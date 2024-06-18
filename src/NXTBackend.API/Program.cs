@@ -1,6 +1,12 @@
-using Microsoft.AspNetCore.Authentication;
-using NXTBackend.API;
+// ============================================================================
+// Copyright (c) 2024 - W2Wizard.
+// See README.md in the project root for license information.
+// ============================================================================
+
 using Serilog;
+using NXTBackend.API;
+
+// ============================================================================
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()

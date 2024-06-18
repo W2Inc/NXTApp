@@ -1,34 +1,44 @@
+// ============================================================================
+// Copyright (c) 2024 - W2Wizard.
+// See README.md in the project root for license information.
+// ============================================================================
+
+using Serilog;
+using Serilog.Templates;
+using Serilog.Templates.Themes;
 using System.Reflection;
-using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Keycloak.AuthServices.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
-using Serilog;
-using Serilog.Events;
-using Serilog.Templates;
-using Serilog.Templates.Themes;
+using System.Text.Json;
+
+// ============================================================================
 
 namespace NXTBackend.API;
 
 public static class Startup
 {
+    /// <summary>
+    /// Handles the registration of services and other configurations
+    /// </summary>
     public static void RegisterServices(WebApplicationBuilder builder)
     {
         string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
             throw new InvalidDataException("Connection string not found in appsettings.json");
 
         var services = builder.Services;
-        services.AddControllers();
         services.AddEndpointsApiExplorer();
+        services.AddControllers().AddJsonOptions(o =>
+        {
+            o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
 
         // Add Keycloak authentication and role-based authorization
         services.AddKeycloakWebApiAuthentication(builder.Configuration);
@@ -50,6 +60,7 @@ public static class Startup
                     Name = "W2Wizard"
                 }
             });
+            c.EnableAnnotations();
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,

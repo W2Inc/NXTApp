@@ -10,6 +10,8 @@ using NXTBackend.API.Models.Requests.Auth;
 
 namespace NXTBackend.API.Controllers;
 
+
+
 [Route("user")]
 [ApiController]
 public class UserController(IUserService userService) : ControllerBase
@@ -21,6 +23,8 @@ public class UserController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
+    /// <response code="200">User created</response>
+    /// <response code="500">An Internal server error has occurred</response>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/user")]
     public async Task<IEnumerable<User>> GetUsers([FromQuery] PaginationParams pagination)
@@ -95,7 +99,7 @@ public class UserController(IUserService userService) : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/me")]
-    public async Task<IActionResult> GetMe(CursusPostRequestDto id)
+    public async Task<IActionResult> GetMe(ProjectPostRequestDto id)
     {
         throw new NotImplementedException();
     }

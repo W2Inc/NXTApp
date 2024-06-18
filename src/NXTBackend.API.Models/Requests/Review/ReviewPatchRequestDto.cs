@@ -4,45 +4,34 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
+using NXTBackend.API.Domain.Enums;
 
 // ============================================================================
 
 namespace NXTBackend.API.Models.Requests;
 
 /// <summary>
-/// Post request for creating a new cursus
+/// The patch request for updating a review
 /// </summary>
-public class RubricPatchRequestDto : BaseRequestDto
+public class ReviewPatchRequestDto : BaseRequestDto
 {
     /// <summary>
     /// 
     /// </summary>
-    [StringLength(128, MinimumLength = 4)]
-    public string? Name { get; set; }
+    public ReviewState? State { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
-    [StringLength(2048, MinimumLength = 128)]
-    public string? Markdown { get; set; }
+    public Guid? FeedbackId { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
-    public bool? Public { get; set; } = false;
+    public Guid? ReviewerId { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
-    public bool? Enabled { get; set; } = false;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public Guid? ProjectId { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public GitInfoRequestDto? GitInfoId { get; set; }
+    public bool? Validated { get; set; }
 }

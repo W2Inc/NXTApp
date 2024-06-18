@@ -44,5 +44,5 @@ public class RubricPostRequestDto : BaseRequestDto
     /// <summary>
     /// The git information (Url, branch, commit) of the rubric
     /// </summary>
-    public Guid GitInfoId { get; set; }
+    public GitInfoRequestDto GitInfo { get; set; }
 }

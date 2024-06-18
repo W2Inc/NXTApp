@@ -5,13 +5,13 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NXTBackend.API", "NXTBackend.API\NXTBackend.API.csproj", "{9556A0FC-99A7-4367-BFDB-65AA0ECCDBE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NXTBackend.API.Domain", "NXTBackend.API.Domain\NXTBackend.API.Domain.csproj", "{82F0CFF7-10D4-40F1-B8EF-3DA64307EE7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NXTBackend.API.Domain", "NXTBackend.API.Domain\NXTBackend.API.Domain.csproj", "{82F0CFF7-10D4-40F1-B8EF-3DA64307EE7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NXTBackend.API.Core", "NXTBackend.API.Core\NXTBackend.API.Core.csproj", "{2D15C364-E06B-414A-885D-19EBC54737C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NXTBackend.API.Core", "NXTBackend.API.Core\NXTBackend.API.Core.csproj", "{2D15C364-E06B-414A-885D-19EBC54737C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NXTBackend.API.Models", "NXTBackend.API.Models\NXTBackend.API.Models.csproj", "{1D4548E9-7A45-4A4F-A4C2-5E3D8B42BD1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NXTBackend.API.Models", "NXTBackend.API.Models\NXTBackend.API.Models.csproj", "{1D4548E9-7A45-4A4F-A4C2-5E3D8B42BD1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NXTBackend.API.Infrastructure", "NXTBackend.API.Infrastructure\NXTBackend.API.Infrastructure.csproj", "{032A6E62-57B3-4D63-A1D1-39624F3C0C05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NXTBackend.API.Infrastructure", "NXTBackend.API.Infrastructure\NXTBackend.API.Infrastructure.csproj", "{032A6E62-57B3-4D63-A1D1-39624F3C0C05}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,6 +5,7 @@ using NXTBackend.API.Common;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
 using NXTBackend.API.Models.Requests.Auth;
 
@@ -35,7 +36,11 @@ public class ProjectController(IUserService userService) : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPost("/project"), Authorize]
-    public async Task<IActionResult> AddProject()
+    [ProducesResponseType<Project>(200)]
+    [ProducesResponseType<BaseResponseDto>(401)]
+    [ProducesResponseType<BaseResponseDto>(403)]
+    [ProducesResponseType<BaseResponseDto>(500)]
+    public async Task<IActionResult> AddProject(ProjectPostRequestDto request)
     {
         throw new NotImplementedException();
     }
@@ -47,6 +52,7 @@ public class ProjectController(IUserService userService) : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/project/{id}")]
+    [ProducesResponseType<Project>(200)]
     public async Task<IActionResult> GetProject(Guid id)
     {
         throw new NotImplementedException();
@@ -59,7 +65,7 @@ public class ProjectController(IUserService userService) : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/project/{id}/users")]
-    public async Task<IActionResult> GetUsersForProject(
+    public async Task<IEnumerable<User>> GetUsersForProject(
         [FromQuery] PaginationParams pagination,
         Guid id
     )
@@ -74,7 +80,7 @@ public class ProjectController(IUserService userService) : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/project/{id}/rubrics")]
-    public async Task<IActionResult> GetProjectRubrics(
+    public async Task<IEnumerable<Rubric>> GetProjectRubrics(
         [FromQuery] PaginationParams pagination,
         Guid id
     )
@@ -89,6 +95,7 @@ public class ProjectController(IUserService userService) : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/project/{id}/git")]
+    [ProducesResponseType<Git>(200)]
     public async Task<IActionResult> GetProjectGitInfo(Guid id)
     {
         throw new NotImplementedException();
@@ -101,6 +108,7 @@ public class ProjectController(IUserService userService) : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPut("/project/{id}/git"), Authorize]
+    [ProducesResponseType<Git>(200)]
     public async Task<IActionResult> SetProjectGitInfo(Guid id)
     {
         throw new NotImplementedException();
