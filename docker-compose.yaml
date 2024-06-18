@@ -1,0 +1,41 @@
+version: '3.9'  
+services:
+  Keycloak:
+    image: quay.io/keycloak/keycloak:22.0.5
+    command: ['start-dev']
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_SCHEMA: public
+      KC_DB_URL: jdbc:postgresql://postgres/keycloak
+
+      KC_DB_USERNAME: keycloak # Make sure it matches the POSTGRES_USER below
+      KC_DB_PASSWORD: password # Make sure it matches the POSTGRES_PASSWORD below
+
+      KEYCLOAK_ADMIN: admin # Change this to a different username
+      KEYCLOAK_ADMIN_PASSWORD: password # Change this to a better password
+      
+      KC_HTTP_RELATIVE_PATH: /auth
+    ports:
+      - "8089:8080"
+  
+  postgres:
+    image: postgres
+    container_name: keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak # Change this to a different username
+      POSTGRES_PASSWORD: password # Change this to a better password
+    ports:
+      - "5432:5432"
+
+  postgres-backend:
+    image: postgres
+    container_name: backend-postgres
+    environment:
+      POSTGRES_DB: backend
+      POSTGRES_USER: backend # Change this to a different username
+      POSTGRES_PASSWORD: password # Change this to a better password
+    ports:
+      - "1330:5432"
