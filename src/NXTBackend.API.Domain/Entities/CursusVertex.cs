@@ -42,11 +42,11 @@ public class CursusVertex : BaseEntity
     {
         CursusId = Guid.Empty;
         Cursus = null!;
-        Goals = [];
-        UserGoals = [];
+        //Goals = [];
+        //UserGoals = [];
         ParentId = null;
         Parent = null;
-        Children = [];
+        //Children = [];
     }
 
     [Column("parent_id")]
@@ -62,12 +62,12 @@ public class CursusVertex : BaseEntity
     [ForeignKey(nameof(CursusId))]
     public virtual Cursus? Cursus { get; set; }
 
-    [JsonIgnore]
-    public IEnumerable<LearningGoal> Goals { get; set; }
+    //[JsonIgnore]
+    //public virtual IEnumerable<LearningGoal> Goals { get; set; }
 
-    [JsonIgnore]
-    public IEnumerable<UserGoal> UserGoals { get; set; }
+    //[JsonIgnore]
+    //public virtual IEnumerable<UserGoal> UserGoals { get; set; }
 
-    [JsonIgnore]
-    public IEnumerable<CursusVertex> Children { get; set; }
+    //[JsonIgnore]
+    //public virtual IEnumerable<CursusVertex> Children { get; set; }
 }

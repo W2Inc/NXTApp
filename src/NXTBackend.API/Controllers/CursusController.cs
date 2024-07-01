@@ -21,11 +21,11 @@ public class CursusController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/cursus")]
-    public async Task<IEnumerable<Cursus>> GetCursi([FromQuery] PaginationParams pagination)
+    public async Task<IActionResult> GetCursi([FromQuery] PaginationParams pagination)
     {
-        throw new NotImplementedException();
+
+        return BadRequest("WUAH!");
     }
 
     /// <summary>
@@ -33,7 +33,6 @@ public class CursusController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpPost("/cursus"), Authorize]
     public async Task<IActionResult> AddCursi([FromQuery] PaginationParams pagination)
     {
@@ -45,7 +44,6 @@ public class CursusController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/cursus/{id}")]
     public async Task<IEnumerable<User>> GetCursus([FromQuery] PaginationParams pagination)
     {
@@ -57,7 +55,6 @@ public class CursusController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpPatch("/cursus/{id}"), Authorize]
     public async Task<IEnumerable<User>> SetCursus([FromQuery] PaginationParams pagination)
     {
@@ -69,7 +66,6 @@ public class CursusController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/cursus/{id}/users")]
     public async Task<IEnumerable<User>> GetUsers([FromQuery] PaginationParams pagination)
     {
@@ -81,7 +77,6 @@ public class CursusController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/cursus/{id}/goals")]
     public async Task<IEnumerable<LearningGoal>> GetGoals([FromQuery] PaginationParams pagination)
     {

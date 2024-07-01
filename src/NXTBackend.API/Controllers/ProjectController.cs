@@ -13,9 +13,9 @@ namespace NXTBackend.API.Controllers;
 
 [Route("project")]
 [ApiController]
-public class ProjectController(IUserService userService) : ControllerBase
+public class ProjectController(IProjectService projectService) : ControllerBase
 {
-    private readonly IUserService _searchService = userService;
+    private readonly IProjectService _projectService = projectService;
 
     /// <summary>
     /// 
@@ -35,14 +35,19 @@ public class ProjectController(IUserService userService) : ControllerBase
     /// <param name="pagination"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    [HttpPost("/project"), Authorize]
+    [HttpPost("/project")]
     [ProducesResponseType<Project>(200)]
     [ProducesResponseType<BaseResponseDto>(401)]
     [ProducesResponseType<BaseResponseDto>(403)]
     [ProducesResponseType<BaseResponseDto>(500)]
     public async Task<IActionResult> AddProject(ProjectPostRequestDto request)
     {
-        throw new NotImplementedException();
+        var project = await _projectService.CreateAsync(new Project
+        {
+            
+        });
+
+        return Ok(project);
     }
 
     /// <summary>

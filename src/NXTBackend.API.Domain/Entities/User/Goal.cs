@@ -60,4 +60,8 @@ public class UserGoal : BaseEntity
     public virtual UserCursus? UserCursus { get; set; }
 
     [Column("vertex_id")]
+    public Guid VertexId { get; set; }
+
+    [ForeignKey(nameof(VertexId))]
+    public virtual CursusVertex Vertex { get; set; }
 }

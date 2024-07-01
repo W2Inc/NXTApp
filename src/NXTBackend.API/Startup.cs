@@ -85,11 +85,9 @@ public static class Startup
             });
         });
 
-        // Add database context and seed it along with any interceptors
-        services.AddScoped<ISaveChangesInterceptor, SavingChangesInterceptor>();
         services.AddDbContext<DatabaseContext>((sp, options) =>
         {
-            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+            options.AddInterceptors(new SavingChangesInterceptor(sp.GetRequiredService<TimeProvider>()));
             // https://docs.microsoft.com/en-us/ef/core/querying/related-data/lazy
             options.UseLazyLoadingProxies().UseNpgsql(connectionString, options =>
             {

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace NXTBackend.API.Common;
 
@@ -8,8 +9,9 @@ namespace NXTBackend.API.Common;
 [JsonSerializable(typeof(PaginationParams))]
 public class PaginationParams
 {
-    private int pageSize = 30;
-    private const int maxPageSize = 50;
+    private const int c_MaxPageSize = 50;
+
+    private int _pageSize = 30;
 
     [JsonPropertyName("page")]
     public int PageNumber { get; set; } = 1;
@@ -17,8 +19,8 @@ public class PaginationParams
     [JsonPropertyName("size")]
     public int PageSize
     {
-        get => pageSize;
-        set => pageSize = (value > maxPageSize) ? maxPageSize : value;
+        get => _pageSize;
+        set => _pageSize = Math.Min(c_MaxPageSize, value);
     }
 }
 
@@ -28,10 +30,6 @@ public class PaginationParams
 /// <typeparam name="T">The object type</typeparam>
 public class PaginatedList<T>
 {
-    public IReadOnlyCollection<T> Items { get; }
-    public int PageNumber { get; }
-    public int TotalPages { get; }
-    public int TotalCount { get; }
 
     public PaginatedList(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize)
     {
@@ -41,10 +39,6 @@ public class PaginatedList<T>
         Items = items;
     }
 
-    public bool HasPreviousPage => PageNumber > 1;
-
-    public bool HasNextPage => PageNumber < TotalPages;
-
     public async static Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
     {
         int count = source.Count();
@@ -53,4 +47,16 @@ public class PaginatedList<T>
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
         //return await Task.FromResult(new PaginatedList<T>(items, count, pageNumber, pageSize));
     }
+
+    public bool HasPreviousPage => PageNumber > 1;
+
+    public bool HasNextPage => PageNumber < TotalPages;
+
+    public IReadOnlyCollection<T> Items { get; }
+
+    public int PageNumber { get; }
+
+    public int TotalPages { get; }
+
+    public int TotalCount { get; }
 }
