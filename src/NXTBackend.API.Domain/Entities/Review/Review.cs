@@ -11,37 +11,35 @@ using NXTBackend.API.Domain.Enums;
 namespace NXTBackend.API.Domain.Entities;
 
 /*
-model Project {
+model Review {
     id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-    created_at DateTime @default(now())
-    updated_at DateTime @default(now()) @updatedAt
+    kind       ReviewType  @default(PERSONAL)
+    state      ReviewState @default(PENDING)
+    created_at DateTime    @default(now())
+    updated_at DateTime    @default(now()) @updatedAt
 
-    name          String  @unique
-    description   String  @db.VarChar(256)
-    markdown      String
-    slug          String  @unique
-    thumbnail_url String?
-    public        Boolean @default(false)
-    enabled       Boolean @default(false)
-    deprecated    Boolean @default(false)
-    max_members   Int     @default(1)
+    // user_id String @db.Uuid
+    // user    User   @relation("Rubriced", fields: [user_id], references: [id])
 
-    // Objectives that are part of this project that get selected on review
-    // For example: "Learn to use git", "Learn to use github", "Learn to use gitlab"
-    //objectives    Objective[]
-    rubrics       Rubric[]
-    goals         LearningGoal[]
-    user_projects UserProject[]
+    reviewer_id String? @db.Uuid
+    reviewer    User?   @relation("Rubricer", fields: [reviewer_id], references: [id])
 
-    git_info_id String?  @db.Uuid
-    git_info    GitInfo? @relation(fields: [git_info_id], references: [id])
+    rubric_id String @db.Uuid
+    rubric    Rubric @relation(fields: [rubric_id], references: [id])
 
-    owner_id String @db.Uuid
-    owner    User   @relation("ProjectCreator", fields: [owner_id], references: [id])
-    tags     Tag[]  @relation("ProjectTags")
+    // The project instance this review is for
+    user_project_id String      @db.Uuid
+    user_project    UserProject @relation(fields: [user_project_id], references: [id])
 
-    @@map("project")
+    feedback_id String?   @db.Uuid
+    feedback    Feedback?
+    validated   Boolean   @default(false)
+
+    // Which objectives have been validated by the reviewer
+    //validated_objectives    Objective[]
+
+    @@map("review")
 }
 */
 
@@ -53,12 +51,16 @@ public class Review : BaseEntity
         Kind = ReviewKind.Self;
         State = ReviewState.Pending;
         Validated = false;
+
         ReviewerId = null;
         Reviewer = null;
+        
         RubricId = null;
         Rubric = null;
+        
         FeedbackId = null;
         Feedback = null;
+        
         UserProjectId = null;
         UserProject = null;
     }

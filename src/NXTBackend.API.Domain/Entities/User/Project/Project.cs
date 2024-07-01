@@ -10,7 +10,7 @@ using NXTBackend.API.Domain.Enums;
 namespace NXTBackend.API.Domain.Entities.UserProject;
 
 /*
-model Project {
+model UserProject {
     id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     created_at DateTime @default(now())
     updated_at DateTime @default(now()) @updatedAt
@@ -39,7 +39,14 @@ public class UserProject : BaseEntity
 {
     public UserProject()
     {
-
+        State = TaskState.Inactive;
+        ProjectId = Guid.Empty;
+        Project = null!;
+        GitInfoId = Guid.Empty;
+        GitInfo = null;
+        RubricId = Guid.Empty;
+        Rubric = null!;
+        ProjectMembers = [];
     }
 
     [Column("state")]

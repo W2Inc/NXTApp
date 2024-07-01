@@ -5,32 +5,31 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
+using NXTBackend.API.Domain.Entities.UserProject;
 
 namespace NXTBackend.API.Domain.Entities;
 
 /*
-model LearningGoal {
-    id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    created_at DateTime @default(now())
-    updated_at DateTime @default(now()) @updatedAt
+model UserGoal {
+    id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    created_at DateTime     @default(now())
+    updated_at DateTime     @default(now()) @updatedAt
+    state      State        @default(INACTIVE)
+    user       User         @relation(fields: [user_id], references: [id])
+    goal       LearningGoal @relation(fields: [goal_id], references: [id])
 
-    name        String @unique
-    slug        String @unique
-    markdown    String
-    description String @db.VarChar(256)
+    user_id String @db.Uuid
+    goal_id String @db.Uuid
 
-    public     Boolean @default(false)
-    enabled    Boolean @default(false)
-    deprecated Boolean @default(false)
+    project_users ProjectMember[]
 
-    owner_id String @db.Uuid
-    owner    User   @relation("GoalCreator", fields: [owner_id], references: [id])
+    user_cursus_id String?     @db.Uuid
+    user_cursus    UserCursus? @relation("UserGoalsInCursus", fields: [user_cursus_id], references: [id])
 
-    projects      Project[]
-    user_goals    UserGoal[]
-    goal_vertices CursusVertex[] // This goal is part of these vertices
+    vertex_id String       @db.Uuid
+    vertex    CursusVertex @relation(fields: [vertex_id], references: [id])
 
-    @@map("learning_goal")
+    @@map("user_goal")
 }
 */
 
@@ -41,4 +40,24 @@ public class UserGoal : BaseEntity
     {
 
     }
+
+    [Column("user_id")]
+    public Guid UserId { get; set; }
+
+    [ForeignKey(nameof(UserId))]
+    public virtual User User { get; set; }
+
+    [Column("goal_id")]
+    public Guid GoalId { get; set; }
+
+    [ForeignKey(nameof(GoalId))]
+    public virtual LearningGoal Goal { get; set; }
+
+    [Column("user_cursus_id")]
+    public Guid? UserCursusId { get; set; }
+
+    [ForeignKey(nameof(UserCursusId))]
+    public virtual UserCursus? UserCursus { get; set; }
+
+    [Column("vertex_id")]
 }

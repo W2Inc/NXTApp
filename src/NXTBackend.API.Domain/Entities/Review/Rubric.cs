@@ -9,45 +9,81 @@ using NXTBackend.API.Domain.Common;
 namespace NXTBackend.API.Domain.Entities;
 
 /*
-model Project {
+model Rubric {
     id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
+    name       String   @unique
+    markdown   String
     created_at DateTime @default(now())
     updated_at DateTime @default(now()) @updatedAt
+    public     Boolean  @default(false)
+    enabled    Boolean  @default(false)
+    deprecated Boolean  @default(false)
 
-    name          String  @unique
-    description   String  @db.VarChar(256)
-    markdown      String
-    slug          String  @unique
-    thumbnail_url String?
-    public        Boolean @default(false)
-    enabled       Boolean @default(false)
-    deprecated    Boolean @default(false)
-    max_members   Int     @default(1)
+    project_id String @unique @db.Uuid
 
-    // Objectives that are part of this project that get selected on review
-    // For example: "Learn to use git", "Learn to use github", "Learn to use gitlab"
-    //objectives    Objective[]
-    rubrics       Rubric[]
-    goals         LearningGoal[]
-    user_projects UserProject[]
+    owner_id String @db.Uuid
+    owner    User   @relation("RubricCreator", fields: [owner_id], references: [id])
 
     git_info_id String?  @db.Uuid
     git_info    GitInfo? @relation(fields: [git_info_id], references: [id])
 
-    owner_id String @db.Uuid
-    owner    User   @relation("ProjectCreator", fields: [owner_id], references: [id])
-    tags     Tag[]  @relation("ProjectTags")
+    project       Project       @relation(fields: [project_id], references: [id])
+    reviews       Review[]
+    user_projects UserProject[]
 
-    @@map("project")
+    @@map("rubric")
 }
 */
 
-[Table("tbl_rubric")]
+[Table("rubric")]
 public class Rubric : BaseEntity
 {
     public Rubric()
     {
-
+        Name = string.Empty;
+        Markdown = string.Empty;
+        Public = false;
+        Enabled = false;
+        ProjectId = Guid.Empty;
+        Project = null!;
+        CreatorId = Guid.Empty;
+        Owner = null!;
+        GitInfoId = Guid.Empty;
+        GitInfo = null!;
     }
+
+    [Column("name")]
+    public string Name { get; set; }
+
+    [Column("markdown")]
+    public string Markdown { get; set; }
+
+    [Column("public")]
+    public bool Public { get; set; }
+
+    [Column("enabled")]
+    public bool Enabled { get; set; }
+
+    [Column("project_id")]
+    public Guid ProjectId { get; set; }
+
+    [ForeignKey(nameof(ProjectId))]
+    public virtual Project Project { get; set; }
+
+    [Column("creator_id")]
+    public Guid CreatorId { get; set; }
+
+    [ForeignKey(nameof(CreatorId))]
+    public virtual User Owner { get; set; }
+
+    [Column("git_info_id")]
+    public Guid GitInfoId { get; set; }
+
+    [ForeignKey(nameof(GitInfoId))]
+    public virtual Git GitInfo { get; set; }
+
+    public virtual Review[] Reviews { get; set; }
+
+    public virtual UserProject.UserProject[] UserProjects { get; set; }
 }

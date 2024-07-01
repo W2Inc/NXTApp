@@ -4,12 +4,13 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Domain.Entities;
 
 /*
-model Cursus {
+model CursusVertex {
     id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     created_at DateTime @default(now())
     updated_at DateTime @default(now()) @updatedAt
@@ -39,7 +40,13 @@ public class CursusVertex : BaseEntity
 {
     public CursusVertex()
     {
-
+        CursusId = Guid.Empty;
+        Cursus = null!;
+        Goals = [];
+        UserGoals = [];
+        ParentId = null;
+        Parent = null;
+        Children = [];
     }
 
     [Column("parent_id")]
@@ -48,9 +55,19 @@ public class CursusVertex : BaseEntity
     [ForeignKey(nameof(ParentId))]
     public virtual CursusVertex? Parent { get; set; }
 
+
     [Column("cursus_id")]
     public Guid? CursusId { get; set; }
 
     [ForeignKey(nameof(CursusId))]
     public virtual Cursus? Cursus { get; set; }
+
+    [JsonIgnore]
+    public IEnumerable<LearningGoal> Goals { get; set; }
+
+    [JsonIgnore]
+    public IEnumerable<UserGoal> UserGoals { get; set; }
+
+    [JsonIgnore]
+    public IEnumerable<CursusVertex> Children { get; set; }
 }

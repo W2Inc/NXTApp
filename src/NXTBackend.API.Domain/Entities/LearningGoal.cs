@@ -39,9 +39,47 @@ public class LearningGoal : BaseEntity
 {
     public LearningGoal()
     {
-
+        Name = string.Empty;
+        Slug = string.Empty;
+        Markdown = string.Empty;
+        Description = string.Empty;
+        CreatorId = Guid.Empty;
+        Creator = null!;
+        Projects = [];
+        UserGoals = [];
+        GoalVertices = [];
     }
 
     [Column("name")]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; }
+
+    [Column("slug")]
+    public string Slug { get; set; }
+
+    [Column("markdown")]
+    public string Markdown { get; set; }
+
+    [Column("description")]
+    public string Description { get; set; }
+
+    [Column("creator_id")]
+    public Guid CreatorId { get; set; }
+
+    [ForeignKey(nameof(CreatorId))]
+    public virtual User Creator { get; set; }
+
+    /// <summary>
+    /// The projects that are part of this goal
+    /// </summary>
+    public virtual ICollection<Project> Projects { get; set; }
+
+    /// <summary>
+    /// The instances of this goal
+    /// </summary>
+    public virtual ICollection<UserGoal> UserGoals { get; set; }
+
+    /// <summary>
+    /// This goal is part of these vertices
+    /// </summary>
+    public virtual ICollection<CursusVertex> GoalVertices { get; set; }
 }

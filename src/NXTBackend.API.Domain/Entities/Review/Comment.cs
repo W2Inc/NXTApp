@@ -6,6 +6,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
+// ============================================================================
+
 namespace NXTBackend.API.Domain.Entities;
 
 /*
@@ -24,6 +26,8 @@ model Comment {
     @@map("comment")
 }
 */
+
+// ============================================================================
 
 /// <summary>
 /// A feature is a experimental feature that is being developed.

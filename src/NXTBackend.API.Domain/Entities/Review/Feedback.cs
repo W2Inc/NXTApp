@@ -1,5 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿// ============================================================================
+// Nextdemy B.V, Amsterdam 2023, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
+
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
+
+// ============================================================================
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -18,6 +26,8 @@ model Feedback {
 }
 */
 
+// ============================================================================
+
 /// <summary>
 /// A feature is a experimental feature that is being developed.
 /// </summary>
@@ -28,6 +38,7 @@ public class Feedback : BaseEntity
     {
         ReviewId = Guid.Empty;
         Review = null!;
+        Comments = [];
     }
 
     [Column("review_id")] // Add unqiue constraint
@@ -35,4 +46,7 @@ public class Feedback : BaseEntity
 
     [ForeignKey(nameof(ReviewId))]
     public virtual Review Review { get; set; }
+
+    [JsonIgnore]
+    public virtual IEnumerable<Comment> Comments { get; set; }
 }

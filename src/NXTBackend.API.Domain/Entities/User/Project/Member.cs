@@ -12,7 +12,7 @@ using NXTBackend.API.Domain.Enums;
 namespace NXTBackend.API.Domain.Entities.UserProject;
 
 /*
-model Project {
+model ProjectMember {
     id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
     created_at DateTime @default(now())
     updated_at DateTime @default(now()) @updatedAt

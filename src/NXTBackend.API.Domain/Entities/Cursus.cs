@@ -5,6 +5,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Enums;
 
@@ -118,4 +119,16 @@ public class Cursus : BaseEntity
     // TODO: Add one-to-many user_cursi relation
     //public virtual ICollection<CursusVertex> Vertices { get; set; } = null!;
     //public virtual ICollection<User.UserCursus> UserCursi { get; set; } = null!;
+
+    /// <summary>
+    /// The user was the evaluator on the following reviews.
+    /// </summary>
+    [JsonIgnore]
+    public virtual ICollection<CursusVertex> Vertices { get; set; }
+
+    /// <summary>
+    /// The user was the evaluator on the following reviews.
+    /// </summary>
+    [JsonIgnore]
+    public virtual ICollection<UserCursus> UserCursi { get; set; }
 }
