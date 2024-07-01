@@ -42,5 +42,6 @@ public class LearningGoal : BaseEntity
 
     }
 
+    [Column("name")]
     public string Name { get; set; } = string.Empty;
 }

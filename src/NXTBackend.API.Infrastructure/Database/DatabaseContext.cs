@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Entities.UserProject;
 using NXTBackend.API.Infrastructure.Interceptors;
 
 namespace NXTBackend.API.Infrastructure.Database;
@@ -20,32 +21,131 @@ public class DatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //modelBuilder.Entity<Feature>()
-        // .Property(s => s.CreatedAt)
-        // .HasDefaultValueSql("GETDATE()");
+        modelBuilder.Entity<Cursus>()
+            .HasOne(c => c.Creator)
+            .WithMany(u => u.CreatedCursus)
+            .HasForeignKey(c => c.CreatorId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        //modelBuilder.Entity<Feature>()
-        //    .Property(s => s.UpdatedAt)
-        //    .HasDefaultValueSql("GETDATE()");
+        //modelBuilder.Entity<Cursus>()
+        //    .HasMany(c => c.Vertices)
+        //    .WithOne(cv => cv.Cursus)
+        //    .HasForeignKey(cv => cv.CursusId);
 
+        //modelBuilder.Entity<Cursus>()
+        //    .HasMany(c => c.UserCursi)
+        //    .WithOne(uc => uc.Cursus)
+        //    .HasForeignKey(uc => uc.CursusId);
+
+        //// CursusVertex relationships
+        //modelBuilder.Entity<CursusVertex>()
+        //    .HasOne(cv => cv.Cursus)
+        //    .WithMany(c => c.Vertices)
+        //    .HasForeignKey(cv => cv.CursusId);
+
+        //modelBuilder.Entity<CursusVertex>()
+        //    .HasOne(cv => cv.Parent)
+        //    .WithMany(p => p.Children)
+        //    .HasForeignKey(cv => cv.ParentId)
+        //    .OnDelete(DeleteBehavior.Restrict);
+
+        //modelBuilder.Entity<CursusVertex>()
+        //    .HasMany(cv => cv.Goals)
+        //    .WithMany(g => g.GoalVertices);
+
+        //modelBuilder.Entity<CursusVertex>()
+        //    .HasMany(cv => cv.UserGoals)
+        //    .WithOne(ug => ug.Vertex)
+        //    .HasForeignKey(ug => ug.VertexId);
+
+        //// UserCursus relationships
+        //modelBuilder.Entity<UserCursus>()
+        //    .HasOne(uc => uc.User)
+        //    .WithMany(u => u.Cursi)
+        //    .HasForeignKey(uc => uc.UserId);
+
+        //modelBuilder.Entity<UserCursus>()
+        //    .HasOne(uc => uc.Cursus)
+        //    .WithMany(c => c.UserCursi)
+        //    .HasForeignKey(uc => uc.CursusId);
+
+        //modelBuilder.Entity<UserCursus>()
+        //    .HasMany(uc => uc.UserGoals)
+        //    .WithOne(ug => ug.UserCursus)
+        //    .HasForeignKey(ug => ug.UserCursusId);
+
+        //// LearningGoal relationships
+        //modelBuilder.Entity<LearningGoal>()
+        //    .HasOne(lg => lg.Owner)
+        //    .WithMany(u => u.CreatedGoals)
+        //    .HasForeignKey(lg => lg.OwnerId)
+        //    .OnDelete(DeleteBehavior.Restrict);
+
+        //modelBuilder.Entity<LearningGoal>()
+        //    .HasMany(lg => lg.Projects)
+        //    .WithMany(p => p.Goals);
+
+        //modelBuilder.Entity<LearningGoal>()
+        //    .HasMany(lg => lg.UserGoals)
+        //    .WithOne(ug => ug.Goal)
+        //    .HasForeignKey(ug => ug.GoalId);
+
+        //modelBuilder.Entity<LearningGoal>()
+        //    .HasMany(lg => lg.GoalVertices)
+        //    .WithOne(cv => cv.Cursus)
+        //    .HasForeignKey(cv => cv.CursusId);
+
+        // Project relationships
+        modelBuilder.Entity<Project>()
+            .HasOne(p => p.Owner)
+            .WithMany(u => u.CreatedProjects)
+            .HasForeignKey(p => p.OwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        //modelBuilder.Entity<Project>()
+        //    .HasMany(p => p.Rubrics)
+        //    .WithOne(r => r.Project)
+        //    .HasForeignKey(r => r.ProjectId);
+
+        //modelBuilder.Entity<Project>()
+        //    .HasMany(p => p.Tags)
+        //    .WithMany(t => t.Projects);
+
+        //modelBuilder.Entity<Project>()
+        //    .HasMany(p => p.UserProjects)
+        //    .WithOne(up => up.Project)
+        //    .HasForeignKey(up => up.ProjectId);
+
+        //modelBuilder.Entity<Project>()
+        //    .HasOne(p => p.GitInfo)
+        //    .WithMany(gi => gi.Projects)
+        //    .HasForeignKey(p => p.GitInfoId);
+
+        //// User relationships
+        //modelBuilder.Entity<User>()
+        //    .HasMany(u => u.CreatedCursus)
+        //    .WithOne(c => c.Owner)
+        //    .HasForeignKey(c => c.OwnerId);
 
         //modelBuilder.Entity<User>()
-        //    .HasOne(u => u.Details)
-        //    .WithOne(d => d.User)
-        //    .HasForeignKey<Details>(d => d.UserId);
+        //    .HasMany(u => u.CreatedGoals)
+        //    .WithOne(g => g.Owner)
+        //    .HasForeignKey(g => g.OwnerId);
 
-        //modelBuilder.Entity<User>()
-        //    .HasMany(u => u.Comments)
-        //    .WithOne(c => c.User)
-        //    .HasForeignKey(c => c.UserId);
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.CreatedProjects)
+            .WithOne(p => p.Owner)
+            .HasForeignKey(p => p.OwnerId);
 
-        //modelBuilder.Entity<Details>()
-        //    .HasMany(d => d.Features)
-        //    .WithMany(f => f.Details)
-        //    .UsingEntity(j => j.ToTable("tbl_user_details_features"));
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Comments)
+            .WithOne(c => c.User)
+            .HasForeignKey(c => c.UserId);
 
-        //modelBuilder.Entity<EventAction>()
-        //    .HasKey(ea => new { ea.UserId, ea.EventId });
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.Rubricer)
+            .WithOne(r => r.Reviewer)
+            .HasForeignKey(r => r.ReviewerId);
     }
 
 #nullable disable

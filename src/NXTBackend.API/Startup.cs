@@ -37,15 +37,12 @@ public static class Startup
         services.AddEndpointsApiExplorer();
         services.AddControllers().AddJsonOptions(o =>
         {
-            o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
         });
 
         // Add Keycloak authentication and role-based authorization
         services.AddKeycloakWebApiAuthentication(builder.Configuration);
-        services.AddAuthorization(o => o.AddPolicy("dev", b =>
-        {
-            b.RequireRole("dev");
-        }));
+        services.AddAuthorization(o => o.AddPolicy("dev", b => b.RequireRole("dev")));
 
         // All sorts of swagger stuff
         services.AddSwaggerGen(c =>
@@ -104,6 +101,7 @@ public static class Startup
         // Add services
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISearchService, SearchService>();
+        services.AddScoped<IUserService, UserService>();
         services.AddSingleton(TimeProvider.System);
         services.AddRateLimiter(limiter =>
         {

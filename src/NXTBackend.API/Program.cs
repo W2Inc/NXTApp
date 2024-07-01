@@ -18,7 +18,7 @@ Startup.RegisterServices(builder);
 
 var app = builder.Build();
 if (!await app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseSeeder>().InitializeAsync(builder.Configuration, args))
-    throw new HostAbortedException();
+    throw new HostAbortedException("Unable to seed, are the containers up?");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

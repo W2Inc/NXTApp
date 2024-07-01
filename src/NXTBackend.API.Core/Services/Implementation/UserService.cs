@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Common;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Entities.UserProject;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models.Requests;
@@ -58,6 +59,21 @@ public sealed class UserService : IUserService
     }
 
     public Task<User> SubscribeToCursus(User entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Review?> didRecentReviewOnUserProject(User entity, UserProject userProject)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User> UpdateAsync(User entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User> DeleteAsync(User entity)
     {
         throw new NotImplementedException();
     }

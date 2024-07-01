@@ -46,7 +46,7 @@ public class DatabaseSeeder
         {
             var dets = await _databaseContext.Details.AddAsync(new()
             {
-                
+
             });
             await _databaseContext.Users.AddAsync(y = new()
             {

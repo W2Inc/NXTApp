@@ -26,17 +26,13 @@ public class Feedback : BaseEntity
 {
     public Feedback()
     {
-        //ReviewId = Guid.Empty;
-        Comments = null!;
-        //Review = null!;
+        ReviewId = Guid.Empty;
+        Review = null!;
     }
 
-    [ForeignKey(nameof(Comment))]
-    public virtual ICollection<Comment> Comments { get; set; }
+    [Column("review_id")] // Add unqiue constraint
+    public Guid ReviewId { get; set; }
 
-    //[Column("review_id")] // Add unqiue constraint
-    //public Guid ReviewId { get; set; }
-
-    //[ForeignKey(nameof(ReviewId))]
-    //public virtual Review Review { get; set; }
+    [ForeignKey(nameof(ReviewId))]
+    public virtual Review Review { get; set; }
 }

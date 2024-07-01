@@ -45,4 +45,10 @@ public class Comment : BaseEntity
 
     [ForeignKey(nameof(UserId))]
     public virtual User User { get; set; } = null!;
+
+    [Column("feedback_id")]
+    public Guid FeedbackId { get; set; }
+
+    [ForeignKey(nameof(FeedbackId))]
+    public virtual Feedback Feedback { get; set; } = null!;
 }

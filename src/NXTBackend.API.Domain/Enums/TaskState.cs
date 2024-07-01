@@ -13,27 +13,22 @@ namespace NXTBackend.API.Domain.Enums;
 /// For example the state of a project
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum State
+public enum TaskState
 {
     /// <summary>
-    /// The entity is inactive.
+    /// The task is inactive and won't continue.
     /// </summary>
     Inactive,
 
     /// <summary>
-    /// The entity is active.
+    /// The task is active and will continue.
     /// </summary>
     Active,
 
     /// <summary>
-    /// The entity is awaiting something.
+    /// The task is awaiting something.
     /// </summary>
     Awaiting,
-
-    /// <summary>
-    /// The entity is on going.
-    /// </summary>
-    OnGoing,
 
     /// <summary>
     /// The entity is completed.

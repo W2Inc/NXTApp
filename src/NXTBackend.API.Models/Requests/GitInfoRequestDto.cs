@@ -3,6 +3,7 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 // ============================================================================

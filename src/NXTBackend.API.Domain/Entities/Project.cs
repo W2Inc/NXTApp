@@ -48,8 +48,66 @@ public class Project : BaseEntity
 {
     public Project()
     {
-
+        Name = string.Empty;
+        Description = string.Empty;
+        Markdown = string.Empty;
+        Slug = string.Empty;
+        ThumbnailUrl = null;
+        Public = false;
+        Enabled = false;
+        MaxMembers = 1;
+        GitInfoId = Guid.Empty;
+        GitInfo = null!;
+        OwnerId = Guid.Empty;
+        Owner = null!;
+        Tags = [];
     }
 
-    public string Name { get; set; } = string.Empty;
+    /// <summary>
+    /// The name of the feature.
+    /// </summary>
+    [Column("name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// The markdown content of the feature.
+    /// </summary>
+    [Column("description")]
+    public string Description { get; set; }
+
+    /// <summary>
+    /// The markdown content of the feature.
+    /// </summary>
+    [Column("markdown")]
+    public string Markdown { get; set; }
+
+    [Column("slug")]
+    public string Slug { get; set; }
+
+    [Column("thumbnail_url")]
+    public string? ThumbnailUrl { get; set; }
+
+    [Column("public")]
+    public bool Public { get; set; }
+
+    [Column("enabled")]
+    public bool Enabled { get; set; }
+
+    [Column("max_members")]
+    public int MaxMembers { get; set; }
+
+    [Column("git_info_id")]
+    public Guid GitInfoId { get; set; }
+
+    [ForeignKey(nameof(GitInfoId))]
+    public virtual Git GitInfo { get; set; }
+
+    [Column("owner_id")]
+    public Guid OwnerId { get; set; }
+
+    [ForeignKey(nameof(OwnerId))]
+    public virtual User Owner { get; set; }
+
+    [Column("tags")]
+    public string[] Tags { get; set; }
 }

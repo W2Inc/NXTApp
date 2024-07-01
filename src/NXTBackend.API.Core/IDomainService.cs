@@ -1,8 +1,14 @@
-﻿namespace NXTBackend.API.Core;
+﻿// ============================================================================
+// Nextdemy B.V, Amsterdam 2023, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
 
 using NXTBackend.API.Common;
-using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Models.Requests;
+using NXTBackend.API.Domain.Common;
+
+// ============================================================================
+
+namespace NXTBackend.API.Core;
 
 /// <summary>
 /// Interface for Domain models.
@@ -10,7 +16,7 @@ using NXTBackend.API.Models.Requests;
 /// Provides generic, usable methods for all models such as Create, Update, Delete, FindById and GetAll.
 /// </summary>
 /// <typeparam name="T">The model.</typeparam>
-public interface IDomainService<T>
+public interface IDomainService<T> where T : BaseEntity
 {
     /// <summary>
     /// Find the entity by its ID.
@@ -24,14 +30,14 @@ public interface IDomainService<T>
     /// </summary>
     /// <param name="entity">The updated entity.</param>
     /// <returns>The updated entity.</returns>
-    public T Update(T entity);
+    public Task<T> UpdateAsync(T entity);
 
     /// <summary>
     /// Delete the entity.
     /// </summary>
     /// <param name="entity">The entity to delete</param>
     /// <returns>The deleted entity.</returns>
-    public T Delete(T entity);
+    public Task<T> DeleteAsync(T entity);
 
     /// <summary>
     /// Create a new entity.

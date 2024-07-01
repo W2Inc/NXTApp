@@ -11,4 +11,10 @@
     <ProjectReference Include="..\NXTBackend.API.Domain\NXTBackend.API.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Requests\User\Cursus\" />
+    <Folder Include="Requests\User\Project\" />
+    <Folder Include="Requests\User\Goal\" />
+  </ItemGroup>
+
 </Project>
