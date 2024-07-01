@@ -4,11 +4,10 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
-using NXTBackend.API.Models.Requests.Cursus;
 
 // ============================================================================
 
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Requests.Cursus;
 
 /// <summary>
 /// Patch request for updating a cursus

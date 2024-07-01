@@ -1,10 +1,8 @@
-﻿namespace NXTBackend.API.Core.Services.Interface;
+﻿using NXTBackend.API.Domain.Entities.Review;
+using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.User.Project;
 
-using NXTBackend.API.Common;
-using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.UserProject;
-using NXTBackend.API.Infrastructure.Database;
-using NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Core.Services.Interface;
 
 public interface IUserService : IDomainService<User>
 {

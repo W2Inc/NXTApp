@@ -5,9 +5,10 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
+using NXTBackend.API.Domain.Entities.Review;
 using NXTBackend.API.Domain.Enums;
 
-namespace NXTBackend.API.Domain.Entities.UserProject;
+namespace NXTBackend.API.Domain.Entities.User.Project;
 
 /*
 model UserProject {
@@ -43,7 +44,7 @@ public class UserProject : BaseEntity
         ProjectId = Guid.Empty;
         Project = null!;
         GitInfoId = Guid.Empty;
-        GitInfo = null;
+        GitInfo = null!;
         RubricId = Guid.Empty;
         Rubric = null!;
         ProjectMembers = [];
@@ -58,13 +59,11 @@ public class UserProject : BaseEntity
     [ForeignKey(nameof(ProjectId))]
     public virtual Project Project { get; set; }
 
-
     [Column("git_info_id")]
     public Guid GitInfoId { get; set; }
 
     [ForeignKey(nameof(GitInfoId))]
     public virtual Git GitInfo { get; set; }
-
 
     [Column("rubric_id")]
     public Guid RubricId { get; set; }
@@ -77,6 +76,5 @@ public class UserProject : BaseEntity
     /// At most N members to what the project allows.
     /// </summary>
     public virtual ICollection<Member> ProjectMembers { get; set; }
-
 
 }

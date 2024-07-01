@@ -1,10 +1,9 @@
-﻿namespace NXTBackend.API.Core.Services.Interface;
-
-using NXTBackend.API.Common;
+﻿
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Infrastructure.Database;
-using NXTBackend.API.Models.Requests;
+using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Models;
 
+namespace NXTBackend.API.Core.Services.Interface;
 public interface IGoalService : IDomainService<LearningGoal>
 {
     /// <summary>

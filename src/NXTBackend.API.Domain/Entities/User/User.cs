@@ -7,10 +7,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
-using NXTBackend.API.Domain.Entities.UserProject;
-using NXTBackend.API.Domain.Enums;
+using NXTBackend.API.Domain.Entities.Review;
+using NXTBackend.API.Domain.Entities.User.Project;
 
-namespace NXTBackend.API.Domain.Entities;
+namespace NXTBackend.API.Domain.Entities.User;
 
 /// <summary>
 /// A feature is a experimental feature that is being developed.

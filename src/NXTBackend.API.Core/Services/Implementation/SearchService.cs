@@ -1,13 +1,11 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using NXTBackend.API.Common;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Enums;
+using NXTBackend.API.Domain.Entities.User;
 using NXTBackend.API.Infrastructure.Database;
+using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
-using NXTBackend.API.Models.Requests.Auth;
-using NXTBackend.API.Models.Responses.Auth;
+using NXTBackend.API.Models.Responses;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -24,7 +22,7 @@ public sealed class SearchService : ISearchService
         _databaseContext = databaseContext;
     }
 
-    async Task<SearchResponseDto<Cursus>> ISearchService.SearchCursusAsync(SearchRequestDto request, PaginationParams pagination)
+    public async Task<SearchResponseDto<Cursus>> SearchCursusAsync(SearchRequestDto request, PaginationParams pagination)
     {
         var query = _databaseContext.Cursi.Where(x => EF.Functions.Like(x.Name, $"%{request.Query}%"));
         var data = await PaginatedList<Cursus>.CreateAsync(query, pagination.PageNumber, pagination.PageSize);

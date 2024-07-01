@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Enums;
 
-namespace NXTBackend.API.Domain.Entities;
+namespace NXTBackend.API.Domain.Entities.Review;
 
 /*
 model Review {
@@ -54,13 +54,13 @@ public class Review : BaseEntity
 
         ReviewerId = null;
         Reviewer = null;
-        
+
         RubricId = null;
         Rubric = null;
-        
+
         FeedbackId = null;
         Feedback = null;
-        
+
         UserProjectId = null;
         UserProject = null;
     }
@@ -116,5 +116,5 @@ public class Review : BaseEntity
     public Guid? UserProjectId { get; set; }
 
     [ForeignKey(nameof(ReviewerId))]
-    public virtual UserProject.UserProject? UserProject { get; set; }
+    public virtual User.Project.UserProject? UserProject { get; set; }
 }

@@ -4,12 +4,10 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 
 // ============================================================================
 
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Requests.Project;
 
 public class ProjectPostRequestDto : BaseRequestDto
 {

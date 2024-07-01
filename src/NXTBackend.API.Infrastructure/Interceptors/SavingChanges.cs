@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Infrastructure.Interceptors;
@@ -36,6 +36,7 @@ public class SavingChangesInterceptor : SaveChangesInterceptor
                 {
                     entry.Entity.CreatedAt = utcNow;
                 }
+
                 entry.Entity.UpdatedAt = utcNow;
             }
         }

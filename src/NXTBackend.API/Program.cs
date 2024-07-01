@@ -3,8 +3,8 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using Serilog;
 using NXTBackend.API;
+using Serilog;
 
 // ============================================================================
 

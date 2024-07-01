@@ -5,9 +5,8 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
-using NXTBackend.API.Domain.Entities.UserProject;
 
-namespace NXTBackend.API.Domain.Entities;
+namespace NXTBackend.API.Domain.Entities.User;
 
 /*
 model UserGoal {

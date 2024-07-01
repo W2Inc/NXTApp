@@ -1,13 +1,11 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NXTBackend.API.Common;
-using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Entities.Review;
+using NXTBackend.API.Domain.Entities.User;
 using NXTBackend.API.Models;
-using NXTBackend.API.Models.Requests;
-using NXTBackend.API.Models.Requests.Auth;
+using NXTBackend.API.Models.Requests.Project;
 
 namespace NXTBackend.API.Controllers;
 
@@ -44,7 +42,7 @@ public class ProjectController(IProjectService projectService) : ControllerBase
     {
         var project = await _projectService.CreateAsync(new Project
         {
-            
+
         });
 
         return Ok(project);

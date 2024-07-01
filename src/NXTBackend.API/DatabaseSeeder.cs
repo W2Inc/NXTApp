@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Entities.User;
 using NXTBackend.API.Infrastructure.Database;
 
 namespace NXTBackend.API;

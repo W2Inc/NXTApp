@@ -1,10 +1,6 @@
-﻿namespace NXTBackend.API.Core.Services.Interface;
+﻿using NXTBackend.API.Domain.Entities.Review;
 
-using NXTBackend.API.Common;
-using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Infrastructure.Database;
-using NXTBackend.API.Models.Requests;
-
+namespace NXTBackend.API.Core.Services.Interface;
 /// <summary>
 /// Service for the Rubric entity.
 /// </summary>

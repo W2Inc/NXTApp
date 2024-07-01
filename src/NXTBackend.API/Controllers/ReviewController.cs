@@ -1,13 +1,9 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NXTBackend.API.Common;
-using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Models.Requests;
-using NXTBackend.API.Models.Requests.Auth;
+using NXTBackend.API.Domain.Entities.Review;
+using NXTBackend.API.Models;
+using NXTBackend.API.Models.Requests.Review;
 
 namespace NXTBackend.API.Controllers;
 
@@ -34,12 +30,16 @@ public class ReviewController(
     [HttpGet("/reviews")]
     public async Task<IEnumerable<Review>> GetReviews(
         [FromQuery] PaginationParams pagination
-    ) => (await _reviewService.GetAllAsync(pagination)).Items;
+    )
+    {
+        return (await _reviewService.GetAllAsync(pagination)).Items;
+    }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="pagination"></param>
+    /// <param name="body"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPost("/reviews")]

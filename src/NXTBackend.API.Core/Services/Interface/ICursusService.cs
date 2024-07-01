@@ -1,10 +1,8 @@
-﻿namespace NXTBackend.API.Core.Services.Interface;
-
-using NXTBackend.API.Common;
+﻿
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Infrastructure.Database;
-using NXTBackend.API.Models.Requests;
+using NXTBackend.API.Models;
 
+namespace NXTBackend.API.Core.Services.Interface;
 public interface ICursusService : IDomainService<Cursus>
 {
 

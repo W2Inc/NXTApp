@@ -1,14 +1,10 @@
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using NXTBackend.API.Common;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.UserProject;
-using NXTBackend.API.Domain.Enums;
+using NXTBackend.API.Domain.Entities.Review;
+using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.User.Project;
 using NXTBackend.API.Infrastructure.Database;
-using NXTBackend.API.Models.Requests;
-using NXTBackend.API.Models.Requests.Auth;
-using NXTBackend.API.Models.Responses.Auth;
+using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -25,11 +21,22 @@ public sealed class UserService : IUserService
         _databaseContext = databaseContext;
     }
 
-    public async Task<User?> FindByIdAsync(Guid id) => await _databaseContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+    /// <inheritdoc/>
+    public async Task<User?> FindByIdAsync(Guid id)
+    {
+        return await _databaseContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+    }
 
-    public async Task<User?> FindByLoginAsync(string login) => await _databaseContext.Users.FirstOrDefaultAsync(u => u.Login == login);
+    /// <inheritdoc/>
+    public async Task<User?> FindByLoginAsync(string login)
+    {
+        return await _databaseContext.Users.FirstOrDefaultAsync(u => u.Login == login);
+    }
 
-    public async Task<User?> FindByNameAsync(string displayName) => await _databaseContext.Users.FirstOrDefaultAsync(u => u.DisplayName == displayName);
+    public async Task<User?> FindByNameAsync(string displayName)
+    {
+        return await _databaseContext.Users.FirstOrDefaultAsync(u => u.DisplayName == displayName);
+    }
 
     public async Task<User> CreateAsync(User entity)
     {

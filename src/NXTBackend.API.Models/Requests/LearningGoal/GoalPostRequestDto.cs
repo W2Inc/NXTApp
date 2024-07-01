@@ -4,11 +4,10 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 
 // ============================================================================
 
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Requests.LearningGoal;
 
 //pub name: String,
 //    pub markdown: String,

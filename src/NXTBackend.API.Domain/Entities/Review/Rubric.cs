@@ -6,7 +6,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
-namespace NXTBackend.API.Domain.Entities;
+namespace NXTBackend.API.Domain.Entities.Review;
 
 /*
 model Rubric {
@@ -85,5 +85,5 @@ public class Rubric : BaseEntity
 
     public virtual Review[] Reviews { get; set; }
 
-    public virtual UserProject.UserProject[] UserProjects { get; set; }
+    public virtual User.Project.UserProject[] UserProjects { get; set; }
 }

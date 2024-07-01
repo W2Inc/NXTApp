@@ -3,13 +3,11 @@
 // See README in the root project for more information.
 // ============================================================================
 
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Enums;
 
-namespace NXTBackend.API.Domain.Entities;
+namespace NXTBackend.API.Domain.Entities.User;
 
 /// <summary>
 /// Table to keep track of the user's plan.

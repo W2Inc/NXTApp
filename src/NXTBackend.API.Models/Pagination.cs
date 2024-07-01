@@ -1,7 +1,6 @@
-﻿using System.Numerics;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace NXTBackend.API.Common;
+namespace NXTBackend.API.Models;
 
 /// <summary>
 /// Query parameters for pagination.
@@ -39,7 +38,7 @@ public class PaginatedList<T>
         Items = items;
     }
 
-    public async static Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
+    public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
     {
         int count = source.Count();
         var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();

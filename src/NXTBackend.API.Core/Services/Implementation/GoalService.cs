@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using NXTBackend.API.Common;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Entities.User;
 using NXTBackend.API.Infrastructure.Database;
+using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -16,7 +17,10 @@ public sealed class GoalService : IGoalService
     }
 
     /// <inheritdoc />
-    public async Task<LearningGoal?> FindByIdAsync(Guid id) => await _databaseContext.LearningGoals.FirstOrDefaultAsync(g => g.Id == id);
+    public async Task<LearningGoal?> FindByIdAsync(Guid id)
+    {
+        return await _databaseContext.LearningGoals.FirstOrDefaultAsync(g => g.Id == id);
+    }
 
     /// <inheritdoc />
     public async Task<LearningGoal> CreateAsync(LearningGoal entity)

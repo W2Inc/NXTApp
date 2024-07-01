@@ -8,7 +8,7 @@ using NXTBackend.API.Domain.Enums;
 
 // ============================================================================
 
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Requests.Review;
 
 /// <summary>
 /// The post request for creating a new review

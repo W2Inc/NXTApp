@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Common;
 
 // ============================================================================
 
-namespace NXTBackend.API.Domain.Entities;
+namespace NXTBackend.API.Domain.Entities.Review;
 
 /*
 model Feedback {

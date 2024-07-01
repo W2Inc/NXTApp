@@ -3,21 +3,20 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using Serilog;
-using Serilog.Templates;
-using Serilog.Templates.Themes;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.RateLimiting;
 using Keycloak.AuthServices.Authentication;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
-using System.Text.Json;
+using Serilog;
+using Serilog.Templates;
+using Serilog.Templates.Themes;
 
 // ============================================================================
 
@@ -47,7 +46,8 @@ public static class Startup
         // All sorts of swagger stuff
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo {
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
                 Title = "NXTBackend",
                 Version = "0.0.1-alpha",
                 Description = "The NXTBackend is the public backend used for handling all this stuff.",
@@ -66,8 +66,8 @@ public static class Startup
                 Type = SecuritySchemeType.ApiKey,
             });
 
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+            string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement

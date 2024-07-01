@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 // ============================================================================
 
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Requests.Rubric;
 
 /// <summary>
 /// Post request for creating a new cursus

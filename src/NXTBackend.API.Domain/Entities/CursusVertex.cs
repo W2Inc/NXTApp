@@ -4,7 +4,6 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Domain.Entities;
@@ -54,7 +53,6 @@ public class CursusVertex : BaseEntity
 
     [ForeignKey(nameof(ParentId))]
     public virtual CursusVertex? Parent { get; set; }
-
 
     [Column("cursus_id")]
     public Guid? CursusId { get; set; }

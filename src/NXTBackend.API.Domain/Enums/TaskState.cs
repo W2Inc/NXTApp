@@ -18,6 +18,7 @@ public enum TaskState
     /// <summary>
     /// The task is inactive and won't continue.
     /// </summary>
+    [JsonPropertyName(nameof(Inactive))]
     Inactive,
 
     /// <summary>

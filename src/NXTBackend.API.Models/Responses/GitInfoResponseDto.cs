@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-using NXTBackend.API.Domain.Enums;
+using System.Text.Json.Serialization;
 
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Responses;
 
 /// <summary>
 /// Request for setting up a git repository
@@ -14,6 +13,7 @@ public class GitInfoResponseDto : BaseRequestDto
     /// <example>
     /// https://github.com/W2Wizard/NXTBackend
     /// </example>
+    [JsonPropertyName(nameof(GitUrl))]
     public string GitUrl { get; set; } = string.Empty;
 
     /// <summary>

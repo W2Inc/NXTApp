@@ -1,12 +1,14 @@
-﻿namespace NXTBackend.API.Core.Services.Interface;
-
-using NXTBackend.API.Common;
+﻿
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
+using NXTBackend.API.Models.Responses;
+
+namespace NXTBackend.API.Core.Services.Interface;
 
 public interface ISearchService
 {
-
     /// <summary>
     /// Search for a specific user.
     /// </summary>

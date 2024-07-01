@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Requests.Feature;
 
 public class FeaturePatchRequestDto : BaseRequestDto
 {

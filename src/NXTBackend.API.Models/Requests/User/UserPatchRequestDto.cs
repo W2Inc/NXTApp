@@ -3,14 +3,12 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models.Validators;
 
 // ============================================================================
 
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Requests.User;
 
 //pub role: Option<UserRole>,
 //    pub display_name: Option<String>,
@@ -22,7 +20,7 @@ namespace NXTBackend.API.Models.Requests;
 /// </summary>
 public class UserPatchRequestDto : BaseRequestDto
 {
-    [UserDisplayName, StringLength(64, MinimumLength = 1)]
+    [UserDisplayNameValidation, StringLength(64, MinimumLength = 1)]
     public string? DisplayName { get; set; }
 
     [Url]

@@ -1,22 +1,18 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NXTBackend.API.Common;
-using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Models.Requests;
-using NXTBackend.API.Models.Requests.Auth;
+using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Models;
+using NXTBackend.API.Models.Requests.User;
 using Serilog;
 
 namespace NXTBackend.API.Controllers;
 
 [Route("user")]
 [ApiController]
-public class UserController(IUserService userService) : ControllerBase
+public class UserController(ILogger<UserController> logger, IUserService userService) : ControllerBase
 {
     private readonly IUserService _searchService = userService;
-    private readonly Serilog.ILogger _log = Log.Logger.ForContext<UserController>();
 
     /// <summary>
     /// 
@@ -78,7 +74,7 @@ public class UserController(IUserService userService) : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPut("/user/{id}/details"), Authorize]
-    public async Task<IActionResult> SetUserDetails(Guid id, [FromBody]UserPatchRequestDto patch)
+    public async Task<IActionResult> SetUserDetails(Guid id, [FromBody] UserPatchRequestDto patch)
     {
         var user = await _searchService.FindByIdAsync(id);
         if (user == null)

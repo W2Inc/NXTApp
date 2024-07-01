@@ -3,8 +3,8 @@
 // See README in the root project for more information.
 // ============================================================================
 
-using NXTBackend.API.Common;
 using NXTBackend.API.Domain.Common;
+using NXTBackend.API.Models;
 
 // ============================================================================
 

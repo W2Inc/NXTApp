@@ -1,12 +1,8 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NXTBackend.API.Common;
-using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Models.Requests;
-using NXTBackend.API.Models.Requests.Auth;
+using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Controllers;
 

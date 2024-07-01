@@ -3,13 +3,12 @@
 // See README in the root project for more information.
 // ============================================================================
 
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Enums;
 
-namespace NXTBackend.API.Domain.Entities;
+namespace NXTBackend.API.Domain.Entities.User;
 
 /*
 model UserCursus {
@@ -50,7 +49,6 @@ public class UserCursus : BaseEntity
         UserGoals = [];
     }
 
-
     [Column("state")]
     public TaskState State { get; set; }
 
@@ -59,7 +57,6 @@ public class UserCursus : BaseEntity
 
     [ForeignKey(nameof(UserId))]
     public virtual User User { get; set; }
-
 
     [Column("cursus_id")]
     public Guid CursusId { get; set; }

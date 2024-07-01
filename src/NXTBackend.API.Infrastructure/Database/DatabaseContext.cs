@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.UserProject;
-using NXTBackend.API.Infrastructure.Interceptors;
+using NXTBackend.API.Domain.Entities.Event;
+using NXTBackend.API.Domain.Entities.Review;
+using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.User.Project;
 
 namespace NXTBackend.API.Infrastructure.Database;
 

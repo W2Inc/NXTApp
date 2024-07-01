@@ -1,7 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using NXTBackend.API.Domain.Enums;
-
-namespace NXTBackend.API.Models.Requests;
+namespace NXTBackend.API.Models.Responses;
 
 //public class SearchResult<T>
 //{

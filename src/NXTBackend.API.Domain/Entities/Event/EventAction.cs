@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
-namespace NXTBackend.API.Domain.Entities;
+namespace NXTBackend.API.Domain.Entities.Event;
 
 [Table("tbl_event_action")]
 public class EventAction : BaseEntity
