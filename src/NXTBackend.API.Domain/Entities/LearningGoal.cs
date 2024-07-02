@@ -48,7 +48,7 @@ public class LearningGoal : BaseEntity
         Creator = null!;
         Projects = [];
         UserGoals = [];
-        GoalVertices = [];
+        Vertices = [];
     }
 
     [Column("name")]
@@ -82,5 +82,5 @@ public class LearningGoal : BaseEntity
     /// <summary>
     /// This goal is part of these vertices
     /// </summary>
-    public virtual ICollection<CursusVertex> GoalVertices { get; set; }
+    public virtual ICollection<CursusVertex> Vertices { get; set; }
 }

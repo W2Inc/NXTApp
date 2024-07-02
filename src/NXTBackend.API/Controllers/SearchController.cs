@@ -12,8 +12,6 @@ namespace NXTBackend.API.Controllers;
 [ApiController]
 public class SearchController(ISearchService searchService) : ControllerBase
 {
-    private readonly ISearchService _searchService = searchService;
-
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum Category
     {
@@ -40,10 +38,10 @@ public class SearchController(ISearchService searchService) : ControllerBase
     {
         return Ok(category switch
         {
-            Category.User => await _searchService.SearchUserAsync(body, pagination),
-            Category.Project => await _searchService.SearchProjectAsync(body, pagination),
-            Category.Cursus => await _searchService.SearchCursusAsync(body, pagination),
-            Category.LearningGoal => await _searchService.SearchGoalAsync(body, pagination),
+            Category.User => await searchService.SearchUserAsync(body, pagination),
+            Category.Project => await searchService.SearchProjectAsync(body, pagination),
+            Category.Cursus => await searchService.SearchCursusAsync(body, pagination),
+            Category.LearningGoal => await searchService.SearchGoalAsync(body, pagination),
             _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
         });
     }

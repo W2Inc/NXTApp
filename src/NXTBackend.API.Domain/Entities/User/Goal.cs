@@ -37,7 +37,17 @@ public class UserGoal : BaseEntity
 {
     public UserGoal()
     {
+        UserId = Guid.Empty;
+        User = null!;
 
+        GoalId = Guid.Empty;
+        Goal = null!;
+
+        UserCursusId = null;
+        UserCursus = null;
+
+        VertexId = Guid.Empty;
+        Vertex = null!;
     }
 
     [Column("user_id")]

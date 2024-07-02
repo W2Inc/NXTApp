@@ -4,9 +4,13 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
+using NXTBackend.API.Domain.Entities.User.Project;
 
-namespace NXTBackend.API.Domain.Entities.Review;
+// ============================================================================
+
+namespace NXTBackend.API.Domain.Entities.Evaluation;
 
 /*
 model Rubric {
@@ -36,6 +40,8 @@ model Rubric {
 }
 */
 
+// ============================================================================
+
 [Table("rubric")]
 public class Rubric : BaseEntity
 {
@@ -45,12 +51,18 @@ public class Rubric : BaseEntity
         Markdown = string.Empty;
         Public = false;
         Enabled = false;
+
         ProjectId = Guid.Empty;
         Project = null!;
+
         CreatorId = Guid.Empty;
-        Owner = null!;
+        Creator = null!;
+
         GitInfoId = Guid.Empty;
         GitInfo = null!;
+
+        Reviews = [];
+        UserProjects = [];
     }
 
     [Column("name")]
@@ -75,7 +87,7 @@ public class Rubric : BaseEntity
     public Guid CreatorId { get; set; }
 
     [ForeignKey(nameof(CreatorId))]
-    public virtual User Owner { get; set; }
+    public virtual User Creator { get; set; }
 
     [Column("git_info_id")]
     public Guid GitInfoId { get; set; }
@@ -83,7 +95,9 @@ public class Rubric : BaseEntity
     [ForeignKey(nameof(GitInfoId))]
     public virtual Git GitInfo { get; set; }
 
-    public virtual Review[] Reviews { get; set; }
+    [JsonIgnore]
+    public virtual IEnumerable<Review> Reviews { get; set; }
 
-    public virtual User.Project.UserProject[] UserProjects { get; set; }
+    [JsonIgnore]
+    public virtual IEnumerable<UserProject> UserProjects { get; set; }
 }

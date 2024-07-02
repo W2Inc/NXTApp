@@ -97,7 +97,6 @@ public static class Startup
         .AddTransient<DatabaseSeeder>();
 
         // Add services
-        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<IUserService, UserService>();
         services.AddSingleton(TimeProvider.System);

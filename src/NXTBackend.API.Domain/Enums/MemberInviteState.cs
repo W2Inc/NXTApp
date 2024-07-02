@@ -19,10 +19,12 @@ public enum MemberInviteState
     /// <summary>
     /// The user has been invited to join the project.
     /// </summary>
+    [JsonPropertyName(nameof(Pending))]
     Pending,
 
     /// <summary>
     /// The user has accepted the invite to join the project.
     /// </summary>
+    [JsonPropertyName(nameof(Accepted))]
     Accepted,
 }

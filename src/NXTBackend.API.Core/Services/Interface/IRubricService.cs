@@ -1,4 +1,4 @@
-﻿using NXTBackend.API.Domain.Entities.Review;
+﻿using NXTBackend.API.Domain.Entities.Evaluation;
 
 namespace NXTBackend.API.Core.Services.Interface;
 /// <summary>

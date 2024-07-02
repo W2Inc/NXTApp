@@ -16,10 +16,12 @@ public enum PlanKind
     /// <summary>
     /// A free plan is a plan that is free to use.
     /// </summary>
+    [JsonPropertyName(nameof(Free))]
     Free,
 
     /// <summary>
     /// A paid plan is a plan that requires a payment to use.
     /// </summary>
+    [JsonPropertyName(nameof(Paid))]
     Paid,
 }

@@ -1,21 +1,16 @@
-﻿using System.Text.Json.Serialization;
-
-namespace NXTBackend.API.Models;
+﻿namespace NXTBackend.API.Models;
 
 /// <summary>
 /// Query parameters for pagination.
 /// </summary>
-[JsonSerializable(typeof(PaginationParams))]
 public class PaginationParams
 {
     private const int c_MaxPageSize = 50;
 
     private int _pageSize = 30;
 
-    [JsonPropertyName("page")]
     public int PageNumber { get; set; } = 1;
 
-    [JsonPropertyName("size")]
     public int PageSize
     {
         get => _pageSize;

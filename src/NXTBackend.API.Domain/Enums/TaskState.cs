@@ -24,15 +24,18 @@ public enum TaskState
     /// <summary>
     /// The task is active and will continue.
     /// </summary>
+    [JsonPropertyName(nameof(Active))]
     Active,
 
     /// <summary>
     /// The task is awaiting something.
     /// </summary>
+    [JsonPropertyName(nameof(Awaiting))]
     Awaiting,
 
     /// <summary>
     /// The entity is completed.
     /// </summary>
+    [JsonPropertyName(nameof(Completed))]
     Completed
 }

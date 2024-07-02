@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Event;
-using NXTBackend.API.Domain.Entities.Review;
 using NXTBackend.API.Domain.Entities.User;
 using NXTBackend.API.Domain.Entities.User.Project;
 
@@ -142,10 +142,10 @@ public class DatabaseContext : DbContext
             .WithOne(c => c.User)
             .HasForeignKey(c => c.UserId);
 
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.Rubricer)
-            .WithOne(r => r.Reviewer)
-            .HasForeignKey(r => r.ReviewerId);
+        //modelBuilder.Entity<User>()
+        //    .HasMany(u => u.Rubricer)
+        //    .WithOne(r => r.Reviewer)
+        //    .HasForeignKey(r => r.ReviewerId);
     }
 
 #nullable disable

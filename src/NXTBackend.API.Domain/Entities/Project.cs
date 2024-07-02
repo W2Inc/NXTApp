@@ -6,7 +6,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
-using NXTBackend.API.Domain.Entities.Review;
+using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Entities.User.Project;
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -113,12 +114,21 @@ public class Project : BaseEntity
     [Column("tags")]
     public string[] Tags { get; set; }
 
+    /// <summary>
+    /// Rubrics that exist for this project.
+    /// </summary>
     [JsonIgnore]
     public virtual ICollection<Rubric> Rubrics { get; set; } = null!;
 
+    /// <summary>
+    /// The goals that reference this project
+    /// </summary>
     [JsonIgnore]
     public virtual ICollection<LearningGoal> Goals { get; set; } = null!;
 
+    /// <summary>
+    /// The different sessions that exist for this project
+    /// </summary>
     [JsonIgnore]
-    public virtual ICollection<User.Project.UserProject> UserProjects { get; set; } = null!;
+    public virtual ICollection<UserProject> UserProjects { get; set; } = null!;
 }

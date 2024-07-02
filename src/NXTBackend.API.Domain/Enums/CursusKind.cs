@@ -23,10 +23,12 @@ public enum CursusKind
     /// Perhaps it starts of with a project about creating a simple calculator, and then the user
     /// can choose to learn about creating a simple game next.
     /// </summary>
+    [JsonPropertyName(nameof(Dynamic))]
     Dynamic,
 
     /// <summary>
     /// A fixed traditional path for a cursus with set in goals that need to be achieved.
     /// </summary>
+    [JsonPropertyName(nameof(Fixed))]
     Fixed,
 }

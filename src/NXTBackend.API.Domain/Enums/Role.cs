@@ -16,15 +16,18 @@ public enum Role
     /// <summary>
     /// Starting role for all users.
     /// </summary>
+    [JsonPropertyName(nameof(Default))]
     Default,
 
     /// <summary>
     /// Role for users that have been granted access to the admin panel.
     /// </summary>
+    [JsonPropertyName(nameof(Admin))]
     Admin,
 
     /// <summary>
     /// Developer role
     /// </summary>
+    [JsonPropertyName(nameof(Developer))]
     Developer,
 }

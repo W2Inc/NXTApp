@@ -116,11 +116,6 @@ public class Cursus : BaseEntity
     [ForeignKey(nameof(CreatorId))]
     public virtual User Creator { get; set; } = null!;
 
-    // TODO: Add path_id and path relation
-    // TODO: Add one-to-many user_cursi relation
-    //public virtual ICollection<CursusVertex> Vertices { get; set; } = null!;
-    //public virtual ICollection<User.UserCursus> UserCursi { get; set; } = null!;
-
     /// <summary>
     /// The user was the evaluator on the following reviews.
     /// </summary>

@@ -4,7 +4,6 @@ using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.User;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.User;
-using Serilog;
 
 namespace NXTBackend.API.Controllers;
 

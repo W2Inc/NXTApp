@@ -8,7 +8,7 @@ using NXTBackend.API.Domain.Common;
 
 // ============================================================================
 
-namespace NXTBackend.API.Domain.Entities.Review;
+namespace NXTBackend.API.Domain.Entities.Evaluation;
 
 /*
 model Comment {

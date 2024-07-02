@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities.Review;
+using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Review;
 
@@ -16,10 +16,6 @@ public class ReviewController(
     IProjectService projectService
 ) : ControllerBase
 {
-    private readonly IReviewService _reviewService = reviewService;
-    private readonly ICommentService _commentService = commentService;
-    private readonly IFeedbackService _feedbackService = feedbackService;
-    private readonly IProjectService _projectService = projectService;
 
     /// <summary>
     /// 
@@ -32,7 +28,7 @@ public class ReviewController(
         [FromQuery] PaginationParams pagination
     )
     {
-        return (await _reviewService.GetAllAsync(pagination)).Items;
+        return (await reviewService.GetAllAsync(pagination)).Items;
     }
 
     /// <summary>
@@ -69,8 +65,8 @@ public class ReviewController(
         // - Can the rubric be used for the user project ?
         // - If the user is a member and asks for a review, we should check if they are allowed to ask for a review only in state of SELF REVIEW can they ask for a self revie
 
-        var userProject = await _projectService.FindByIdAsync(body.UserProjectId);
-        var rubric = await _reviewService.FindByIdAsync(body.RubricId);
+        var userProject = await projectService.FindByIdAsync(body.UserProjectId);
+        var rubric = await reviewService.FindByIdAsync(body.RubricId);
 
         if (userProject == null || rubric == null)
             return UnprocessableEntity(rubric == null ? "Rubric not found" : "User project not found");

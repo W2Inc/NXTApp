@@ -19,10 +19,13 @@ public class GitInfoResponseDto : BaseRequestDto
     /// <summary>
     /// If null, will use the master branch
     /// </summary>
+    [JsonPropertyName(nameof(GitBranch))]
+
     public string GitBranch { get; set; } = string.Empty;
 
     /// <summary>
     /// If null, will use the latest commit
     /// </summary>
+    [JsonPropertyName(nameof(GitCommit))]
     public string GitCommit { get; set; } = string.Empty;
 }

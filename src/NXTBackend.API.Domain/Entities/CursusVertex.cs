@@ -4,7 +4,9 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
+using NXTBackend.API.Domain.Entities.User;
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -41,11 +43,11 @@ public class CursusVertex : BaseEntity
     {
         CursusId = Guid.Empty;
         Cursus = null!;
-        //Goals = [];
-        //UserGoals = [];
+        Goals = [];
+        UserGoals = [];
         ParentId = null;
         Parent = null;
-        //Children = [];
+        Children = [];
     }
 
     [Column("parent_id")]
@@ -60,12 +62,12 @@ public class CursusVertex : BaseEntity
     [ForeignKey(nameof(CursusId))]
     public virtual Cursus? Cursus { get; set; }
 
-    //[JsonIgnore]
-    //public virtual IEnumerable<LearningGoal> Goals { get; set; }
+    [JsonIgnore]
+    public virtual IEnumerable<LearningGoal> Goals { get; set; }
 
-    //[JsonIgnore]
-    //public virtual IEnumerable<UserGoal> UserGoals { get; set; }
+    [JsonIgnore]
+    public virtual IEnumerable<UserGoal> UserGoals { get; set; }
 
-    //[JsonIgnore]
-    //public virtual IEnumerable<CursusVertex> Children { get; set; }
+    [JsonIgnore]
+    public virtual IEnumerable<CursusVertex> Children { get; set; }
 }
