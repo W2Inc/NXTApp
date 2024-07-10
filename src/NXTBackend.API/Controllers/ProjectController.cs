@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Project;
 

@@ -6,7 +6,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
-namespace NXTBackend.API.Domain.Entities.User;
+namespace NXTBackend.API.Domain.Entities.Users;
 
 /*
 model UserGoal {
@@ -73,4 +73,10 @@ public class UserGoal : BaseEntity
 
     [ForeignKey(nameof(VertexId))]
     public virtual CursusVertex Vertex { get; set; }
+
+    /// <summary>
+    /// All the members that are part of this project.
+    /// At most N members to what the project allows.
+    /// </summary>
+    public virtual ICollection<Member> Members { get; set; } = [];
 }

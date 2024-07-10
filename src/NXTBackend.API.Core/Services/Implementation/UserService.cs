@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.User;
-using NXTBackend.API.Domain.Entities.User.Project;
+using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 

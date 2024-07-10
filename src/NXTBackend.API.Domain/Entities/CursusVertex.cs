@@ -6,7 +6,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
-using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Domain.Entities;
 

@@ -7,8 +7,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
-using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
+
+// ============================================================================
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -51,6 +53,8 @@ model Cursus {
     @@map("cursus")
 }
 */
+
+// ============================================================================
 
 /// <summary>
 /// A feature is a experimental feature that is being developed.
@@ -120,11 +124,11 @@ public class Cursus : BaseEntity
     /// The user was the evaluator on the following reviews.
     /// </summary>
     [JsonIgnore]
-    public virtual ICollection<CursusVertex> Vertices { get; set; }
+    public virtual ICollection<CursusVertex> Vertices { get; set; } = [];
 
     /// <summary>
-    /// The user was the evaluator on the following reviews.
+    /// The different cursus sessions that exist for this cursus.
     /// </summary>
     [JsonIgnore]
-    public virtual ICollection<UserCursus> UserCursi { get; set; }
+    public virtual ICollection<UserCursus> UserCursi { get; set; } = [];
 }

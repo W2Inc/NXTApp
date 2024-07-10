@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Enums;
 
-namespace NXTBackend.API.Domain.Entities.User;
+namespace NXTBackend.API.Domain.Entities.Users;
 
 /*
 model UserCursus {

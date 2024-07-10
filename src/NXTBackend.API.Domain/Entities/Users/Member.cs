@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Enums;
 
 // ============================================================================
 
-namespace NXTBackend.API.Domain.Entities.User.Project;
+namespace NXTBackend.API.Domain.Entities.Users;
 
 /*
 model ProjectMember {

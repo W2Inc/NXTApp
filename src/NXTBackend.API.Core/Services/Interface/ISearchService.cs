@@ -1,6 +1,6 @@
 ﻿
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
 using NXTBackend.API.Models.Responses;

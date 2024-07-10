@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NXTBackend.API.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240701145122_Init")]
+    [Migration("20240709183348_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -27,6 +27,21 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("CursusVertexLearningGoal", b =>
+                {
+                    b.Property<Guid>("GoalsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VerticesId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("GoalsId", "VerticesId");
+
+                    b.HasIndex("VerticesId");
+
+                    b.ToTable("CursusVertexLearningGoal");
+                });
 
             modelBuilder.Entity("LearningGoalProject", b =>
                 {
@@ -43,45 +58,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.ToTable("LearningGoalProject");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Comment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid>("FeedbackId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("feedback_id");
-
-                    b.Property<string>("Markdown")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("markdown");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FeedbackId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("tbl_comment");
-                });
-
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Cursus", b =>
                 {
                     b.Property<Guid>("Id")
@@ -90,7 +66,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -133,7 +108,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("slug");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
@@ -152,7 +126,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -160,15 +133,11 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("cursus_id");
 
-                    b.Property<Guid?>("LearningGoalId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid")
                         .HasColumnName("parent_id");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
@@ -176,14 +145,451 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasIndex("CursusId");
 
-                    b.HasIndex("LearningGoalId");
-
                     b.HasIndex("ParentId");
 
                     b.ToTable("tbl_cursus_vertex");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Details", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("FeedbackId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("feedback_id");
+
+                    b.Property<string>("Markdown")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("markdown");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeedbackId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("tbl_comment");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Feedback", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("ReviewId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("review_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId")
+                        .IsUnique();
+
+                    b.ToTable("tbl_feedback");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("FeedbackId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("feedback_id");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer")
+                        .HasColumnName("name");
+
+                    b.Property<Guid?>("ReviewerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("reviewer_id");
+
+                    b.Property<Guid?>("RubricId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("rubric_id");
+
+                    b.Property<int>("State")
+                        .HasMaxLength(256)
+                        .HasColumnType("integer")
+                        .HasColumnName("description");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UserProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_project_id");
+
+                    b.Property<bool>("Validated")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewerId");
+
+                    b.HasIndex("RubricId");
+
+                    b.ToTable("tbl_review");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Rubric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("creator_id");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("enabled");
+
+                    b.Property<Guid>("GitInfoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("git_info_id");
+
+                    b.Property<string>("Markdown")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("markdown");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<bool>("Public")
+                        .HasColumnType("boolean")
+                        .HasColumnName("public");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("GitInfoId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("tbl_rubric");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Event.Event", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ActionText")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("action_text");
+
+                    b.Property<string>("BackgroundUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("background_url");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Href")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("href");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_event");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Event.EventAction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("event_id");
+
+                    b.Property<bool>("IsDismissed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_dismissed");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_event_action");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Feature", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_public");
+
+                    b.Property<string>("Markdown")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("markdown");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_feature");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Git", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("GitBranch")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("git_branch");
+
+                    b.Property<string>("GitCommit")
+                        .HasColumnType("text")
+                        .HasColumnName("git_commit");
+
+                    b.Property<string>("GitUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("git_url");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_git");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.LearningGoal", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("creator_id");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Markdown")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("markdown");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("slug");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("tbl_learning_goal");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Project", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("creator_id");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("enabled");
+
+                    b.Property<Guid>("GitInfoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("git_info_id");
+
+                    b.Property<string>("Markdown")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("markdown");
+
+                    b.Property<int>("MaxMembers")
+                        .HasColumnType("integer")
+                        .HasColumnName("max_members");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<bool>("Public")
+                        .HasColumnType("boolean")
+                        .HasColumnName("public");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("slug");
+
+                    b.Property<string[]>("Tags")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("tags");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("thumbnail_url");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("GitInfoId");
+
+                    b.ToTable("tbl_project");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.Details", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -197,7 +603,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("bio");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -232,9 +637,12 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("twitter_url");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
                     b.Property<string>("WebsiteUrl")
                         .IsRequired()
@@ -243,60 +651,13 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("tbl_user_details");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Event", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ActionText")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("action_text");
-
-                    b.Property<string>("BackgroundUrl")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("background_url");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Href")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("href");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("title");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("tbl_event");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.EventAction", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.Member", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -304,366 +665,39 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("event_id");
-
-                    b.Property<bool>("IsDismissed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_dismissed");
+                    b.Property<int>("State")
+                        .HasColumnType("integer")
+                        .HasColumnName("invite_state");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UserGoalId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_goal_id");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("tbl_event_action");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Feature", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_public");
-
-                    b.Property<string>("Markdown")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("markdown");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("tbl_feature");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Feedback", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid>("ReviewId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("review_id");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReviewId");
-
-                    b.ToTable("tbl_feedback");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Git", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("GitBranch")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("git_branch");
-
-                    b.Property<string>("GitCommit")
-                        .HasColumnType("text")
-                        .HasColumnName("git_commit");
-
-                    b.Property<string>("GitUrl")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("git_url");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("tbl_git");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.LearningGoal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("creator_id");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Markdown")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("markdown");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("slug");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.ToTable("tbl_learning_goal");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Project", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("enabled");
-
-                    b.Property<Guid>("GitInfoId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("git_info_id");
-
-                    b.Property<string>("Markdown")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("markdown");
-
-                    b.Property<int>("MaxMembers")
-                        .HasColumnType("integer")
-                        .HasColumnName("max_members");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("owner_id");
-
-                    b.Property<bool>("Public")
-                        .HasColumnType("boolean")
-                        .HasColumnName("public");
-
-                    b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("slug");
-
-                    b.Property<string[]>("Tags")
-                        .IsRequired()
-                        .HasColumnType("text[]")
-                        .HasColumnName("tags");
-
-                    b.Property<string>("ThumbnailUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("thumbnail_url");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GitInfoId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("tbl_project");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Review", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid?>("FeedbackId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("feedback_id");
-
-                    b.Property<int>("Kind")
-                        .HasColumnType("integer")
-                        .HasColumnName("name");
-
-                    b.Property<Guid?>("ReviewerId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("reviewer_id");
-
-                    b.Property<Guid?>("RubricId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("rubric_id");
-
-                    b.Property<int>("State")
-                        .HasMaxLength(256)
-                        .HasColumnType("integer")
-                        .HasColumnName("description");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UserProjectId")
+                    b.Property<Guid>("UserProjectId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_project_id");
 
-                    b.Property<bool>("Validated")
-                        .HasColumnType("boolean");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ReviewerId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("tbl_review");
+                    b.HasIndex("UserProjectId");
+
+                    b.ToTable("tbl_user_project_member");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Rubric", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid>("CreatorId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("creator_id");
-
-                    b.Property<bool>("Enabled")
-                        .HasColumnType("boolean")
-                        .HasColumnName("enabled");
-
-                    b.Property<Guid>("GitInfoId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("git_info_id");
-
-                    b.Property<string>("Markdown")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("markdown");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("project_id");
-
-                    b.Property<bool>("Public")
-                        .HasColumnType("boolean")
-                        .HasColumnName("public");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("GitInfoId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("rubric");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.User", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -675,7 +709,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("avatar_url");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -693,18 +726,15 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("login");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DetailsId");
-
                     b.ToTable("tbl_user");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserCursus", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserCursus", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -712,7 +742,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -725,7 +754,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("state");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
@@ -742,7 +770,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.ToTable("tbl_user_cursus");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserGoal", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserGoal", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -750,7 +778,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -759,7 +786,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("goal_id");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
@@ -788,7 +814,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.ToTable("tbl_user_goal");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserProject.Member", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserProject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -796,51 +822,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("State")
-                        .HasColumnType("integer")
-                        .HasColumnName("invite_state");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UserGoalId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_goal_id");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.Property<Guid>("UserProjectId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_project_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserGoalId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("UserProjectId");
-
-                    b.ToTable("tbl_user_project_member");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserProject.UserProject", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
@@ -861,7 +842,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("state");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
@@ -874,6 +854,21 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.HasIndex("RubricId");
 
                     b.ToTable("tbl_user_project");
+                });
+
+            modelBuilder.Entity("CursusVertexLearningGoal", b =>
+                {
+                    b.HasOne("NXTBackend.API.Domain.Entities.LearningGoal", null)
+                        .WithMany()
+                        .HasForeignKey("GoalsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NXTBackend.API.Domain.Entities.CursusVertex", null)
+                        .WithMany()
+                        .HasForeignKey("VerticesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("LearningGoalProject", b =>
@@ -891,28 +886,9 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Comment", b =>
-                {
-                    b.HasOne("NXTBackend.API.Domain.Entities.Feedback", "Feedback")
-                        .WithMany("Comments")
-                        .HasForeignKey("FeedbackId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Feedback");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Cursus", b =>
                 {
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "Creator")
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Creator")
                         .WithMany("CreatedCursus")
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -927,79 +903,61 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .WithMany("Vertices")
                         .HasForeignKey("CursusId");
 
-                    b.HasOne("NXTBackend.API.Domain.Entities.LearningGoal", null)
-                        .WithMany("GoalVertices")
-                        .HasForeignKey("LearningGoalId");
-
                     b.HasOne("NXTBackend.API.Domain.Entities.CursusVertex", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId");
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Cursus");
 
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Feedback", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Comment", b =>
                 {
-                    b.HasOne("NXTBackend.API.Domain.Entities.Review", "Review")
-                        .WithMany()
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("NXTBackend.API.Domain.Entities.Evaluation.Feedback", "Feedback")
+                        .WithMany("Comments")
+                        .HasForeignKey("FeedbackId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Feedback");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Feedback", b =>
+                {
+                    b.HasOne("NXTBackend.API.Domain.Entities.Evaluation.Review", "Review")
+                        .WithOne("Feedback")
+                        .HasForeignKey("NXTBackend.API.Domain.Entities.Evaluation.Feedback", "ReviewId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Review");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.LearningGoal", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Review", b =>
                 {
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "Creator")
-                        .WithMany("CreatedGoals")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Project", b =>
-                {
-                    b.HasOne("NXTBackend.API.Domain.Entities.Git", "GitInfo")
-                        .WithMany()
-                        .HasForeignKey("GitInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "Owner")
-                        .WithMany("CreatedProjects")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("GitInfo");
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Review", b =>
-                {
-                    b.HasOne("NXTBackend.API.Domain.Entities.Feedback", "Feedback")
-                        .WithMany()
-                        .HasForeignKey("ReviewerId");
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.Rubric", "Rubric")
-                        .WithMany("Reviews")
-                        .HasForeignKey("ReviewerId");
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "Reviewer")
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Reviewer")
                         .WithMany("Rubricer")
-                        .HasForeignKey("ReviewerId");
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("NXTBackend.API.Domain.Entities.UserProject.UserProject", "UserProject")
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.UserProject", "UserProject")
                         .WithMany()
                         .HasForeignKey("ReviewerId");
 
-                    b.Navigation("Feedback");
+                    b.HasOne("NXTBackend.API.Domain.Entities.Evaluation.Rubric", "Rubric")
+                        .WithMany("Reviews")
+                        .HasForeignKey("RubricId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Reviewer");
 
@@ -1008,16 +966,16 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("UserProject");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Rubric", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Rubric", b =>
                 {
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "Owner")
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Creator")
                         .WithMany("CreatedRubrics")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NXTBackend.API.Domain.Entities.Git", "GitInfo")
-                        .WithMany()
+                        .WithMany("Rubrics")
                         .HasForeignKey("GitInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1028,23 +986,82 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("GitInfo");
+                    b.Navigation("Creator");
 
-                    b.Navigation("Owner");
+                    b.Navigation("GitInfo");
 
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.User", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.LearningGoal", b =>
                 {
-                    b.HasOne("NXTBackend.API.Domain.Entities.Details", "Details")
-                        .WithMany()
-                        .HasForeignKey("DetailsId");
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Creator")
+                        .WithMany("CreatedGoals")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Details");
+                    b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserCursus", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Project", b =>
+                {
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Creator")
+                        .WithMany("CreatedProjects")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NXTBackend.API.Domain.Entities.Git", "GitInfo")
+                        .WithMany("Projects")
+                        .HasForeignKey("GitInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("GitInfo");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.Details", b =>
+                {
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
+                        .WithOne("Details")
+                        .HasForeignKey("NXTBackend.API.Domain.Entities.Users.Details", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.Member", b =>
+                {
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
+                        .WithMany("ProjectMember")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.UserGoal", "UserGoal")
+                        .WithMany("Members")
+                        .HasForeignKey("UserProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.UserProject", "UserProject")
+                        .WithMany("Members")
+                        .HasForeignKey("UserProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("UserGoal");
+
+                    b.Navigation("UserProject");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserCursus", b =>
                 {
                     b.HasOne("NXTBackend.API.Domain.Entities.Cursus", "Cursus")
                         .WithMany("UserCursi")
@@ -1052,8 +1069,8 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "User")
-                        .WithMany()
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
+                        .WithMany("UserCursi")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1063,28 +1080,29 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserGoal", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserGoal", b =>
                 {
                     b.HasOne("NXTBackend.API.Domain.Entities.LearningGoal", "Goal")
                         .WithMany("UserGoals")
                         .HasForeignKey("GoalId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("NXTBackend.API.Domain.Entities.UserCursus", "UserCursus")
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.UserCursus", "UserCursus")
                         .WithMany("UserGoals")
-                        .HasForeignKey("UserCursusId");
+                        .HasForeignKey("UserCursusId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "User")
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
                         .WithMany("UserGoals")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NXTBackend.API.Domain.Entities.CursusVertex", "Vertex")
-                        .WithMany()
+                        .WithMany("UserGoals")
                         .HasForeignKey("VertexId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Goal");
@@ -1096,49 +1114,24 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("Vertex");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserProject.Member", b =>
-                {
-                    b.HasOne("NXTBackend.API.Domain.Entities.UserGoal", "UserGoal")
-                        .WithMany()
-                        .HasForeignKey("UserGoalId");
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.User", "User")
-                        .WithMany("ProjectMember")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.UserProject.UserProject", "UserProject")
-                        .WithMany("ProjectMembers")
-                        .HasForeignKey("UserProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("UserGoal");
-
-                    b.Navigation("UserProject");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserProject.UserProject", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserProject", b =>
                 {
                     b.HasOne("NXTBackend.API.Domain.Entities.Git", "GitInfo")
-                        .WithMany()
+                        .WithMany("UserProjects")
                         .HasForeignKey("GitInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NXTBackend.API.Domain.Entities.Project", "Project")
                         .WithMany("UserProjects")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("NXTBackend.API.Domain.Entities.Rubric", "Rubric")
+                    b.HasOne("NXTBackend.API.Domain.Entities.Evaluation.Rubric", "Rubric")
                         .WithMany("UserProjects")
                         .HasForeignKey("RubricId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("GitInfo");
@@ -1155,15 +1148,41 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("Vertices");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Feedback", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.CursusVertex", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("UserGoals");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Feedback", b =>
                 {
                     b.Navigation("Comments");
                 });
 
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Review", b =>
+                {
+                    b.Navigation("Feedback");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Rubric", b =>
+                {
+                    b.Navigation("Reviews");
+
+                    b.Navigation("UserProjects");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Git", b =>
+                {
+                    b.Navigation("Projects");
+
+                    b.Navigation("Rubrics");
+
+                    b.Navigation("UserProjects");
+                });
+
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.LearningGoal", b =>
                 {
-                    b.Navigation("GoalVertices");
-
                     b.Navigation("UserGoals");
                 });
 
@@ -1174,14 +1193,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("UserProjects");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Rubric", b =>
-                {
-                    b.Navigation("Reviews");
-
-                    b.Navigation("UserProjects");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.User", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.User", b =>
                 {
                     b.Navigation("Comments");
 
@@ -1193,21 +1205,30 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.Navigation("CreatedRubrics");
 
+                    b.Navigation("Details");
+
                     b.Navigation("ProjectMember");
 
                     b.Navigation("Rubricer");
 
+                    b.Navigation("UserCursi");
+
                     b.Navigation("UserGoals");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserCursus", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserCursus", b =>
                 {
                     b.Navigation("UserGoals");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.UserProject.UserProject", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserGoal", b =>
                 {
-                    b.Navigation("ProjectMembers");
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserProject", b =>
+                {
+                    b.Navigation("Members");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.User.Project;
+using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -59,10 +59,12 @@ public class Project : BaseEntity
         Public = false;
         Enabled = false;
         MaxMembers = 1;
+
         GitInfoId = Guid.Empty;
         GitInfo = null!;
-        OwnerId = Guid.Empty;
-        Owner = null!;
+
+        CreatorId = Guid.Empty;
+        Creator = null!;
         Tags = [];
     }
 
@@ -105,11 +107,11 @@ public class Project : BaseEntity
     [ForeignKey(nameof(GitInfoId))]
     public virtual Git GitInfo { get; set; }
 
-    [Column("owner_id")]
-    public Guid OwnerId { get; set; }
+    [Column("creator_id")]
+    public Guid CreatorId { get; set; }
 
-    [ForeignKey(nameof(OwnerId))]
-    public virtual User Owner { get; set; }
+    [ForeignKey(nameof(CreatorId))]
+    public virtual User Creator { get; set; }
 
     [Column("tags")]
     public string[] Tags { get; set; }

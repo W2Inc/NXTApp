@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Enums;
 
-namespace NXTBackend.API.Domain.Entities.User;
+namespace NXTBackend.API.Domain.Entities.Users;
 
 /// <summary>
 /// Table to keep track of the user's plan.

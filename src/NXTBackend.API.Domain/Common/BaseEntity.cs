@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NXTBackend.API.Domain.Extensions;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NXTBackend.API.Domain.Common;
@@ -13,7 +14,7 @@ public abstract class BaseEntity
     // This can easily be modified to be BaseEntity<T> and public T Id to support different key types.
     // Using non-generic integer types for simplicity
     [Column("id"), Key]
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = GuidExtensions.NewUuidV7();
 
     /// <summary>
     /// When the feature was created.

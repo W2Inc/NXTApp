@@ -5,7 +5,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
-using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Domain.Entities;
 

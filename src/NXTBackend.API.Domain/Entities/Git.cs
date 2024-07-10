@@ -5,7 +5,10 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
+using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -48,4 +51,13 @@ public class Git : BaseEntity
 
     [Column("git_commit")]
     public string? GitCommit { get; set; }
+
+    [JsonIgnore]
+    public virtual IEnumerable<Project> Projects { get; set; } = [];
+
+    [JsonIgnore]
+    public virtual IEnumerable<Rubric> Rubrics { get; set; } = [];
+
+    [JsonIgnore]
+    public virtual IEnumerable<UserProject> UserProjects { get; set; } = [];
 }

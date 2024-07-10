@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.User;
+using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Controllers;

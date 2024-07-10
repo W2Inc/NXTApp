@@ -1,6 +1,5 @@
 ﻿using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.User;
-using NXTBackend.API.Domain.Entities.User.Project;
+using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Core.Services.Interface;
 

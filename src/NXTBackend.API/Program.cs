@@ -37,4 +37,20 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers().RequireRateLimiting("fixed");
+
+// Shortcut
+if (app.Environment.IsDevelopment())
+{
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.Path == "/docs")
+        {
+            context.Response.Redirect("/swagger");
+            return;
+        }
+
+        await next(context);
+    });
+}
+
 app.Run();

@@ -8,7 +8,7 @@ using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Enums;
 
-namespace NXTBackend.API.Domain.Entities.User.Project;
+namespace NXTBackend.API.Domain.Entities.Users;
 
 /*
 model UserProject {
@@ -47,7 +47,6 @@ public class UserProject : BaseEntity
         GitInfo = null!;
         RubricId = Guid.Empty;
         Rubric = null!;
-        ProjectMembers = [];
     }
 
     [Column("state")]
@@ -75,6 +74,6 @@ public class UserProject : BaseEntity
     /// All the members that are part of this project.
     /// At most N members to what the project allows.
     /// </summary>
-    public virtual ICollection<Member> ProjectMembers { get; set; }
+    public virtual ICollection<Member> Members { get; set; } = [];
 
 }

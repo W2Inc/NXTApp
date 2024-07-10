@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
-namespace NXTBackend.API.Domain.Entities.User;
+namespace NXTBackend.API.Domain.Entities.Users;
 
 /*
  model UserDetails {
@@ -43,6 +43,12 @@ public class Details : BaseEntity
         TwitterUrl = string.Empty;
         WebsiteUrl = string.Empty;
     }
+
+    [Column("user_id")]
+    public Guid UserId { get; set; }
+
+    [ForeignKey(nameof(UserId))]
+    public virtual User User { get; set; }
 
     [Column("email"), EmailAddress]
     public string Email { get; set; }
