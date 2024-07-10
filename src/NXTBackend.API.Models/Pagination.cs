@@ -1,4 +1,6 @@
-﻿namespace NXTBackend.API.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace NXTBackend.API.Models;
 
 /// <summary>
 /// Query parameters for pagination.
@@ -8,13 +10,26 @@ public class PaginationParams
     private const int c_MaxPageSize = 50;
 
     private int _pageSize = 30;
+    private int _pageNumber = 1;
 
-    public int PageNumber { get; set; } = 1;
+    /// <summary>
+    /// The page number.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    public int Page
+    {
+        get => _pageNumber;
+        set => _pageNumber = Math.Max(1, value);
+    }
 
-    public int PageSize
+    /// <summary>
+    /// How many items per page.
+    /// </summary>
+    [Range(1, c_MaxPageSize)]
+    public int Size
     {
         get => _pageSize;
-        set => _pageSize = Math.Min(c_MaxPageSize, value);
+        set => _pageSize = Math.Min(c_MaxPageSize, Math.Max(1, value));
     }
 }
 
@@ -24,10 +39,9 @@ public class PaginationParams
 /// <typeparam name="T">The object type</typeparam>
 public class PaginatedList<T>
 {
-
     public PaginatedList(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize)
     {
-        PageNumber = pageNumber;
+        Page = pageNumber;
         TotalPages = (int)Math.Ceiling(count / (double)pageSize);
         TotalCount = count;
         Items = items;
@@ -39,16 +53,15 @@ public class PaginatedList<T>
         var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
-        //return await Task.FromResult(new PaginatedList<T>(items, count, pageNumber, pageSize));
     }
 
-    public bool HasPreviousPage => PageNumber > 1;
+    public bool HasPreviousPage => Page > 1;
 
-    public bool HasNextPage => PageNumber < TotalPages;
+    public bool HasNextPage => Page < TotalPages;
 
     public IReadOnlyCollection<T> Items { get; }
 
-    public int PageNumber { get; }
+    public int Page { get; }
 
     public int TotalPages { get; }
 

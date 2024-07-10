@@ -25,7 +25,7 @@ public sealed class SearchService : ISearchService
     public async Task<SearchResponseDto<Cursus>> SearchCursusAsync(SearchRequestDto request, PaginationParams pagination)
     {
         var query = _databaseContext.Cursi.Where(x => EF.Functions.Like(x.Name, $"%{request.Query}%"));
-        var data = await PaginatedList<Cursus>.CreateAsync(query, pagination.PageNumber, pagination.PageSize);
+        var data = await PaginatedList<Cursus>.CreateAsync(query, pagination.Page, pagination.Size);
 
         return new()
         {
@@ -36,7 +36,7 @@ public sealed class SearchService : ISearchService
     async Task<SearchResponseDto<LearningGoal>> ISearchService.SearchGoalAsync(SearchRequestDto request, PaginationParams pagination)
     {
         var query = _databaseContext.LearningGoals.Where(x => EF.Functions.Like(x.Name, $"%{request.Query}%"));
-        var data = await PaginatedList<LearningGoal>.CreateAsync(query, pagination.PageNumber, pagination.PageSize);
+        var data = await PaginatedList<LearningGoal>.CreateAsync(query, pagination.Page, pagination.Size);
 
         return new()
         {
@@ -47,7 +47,7 @@ public sealed class SearchService : ISearchService
     async Task<SearchResponseDto<Project>> ISearchService.SearchProjectAsync(SearchRequestDto request, PaginationParams pagination)
     {
         var query = _databaseContext.Projects.Where(x => EF.Functions.Like(x.Name, $"%{request.Query}%"));
-        var data = await PaginatedList<Project>.CreateAsync(query, pagination.PageNumber, pagination.PageSize);
+        var data = await PaginatedList<Project>.CreateAsync(query, pagination.Page, pagination.Size);
 
         return new()
         {
@@ -59,7 +59,7 @@ public sealed class SearchService : ISearchService
     {
         var query = _databaseContext.Users
             .Where(x => EF.Functions.Like(x.Login, $"%{request.Query.ToLower()}%"));
-        var data = await PaginatedList<User>.CreateAsync(query, pagination.PageNumber, pagination.PageSize);
+        var data = await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
 
         return new()
         {

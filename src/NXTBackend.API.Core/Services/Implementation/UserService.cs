@@ -61,7 +61,7 @@ public sealed class UserService : IUserService
     public async Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination)
     {
         var query = _databaseContext.Users.Select(User => User);
-        return await PaginatedList<User>.CreateAsync(query, pagination.PageNumber, pagination.PageSize);
+        return await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 
     public Task<User> SubscribeToCursus(User entity)
@@ -80,6 +80,11 @@ public sealed class UserService : IUserService
     }
 
     public Task<User> DeleteAsync(User entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, FilterParams filers, OrderByParams order)
     {
         throw new NotImplementedException();
     }

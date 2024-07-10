@@ -1,9 +1,11 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Event;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Infrastructure.Seeding;
 
 namespace NXTBackend.API.Infrastructure.Database;
 
@@ -16,11 +18,16 @@ public class DatabaseContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        optionsBuilder.EnableSensitiveDataLogging();
         //optionsBuilder.AddInterceptors(new SavingChangesInterceptor(TimeProvider.System));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        //UserSeeder.Generate(5);
+        //modelBuilder.Entity<User>().HasData(UserSeeder.FakeUsers);
+        //modelBuilder.Entity<Details>().HasData(UserSeeder.FakeDetails);
+
         /**
          * We avoid using unique constraints in preference to just checking before
          * if the entity exists for example. This is because we want to avoid having 500 errors
@@ -217,10 +224,6 @@ public class DatabaseContext : DbContext
         // ============================================================================
         //= User relationships =//
         // ============================================================================
-
-        //modelBuilder.Entity<User>()
-        //    .HasIndex(u => u.Id)
-        //    .IsUnique();
 
         modelBuilder.Entity<User>()
             .HasMany(u => u.CreatedCursus)

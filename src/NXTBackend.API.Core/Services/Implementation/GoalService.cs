@@ -47,13 +47,6 @@ public sealed class GoalService : IGoalService
     }
 
     /// <inheritdoc />
-    public async Task<PaginatedList<LearningGoal>> GetAllAsync(PaginationParams pagination)
-    {
-        var query = _databaseContext.LearningGoals.Select(goal => goal);
-        return await PaginatedList<LearningGoal>.CreateAsync(query, pagination.PageNumber, pagination.PageSize);
-    }
-
-    /// <inheritdoc />
     public async Task<LearningGoal> AddProject(LearningGoal goal, Project project)
     {
         throw new NotImplementedException();
@@ -73,6 +66,11 @@ public sealed class GoalService : IGoalService
 
     /// <inheritdoc />
     public async Task<PaginatedList<User>> GetUsers(LearningGoal goal, PaginationParams pagination)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PaginatedList<LearningGoal>> GetAllAsync(PaginationParams pagination)
     {
         throw new NotImplementedException();
     }

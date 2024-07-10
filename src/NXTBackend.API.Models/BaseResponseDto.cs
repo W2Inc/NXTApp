@@ -10,18 +10,23 @@ public class BaseResponseDto
     /// <summary>
     /// Message to be returned to the client.
     /// </summary>
+    /// <example>Something went wrong</example>
     [JsonPropertyName(nameof(Message))]
     public string Message { get; set; } = string.Empty;
 
     /// <summary>
-    /// Errors to be returned to the client.
-    /// </summary>    
-    [JsonPropertyName(nameof(Errors))]
-    public IList<string> Errors { get; set; } = [];
-
-    /// <summary>
     /// Success status of the operation.
     /// </summary>
+    /// <example>false</example>
     [JsonPropertyName(nameof(Success))]
-    public bool Success { get; set; }
+    public bool Success { get; set; } = true;
+}
+
+public class ErrorResponseDto : BaseResponseDto
+{
+    public ErrorResponseDto(string message)
+    {
+        Message = message;
+        Success = false;
+    }
 }

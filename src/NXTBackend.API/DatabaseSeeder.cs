@@ -3,7 +3,6 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using NXTBackend.API.Seeding;
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Infrastructure.Database;
 using System.Security.Cryptography;

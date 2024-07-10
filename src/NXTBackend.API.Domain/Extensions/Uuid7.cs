@@ -16,10 +16,8 @@ public static class GuidExtensions
             rng.GetBytes(randomBytes);
         }
 
-        // Allocate a 16 byte array to hold the UUID
-        Span<byte> uuidBytes = stackalloc byte[16];
-
         // Fill the timestamp (48 bits)
+        Span<byte> uuidBytes = stackalloc byte[16];
         uuidBytes[0] = (byte)((timestamp >> 40) & 0xFF);
         uuidBytes[1] = (byte)((timestamp >> 32) & 0xFF);
         uuidBytes[2] = (byte)((timestamp >> 24) & 0xFF);
