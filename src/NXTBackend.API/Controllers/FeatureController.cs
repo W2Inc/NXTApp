@@ -25,7 +25,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     /// <returns></returns>
     [HttpGet("/features")]
     [ProducesResponseType<PaginatedList<Feature>>(200)]
-    [ProducesResponseType(500)]
+    [ProducesResponseType<ErrorResponseDto>(500)]
     public async Task<IActionResult> GetFeatures(
         [FromQuery] OrderByParams order,
         [FromQuery] PaginationParams pagination,
@@ -33,7 +33,16 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     )
     {
         Log.Information("GetFeatures: {@pagination}, {@filters}, {@order}", pagination, filters, order);
-        return Ok(await featureService.GetAllAsync(pagination, filters, order));
+        try
+        {
+            throw new Exception("OLLAAA");
+            return Ok(await featureService.GetAllAsync(pagination, filters, order));
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "An error occurred while fetching features");
+            return StatusCode(500, new ErrorResponseDto());
+        }
     }
 
     /// <summary>

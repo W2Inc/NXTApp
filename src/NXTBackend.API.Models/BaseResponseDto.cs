@@ -24,7 +24,7 @@ public class BaseResponseDto
 
 public class ErrorResponseDto : BaseResponseDto
 {
-    public ErrorResponseDto(string message)
+    public ErrorResponseDto(string message = "Internal server error")
     {
         Message = message;
         Success = false;
