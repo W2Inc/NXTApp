@@ -56,11 +56,11 @@ public sealed class FeatureService : IFeatureService
         return PaginatedList<Feature>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 
-    public Task<PaginatedList<Feature>> GetAllAsync(PaginationParams pagination, FilterParams filers, OrderByParams order)
+    public Task<PaginatedList<Feature>> GetAllAsync(PaginationParams pagination, FilterParams filters, OrderByParams order)
     {
         var query = _databaseContext.Features.Select(Feature => Feature);
         //query = OrderQuery<Feature>.ApplyOrder(query, order);
-        query = FilterQuery<Feature>.ApplyFilters(query, filers);
+        query = FilterQuery<Feature>.ApplyFilters(query, filters);
         return PaginatedList<Feature>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 

@@ -22,19 +22,19 @@ public class FilterParams
     /// Filter by id.
     /// </summary>
     [JsonPropertyName("filter[id]")]
-    public Guid? Id { get; set; }
+    public Guid Id { get; set; }
 
     /// <summary>
     /// Filter by created at.
     /// </summary>
     [JsonPropertyName("filter[created_at]")]
-    public DateTimeOffset? CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>
     /// Filter by updated at.
     /// </summary>
     [JsonPropertyName("filter[updated_at]")]
-    public DateTimeOffset? UpdatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 }
 
 /// <summary>
@@ -76,8 +76,8 @@ public enum OrderBy
 public class OrderByParams
 {
     [JsonPropertyName("sort[field]")]
-    public string? Field { get; set; } 
+    public string? Field { get; set; }
 
     [JsonPropertyName("sort[order]")]
-    public OrderBy? Order { get; set; }
+    public OrderBy Order { get; set; }
 }

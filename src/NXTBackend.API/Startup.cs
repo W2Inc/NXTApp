@@ -100,6 +100,7 @@ public static class Startup
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFeatureService, FeatureService>();
+        services.AddScoped<IEventService, EventService>();
         services.AddSingleton(TimeProvider.System);
         services.AddRateLimiter(limiter =>
         {

@@ -24,7 +24,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     /// <param name="order"></param>
     /// <returns></returns>
     [HttpGet("/features")]
-    [ProducesResponseType<PaginatedList<Feature>>(200)]
+    [ProducesResponseType<IEnumerable<Feature>>(200)]
     [ProducesResponseType<ErrorResponseDto>(500)]
     public async Task<IActionResult> GetFeatures(
         [FromQuery] OrderByParams order,
@@ -35,8 +35,13 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
         Log.Information("GetFeatures: {@pagination}, {@filters}, {@order}", pagination, filters, order);
         try
         {
-            throw new Exception("OLLAAA");
-            return Ok(await featureService.GetAllAsync(pagination, filters, order));
+            var list = await featureService.GetAllAsync(pagination, filters, order);
+            HttpContext.Response.Headers.Append("X-Next-Page", list.HasNextPage.ToString());
+            HttpContext.Response.Headers.Append("X-Prev-Page", list.HasPreviousPage.ToString());
+            HttpContext.Response.Headers.Append("X-Page", list.Page.ToString());
+            HttpContext.Response.Headers.Append("X-Count", list.TotalCount.ToString());
+            HttpContext.Response.Headers.Append("X-Pages", list.TotalPages.ToString());
+            return Ok(list.Items);
         }
         catch (Exception e)
         {
