@@ -7,8 +7,11 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using Keycloak.AuthServices.Authentication;
+using Keycloak.AuthServices.Common;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
@@ -46,6 +49,7 @@ public static class Startup
         // All sorts of swagger stuff
         services.AddSwaggerGen(c =>
         {
+            c.EnableAnnotations();
             c.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "NXTBackend",
@@ -57,32 +61,40 @@ public static class Startup
                     Name = "W2Wizard"
                 }
             });
-            c.EnableAnnotations();
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                In = ParameterLocation.Header,
-                Description = "Please provide JWT with bearer (Bearer {jwt token})",
-                Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey,
-            });
 
+            // Convert XML Comments to openapi stuff
             string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
             string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
 
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            var options = builder.Configuration.GetKeycloakOptions<KeycloakAuthenticationOptions>()!;
+            var securityScheme = new OpenApiSecurityScheme
             {
+                Name = "Auth",
+                Type = SecuritySchemeType.OAuth2,
+                Reference = new OpenApiReference
                 {
-                    new OpenApiSecurityScheme
+                    Id = JwtBearerDefaults.AuthenticationScheme,
+                    Type = ReferenceType.SecurityScheme
+                },
+                Flows = new OpenApiOAuthFlows
+                {
+                    Implicit = new OpenApiOAuthFlow
                     {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        },
-                    },
-                    new List<string>() }
-            });
+                        AuthorizationUrl = new Uri(
+                            $"{options.KeycloakUrlRealm}protocol/openid-connect/auth"
+                        ),
+                        TokenUrl = new Uri(
+                            $"{options.KeycloakUrlRealm}protocol/openid-connect/token"
+                        ),
+                        Scopes = new Dictionary<string, string>(),
+                    }
+                }
+            };
+            c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+            c.AddSecurityRequirement(
+                new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } }
+            );
         });
 
         services.AddDbContext<DatabaseContext>((sp, options) =>
@@ -101,6 +113,7 @@ public static class Startup
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFeatureService, FeatureService>();
         services.AddScoped<IEventService, EventService>();
+        services.AddScoped<ICursusService, CursusService>();
         services.AddSingleton(TimeProvider.System);
         services.AddRateLimiter(limiter =>
         {

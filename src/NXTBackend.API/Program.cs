@@ -3,6 +3,8 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
+using Keycloak.AuthServices.Authentication;
+using Keycloak.AuthServices.Common;
 using NXTBackend.API;
 using Serilog;
 
@@ -24,7 +26,10 @@ if (!await app.Services.CreateScope().ServiceProvider.GetRequiredService<Databas
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    KeycloakAuthenticationOptions options = new();
+    builder.Configuration.BindKeycloakOptions(options);
+    Log.Information(options.Resource);
+    app.UseSwaggerUI(s => s.OAuthClientId(options.Resource));
 }
 
 // Use all the middleware
@@ -48,7 +53,6 @@ if (app.Environment.IsDevelopment())
             context.Response.Redirect("/swagger");
             return;
         }
-
         await next(context);
     });
 }

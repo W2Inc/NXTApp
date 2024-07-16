@@ -33,10 +33,7 @@ public class SavingChangesInterceptor : SaveChangesInterceptor
             {
                 var utcNow = _dateTime.GetUtcNow();
                 if (entry.State == EntityState.Added)
-                {
                     entry.Entity.CreatedAt = utcNow;
-                }
-
                 entry.Entity.UpdatedAt = utcNow;
             }
         }

@@ -16,5 +16,4 @@ public interface IFeatureService : IDomainService<Feature>
     /// <returns> The feature or null</returns>
     public Task<Feature?> FindByNameAsync(string name);
 
-    public Task<PaginatedList<Feature>> GetAllAsync(PaginationParams pagination, FilterParams filters, OrderByParams order);
 }

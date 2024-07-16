@@ -17,5 +17,4 @@ public interface IEventService : IDomainService<Event>
     /// <returns> The feature or null</returns>
     public Task<Event?> FindByNameAsync(string name);
 
-    public Task<PaginatedList<Event>> GetAllAsync(PaginationParams pagination, FilterParams filters, OrderByParams order);
 }

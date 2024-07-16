@@ -55,6 +55,18 @@ public class PaginatedList<T>
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
     }
 
+    /// <summary>
+    /// Headers for the paginated list.
+    /// </summary>
+    public Dictionary<string, string> GetHeaders() => new()
+    {
+        { "X-Page", Page.ToString() },
+        { "X-Next-Page", HasNextPage.ToString() },
+        { "X-Prev-Page", HasPreviousPage.ToString() },
+        { "X-Count", TotalCount.ToString() },
+        { "X-Pages", TotalPages.ToString() }
+    };
+
     public bool HasPreviousPage => Page > 1;
 
     public bool HasNextPage => Page < TotalPages;

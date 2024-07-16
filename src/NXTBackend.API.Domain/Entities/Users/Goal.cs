@@ -45,9 +45,6 @@ public class UserGoal : BaseEntity
 
         UserCursusId = null;
         UserCursus = null;
-
-        VertexId = Guid.Empty;
-        Vertex = null!;
     }
 
     [Column("user_id")]
@@ -67,12 +64,6 @@ public class UserGoal : BaseEntity
 
     [ForeignKey(nameof(UserCursusId))]
     public virtual UserCursus? UserCursus { get; set; }
-
-    [Column("vertex_id")]
-    public Guid VertexId { get; set; }
-
-    [ForeignKey(nameof(VertexId))]
-    public virtual CursusVertex Vertex { get; set; }
 
     /// <summary>
     /// All the members that are part of this project.

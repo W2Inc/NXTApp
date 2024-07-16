@@ -1,8 +1,8 @@
 version: '3.9'  
 services:
   Keycloak:
-    image: quay.io/keycloak/keycloak:22.0.5
-    command: ['start-dev']
+    image: keycloak-app
+    #command: ['start-dev']
     container_name: keycloak
     environment:
       KC_DB: postgres

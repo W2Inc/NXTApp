@@ -27,15 +27,12 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     [ProducesResponseType<IEnumerable<Feature>>(200)]
     [ProducesResponseType<ErrorResponseDto>(500)]
     public async Task<IActionResult> GetFeatures(
-        [FromQuery] OrderByParams order,
-        [FromQuery] PaginationParams pagination,
-        [FromQuery] FilterParams filters
+        [FromQuery] PaginationParams pagination
     )
     {
-        Log.Information("GetFeatures: {@pagination}, {@filters}, {@order}", pagination, filters, order);
         try
         {
-            var list = await featureService.GetAllAsync(pagination, filters, order);
+            var list = await featureService.GetAllAsync(pagination);
             HttpContext.Response.Headers.Append("X-Next-Page", list.HasNextPage.ToString());
             HttpContext.Response.Headers.Append("X-Prev-Page", list.HasPreviousPage.ToString());
             HttpContext.Response.Headers.Append("X-Page", list.Page.ToString());

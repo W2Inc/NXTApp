@@ -83,9 +83,4 @@ public sealed class UserService : IUserService
     {
         throw new NotImplementedException();
     }
-
-    public Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, FilterParams filers, OrderByParams order)
-    {
-        throw new NotImplementedException();
-    }
 }

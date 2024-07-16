@@ -57,14 +57,6 @@ public sealed class EventService : IEventService
         return PaginatedList<Event>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 
-    public Task<PaginatedList<Event>> GetAllAsync(PaginationParams pagination, FilterParams filters, OrderByParams order)
-    {
-        var query = _databaseContext.Events.Select(Event => Event);
-        //query = OrderQuery<Event>.ApplyOrder(query, order);
-        query = FilterQuery<Event>.ApplyFilters(query, filters);
-        return PaginatedList<Event>.CreateAsync(query, pagination.Page, pagination.Size);
-    }
-
     public async Task<Event> UpdateAsync(Event entity)
     {
         var eventData = _databaseContext.Events.Update(entity).Entity;

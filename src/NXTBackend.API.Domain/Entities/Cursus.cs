@@ -121,10 +121,10 @@ public class Cursus : BaseEntity
     public virtual User Creator { get; set; } = null!;
 
     /// <summary>
-    /// The user was the evaluator on the following reviews.
+    /// The track / path of the Cursus stored in the .graph format.
     /// </summary>
     [JsonIgnore]
-    public virtual ICollection<CursusVertex> Vertices { get; set; } = [];
+    public byte[] Track { get; set; } = [];
 
     /// <summary>
     /// The different cursus sessions that exist for this cursus.

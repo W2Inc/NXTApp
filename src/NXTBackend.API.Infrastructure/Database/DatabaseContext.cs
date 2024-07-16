@@ -48,38 +48,9 @@ public class DatabaseContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Cursus>()
-            .HasMany(c => c.Vertices)
-            .WithOne(cv => cv.Cursus)
-            .HasForeignKey(cv => cv.CursusId);
-
-        modelBuilder.Entity<Cursus>()
             .HasMany(c => c.UserCursi)
             .WithOne(uc => uc.Cursus)
             .HasForeignKey(uc => uc.CursusId);
-
-        // ============================================================================
-        //= Cursus Vertex relationships =//
-        // ============================================================================
-
-        modelBuilder.Entity<CursusVertex>()
-            .HasMany(c => c.Goals)
-            .WithMany(g => g.Vertices);
-
-        modelBuilder.Entity<CursusVertex>()
-            .HasMany(c => c.UserGoals)
-            .WithOne(ug => ug.Vertex)
-            .HasForeignKey(ug => ug.VertexId);
-
-        modelBuilder.Entity<CursusVertex>()
-            .HasOne(cv => cv.Cursus)
-            .WithMany(c => c.Vertices)
-            .HasForeignKey(cv => cv.CursusId);
-
-        modelBuilder.Entity<CursusVertex>()
-            .HasOne(cv => cv.Parent)
-            .WithMany(p => p.Children)
-            .HasForeignKey(cv => cv.ParentId)
-            .OnDelete(DeleteBehavior.Restrict);
 
         // ============================================================================
         //= LearningGoal relationships =//
@@ -101,11 +72,6 @@ public class DatabaseContext : DbContext
             .HasMany(lg => lg.UserGoals)
             .WithOne(ug => ug.Goal)
             .HasForeignKey(ug => ug.GoalId);
-
-        // A LearningGoal can be part of multiple vertices
-        modelBuilder.Entity<LearningGoal>()
-            .HasMany(lg => lg.Vertices)
-            .WithMany(cv => cv.Goals);
 
         // ============================================================================
         //= Project relationships =//
@@ -321,12 +287,6 @@ public class DatabaseContext : DbContext
             .HasForeignKey(ug => ug.UserCursusId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<UserGoal>()
-            .HasOne(ug => ug.Vertex)
-            .WithMany(cv => cv.UserGoals)
-            .HasForeignKey(ug => ug.VertexId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         // ============================================================================
         //= User Project relationships =//
         // ============================================================================
@@ -364,7 +324,6 @@ public class DatabaseContext : DbContext
     public DbSet<EventAction> EventActions { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Cursus> Cursi { get; set; }
-    public DbSet<CursusVertex> CursusVertices { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<LearningGoal> LearningGoals { get; set; }
     public DbSet<UserGoal> UserGoals { get; set; }
@@ -372,5 +331,6 @@ public class DatabaseContext : DbContext
     public DbSet<Rubric> Rubric { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Git> GitInfo { get; set; }
+    public DbSet<Feedback> Feedbacks { get; set; }
 #nullable restore
 }

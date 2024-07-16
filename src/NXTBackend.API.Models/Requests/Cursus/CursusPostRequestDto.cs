@@ -43,10 +43,4 @@ public class CursusPostRequestDto : BaseRequestDto
     /// </summary>
     [Required]
     public bool Enabled { get; set; } = false;
-
-    /// <summary>
-    /// The path of the cursus
-    /// </summary>
-    [Required]
-    public CursusPath Path { get; set; }
 }

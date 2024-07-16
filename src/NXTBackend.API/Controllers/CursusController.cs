@@ -1,18 +1,24 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.Reflection.PortableExecutable;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NXTBackend.API.Core.Graph;
+using NXTBackend.API.Core.Graph.Meta;
+using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Models;
+using NXTBackend.API.Models.Requests.Cursus;
+using Serilog;
 
 namespace NXTBackend.API.Controllers;
 
 [Route("cursus")]
 [ApiController]
-public class CursusController(IUserService userService) : ControllerBase
+public class CursusController(ICursusService cursusService) : ControllerBase
 {
-    private readonly IUserService _searchService = userService;
-
     /// <summary>
     /// 
     /// </summary>
@@ -21,8 +27,11 @@ public class CursusController(IUserService userService) : ControllerBase
     [HttpGet("/cursus")]
     public async Task<IActionResult> GetCursi([FromQuery] PaginationParams pagination)
     {
-
-        return BadRequest("WUAH!");
+        var list = await cursusService.GetAllAsync(pagination);
+        var headers = list.GetHeaders();
+        foreach (var header in headers)
+            HttpContext.Response.Headers.Append(header.Key, header.Value);
+        return Ok(list.Items);
     }
 
     /// <summary>
@@ -30,10 +39,22 @@ public class CursusController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    [HttpPost("/cursus"), Authorize]
-    public async Task<IActionResult> AddCursi([FromQuery] PaginationParams pagination)
+    [HttpPut("/cursus/{id}/path"), Authorize]
+    public async Task<IActionResult> AddCursi(Guid id)
     {
-        throw new NotImplementedException();
+
+        using var memoryStream = new MemoryStream();
+        await Request.Body.CopyToAsync(memoryStream);
+
+        memoryStream.Position = 0;
+        using (var reader = new GraphReader(memoryStream))
+        {
+            reader.ReadHeader();
+            reader.ReadData();
+        }
+
+        Log.Information("Cursus added");
+        return Ok();
     }
 
     /// <summary>
@@ -63,20 +84,65 @@ public class CursusController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    [HttpGet("/cursus/{id}/users")]
-    public async Task<IEnumerable<User>> GetUsers([FromQuery] PaginationParams pagination)
+    [HttpGet("/cursus/{id}/path")]
+    [ProducesResponseType<FileStreamResult>(200, "application/octet-stream")]
+    public async Task<IActionResult> GetPath(Guid id, [FromQuery] PaginationParams pagination)
     {
-        throw new NotImplementedException();
-    }
+        var cursus = await cursusService.FindByIdAsync(id);
+        if (cursus == null)
+            return NotFound(new ErrorResponseDto("Cursus not found"));
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="pagination"></param>
-    /// <returns></returns>
-    [HttpGet("/cursus/{id}/goals")]
-    public async Task<IEnumerable<LearningGoal>> GetGoals([FromQuery] PaginationParams pagination)
-    {
-        throw new NotImplementedException();
+        var nodes = new List<GraphNode>()
+        {
+            new GraphNode()
+            {
+                Id = 0,
+                ParentId = 0,
+                Goals = new List<GoalEntry>
+                {
+                    new GoalEntry
+                    {
+                        Name = $"Goal 1",
+                        GoalId = Guid.NewGuid()
+                    },
+                    new GoalEntry
+                    {
+                        Name = $"Goal 2",
+                        GoalId = Guid.NewGuid()
+                    }
+                },
+                Next = new List<GraphNode>
+                {
+                    new GraphNode()
+                    {
+                        Id = 1,
+                        ParentId = 0,
+                        Goals = new List<GoalEntry>
+                        {
+                            new GoalEntry
+                            {
+                                Name = $"Goal 3",
+                                GoalId = Guid.NewGuid()
+                            },
+                            new GoalEntry
+                            {
+                                Name = $"Goal 4",
+                                GoalId = Guid.NewGuid()
+                            }
+                        }
+                    }
+                }
+            },
+        };
+
+        var memoryStream = new MemoryStream();
+        using (var writer = new GraphWriter(memoryStream))
+            writer.WriteData(nodes);
+
+        memoryStream.Position = 0; // Reset the memory stream position
+        return new FileStreamResult(memoryStream, "application/octet-stream")
+        {
+            FileDownloadName = $"{id}.graph"
+        };
     }
 }

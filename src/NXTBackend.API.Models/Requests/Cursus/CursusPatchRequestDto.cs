@@ -41,9 +41,4 @@ public class CursusPatchRequestDto : BaseRequestDto
     /// Can a user actively subscribe to the cursus?
     /// </summary>
     public bool? Enabled { get; set; } = false;
-
-    /// <summary>
-    /// The path of the cursus
-    /// </summary>
-    public CursusPath? Path { get; set; }
 }
