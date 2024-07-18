@@ -13,21 +13,23 @@ public struct GoalEntry
     public Guid GoalId { get; set; }
 }
 
-public class GraphNode(GraphNode? Parent = null)
+public class GraphNode()
 {
-    public int Id { get; set; }
+    public const ushort C_MAX_NODES = 4;
+    public const ushort C_MAX_GOALS = 3;
+    public const byte C_MAX_DEPTH = byte.MaxValue;
 
-    public int ParentId { get; set; }
+    public ushort Id { get; set; }
 
-    public bool isRoot { get; set; }
+    public ushort ParentId { get; set; }
+
+    public bool IsRoot { get; set; }
 
     public ushort GoalCount { get; set; }
 
-    public GraphNode? Parent { get; set; } = Parent;
-
-    public bool IsRoot => Parent == null;
+    public ushort ChildrenCount { get; set; }
 
     public List<GoalEntry> Goals { get; set; } = [];
 
-    public List<GraphNode> Next { get; set; } = [];
+    public List<GraphNode> Children { get; set; } = [];
 }

@@ -51,4 +51,9 @@ public sealed class CursusService : ICursusService
         var query = _databaseContext.Cursi.Select(c => c);
         return PaginatedList<Cursus>.CreateAsync(query, pagination.Page, pagination.Size);
     }
+
+    public async Task<Cursus?> FindByNameAsync(string name)
+    {
+        return await _databaseContext.Cursi.FirstOrDefaultAsync(c => c.Name == name);
+    }
 }

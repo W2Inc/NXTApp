@@ -13,7 +13,7 @@ DTO models are used to transfer data between the client and the server. They are
 -> /users/{id}/user_cursus [GET]
 -> /users/{id}/user_goals [GET]
 -> /users/{id}/user_projects [GET]
--> /users/{id}/user_project/{id} [POST, PATCH, DELETE] // Send, accept or decline being added to a project
+-> /users/{id}/user_projects/{id}/invite [POST, PATCH, DELETE] // Send, accept or decline being added to a project
 
 - Events
 -> /events/ [GET, POST] // Get all events or add a new event

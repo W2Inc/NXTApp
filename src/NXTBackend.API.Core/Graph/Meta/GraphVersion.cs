@@ -8,5 +8,5 @@ namespace NXTBackend.API.Core.Graph.Meta;
 
 public enum GraphFileVersion
 {
-    Version1 = 0x22446688,
+    XGraphV1 = 0x22446688,
 }

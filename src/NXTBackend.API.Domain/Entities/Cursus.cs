@@ -124,6 +124,7 @@ public class Cursus : BaseEntity
     /// The track / path of the Cursus stored in the .graph format.
     /// </summary>
     [JsonIgnore]
+    [Column("track")]
     public byte[] Track { get; set; } = [];
 
     /// <summary>

@@ -29,44 +29,35 @@ public class GraphHeader
     public ushort GoalCount;
 
     /// <summary>
-    /// The depth of the graph. A.k.a. the amount of nodes in the longest path.
-    /// </summary>
-    public ushort NodeDepth;
-
-    /// <summary>
     /// Magic number to identify the file.
     /// </summary>
-    public const long C_MAGIC = 0x7765616B636F6465; // "weakcode"
+    public const ulong C_MAGIC = 0xB0B0BEBAFECA;
 
     public bool Read(BaseEndianReader reader)
     {
         int version = reader.ReadInt32();
-        if (version is not (int)GraphFileVersion.Version1)
+        if (version is not (int)GraphFileVersion.XGraphV1)
             return false;
         Version = (GraphFileVersion)version;
 
-        // SKip 4 bytes for padding
-        reader.Position += 4;
-        if (reader.ReadLong() != C_MAGIC)
+        // Account for padding in the header
+        reader.ReadAlignment(16);
+        if (reader.ReadULong() != C_MAGIC)
             return false;
 
         NodeCount = reader.ReadUInt16();
         GoalCount = reader.ReadUInt16();
-        NodeDepth = reader.ReadUInt16();
-
-        // Skip 10 bytes for padding
-        reader.Position += 10;
+        reader.ReadAlignment(16);
         return true;
     }
 
     public void Write(EndianStreamWriter writer)
     {
         writer.Write((int)Version);
-        writer.WritePadding(4);
-        writer.Write(C_MAGIC);
-        writer.Write(NodeCount);
-        writer.Write(GoalCount);
-        writer.Write(NodeDepth);
-        writer.WritePadding(10);
+        writer.WritePadding(16);
+        writer.Write(C_MAGIC);  // ulong -> 8 bytes
+        writer.Write(NodeCount); // 4 bytes
+        writer.Write(GoalCount); // 4 bytes
+        writer.WritePadding(16);
     }
 }

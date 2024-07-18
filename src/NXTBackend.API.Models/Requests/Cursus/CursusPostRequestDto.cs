@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
+using NXTBackend.API.Domain.Enums;
 
 // ============================================================================
 
@@ -43,4 +44,10 @@ public class CursusPostRequestDto : BaseRequestDto
     /// </summary>
     [Required]
     public bool Enabled { get; set; } = false;
+
+    /// <summary>
+    /// The kind of cursus
+    /// </summary>
+    [Required]
+    public CursusKind Kind { get; set; } = CursusKind.Fixed;
 }
