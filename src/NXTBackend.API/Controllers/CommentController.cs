@@ -24,7 +24,7 @@ namespace NXTBackend.API.Controllers;
 
 [Route("comments")]
 [ApiController]
-public class CommentController(ICommentService commentService) : ControllerBase
+public class CommentController(ILogger<CommentController> logger, ICommentService commentService) : ControllerBase
 {
     /// <summary>
     /// Get all comments

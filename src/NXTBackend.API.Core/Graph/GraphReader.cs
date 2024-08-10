@@ -24,7 +24,7 @@ public sealed class GraphReader(Stream? stream) : EndianStreamReader(stream, nul
     private void ReadNode(byte depth, GraphNode? parent)
     {
         if (depth > GraphNode.C_MAX_DEPTH)
-            throw new InvalidOperationException($"Graph with a depth of: {depth} is too large!");
+            throw new InvalidDataException($"Graph with a depth of: {depth} is too large!");
 
         ushort id = ReadUInt16();
         ushort parentId = ReadUInt16();
@@ -33,23 +33,20 @@ public sealed class GraphReader(Stream? stream) : EndianStreamReader(stream, nul
         ushort childrenCount = ReadUInt16();
 
         if (goalCount > GraphNode.C_MAX_GOALS)
-            throw new InvalidOperationException("Node can't have more than 4 goals.");
-
+            throw new InvalidDataException($"Node can't have more than {GraphNode.C_MAX_GOALS} goals.");
         if (childrenCount > GraphNode.C_MAX_NODES)
-            throw new InvalidOperationException("Node can't have more than 4 children.");
+            throw new InvalidDataException($"Node can't have more than {GraphNode.C_MAX_NODES} children.");
 
-        GraphNode node = new GraphNode
+        var node = new GraphNode
         {
             Id = id,
             ParentId = parentId,
-            IsRoot = parent is null,
+            IsRoot = parent is null || isRoot,
             GoalCount = goalCount,
             ChildrenCount = childrenCount
         };
 
-        if (parent == null)
-            RootNode = node;
-
+        RootNode = parent is null ? node : RootNode;
         for (int i = 0; i < goalCount; i++)
         {
             string? goalName = ReadCString();
@@ -70,5 +67,3 @@ public sealed class GraphReader(Stream? stream) : EndianStreamReader(stream, nul
             ReadNode((byte)(depth + 1), node); // Read child nodes and increase the depth
     }
 }
-
-

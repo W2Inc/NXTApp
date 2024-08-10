@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.Event;
@@ -10,25 +12,33 @@ namespace NXTBackend.API.Controllers;
 
 [Route("user")]
 [ApiController]
-public class UserController(ILogger<UserController> logger, IUserService userService) : ControllerBase
+public class UserController(
+    ILogger<UserController> logger,
+    IUserService userService,
+    IEventService eventService
+) : ControllerBase
 {
-    private readonly IUserService _searchService = userService;
-
     /// <summary>
     /// Get the currently authenticated user
     /// </summary>
     /// <response code="200">Ok</response>
     /// <response code="401">Unauthorized</response>
-    /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
-    /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
     [ProducesResponseType<User>(200)]
     [ProducesErrorResponseType(typeof(ErrorResponseDto))]
     [HttpGet("/me")]
     public async Task<IActionResult> GetMe()
     {
-        throw new NotImplementedException();
+        var userId = HttpContext.GetUserId();
+        if (userId is null)
+            return Unauthorized(new ErrorResponseDto("Unauthorized"));
+
+        var user = await userService.FindByIdAsync(userId.Value);
+        if (user is null)
+            return NotFound(new ErrorResponseDto("User not found"));
+
+        return Ok(user);
     }
 
     /// <summary>
@@ -45,7 +55,17 @@ public class UserController(ILogger<UserController> logger, IUserService userSer
     [HttpGet("/me/events")]
     public async Task<IActionResult> GetMeEvents([FromQuery] PaginationParams pagination)
     {
-        throw new NotImplementedException();
+        var userId = HttpContext.GetUserId();
+        if (userId is null)
+            return Unauthorized(new ErrorResponseDto("Unauthorized"));
+
+        var user = await userService.FindByIdAsync(userId.Value);
+        if (user is null)
+            return NotFound(new ErrorResponseDto("User not found"));
+
+        var list = await userService.GetEvents(user);
+        list.AppendHeaders(Response.Headers);
+        return Ok(list.Items);
     }
 
     /// <summary>

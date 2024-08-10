@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Entities.Event;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
@@ -82,5 +84,23 @@ public sealed class UserService : IUserService
     public Task<User> DeleteAsync(User entity)
     {
         throw new NotImplementedException();
+    }
+
+    public Task<User> SubscribeToCursus(User entity, Cursus cursus)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<User> UnsubscribeFromCursus(User entity, Cursus cursus)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PaginatedList<Event>> GetEvents(User entity, PaginationParams pagination)
+    {
+        var dismissedEvents = _databaseContext.EventActions.Where(ae => ae.IsDismissed);
+        var events = _databaseContext.Events.Where(e => !dismissedEvents.Any(ae => ae.EventId == e.Id));
+
+        return PaginatedList<Event>.CreateAsync(events, pagination.Page, pagination.Size);
     }
 }

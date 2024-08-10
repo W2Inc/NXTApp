@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Primitives;
 
 namespace NXTBackend.API.Models;
 
@@ -47,6 +48,13 @@ public class PaginatedList<T>
         Items = items;
     }
 
+    /// <summary>
+    /// Create a paginated list from a queryable source.
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="pageNumber"></param>
+    /// <param name="pageSize"></param>
+    /// <returns></returns>
     public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
     {
         int count = source.Count();
@@ -56,16 +64,17 @@ public class PaginatedList<T>
     }
 
     /// <summary>
-    /// Headers for the paginated list.
+    /// Append pagination headers to the response headers.
     /// </summary>
-    public Dictionary<string, string> GetHeaders() => new()
+    /// <param name="headers"></param>
+    public void AppendHeaders(IDictionary<string, StringValues> headers)
     {
-        { "X-Page", Page.ToString() },
-        { "X-Next-Page", HasNextPage.ToString() },
-        { "X-Prev-Page", HasPreviousPage.ToString() },
-        { "X-Count", TotalCount.ToString() },
-        { "X-Pages", TotalPages.ToString() }
-    };
+        headers.Add("X-Page", Page.ToString());
+        headers.Add("X-Next-Page", HasNextPage.ToString());
+        headers.Add("X-Prev-Page", HasPreviousPage.ToString());
+        headers.Add("X-Count", TotalCount.ToString());
+        headers.Add("X-Pages", TotalPages.ToString());
+    }
 
     public bool HasPreviousPage => Page > 1;
 

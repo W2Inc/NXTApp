@@ -25,6 +25,19 @@ public class CursusController(
 ) : ControllerBase
 {
 
+    /// <summary>
+    /// Get all comments
+    /// </summary>
+    /// <returns>All current existing events</returns>
+    /// <response code="200">The updated feature</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
+    /// <response code="429">Too many requests</response>
+    /// <response code="400">Bad Request</response>
+    /// <response code="500">An Internal server error has occurred</response>
+    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<ErrorResponseDto>(400)]
+    [ProducesResponseType<ErrorResponseDto>(500)]
     [HttpGet("/cursus")]
     public async Task<IActionResult> GetCursi([FromQuery] PaginationParams pagination)
     {
