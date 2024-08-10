@@ -1,0 +1,14 @@
+{
+	"seed": "uuid-v4-1337-420-69-666-4",
+	"root": {
+		"id": "0",
+		"next": [],
+		"prev": [],
+		"type": "Action",
+		"meta": {
+			"count": 0,
+			"type": "new:goal"
+		}
+	},
+	"nodes": []
+}
