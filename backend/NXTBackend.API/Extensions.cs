@@ -13,57 +13,25 @@ namespace NXTBackend.API;
 
 public static class Extensions
 {
-    public static Guid? GetUserId(this HttpContext context)
-    {
-        var id = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (id is null)
-            return null;
-
-        return Guid.TryParse(id.Value, out var guid) ? guid : null;
-    }
-
-    public async static Task<User?> GetUser(this HttpContext context, IUserService service)
-    {
-        var id = context.GetUserId();
-        return id is null ? null : await service.FindByIdAsync(id.Value);
-    }
-
-    public static string? GetClaimValue(this HttpContext context, string claim) => context.User.Claims.FirstOrDefault(c => c.Type == claim)?.Value;
-
+    private const string C_CONTEXT_USER = "__user";
 
     /// <summary>
-    ///
+    /// Get the current authenticated user for the given context.
     /// </summary>
     /// <param name="context"></param>
-    /// <param name="service"></param>
     /// <returns></returns>
-    public async static Task<User?> EnsureUser(this HttpContext context, IUserService service)
+    public static User? GetUser(this HttpContext context)
     {
-
-        var id = context.GetUserId();
-        if (id is null)
-            return null;
-        var user = await service.FindByIdAsync(id.Value);
-        if (user is null)
-            return null;
-        if (!Guid.TryParse(context.GetClaimValue(ClaimTypes.NameIdentifier), out var userID))
-        {
-            return null;
-        }
-
-        var login = context.GetClaimValue(ClaimTypes.GivenName);
-        if (login is null)
-            return null;
-
-        await service.CreateAsync(new()
-        {
-            Id = userID,
-            Login = login,
-            DisplayName = context.GetClaimValue(ClaimTypes.GivenName),
-        });
-
-
-        return user;
+        return context.Items[C_CONTEXT_USER] as User;
     }
 
+    /// <summary>
+    /// Set authenticated the current user for the given context.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="user"></param>
+    public static void SetUser(this HttpContext context, User? user)
+    {
+        context.Items[C_CONTEXT_USER] = user;
+    }
 }

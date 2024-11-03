@@ -46,7 +46,7 @@ public class UserController(
     [HttpGet("/users/current"), Authorize]
     public async Task<IActionResult> CurrentUser()
     {
-        var user = await HttpContext.GetUser(userService);
+        var user = HttpContext.GetUser();
         return user is null ? Forbid() : Ok(new UserDO(user));
     }
 
@@ -116,15 +116,14 @@ public class UserController(
     [ProducesResponseType(typeof(IEnumerable<UserDO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [HttpGet("/users")]
+    [HttpGet("/users"), Authorize]
     public async Task<IActionResult> GetAll([FromQuery] PaginationParams paging, [FromQuery] SortingParams sorting)
     {
-        var user = await HttpContext.GetUser(userService);
-        logger.Log(LogLevel.Information, "HELLO WORLD!");
-
-        if (user is not null)
+        var user = HttpContext.GetUser();
+        logger.Log(LogLevel.Information, "HELLO WORLD!, {@user}", user);
+        if (user is null)
         {
-            logger.LogDebug("NO USER!");
+            logger.LogInformation("NO USER!");
         }
 
         var page = await userService.GetAllAsync(paging, sorting);

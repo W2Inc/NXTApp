@@ -68,9 +68,9 @@ app.UseRateLimiter();
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
+app.UseMiddleware<UserMiddlerware>();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<LoggingMiddleware>();
 app.MapControllers().RequireRateLimiting("fixed");
 
 // Shortcut
