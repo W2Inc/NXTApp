@@ -23,7 +23,7 @@ public interface IUserService : IDomainService<User>
     public Task<User?> FindByNameAsync(string displayName);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="entity"></param>
     /// <param name="cursus"></param>
@@ -31,7 +31,7 @@ public interface IUserService : IDomainService<User>
     public Task<User> SubscribeToCursus(User entity, Cursus cursus);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="entity"></param>
     /// <param name="cursus"></param>
@@ -43,7 +43,7 @@ public interface IUserService : IDomainService<User>
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
-    public Task<PaginatedList<Event>> GetEvents(User entity);
+    public Task<PaginatedList<Notification>> GetEvents(User entity);
 
     /// <summary>
     /// Check if the user recently reviewed the project instance, recently means within the last 24 hours

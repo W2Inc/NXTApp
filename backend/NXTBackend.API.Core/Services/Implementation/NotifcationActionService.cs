@@ -13,7 +13,4 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// Temporary service to search for users, projects, cursi and learning goals.
 /// Later on this service SHOULD be converted to use a search engine like ElasticSearch.
 /// </summary>
-public sealed class CommentService(DatabaseContext ctx) : BaseService<Comment>(ctx), ICommentService
-{
-
-}
+public sealed class NotificationActionService(DatabaseContext ctx) : BaseService<NotificationAction>(ctx), INotificationActionService { }

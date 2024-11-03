@@ -9,5 +9,5 @@ namespace NXTBackend.API.Models.Responses;
 public class EventGetResponseDto : BaseResponseDto
 {
     [JsonPropertyName(nameof(Event))]
-    public Event Event { get; set; } = null!;
+    public Notification Event { get; set; } = null!;
 }

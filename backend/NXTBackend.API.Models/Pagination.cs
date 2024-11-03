@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 
 namespace NXTBackend.API.Models;
@@ -42,10 +43,9 @@ public class PaginatedList<T>
 {
     public PaginatedList(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize)
     {
+        Items = items;
         Page = pageNumber;
         TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-        TotalCount = count;
-        Items = items;
     }
 
     /// <summary>
@@ -57,8 +57,8 @@ public class PaginatedList<T>
     /// <returns></returns>
     public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
     {
-        int count = source.Count();
-        var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+        var count = await source.CountAsync();
+        var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
     }
@@ -70,21 +70,13 @@ public class PaginatedList<T>
     public void AppendHeaders(IDictionary<string, StringValues> headers)
     {
         headers.Add("X-Page", Page.ToString());
-        headers.Add("X-Next-Page", HasNextPage.ToString());
-        headers.Add("X-Prev-Page", HasPreviousPage.ToString());
-        headers.Add("X-Count", TotalCount.ToString());
         headers.Add("X-Pages", TotalPages.ToString());
+
     }
-
-    public bool HasPreviousPage => Page > 1;
-
-    public bool HasNextPage => Page < TotalPages;
 
     public IReadOnlyCollection<T> Items { get; }
 
     public int Page { get; }
 
     public int TotalPages { get; }
-
-    public int TotalCount { get; }
 }

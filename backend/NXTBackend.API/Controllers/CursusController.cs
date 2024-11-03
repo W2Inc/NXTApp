@@ -35,17 +35,17 @@ public class CursusController(
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesResponseType<ErrorResponseDto>(400)]
     [ProducesResponseType<ErrorResponseDto>(500)]
     [HttpGet("/cursus")]
     public async Task<IActionResult> GetCursi([FromQuery] PaginationParams pagination)
     {
-        var list = await cursusService.GetAllAsync(pagination);
-        var headers = list.GetHeaders();
-        foreach (var header in headers)
-            HttpContext.Response.Headers.Append(header.Key, header.Value);
-        return Ok(list.Items);
+        // var list = await cursusService.GetAllAsync(pagination);
+        // var headers = list.GetHeaders();
+        // foreach (var header in headers)
+        //     HttpContext.Response.Headers.Append(header.Key, header.Value);
+        return Ok();
     }
 
     [HttpPost("/cursus")]

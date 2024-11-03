@@ -32,7 +32,7 @@ public class DatabaseContext : DbContext
          * We avoid using unique constraints in preference to just checking before
          * if the entity exists for example. This is because we want to avoid having 500 errors
          * and actually handle the error in a more graceful way.
-         * 
+         *
          * Only a few models present unique constraints, and those are the ones that are
          * required to be unique / should error in any attempt to create a duplicate.
          */
@@ -320,8 +320,8 @@ public class DatabaseContext : DbContext
     public DbSet<Feature> Features { get; set; }
     public DbSet<Details> Details { get; set; }
     public DbSet<User> Users { get; set; }
-    public DbSet<Event> Events { get; set; }
-    public DbSet<EventAction> EventActions { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<NotificationAction> NotificationActions { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Cursus> Cursi { get; set; }
     public DbSet<Project> Projects { get; set; }

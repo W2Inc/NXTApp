@@ -17,7 +17,7 @@ namespace NXTBackend.API.Controllers;
 public class FeatureController(IFeatureService featureService) : ControllerBase
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <param name="filters"></param>
@@ -27,12 +27,13 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     [ProducesResponseType<IEnumerable<Feature>>(200)]
     [ProducesResponseType<ErrorResponseDto>(500)]
     public async Task<IActionResult> GetFeatures(
-        [FromQuery] PaginationParams pagination
+        [FromQuery] PaginationParams pagination,
+        [FromQuery] SortingParams sorting
     )
     {
         try
         {
-            var list = await featureService.GetAllAsync(pagination);
+            var list = await featureService.GetAllAsync(pagination, sorting);
             list.AppendHeaders(Response.Headers);
             return Ok(list.Items);
         }
@@ -44,7 +45,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -117,7 +118,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

@@ -7,9 +7,9 @@
     <Configurations>Debug;Release;Deploy</Configurations>
   </PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Bogus" Version="35.5.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
-		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
+		<PackageReference Include="Bogus" Version="35.6.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\NXTBackend.API.Domain\NXTBackend.API.Domain.csproj" />

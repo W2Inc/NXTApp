@@ -16,7 +16,7 @@ using NXTBackend.API.Models.Requests.Event;
 namespace NXTBackend.API.Controllers;
 
 [Route("events"), ApiController, Authorize]
-public class EventController(IEventService eventService) : ControllerBase
+public class EventController(INotificationService notificationService) : ControllerBase
 {
     /// <summary>
     /// Get all events
@@ -27,16 +27,12 @@ public class EventController(IEventService eventService) : ControllerBase
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<IEnumerable<Event>>(200)]
+    [ProducesResponseType<IEnumerable<Notification>>(200)]
     [ProducesErrorResponseType(typeof(ErrorResponseDto))]
     [HttpGet("/events")]
     public async Task<IActionResult> GetEvents([FromQuery] PaginationParams pagination)
     {
-        var list = await eventService.GetAllAsync(pagination);
-        var headers = list.GetHeaders();
-        foreach (var header in headers)
-            HttpContext.Response.Headers.Append(header.Key, header.Value);
-        return Ok(list.Items);
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -49,15 +45,15 @@ public class EventController(IEventService eventService) : ControllerBase
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesErrorResponseType(typeof(ErrorResponseDto))]
     [HttpPost("/events")]
     public async Task<IActionResult> CreateEvent([FromBody] EventPostRequestDto request)
     {
-        if (await eventService.FindByNameAsync(request.Title) is not null)
+        if (await notificationService.FindByTitleAsync(request.Title) is not null)
             return Conflict(new ErrorResponseDto("Event already exists"));
 
-        var @event = await eventService.CreateAsync(new ()
+        var @event = await notificationService.CreateAsync(new ()
         {
             Title = request.Title,
             Description = request.Description,
@@ -79,12 +75,12 @@ public class EventController(IEventService eventService) : ControllerBase
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesErrorResponseType(typeof(ErrorResponseDto))]
     [HttpGet("/events/{id}")]
     public async Task<IActionResult> GetEvent(Guid id)
     {
-        var @event = await eventService.FindByIdAsync(id);
+        var @event = await notificationService.FindByIdAsync(id);
         if (@event is null)
             return NotFound(new ErrorResponseDto("Event not found"));
         return Ok(@event);
@@ -100,22 +96,22 @@ public class EventController(IEventService eventService) : ControllerBase
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesErrorResponseType(typeof(ErrorResponseDto))]
     [HttpPatch("/events/{id}")]
-    public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventPatchRequestDto request)
+    public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] EventPatchRequestDto data)
     {
-        var @event = await eventService.FindByIdAsync(id);
+        var @event = await notificationService.FindByIdAsync(id);
         if (@event is null)
             return NotFound(new ErrorResponseDto("Event not found"));
 
-        @event.Title = request.Title ?? @event.Title;
-        @event.Description = request.Description ?? @event.Description;
-        @event.Href = request.Href ?? @event.Href;
-        @event.ActionText = request.HrefText ?? @event.ActionText;
-        @event.BackgroundUrl = request.BackgroundUrl ?? @event.BackgroundUrl;
+        @event.Title = data.Title ?? @event.Title;
+        @event.Description = data.Description ?? @event.Description;
+        @event.Href = data.Href ?? @event.Href;
+        @event.ActionText = data.HrefText ?? @event.ActionText;
+        @event.BackgroundUrl = data.BackgroundUrl ?? @event.BackgroundUrl;
 
-        await eventService.UpdateAsync(@event);
+        await notificationService.UpdateAsync(@event);
         return Ok(@event);
     }
 
@@ -129,16 +125,16 @@ public class EventController(IEventService eventService) : ControllerBase
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesErrorResponseType(typeof(ErrorResponseDto))]
     [HttpDelete("/events/{id}")]
     public async Task<IActionResult> DeleteEvent(Guid id)
     {
-        var @event = await eventService.FindByIdAsync(id);
+        var @event = await notificationService.FindByIdAsync(id);
         if (@event is null)
             return NotFound(new ErrorResponseDto("Event not found"));
 
-        await eventService.DeleteAsync(@event);
+        await notificationService.DeleteAsync(@event);
         return NoContent();
     }
 }

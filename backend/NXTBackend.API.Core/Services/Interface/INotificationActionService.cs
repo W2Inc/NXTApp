@@ -8,7 +8,7 @@ namespace NXTBackend.API.Core.Services.Interface;
 /// <summary>
 /// Service for the Rubric entity.
 /// </summary>
-public interface IEventActionService : IDomainService<EventAction>
+public interface INotificationActionService : IDomainService<NotificationAction>
 {
 
 }

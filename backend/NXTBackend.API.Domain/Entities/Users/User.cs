@@ -37,7 +37,7 @@ public class User : BaseEntity
     [Column("avatar_url"), Url]
     public string? AvatarUrl { get; set; }
 
-    [Column("details_id")]
+    [JsonIgnore, Column("details_id")]
     public Guid? DetailsId { get; set; }
 
     [ForeignKey(nameof(DetailsId))]
@@ -65,7 +65,7 @@ public class User : BaseEntity
     public virtual ICollection<Rubric> CreatedRubrics { get; set; } = [];
 
     /// <summary>
-    /// The Learning goals the user created. 
+    /// The Learning goals the user created.
     /// </summary>
     [JsonIgnore]
     public virtual ICollection<LearningGoal> CreatedGoals { get; set; } = [];

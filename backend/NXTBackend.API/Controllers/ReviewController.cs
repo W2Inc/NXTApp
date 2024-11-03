@@ -18,21 +18,22 @@ public class ReviewController(
 {
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("/reviews")]
     public async Task<IEnumerable<Review>> GetReviews(
-        [FromQuery] PaginationParams pagination
+        [FromQuery] PaginationParams pagination,
+        [FromQuery] SortingParams sorting
     )
     {
-        return (await reviewService.GetAllAsync(pagination)).Items;
+        return (await reviewService.GetAllAsync(pagination, sorting)).Items;
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <param name="body"></param>
@@ -76,7 +77,7 @@ public class ReviewController(
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -88,7 +89,7 @@ public class ReviewController(
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -102,7 +103,7 @@ public class ReviewController(
     //= /feedback routes =//
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="body"></param>
     /// <returns></returns>
@@ -114,7 +115,7 @@ public class ReviewController(
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <param name="body"></param>
@@ -130,7 +131,7 @@ public class ReviewController(
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <param name="body"></param>
@@ -146,7 +147,7 @@ public class ReviewController(
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <param name="body"></param>
@@ -164,7 +165,7 @@ public class ReviewController(
     //= /comment routes =//
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <param name="body"></param>
@@ -180,7 +181,7 @@ public class ReviewController(
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

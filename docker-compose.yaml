@@ -1,4 +1,4 @@
-version: '3.9'  
+---
 services:
   Keycloak:
     image: keycloak-app
@@ -15,11 +15,11 @@ services:
 
       KEYCLOAK_ADMIN: admin # Change this to a different username
       KEYCLOAK_ADMIN_PASSWORD: password # Change this to a better password
-      
+
       KC_HTTP_RELATIVE_PATH: /auth
     ports:
       - "8089:8080"
-  
+
   postgres:
     image: postgres
     container_name: keycloak-postgres
@@ -28,7 +28,7 @@ services:
       POSTGRES_USER: keycloak # Change this to a different username
       POSTGRES_PASSWORD: password # Change this to a better password
     ports:
-      - "5432:5432"
+      - "8888:5432"
 
   postgres-backend:
     image: postgres

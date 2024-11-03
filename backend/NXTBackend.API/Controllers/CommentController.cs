@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Event;
@@ -22,9 +23,15 @@ using Serilog;
 
 namespace NXTBackend.API.Controllers;
 
+public class GetAllParams
+{
+    [FromQuery(Name = "filter[demo]")]
+    public string? NoteFromQueryString { get; set; }
+}
+
 [Route("comments")]
-[ApiController]
-public class CommentController(ILogger<CommentController> logger, ICommentService commentService) : ControllerBase
+[ApiController, Produces("application/json")]
+public class CommentController(ILogger<CommentController> logger) : ControllerBase
 {
     /// <summary>
     /// Get all comments
@@ -36,17 +43,17 @@ public class CommentController(ILogger<CommentController> logger, ICommentServic
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesResponseType<ErrorResponseDto>(400)]
     [ProducesResponseType<ErrorResponseDto>(500)]
     [HttpGet("/comments")]
-    public async Task<IActionResult> GetComments([FromQuery] PaginationParams pagination)
+    public async Task<Notification> GetComments([FromQuery] PaginationParams pagination, GetAllParams urlParams)
     {
-        var list = await commentService.GetAllAsync(pagination);
-        var headers = list.GetHeaders();
-        foreach (var header in headers)
-            HttpContext.Response.Headers.Append(header.Key, header.Value);
-        return Ok(list.Items);
+        // var list = await commentService.GetAllAsync(pagination);
+        // var headers = list.GetHeaders();
+        // foreach (var header in headers)
+        //     HttpContext.Response.Headers.Append(header.Key, header.Value);
+        return new Notification();
     }
 
     /// <summary>
@@ -59,7 +66,7 @@ public class CommentController(ILogger<CommentController> logger, ICommentServic
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesResponseType<ErrorResponseDto>(400)]
     [ProducesResponseType<ErrorResponseDto>(500)]
     [HttpPost("/comments")]
@@ -77,7 +84,7 @@ public class CommentController(ILogger<CommentController> logger, ICommentServic
     /// <response code="403">Forbidden</response>
     /// <response code="404">Not Found</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesResponseType<ErrorResponseDto>(401)]
     [ProducesResponseType<ErrorResponseDto>(403)]
     [ProducesResponseType<ErrorResponseDto>(404)]
@@ -85,10 +92,12 @@ public class CommentController(ILogger<CommentController> logger, ICommentServic
     [HttpGet("/comments/{id}")]
     public async Task<IActionResult> GetComment(Guid id)
     {
-        var eventData = await commentService.FindByIdAsync(id);
-        if (eventData is null)
-            return NotFound(new ErrorResponseDto("Comment not found"));
-        return Ok(eventData);
+        throw new NotImplementedException();
+
+        //var eventData = await commentService.FindByIdAsync(id);
+        //if (eventData is null)
+        //    return NotFound(new ErrorResponseDto("Comment not found"));
+        //return Ok(eventData);
     }
 
     /// <summary>
@@ -104,7 +113,7 @@ public class CommentController(ILogger<CommentController> logger, ICommentServic
     /// <response code="400">Bad Request</response>
     /// <response code="422">Unprocessable Entity</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesResponseType<ErrorResponseDto>(400)]
     [ProducesResponseType<ErrorResponseDto>(401)]
     [ProducesResponseType<ErrorResponseDto>(403)]
@@ -130,7 +139,7 @@ public class CommentController(ILogger<CommentController> logger, ICommentServic
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Event>(200)]
+    [ProducesResponseType<Notification>(200)]
     [ProducesResponseType<ErrorResponseDto>(400)]
     [ProducesResponseType<ErrorResponseDto>(401)]
     [ProducesResponseType<ErrorResponseDto>(403)]
@@ -140,9 +149,11 @@ public class CommentController(ILogger<CommentController> logger, ICommentServic
     [HttpDelete("/comments/{id}"), Authorize]
     public async Task<IActionResult> DeleteComment(Guid id)
     {
-        var comment = await commentService.FindByIdAsync(id);
-        if (comment is null)
-            return NotFound(new ErrorResponseDto("Event not found"));
-        return Ok(await commentService.DeleteAsync(comment));
+        throw new NotImplementedException();
+
+        //var comment = await commentService.FindByIdAsync(id);
+        //if (comment is null)
+        //    return NotFound(new ErrorResponseDto("Event not found"));
+        //return Ok(await commentService.DeleteAsync(comment));
     }
 }

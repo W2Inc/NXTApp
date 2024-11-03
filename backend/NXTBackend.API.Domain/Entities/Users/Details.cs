@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Domain.Entities.Users;
@@ -42,12 +43,13 @@ public class Details : BaseEntity
         LinkedinUrl = string.Empty;
         TwitterUrl = string.Empty;
         WebsiteUrl = string.Empty;
+        User = null!;
     }
 
     [Column("user_id")]
     public Guid UserId { get; set; }
 
-    [ForeignKey(nameof(UserId))]
+    [JsonIgnore, ForeignKey(nameof(UserId))]
     public virtual User User { get; set; }
 
     [Column("email"), EmailAddress]

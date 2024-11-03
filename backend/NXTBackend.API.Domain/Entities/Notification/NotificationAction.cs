@@ -9,13 +9,13 @@ using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Domain.Entities.Event;
 
-[Table("tbl_event_action")]
-public class EventAction : BaseEntity
+[Table("tbl_notification_action")]
+public class NotificationAction : BaseEntity
 {
-    public EventAction()
+    public NotificationAction()
     {
         UserId = Guid.Empty;
-        EventId = Guid.Empty;
+        NotificationId = Guid.Empty;
         IsDismissed = false;
     }
 
@@ -24,8 +24,8 @@ public class EventAction : BaseEntity
     public Guid UserId { get; set; }
 
     [Required]
-    [Column("event_id")]
-    public Guid EventId { get; set; }
+    [Column("notification_id")]
+    public Guid NotificationId { get; set; }
 
     [Required]
     [Column("is_dismissed")]

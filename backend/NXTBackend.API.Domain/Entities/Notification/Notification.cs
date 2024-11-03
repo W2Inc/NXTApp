@@ -25,10 +25,10 @@ model Event {
 }
 */
 
-[Table("tbl_event")]
-public class Event : BaseEntity
+[Table("tbl_notification")]
+public class Notification : BaseEntity
 {
-    public Event()
+    public Notification()
     {
         Title = string.Empty;
         Description = string.Empty;
@@ -37,6 +37,9 @@ public class Event : BaseEntity
         BackgroundUrl = string.Empty;
     }
 
+    /// <summary>
+    /// The title of the event
+    /// </summary>
     [Required]
     [Column("title"), StringLength(64)]
     public string Title { get; set; }

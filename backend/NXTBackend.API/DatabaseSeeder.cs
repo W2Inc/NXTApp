@@ -38,9 +38,6 @@ public class DatabaseSeeder
     /// <returns></returns>
     public async Task<bool> InitializeAsync(IConfiguration configuration, string[] args)
     {
-        //if (!args.Contains("--seed"))
-        //    return true;
-
         await _databaseContext.Database.MigrateAsync();
         await _databaseContext.SaveChangesAsync();
         return true;

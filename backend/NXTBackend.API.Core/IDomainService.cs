@@ -12,10 +12,8 @@ namespace NXTBackend.API.Core;
 
 /// <summary>
 /// Interface for Domain models.
-/// 
-/// Provides generic, usable methods for all models such as Create, Update, Delete, FindById and GetAll.
 /// </summary>
-/// <typeparam name="T">The model.</typeparam>
+/// <typeparam name="T">The model type.</typeparam>
 public interface IDomainService<T> where T : BaseEntity
 {
     /// <summary>
@@ -51,5 +49,5 @@ public interface IDomainService<T> where T : BaseEntity
     /// </summary>
     /// <param name="pagination">Specific pagination parameters (as to avoid large queries)</param>
     /// <returns>A paginated list of entities.</returns>
-    public Task<PaginatedList<T>> GetAllAsync(PaginationParams pagination);
+    public Task<PaginatedList<T>> GetAllAsync(PaginationParams pagination, SortingParams sorting);
 }
