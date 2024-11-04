@@ -24,20 +24,20 @@ public class UserMiddlerware(RequestDelegate next, ILogger<UserMiddlerware> log)
     {
         context.SetUser(null);
 
-        var id = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (id is null || Guid.TryParse(id.Value, out var guid))
-        {
-            log.LogDebug("No authenticated user");
-            await next(context);
-            return;
-        }
-
         // If the routes requires a user to be authenticated. We can already
         // fetch it and add it as an item to the context for later.
         var endpoint = context.GetEndpoint();
         var authorizeAttributes = endpoint?.Metadata.GetMetadata<AuthorizeAttribute>();
         if (authorizeAttributes is not null)
         {
+            var id = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (id is null || !Guid.TryParse(id.Value, out var guid))
+            {
+                log.LogDebug("No authenticated user");
+                await next(context);
+                return;
+            }
+
             // The endpoint does require a authenticated user...
             var user = await service.FindByIdAsync(guid);
             log.LogDebug("Authenticated user: {@id}", user?.Id ?? Guid.Empty);

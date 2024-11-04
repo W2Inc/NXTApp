@@ -4,10 +4,32 @@ Original by Oscar, Nicolas and Me
 
 ## Setup backend
 
-Run the Docker compose file to setup the backend.
-It's important that you pull and build the docker image from the keycloak repo.
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/your-repo/NXTBackend.git
+    ```
 
-Afterwards you can just `dotnet restore` and `dotnet run` inside the `NXTBackend.App` directory.
+2. Navigate to the project directory:
+    ```bash
+    cd NXTBackend
+    ```
+
+3. Restore the dependencies:
+    ```bash
+    dotnet restore
+    ```
+
+4. Build the project:
+    ```bash
+    dotnet build
+    ```
+
+5. Run the application:
+    ```bash
+    dotnet run --project "NXTBackend.API"
+    ```
+
+6. Open your browser and navigate to `http://localhost:3000` to access the API.
 
 ## Setup frontend
 
@@ -48,22 +70,3 @@ choco install awscli
     ```
 - Run `aws s3 ls s3://oolp-dev/` to list all files in the bucket.
 - Run `aws s3 cp --recursive static/ s3://oolp-dev/` to upload all files in the `static` folder to the bucket.
-
-### FAQ
-
-Q: The frontend. It's pretty ... slow?
-A: Give it a bit, let vite optimize the deps and everything. Maybe open in a new tab?
-
-Q: I get 403 when trying to sign in, something with malformed token?
-A: [It failed!](#it-failed)
-
-Q: I git pulled and it's all broken >-<
-A: `npx prisma db push` usually fixes this.
-
-## It failed!
-
-1. Is your database up?
-2. Are your credentials correct?
-3. Did you make sure you put the `.env` in the right place?
-4. Did you ACTUALLY follow all the steps?
-5. ARE THE SECRETS CORRECT???
