@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.Event;
+using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Event;
 using NXTBackend.API.Models.Requests.Feature;

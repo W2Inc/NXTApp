@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
-namespace NXTBackend.API.Domain.Entities.Event;
+namespace NXTBackend.API.Domain.Entities.Notification;
 
 [Table("tbl_notification_action")]
 public class NotificationAction : BaseEntity

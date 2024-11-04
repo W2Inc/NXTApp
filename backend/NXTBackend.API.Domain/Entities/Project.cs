@@ -119,18 +119,15 @@ public class Project : BaseEntity
     /// <summary>
     /// Rubrics that exist for this project.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<Rubric> Rubrics { get; set; } = null!;
 
     /// <summary>
     /// The goals that reference this project
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<LearningGoal> Goals { get; set; } = null!;
 
     /// <summary>
     /// The different sessions that exist for this project
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<UserProject> UserProjects { get; set; } = null!;
 }

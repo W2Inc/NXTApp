@@ -7,9 +7,9 @@ using Serilog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities.Event;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Event;
+using NXTBackend.API.Domain.Entities.Notification;
 
 // ============================================================================
 

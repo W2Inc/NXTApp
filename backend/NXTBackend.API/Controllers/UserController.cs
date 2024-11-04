@@ -2,12 +2,9 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities.Event;
-using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Models;
-using NXTBackend.API.Models.Requests.User;
 using NXTBackend.API.Models.Responses.Objects;
 
 namespace NXTBackend.API.Controllers;
@@ -24,6 +21,18 @@ public class UserController(
     /// Get the currently authenticated user.
     /// </summary>
     /// <returns>The user, aka, you.</returns>
+    /// <param name=""></param>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST /Todo
+    ///     {
+    ///        "id": 1,
+    ///        "name": "Item #1"
+    ///        "isComplete": true
+    ///     }
+    ///
+    /// </remarks>
     /// <response code="200">Ok</response>
     /// <response code="401">Unauthorized</response>
     /// <response code="403">Forbidden</response>
@@ -32,12 +41,12 @@ public class UserController(
     [ProducesResponseType(typeof(UserDO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [HttpGet("/users/current"), Authorize, EnableRateLimiting("authorized")]
-    public IActionResult CurrentUser()
+    [HttpGet("/users/current"), Authorize]
+    public async Task<IActionResult> CurrentUser()
     {
         var user = HttpContext.GetUser();
         return user is null ? Forbid() : Ok(new UserDO(user));
-
+    }
 
     /// <summary>
     /// Get the current user's events

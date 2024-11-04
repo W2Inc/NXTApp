@@ -109,7 +109,7 @@ public static class Startup
         .AddTransient<DatabaseSeeder>();
 
         // Add services
-        // services.AddScoped<ISearchService, SearchService>();
+        services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFeatureService, FeatureService>();
         services.AddScoped<INotificationService, NotifcationService>();

@@ -1,6 +1,6 @@
 ﻿using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.Event;
+using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Models;
 

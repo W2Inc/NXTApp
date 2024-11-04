@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
-namespace NXTBackend.API.Domain.Entities.Event;
+namespace NXTBackend.API.Domain.Entities.Notification;
 
 /*
 model Event {
@@ -40,19 +40,15 @@ public class Notification : BaseEntity
     /// <summary>
     /// The title of the event
     /// </summary>
-    [Required]
-    [Column("title"), StringLength(64)]
+    [Column("title")]
     public string Title { get; set; }
 
-    [Required]
-    [Column("description"), StringLength(256)]
+    [Column("description")]
     public string Description { get; set; }
 
-    [Required]
-    [Column("action_text"), StringLength(64)]
+    [Column("action_text")]
     public string ActionText { get; set; }
 
-    [Required]
     [Column("href"), Url]
     public string Href { get; set; }
 

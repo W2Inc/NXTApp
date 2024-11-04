@@ -28,7 +28,7 @@ public class SearchController(ISearchService searchService) : ControllerBase
     //[ProducesResponseType(400)]
     //[ProducesResponseType(500)]
     // public ProducesResponseTypeAttribute(Type type, int statusCode)
-    [ProducesResponseType(typeof(SearchResponseDto<User>), 200)] // Can respond like this if Category enum is User
+    [ProducesResponseType(typeof(SearchResponseDto<User>), StatusCodes.Status200OK)] // Can respond like this if Category enum is User
     //[ProducesResponseType(typeof(SearchResponseDto<Cursus>), 200)]
     public async Task<IActionResult> Search(
         Category category,

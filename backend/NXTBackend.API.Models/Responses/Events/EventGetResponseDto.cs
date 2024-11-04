@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using NXTBackend.API.Domain.Entities.Event;
+using NXTBackend.API.Domain.Entities.Notification;
 
 namespace NXTBackend.API.Models.Responses;
 
