@@ -9,47 +9,59 @@ using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Models.Responses;
 
-public class UserDetailsDO(Details details) : BaseDO<Details>(details)
+public class UserDetailsDO : BaseDO<Details>
 {
+    /// <summary>
+    ///
+    /// </summary>
+    public string Email { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string Bio { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string FirstName { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string LastName { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string GithubUrl { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string LinkedinUrl { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string TwitterUrl { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string WebsiteUrl { get; set; }
+
+    public UserDetailsDO(Details details) : base(details)
+    {
+        Email = details.Email;
+        Bio = details.Bio;
+        FirstName = details.FirstName;
+        LastName = details.LastName;
+        GithubUrl = details.GithubUrl;
+        LinkedinUrl = details.LinkedinUrl;
+        TwitterUrl = details.TwitterUrl;
+        WebsiteUrl = details.WebsiteUrl;
+    }
+
     public static implicit operator UserDetailsDO?(Details? data) => data is null ? null : new(data);
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string Email { get; set; } = details.Email;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string Bio { get; set; } = details.Bio;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string FirstName { get; set; } = details.FirstName;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string LastName { get; set; } = details.LastName;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string GithubUrl { get; set; } = details.GithubUrl;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string LinkedinUrl { get; set; } = details.LinkedinUrl;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string TwitterUrl { get; set; } = details.TwitterUrl;
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string WebsiteUrl { get; set; } = details.WebsiteUrl;
 }

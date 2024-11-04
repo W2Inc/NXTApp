@@ -64,8 +64,23 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
     }
 
     /// <inheritdoc/>
-    public Task<PaginatedList<Notification>> GetEvents(User entity)
+    public Task<PaginatedList<Notification>> GetNotifications(User entity)
     {
         throw new NotImplementedException();
+    }
+
+    public Task<NotificationAction> DismissNotification(User entity, Notification notification)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override async Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, SortingParams sorting)
+    {
+        var query = _dbSet
+            .Include(user => user.Details)
+            .AsQueryable();
+
+        query = await SortedList<User>.ApplyAsync(query, sorting);
+        return await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 }

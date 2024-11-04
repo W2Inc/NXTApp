@@ -54,7 +54,7 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
         return entity;
     }
 
-    public async Task<PaginatedList<T>> GetAllAsync(PaginationParams pagination, SortingParams sorting)
+    public virtual async Task<PaginatedList<T>> GetAllAsync(PaginationParams pagination, SortingParams sorting)
     {
         var query = await SortedList<T>.ApplyAsync(_dbSet.AsQueryable(), sorting);
         return await PaginatedList<T>.CreateAsync(query, pagination.Page, pagination.Size);

@@ -9,31 +9,47 @@ using NXTBackend.API.Domain.Entities;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class ProjectDO(Project project) : BaseDO<Project>(project)
+public class ProjectDO : BaseDO<Project>
 {
-    public string Name { get; set; } = project.Name;
+    public string Name { get; set; }
 
-    public string Markdown { get; set; } = project.Markdown;
+    public string Markdown { get; set; }
 
-    public string Slug { get; set; } = project.Slug;
+    public string Slug { get; set; }
 
-    public string? ThumbnailUrl { get; set; } = project.ThumbnailUrl;
+    public string? ThumbnailUrl { get; set; }
 
-    public bool Public { get; set; } = project.Public;
+    public bool Public { get; set; }
 
-    public bool Enabled { get; set; } = project.Enabled;
+    public bool Enabled { get; set; }
 
-    public int MaxMembers { get; set; } = project.MaxMembers;
+    public int MaxMembers { get; set; }
 
-    public Guid GitInfoId { get; set; } = project.GitInfoId;
+    public Guid GitInfoId { get; set; }
 
-    public virtual Git GitInfo { get; set; } = project.GitInfo;
+    public virtual Git GitInfo { get; set; }
 
-    public Guid CreatorId { get; set; } = project.CreatorId;
+    public Guid CreatorId { get; set; }
 
-    public virtual UserDO? Creator { get; set; } = project.Creator;
+    public virtual UserDO? Creator { get; set; }
 
-    public string[] Tags { get; set; } = project.Tags;
+    public string[] Tags { get; set; }
+
+    public ProjectDO(Project project) : base(project)
+    {
+        Name = project.Name;
+        Markdown = project.Markdown;
+        Slug = project.Slug;
+        ThumbnailUrl = project.ThumbnailUrl;
+        Public = project.Public;
+        Enabled = project.Enabled;
+        MaxMembers = project.MaxMembers;
+        GitInfoId = project.GitInfoId;
+        GitInfo = project.GitInfo;
+        CreatorId = project.CreatorId;
+        Creator = project.Creator;
+        Tags = project.Tags;
+    }
 
     public static implicit operator ProjectDO?(Project? entity) => entity is null ? null : new ProjectDO(entity);
 }

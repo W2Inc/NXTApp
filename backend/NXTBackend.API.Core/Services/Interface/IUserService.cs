@@ -43,7 +43,15 @@ public interface IUserService : IDomainService<User>
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
-    public Task<PaginatedList<Notification>> GetEvents(User entity);
+    public Task<PaginatedList<Notification>> GetNotifications(User entity);
+
+    /// <summary>
+    /// Dismiss a event for a user
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="notification"></param>
+    /// <returns></returns>
+    public Task<NotificationAction> DismissNotification(User entity, Notification notification);
 
     /// <summary>
     /// Check if the user recently reviewed the project instance, recently means within the last 24 hours

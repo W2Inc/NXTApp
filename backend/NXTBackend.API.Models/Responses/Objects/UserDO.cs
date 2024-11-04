@@ -17,7 +17,7 @@ public class UserDO(User user) : BaseDO<User>(user)
 
     public string? AvatarUrl { get; set; } = user.AvatarUrl;
 
-    public virtual UserDetailsDO? Details { get; set; } = user.Details;
+    public virtual UserDetailsDO? DetailsId { get; set; } = user.Details;
 
     /// <summary>
     /// Convert a possible user to a DO.
