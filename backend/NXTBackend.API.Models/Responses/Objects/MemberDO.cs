@@ -11,7 +11,7 @@ using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class MemberDO : BaseDO<Member>
+public class MemberDO : BaseObjectDO<Member>
 {
     public MemberDO(Member member) : base(member)
     {

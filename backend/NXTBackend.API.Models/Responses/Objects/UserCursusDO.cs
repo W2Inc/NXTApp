@@ -8,7 +8,7 @@ using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class UserCursusDO : BaseDO<UserCursus>
+public class UserCursusDO : BaseObjectDO<UserCursus>
 {
     public UserCursusDO(UserCursus userCursus) : base(userCursus)
     {

@@ -7,7 +7,7 @@ using NXTBackend.API.Domain.Entities.Notification;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class NotificationActionDO : BaseDO<NotificationAction>
+public class NotificationActionDO : BaseObjectDO<NotificationAction>
 {
     public NotificationActionDO(NotificationAction notificationAction) : base(notificationAction)
     {

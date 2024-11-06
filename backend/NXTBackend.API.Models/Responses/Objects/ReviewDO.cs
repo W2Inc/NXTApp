@@ -8,7 +8,7 @@ using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class ReviewDO : BaseDO<Review>
+public class ReviewDO : BaseObjectDO<Review>
 {
     public ReviewDO(Review review) : base(review)
     {

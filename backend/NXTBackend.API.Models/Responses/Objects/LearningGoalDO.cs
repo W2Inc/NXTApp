@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Entities;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class LearningGoalDO : BaseDO<LearningGoal>
+public class LearningGoalDO : BaseObjectDO<LearningGoal>
 {
     public LearningGoalDO(LearningGoal learningGoal) : base(learningGoal)
     {

@@ -7,7 +7,7 @@ using NXTBackend.API.Domain.Entities.Evaluation;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class FeedbackDO : BaseDO<Feedback>
+public class FeedbackDO : BaseObjectDO<Feedback>
 {
     public FeedbackDO(Feedback feedback) : base(feedback)
     {

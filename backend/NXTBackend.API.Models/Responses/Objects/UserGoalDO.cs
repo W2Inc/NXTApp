@@ -10,7 +10,7 @@ using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class UserGoalDO : BaseDO<UserGoal>
+public class UserGoalDO : BaseObjectDO<UserGoal>
 {
     public UserGoalDO(UserGoal userGoal) : base(userGoal)
     {

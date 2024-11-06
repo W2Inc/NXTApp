@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Entities;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class ProjectDO : BaseDO<Project>
+public class ProjectDO : BaseObjectDO<Project>
 {
     public string Name { get; set; }
 

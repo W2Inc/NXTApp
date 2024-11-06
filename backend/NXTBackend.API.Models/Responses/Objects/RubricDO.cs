@@ -11,7 +11,7 @@ using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class RubricDO : BaseDO<Rubric>
+public class RubricDO : BaseObjectDO<Rubric>
 {
     public RubricDO(Rubric rubric) : base(rubric)
     {

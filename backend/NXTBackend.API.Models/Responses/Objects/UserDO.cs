@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class UserDO(User user) : BaseDO<User>(user)
+public class UserDO(User user) : BaseObjectDO<User>(user)
 {
     public string Login { get; set; } = user.Login;
 

@@ -11,7 +11,7 @@ using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class UserProjectDO : BaseDO<UserProject>
+public class UserProjectDO : BaseObjectDO<UserProject>
 {
     public UserProjectDO(UserProject userProject) : base(userProject)
     {

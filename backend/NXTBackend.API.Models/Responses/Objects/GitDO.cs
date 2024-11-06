@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Entities;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class GitDO : BaseDO<Git>
+public class GitDO : BaseObjectDO<Git>
 {
     public GitDO(Git git) : base(git)
     {

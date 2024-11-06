@@ -8,7 +8,7 @@ using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class CommentDO : BaseDO<Comment>
+public class CommentDO : BaseObjectDO<Comment>
 {
     public CommentDO(Comment comment) : base(comment)
     {

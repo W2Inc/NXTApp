@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Entities;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class FeatureDO : BaseDO<Feature>
+public class FeatureDO : BaseObjectDO<Feature>
 {
     public FeatureDO(Feature feature) : base(feature)
     {

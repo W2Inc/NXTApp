@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Entities.Notification;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class NotificationDO : BaseDO<Notification>
+public class NotificationDO : BaseObjectDO<Notification>
 {
     public string Title { get; set; }
 

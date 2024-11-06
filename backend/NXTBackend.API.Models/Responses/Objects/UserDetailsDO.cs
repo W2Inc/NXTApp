@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Models.Responses;
 
-public class UserDetailsDO : BaseDO<Details>
+public class UserDetailsDO : BaseObjectDO<Details>
 {
     /// <summary>
     ///
