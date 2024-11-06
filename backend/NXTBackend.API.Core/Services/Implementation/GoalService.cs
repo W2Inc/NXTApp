@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;

@@ -1,6 +1,6 @@
-﻿using NXTBackend.API.Domain.Extensions;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using NXTBackend.API.Domain.Extensions;
 
 namespace NXTBackend.API.Domain.Common;
 

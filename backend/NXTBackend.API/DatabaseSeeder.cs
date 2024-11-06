@@ -5,9 +5,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Infrastructure.Database;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Hosting.Server;
-using NXTBackend.API.Domain.Common;
 
 // ============================================================================
 

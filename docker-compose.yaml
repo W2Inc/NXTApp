@@ -15,10 +15,25 @@ services:
       clickhouse:
         db: service_healthy
 
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: redis
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - app
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
   keycloak:
     image: keycloak-app
     #command: ['start-dev']
     container_name: keycloak
+    networks:
+      - app
     environment:
       KC_DB: postgres
       KC_DB_URL_DATABASE: keycloak
@@ -43,6 +58,8 @@ services:
 
   keycloakdb:
     image: postgres
+    networks:
+      - app
     container_name: keycloak-postgres
     environment:
       POSTGRES_DB: keycloak
@@ -59,6 +76,8 @@ services:
 
   db:
     image: postgres
+    networks:
+      - app
     container_name: backend-postgres
     environment:
       POSTGRES_DB: backend
@@ -72,3 +91,7 @@ services:
       timeout: 60s
       retries: 5
       start_period: 80s
+
+networks:
+  app:
+    driver: bridge

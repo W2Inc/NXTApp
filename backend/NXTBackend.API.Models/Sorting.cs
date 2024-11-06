@@ -70,17 +70,17 @@ public class SortedList<T> where T : BaseEntity
             return source;
 
         // Parse and build the sorting expression
-        var orderParams = sorting.OrderBy.Trim().Split(',');
+        string[] orderParams = sorting.OrderBy.Trim().Split(',');
         var propertyInfos = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
         IOrderedQueryable<T>? orderedQuery = null;
-        foreach (var param in orderParams)
+        foreach (string param in orderParams)
         {
             if (string.IsNullOrWhiteSpace(param)) continue;
 
-            var paramParts = param.Trim().Split(" ");
-            var propertyName = paramParts[0];
-            var descending = paramParts.Length > 1 && paramParts[1].Equals("desc", StringComparison.InvariantCultureIgnoreCase);
+            string[] paramParts = param.Trim().Split(" ");
+            string propertyName = paramParts[0];
+            bool descending = paramParts.Length > 1 && paramParts[1].Equals("desc", StringComparison.InvariantCultureIgnoreCase);
 
             var property = propertyInfos.FirstOrDefault(pi =>
                 pi.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
@@ -93,18 +93,13 @@ public class SortedList<T> where T : BaseEntity
             var orderByExpression = Expression.Lambda(propertyAccess, parameter);
 
             // Apply OrderBy or ThenBy based on whether it is the first sorting parameter
-            if (orderedQuery == null)
-            {
-                orderedQuery = descending
+            orderedQuery = orderedQuery == null
+                ? (IOrderedQueryable<T>)(descending
                     ? Queryable.OrderByDescending(source, (dynamic)orderByExpression)
-                    : Queryable.OrderBy(source, (dynamic)orderByExpression);
-            }
-            else
-            {
-                orderedQuery = descending
+                    : Queryable.OrderBy(source, (dynamic)orderByExpression))
+                : (IOrderedQueryable<T>)(descending
                     ? Queryable.ThenByDescending(orderedQuery, (dynamic)orderByExpression)
-                    : Queryable.ThenBy(orderedQuery, (dynamic)orderByExpression);
-            }
+                    : Queryable.ThenBy(orderedQuery, (dynamic)orderByExpression));
         }
 
         return orderedQuery ?? source; // Return sorted query if applicable, otherwise original source

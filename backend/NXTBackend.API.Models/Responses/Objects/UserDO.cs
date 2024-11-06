@@ -9,19 +9,23 @@ using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class UserDO(User user) : BaseObjectDO<User>(user)
+public class UserDO : BaseObjectDO<User>
 {
-    public string Login { get; set; } = user.Login;
+    public UserDO(User user) : base(user)
+    {
+        Login = user.Login;
+        DisplayName = user.DisplayName;
+        AvatarUrl = user.AvatarUrl;
+        DetailsId = user.Details;
+    }
 
-    public string? DisplayName { get; set; } = user.DisplayName;
-
-    public string? AvatarUrl { get; set; } = user.AvatarUrl;
-
-    public virtual UserDetailsDO? DetailsId { get; set; } = user.Details;
-
-    /// <summary>
-    /// Convert a possible user to a DO.
-    /// </summary>
-    /// <param name="user">The user.</param>
     public static implicit operator UserDO?(User? user) => user is null ? null : new(user);
+
+    public string Login { get; set; }
+
+    public string? DisplayName { get; set; }
+
+    public string? AvatarUrl { get; set; }
+
+    public virtual UserDetailsDO? DetailsId { get; set; }
 }

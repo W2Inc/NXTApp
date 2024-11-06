@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Domain.Entities.Users;
@@ -49,30 +46,30 @@ public class Details : BaseEntity
     [Column("user_id")]
     public Guid UserId { get; set; }
 
-    [JsonIgnore, ForeignKey(nameof(UserId))]
+    [ForeignKey(nameof(UserId))]
     public virtual User User { get; set; }
 
-    [Column("email"), EmailAddress]
-    public string Email { get; set; }
+    [Column("email")]
+    public string? Email { get; set; }
 
-    [Column("bio"), StringLength(1024)]
-    public string Bio { get; set; }
+    [Column("bio")]
+    public string? Bio { get; set; }
 
-    [Column("first_name"), DisplayName]
-    public string FirstName { get; set; }
+    [Column("first_name")]
+    public string? FirstName { get; set; }
 
-    [Column("last_name"), DisplayName]
-    public string LastName { get; set; }
+    [Column("last_name")]
+    public string? LastName { get; set; }
 
-    [Column("github_url"), Url]
-    public string GithubUrl { get; set; }
+    [Column("github_url")]
+    public string? GithubUrl { get; set; }
 
-    [Column("linkedin_url"), Url]
-    public string LinkedinUrl { get; set; }
+    [Column("linkedin_url")]
+    public string? LinkedinUrl { get; set; }
 
-    [Column("twitter_url"), Url]
-    public string TwitterUrl { get; set; }
+    [Column("twitter_url")]
+    public string? TwitterUrl { get; set; }
 
-    [Column("website_url"), Url]
-    public string WebsiteUrl { get; set; }
+    [Column("website_url")]
+    public string? WebsiteUrl { get; set; }
 }

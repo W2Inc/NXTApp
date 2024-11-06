@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
-using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 

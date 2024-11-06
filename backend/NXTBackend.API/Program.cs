@@ -3,11 +3,11 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using Scalar.AspNetCore;
 using Keycloak.AuthServices.Authentication;
 using Keycloak.AuthServices.Common;
-using NXTBackend.API.Middleware;
 using NXTBackend.API;
+using NXTBackend.API.Middleware;
+using Scalar.AspNetCore;
 using Serilog;
 
 // ============================================================================
@@ -62,6 +62,7 @@ if (app.Environment.IsDevelopment())
 
 }
 
+app.UseOutputCache();
 app.UseSerilogRequestLogging();
 app.UseRouting();
 app.UseRateLimiter();
@@ -69,8 +70,8 @@ app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseMiddleware<KeycloakUserMiddlerware>();
 app.UseAuthorization();
-app.UseMiddleware<UserMiddlerware>();
 app.MapControllers().RequireRateLimiting("fixed");
 
 // Shortcut

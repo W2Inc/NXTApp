@@ -3,13 +3,12 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using Serilog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Event;
-using NXTBackend.API.Domain.Entities.Notification;
 
 // ============================================================================
 
@@ -53,7 +52,7 @@ public class EventController(INotificationService notificationService) : Control
         if (await notificationService.FindByTitleAsync(request.Title) is not null)
             return Conflict(new ErrorResponseDto("Event already exists"));
 
-        var @event = await notificationService.CreateAsync(new ()
+        var @event = await notificationService.CreateAsync(new()
         {
             Title = request.Title,
             Description = request.Description,
@@ -81,9 +80,7 @@ public class EventController(INotificationService notificationService) : Control
     public async Task<IActionResult> GetEvent(Guid id)
     {
         var @event = await notificationService.FindByIdAsync(id);
-        if (@event is null)
-            return NotFound(new ErrorResponseDto("Event not found"));
-        return Ok(@event);
+        return @event is null ? NotFound(new ErrorResponseDto("Event not found")) : Ok(@event);
     }
 
     /// <summary>

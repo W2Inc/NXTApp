@@ -3,9 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
-using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.Users;
 
 // ============================================================================
 

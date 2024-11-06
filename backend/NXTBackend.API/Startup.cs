@@ -11,7 +11,6 @@ using Keycloak.AuthServices.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
@@ -32,21 +31,22 @@ public static class Startup
     /// </summary>
     public static void RegisterServices(WebApplicationBuilder builder)
     {
-        string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-            throw new InvalidDataException("Connection string not found in appsettings.json");
-
         var services = builder.Services;
+        string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidDataException("Connection string not found in appsettings.json");
+
+        // API and JSON settings
         services.AddEndpointsApiExplorer();
         services.AddControllers().AddJsonOptions(o =>
         {
             o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
         });
 
-        // Add Keycloak authentication and role-based authorization
+        // Authentication and Authorization (Keycloak)
         services.AddKeycloakWebApiAuthentication(builder.Configuration);
-        services.AddAuthorization(o => o.AddPolicy("dev", b => b.RequireRole("dev")));
+        services.AddAuthorizationBuilder().AddPolicy("admin", b => b.RequireRole("admin"));
 
-        // All sorts of swagger stuff
+        // Swagger / OpenAPI Configuration
         services.AddSwaggerGen(c =>
         {
             c.EnableAnnotations();
@@ -62,7 +62,6 @@ public static class Startup
                 }
             });
 
-            // Convert XML Comments to openapi stuff
             string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
             string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
@@ -81,46 +80,45 @@ public static class Startup
                 {
                     Implicit = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = new Uri(
-                            $"{options.KeycloakUrlRealm}protocol/openid-connect/auth"
-                        ),
-                        TokenUrl = new Uri(
-                            $"{options.KeycloakUrlRealm}protocol/openid-connect/token"
-                        ),
-                        Scopes = new Dictionary<string, string>(),
+                        AuthorizationUrl = new Uri($"{options.KeycloakUrlRealm}protocol/openid-connect/auth"),
+                        TokenUrl = new Uri($"{options.KeycloakUrlRealm}protocol/openid-connect/token"),
+                        Scopes = new Dictionary<string, string>()
                     }
                 }
             };
             c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
-            c.AddSecurityRequirement(
-                new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } }
-            );
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } });
         });
 
+        // Database Context and Seeders
         services.AddDbContext<DatabaseContext>((sp, options) =>
         {
             options.AddInterceptors(new SavingChangesInterceptor(sp.GetRequiredService<TimeProvider>()));
-            // https://docs.microsoft.com/en-us/ef/core/querying/related-data/lazy
-            options.UseLazyLoadingProxies().UseNpgsql(connectionString, options =>
-            {
-                // options.MigrationsAssembly(typeof(DatabaseContext).Assembly.GetName().Name);
-            });
+            options.UseLazyLoadingProxies().UseNpgsql(connectionString);
         })
         .AddTransient<DatabaseSeeder>();
 
-        // Add services
+        // Caching Configuration
+        services.AddOutputCache(options =>
+        {
+            options.AddBasePolicy(b => b.Expire(TimeSpan.FromSeconds(30)));
+            options.AddPolicy("NoCache", builder => builder.NoCache());
+            options.AddPolicy("1m", b => b.Expire(TimeSpan.FromSeconds(60)));
+            options.AddPolicy("2m", b => b.Expire(TimeSpan.FromSeconds(120)));
+        });
+        services.AddDistributedMemoryCache();
+
+        // Dependency Injection for Services
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFeatureService, FeatureService>();
         services.AddScoped<INotificationService, NotifcationService>();
         services.AddSingleton(TimeProvider.System);
+
+        // Rate Limiting
         services.AddRateLimiter(limiter =>
         {
-            // TODO: Varying rate limits for custom clients
-            // TODO: Varying rate limits depending on if user is authenticated or not
             limiter.RejectionStatusCode = 429;
-
-            // General purpose rate limiter for all requests
             limiter.AddFixedWindowLimiter("fixed", options =>
             {
                 options.PermitLimit = 10;
@@ -130,28 +128,26 @@ public static class Startup
             });
         });
 
-        // Cors Policy
-        builder.Services.AddCors(options =>
+        // CORS Policy
+        services.AddCors(options =>
         {
-            options.AddPolicy("AllowSpecificOrigin",
-                builder =>
-                {
-                    builder
-                    .WithOrigins("http://localhost:3000")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-                });
+            options.AddPolicy("AllowSpecificOrigin", builder =>
+            {
+                builder.WithOrigins("http://localhost:3000")
+                       .AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .AllowCredentials();
+            });
         });
 
-        // Serilog for nice logging
-        builder.Services.AddSerilog((services, lc) => lc
+        // Serilog Logging
+        services.AddSerilog((services, lc) => lc
             .ReadFrom.Configuration(builder.Configuration)
             .ReadFrom.Services(services)
             .Enrich.FromLogContext()
             .WriteTo.Console(new ExpressionTemplate(
-                // Include trace and span ids when present.
                 "[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
-                theme: TemplateTheme.Code)));
+                theme: TemplateTheme.Code
+            )));
     }
 }

@@ -1,11 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Notification;
-using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Infrastructure.Database;
-using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -30,6 +26,6 @@ public sealed class NotifcationService(DatabaseContext ctx) : BaseService<Notifi
 
     public async Task<Notification?> FindByTitleAsync(string name)
     {
-        return await _dbSet.FirstOrDefaultAsync(n => n.Title == name );
+        return await _dbSet.FirstOrDefaultAsync(n => n.Title == name);
     }
 }

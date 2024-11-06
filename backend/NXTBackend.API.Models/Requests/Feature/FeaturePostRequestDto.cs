@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NXTBackend.API.Models.Requests.Feature;
 
-public class FeaturePostRequestDto : BaseRequestDto
+public class FeaturePostRequestDTO : BaseRequestDto
 {
     /// <summary>
     /// The name of the feature

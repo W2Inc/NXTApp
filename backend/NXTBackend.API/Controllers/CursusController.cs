@@ -1,16 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Reflection.PortableExecutable;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Graph;
-using NXTBackend.API.Core.Graph.Meta;
-using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Notification;
-using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Cursus;
 using Serilog;
@@ -81,9 +73,7 @@ public class CursusController(
     public async Task<IActionResult> GetCursus(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
-        if (cursus is null)
-            return NotFound(new ErrorResponseDto("Cursus not found"));
-        return Ok(cursus);
+        return cursus is null ? NotFound(new ErrorResponseDto("Cursus not found")) : Ok(cursus);
     }
 
     [HttpPatch("/cursus/{id}")]

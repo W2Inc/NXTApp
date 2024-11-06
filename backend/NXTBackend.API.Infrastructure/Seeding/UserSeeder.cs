@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata;
-using Bogus;
-using Microsoft.Extensions.Hosting;
+﻿using Bogus;
 using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Infrastructure.Seeding;

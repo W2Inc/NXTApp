@@ -16,10 +16,7 @@ public partial class UserDisplayNameValidation : ValidationAttribute
 
         var regex = DisplayNameMatching();
 
-        if (!regex.IsMatch(displayName))
-            return new ValidationResult("Invalid display name");
-
-        return ValidationResult.Success;
+        return !regex.IsMatch(displayName) ? new ValidationResult("Invalid display name") : ValidationResult.Success;
     }
 
     [GeneratedRegex(@"^[a-zA-Z0-9]+(?:[_-][a-zA-Z0-9]+)*$", RegexOptions.Compiled)]

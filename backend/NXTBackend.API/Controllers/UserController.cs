@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.Notification;
+using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
+using NXTBackend.API.Models.Requests.User;
 using NXTBackend.API.Models.Responses.Objects;
 
 namespace NXTBackend.API.Controllers;
@@ -15,68 +17,39 @@ public class UserController(
     ILogger<UserController> logger,
     IUserService userService,
     INotificationService notificationService
-) : ControllerBase
+) : Controller
 {
     /// <summary>
     /// Get the currently authenticated user.
     /// </summary>
     /// <returns>The user, aka, you.</returns>
-    /// <param name=""></param>
-    /// <remarks>
-    /// Sample request:
-    ///
-    ///     POST /Todo
-    ///     {
-    ///        "id": 1,
-    ///        "name": "Item #1"
-    ///        "isComplete": true
-    ///     }
-    ///
-    /// </remarks>
-    /// <response code="200">Ok</response>
     /// <response code="401">Unauthorized</response>
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
-    /// <response code="500">Internal Error</response>
     [ProducesResponseType(typeof(UserDO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [HttpGet("/users/current"), Authorize]
-    public IActionResult CurrentUser()
+    public async Task<IActionResult> CurrentUserAsync()
     {
-        var user = HttpContext.GetUser();
+        var user = await userService.FindByIdAsync(User.GetSID());
         return user is null ? Forbid() : Ok(new UserDO(user));
     }
 
     /// <summary>
     /// Get the current user's events
     /// </summary>
-    /// <param name=""></param>
     /// <returns>Your Events</returns>
-    /// <remarks>
-    /// Sample request:
-    ///
-    ///     POST /Todo
-    ///     {
-    ///        "id": 1,
-    ///        "name": "Item #1"
-    ///        "isComplete": true
-    ///     }
-    ///
-    /// </remarks>
-    /// <response code="200">Ok</response>
-    /// <response code="400">Bad Request</response>
     /// <response code="401">Unauthorized</response>
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
-    /// <response code="500">Internal Error</response>
     [ProducesResponseType(typeof(IEnumerable<Notification>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [HttpGet("/users/current/notifications"), Authorize]
     public async Task<IActionResult> GetNotifications()
     {
-        var user = HttpContext.GetUser();
+        var user = await userService.FindByIdAsync(User.GetSID());
         if (user is null)
             return Forbid();
 
@@ -88,29 +61,29 @@ public class UserController(
     /// <summary>
     /// Dismiss a notification, making sure it is not shown again to the user.
     /// </summary>
-    /// <param name="Id">The notifiction id to dismiss.</param>
+    /// <param name="id">The notifications id to dismiss.</param>
     /// <returns>None</returns>
-    /// <response code="200">Ok</response>
-    /// <response code="400">Bad Request</response>
     /// <response code="401">Unauthorized</response>
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
-    /// <response code="500">Internal Error</response>
     [ProducesResponseType(typeof(NotificationActionDO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [HttpDelete("/users/current/notifications/{id}")]
-    public async Task<IActionResult> DismissNotification(Guid Id)
+    [HttpDelete("/users/current/notifications/{id}"), Authorize]
+    public async Task<IActionResult> DismissNotification(Guid id)
     {
-        var user = HttpContext.GetUser();
+        if (User.GetSID() != id)
+            return Forbid();
+
+        var user = await userService.FindByIdAsync(id);
         if (user is null)
             return Forbid();
 
-        var notification = await notificationService.FindByIdAsync(Id);
+        var notification = await notificationService.FindByIdAsync(id);
         if (notification is null)
             return NotFound("Notification not found");
 
-        var action =  await userService.DismissNotification(user, notification);
+        var action = await userService.DismissNotification(user, notification);
         return Ok(new NotificationActionDO(action));
     }
 
@@ -120,8 +93,6 @@ public class UserController(
     /// <param name="paging">Page parameters</param>
     /// <param name="sorting">Sort parameters</param>
     /// <returns></returns>
-    /// <response code="200">Ok</response>
-    /// <response code="400">Bad Request</response>
     /// <response code="401">Unauthorized</response>
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
@@ -129,11 +100,94 @@ public class UserController(
     [ProducesResponseType(typeof(IEnumerable<UserDO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    [HttpGet("/users")]
+    [HttpGet("/users"), OutputCache]
     public async Task<IActionResult> GetAll([FromQuery] PaginationParams paging, [FromQuery] SortingParams sorting)
     {
         var page = await userService.GetAllAsync(paging, sorting);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(e => new UserDO(e)));
+    }
+
+    /// <summary>
+    /// Get a specific user
+    /// </summary>
+    /// <param name="id">The user to get</param>
+    /// <response code="200">Ok</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="404">Not Found</response>
+    /// <response code="429">Too many requests</response>
+    [ProducesResponseType(typeof(IEnumerable<UserDO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    [HttpGet("/users/{id}")]
+    public async Task<IActionResult> GetUser(Guid id)
+    {
+        var user = await userService.FindByIdAsync(id);
+        return user is null ? NotFound() : Ok(new UserDO(user));
+    }
+
+    /// <summary>
+    /// Update a user
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="data"></param>
+    /// <response code="200">Ok</response>
+    /// <response code="400">Bad Request</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
+    /// <response code="429">Too many requests</response>
+    /// <response code="500">Internal Error</response>
+    [ProducesResponseType<UserDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    [HttpPatch("/users/{id}"), Authorize]
+    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserPatchRequestDTO data)
+    {
+        if (User.GetSID() != id && !User.IsInRole(Role.Admin.ToString()))
+            return Forbid();
+
+        var user = await userService.FindByIdAsync(id);
+        if (user is null)
+            return NotFound();
+
+        user.DisplayName = data.DisplayName ?? user.DisplayName;
+        user.AvatarUrl = data.AvatarUrl ?? user.AvatarUrl;
+        return Ok(new UserDO(user));
+    }
+
+    /// <summary>
+    /// Update a user's details
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="data"></param>
+    /// <response code="200">Ok</response>
+    /// <response code="400">Bad Request</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
+    /// <response code="429">Too many requests</response>
+    /// <response code="500">Internal Error</response>
+    [ProducesResponseType<UserDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    [HttpPut("/users/{id}/details"), Authorize]
+    public async Task<IActionResult> UpdateUserDetails(Guid id, [FromBody] UserDetailsPutRequestDTO data)
+    {
+        if (User.GetSID() != id && !User.IsInRole(Role.Admin.ToString()))
+            return Forbid();
+
+        var user = await userService.FindByIdAsync(id);
+        if (user is null)
+            return NotFound();
+
+        return Ok(new UserDO(await userService.UpdateDetails(user, new()
+        {
+            Bio = data.Bio ?? user.Details?.Bio,
+            Email = data.Bio ?? user.Details?.Email,
+            FirstName = data.Bio ?? user.Details?.FirstName,
+            LastName = data.Bio ?? user.Details?.LastName,
+            GithubUrl = data.Bio ?? user.Details?.GithubUrl,
+            WebsiteUrl = data.Bio ?? user.Details?.WebsiteUrl,
+            TwitterUrl = data.Bio ?? user.Details?.TwitterUrl,
+            LinkedinUrl = data.Bio ?? user.Details?.LinkedinUrl,
+        })));
     }
 }

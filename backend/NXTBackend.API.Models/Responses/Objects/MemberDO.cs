@@ -3,7 +3,6 @@
 // See README in the root project for more information.
 // ============================================================================
 
-using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 

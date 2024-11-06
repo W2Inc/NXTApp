@@ -3,21 +3,11 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Models;
-using NXTBackend.API.Models.Requests.Event;
-using NXTBackend.API.Models.Requests.Feature;
 using NXTBackend.API.Models.Requests.Review;
-using NXTBackend.API.Models.Responses;
-using Serilog;
 
 // ============================================================================
 

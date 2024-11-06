@@ -4,7 +4,6 @@
 // ============================================================================
 
 using System.Security.Claims;
-using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.Users;
 
 // ============================================================================
@@ -13,25 +12,30 @@ namespace NXTBackend.API;
 
 public static class Extensions
 {
-    private const string C_CONTEXT_USER = "__user";
-
     /// <summary>
-    /// Get the current authenticated user for the given context.
+    /// Get the current user sid.
     /// </summary>
-    /// <param name="context"></param>
+    /// <param name="principal"></param>
     /// <returns></returns>
-    public static User? GetUser(this HttpContext context)
+    public static Guid GetSID(this ClaimsPrincipal principal)
     {
-        return context.Items[C_CONTEXT_USER] as User;
+        string? claim = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(claim, out var guid) ? guid : Guid.Empty;
     }
 
     /// <summary>
-    /// Set authenticated the current user for the given context.
+    /// Get the current user login name.
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="user"></param>
-    public static void SetUser(this HttpContext context, User? user)
+    /// <param name="principal"></param>
+    /// <returns></returns>
+    public static Claim? GetPreferredUsername(this ClaimsPrincipal principal)
     {
-        context.Items[C_CONTEXT_USER] = user;
+        return principal.FindFirst("preferred_username");
+    }
+
+    public static bool IsAuthenticated(this ClaimsPrincipal principal)
+    {
+        var identity = principal.Identities.First();
+        return identity != null && identity.IsAuthenticated;
     }
 }

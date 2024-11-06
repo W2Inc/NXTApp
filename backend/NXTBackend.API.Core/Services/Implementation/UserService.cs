@@ -40,18 +40,6 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
     }
 
     /// <inheritdoc/>
-    public Task<User> UpdateAsync(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public Task<User> DeleteAsync(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
     public Task<User> SubscribeToCursus(User entity, Cursus cursus)
     {
         throw new NotImplementedException();
@@ -69,11 +57,13 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
         throw new NotImplementedException();
     }
 
+    /// <inheritdoc/>
     public Task<NotificationAction> DismissNotification(User entity, Notification notification)
     {
         throw new NotImplementedException();
     }
 
+    /// <inheritdoc/>
     public override async Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, SortingParams sorting)
     {
         var query = _dbSet
@@ -82,5 +72,14 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
 
         query = await SortedList<User>.ApplyAsync(query, sorting);
         return await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
+    }
+
+    public async Task<User> UpdateDetails(User entity, Details details)
+    {
+        var detailsEntity = await _context.Details.AddAsync(details);
+        entity.DetailsId = detailsEntity.Entity.Id;
+        entity.Details = detailsEntity.Entity;
+        await _context.SaveChangesAsync();
+        return entity;
     }
 }

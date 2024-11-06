@@ -1,134 +1,119 @@
-﻿using System.Net;
-using System.Security.Cryptography.X509Certificates;
+﻿// ============================================================================
+// Nextdemy B.V, Amsterdam 2023, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
+
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Feature;
-using NXTBackend.API.Models.Responses;
-using Serilog;
+using NXTBackend.API.Models.Responses.Objects;
+
+// ============================================================================
 
 namespace NXTBackend.API.Controllers;
 
-[Route("features")]
-[ApiController]
+[ApiController, Route("features")]
 public class FeatureController(IFeatureService featureService) : ControllerBase
 {
     /// <summary>
-    ///
+    /// Get all features
     /// </summary>
-    /// <param name="pagination"></param>
-    /// <param name="filters"></param>
-    /// <param name="order"></param>
-    /// <returns></returns>
+    /// <param name="pagination">The pagination parameters</param>
+    /// <param name="sorting">The sorting parameters</param>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
+    /// <response code="429">Too many requests</response>
     [HttpGet("/features")]
-    [ProducesResponseType<IEnumerable<Feature>>(200)]
-    [ProducesResponseType<ErrorResponseDto>(500)]
-    public async Task<IActionResult> GetFeatures(
-        [FromQuery] PaginationParams pagination,
-        [FromQuery] SortingParams sorting
-    )
+    [ProducesResponseType<FeatureDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetFeatures([FromQuery] PaginationParams pagination, [FromQuery] SortingParams sorting)
     {
-        try
-        {
-            var list = await featureService.GetAllAsync(pagination, sorting);
-            list.AppendHeaders(Response.Headers);
-            return Ok(list.Items);
-        }
-        catch (Exception e)
-        {
-            Log.Error(e, "An error occurred while fetching features");
-            return StatusCode(500, new ErrorResponseDto());
-        }
+        var list = await featureService.GetAllAsync(pagination, sorting);
+        list.AppendHeaders(Response.Headers);
+        return Ok(list.Items);
     }
 
     /// <summary>
-    ///
+    /// Get a specific feature
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    /// <response code="200">Returns the feature</response>
-    /// <response code="400">Bad Request</response>
-    /// <response code="500">Internal server error</response>
+    /// <param name="id">The feature ID</param>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
+    /// <response code="409">Feature by that name exists</response>
     [HttpGet("/features/{id}")]
-    [ProducesResponseType<Feature>(200)]
-    [ProducesResponseType<ErrorResponseDto>(404)]
-    [ProducesResponseType<ErrorResponseDto>(500)]
+    [ProducesResponseType<FeatureDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetFeature(Guid id)
     {
         var feature = await featureService.FindByIdAsync(id);
-        if (feature is null)
-            return NotFound(new ErrorResponseDto("Feature not found"));
-
-        return Ok(new FeatureResponseDto()
-        {
-            Name = feature.Name,
-            IsPublic = feature.IsPublic,
-            Markdown = feature.Markdown,
-        });
+        return feature is null ? NotFound() : Ok(new FeatureDO(feature));
     }
 
     /// <summary>
-    /// Update a feature
+    /// Creates a new feature.
     /// </summary>
-    /// <param name="id"> The id of the feature to update</param>
-    /// <returns> The updated feature</returns>
-    /// <response code="200">The updated feature</response>
-    /// <response code="500">An Internal server error has occurred</response>
-    //[Authorize("dev")]
-    [HttpPost("/features")]
-    public async Task<IActionResult> SetFeature(Guid id, [FromBody] FeaturePostRequestDto body)
+    /// <param name="body">The DTO to post with.</param>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
+    /// <response code="409">Feature by that name exists</response>
+    [HttpPost("/features"), Authorize("admin")]
+    [ProducesResponseType<FeatureDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> SetFeature([FromBody] FeaturePostRequestDTO body)
     {
-        var feature = await featureService.FindByNameAsync(body.Name);
-        if (feature is not null)
-        {
-            return Conflict("blah"); // Response in text plain ? WHat do I use for a uniform error ??
-        }
-
-        return Ok(await featureService.CreateAsync(new Feature
-        {
-            Name = body.Name,
-            IsPublic = body.Public,
-            Markdown = body.Markdown
-        }));
+        return await featureService.FindByNameAsync(body.Name) is not null
+            ? Conflict("Feature by that name exists")
+            : Ok(await featureService.CreateAsync(new Feature
+            {
+                Name = body.Name,
+                Markdown = body.Markdown,
+                IsPublic = body.Public
+            }));
     }
 
     /// <summary>
-    /// Update a feature
+    /// Updates a new feature.
     /// </summary>
-    /// <param name="id"> The id of the feature to update</param>
-    /// <returns> The updated feature</returns>
-    /// <response code="200">The updated feature</response>
-    /// <response code="500">An Internal server error has occurred</response>
-    //[Authorize("dev")]
-    [HttpPatch("/features/{id}")]
-    public async Task<IActionResult> SetFeature(Guid id, [FromBody] FeaturePatchRequestDto body)
+    /// <param name="id">The feature to update.</param>
+    /// <param name="body">The DTO to post with.</param>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
+    /// <response code="404">Not found</response>
+    [HttpPatch("/features/{id}"), Authorize("admin")]
+    [ProducesResponseType<FeatureDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> SetFeature(Guid id, [FromBody] FeaturePatchRequestDTO body)
     {
         var feature = await featureService.FindByIdAsync(id);
         if (feature is null)
             return NotFound();
 
-        // Coalesce the values
         feature.Name = body.Name ?? feature.Name;
-        feature.IsPublic = body.Public ?? feature.IsPublic;
         feature.Markdown = body.Markdown ?? feature.Markdown;
+        feature.IsPublic = body.Public ?? feature.IsPublic;
         return Ok(await featureService.UpdateAsync(feature));
     }
 
     /// <summary>
-    ///
+    /// Delete a feature.
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    //[Authorize("dev")]
-    [HttpDelete("/features/{id}")]
+    /// <param name="id">The feature to delete.</param>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
+    /// <response code="404">Not found</response>
+    [HttpDelete("/features/{id}"), Authorize("admin")]
+    [ProducesResponseType<FeatureDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteFeature(Guid id)
     {
         var feature = await featureService.FindByIdAsync(id);
-        if (feature is null)
-            return NotFound();
-        return Ok(await featureService.DeleteAsync(feature));
+        return feature is null ? NotFound() : Ok(await featureService.DeleteAsync(feature));
     }
 }

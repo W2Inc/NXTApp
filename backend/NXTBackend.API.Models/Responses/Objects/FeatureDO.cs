@@ -15,14 +15,11 @@ public class FeatureDO : BaseObjectDO<Feature>
     {
         Name = feature.Name;
         Markdown = feature.Markdown;
-        IsPublic = feature.IsPublic;
     }
 
     public string Name { get; set; }
 
     public string Markdown { get; set; }
-
-    public bool IsPublic { get; set; }
 
     public static implicit operator FeatureDO?(Feature? entity) => entity is null ? null : new(entity);
 }

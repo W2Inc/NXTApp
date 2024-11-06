@@ -22,8 +22,8 @@ public class User : BaseEntity
     public User()
     {
         Login = string.Empty;
-        DisplayName = string.Empty;
-        AvatarUrl = string.Empty;
+        DisplayName = null;
+        AvatarUrl = null;
         DetailsId = null;
         Details = null;
     }

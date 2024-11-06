@@ -28,6 +28,14 @@ public interface IUserService : IDomainService<User>
     /// <param name="entity"></param>
     /// <param name="cursus"></param>
     /// <returns></returns>
+    public Task<User> UpdateDetails(User entity, Details details);
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="cursus"></param>
+    /// <returns></returns>
     public Task<User> SubscribeToCursus(User entity, Cursus cursus);
 
     /// <summary>

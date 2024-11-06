@@ -3,7 +3,6 @@
 // See README in the root project for more information.
 // ============================================================================
 
-using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Models.Responses;

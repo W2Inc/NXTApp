@@ -69,11 +69,9 @@ public class ReviewController(
         var userProject = await projectService.FindByIdAsync(body.UserProjectId);
         var rubric = await reviewService.FindByIdAsync(body.RubricId);
 
-        if (userProject == null || rubric == null)
-            return UnprocessableEntity(rubric == null ? "Rubric not found" : "User project not found");
-
-        throw new NotImplementedException();
-
+        return userProject == null || rubric == null
+            ? (IActionResult)UnprocessableEntity(rubric == null ? "Rubric not found" : "User project not found")
+            : throw new NotImplementedException();
     }
 
     /// <summary>
