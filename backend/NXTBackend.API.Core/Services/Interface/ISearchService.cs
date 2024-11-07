@@ -1,39 +1,21 @@
 ﻿
-using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
-using NXTBackend.API.Models.Responses;
+using Microsoft.EntityFrameworkCore;
 
 namespace NXTBackend.API.Core.Services.Interface;
 
 public interface ISearchService
 {
     /// <summary>
-    /// Search for a specific user.
+    /// Generic search function that takes in a function to query the given entity type.
     /// </summary>
-    /// <param name="query">The query to use for searching.</param>
-    /// <returns>The search result of regarding the user</returns>
-    Task<SearchResponseDto<User>> SearchUserAsync(SearchRequestDto request, PaginationParams pagination);
-
-    /// <summary>
-    /// Search for a specific project.
-    /// </summary>
-    /// <param name="query">The query to use for searching.</param>
-    /// <returns>The search result of regarding the project</returns>
-    Task<SearchResponseDto<Project>> SearchProjectAsync(SearchRequestDto request, PaginationParams pagination);
-
-    /// <summary>
-    /// Search for a specific cursus.
-    /// </summary>
-    /// <param name="query">The query to use for searching.</param>
-    /// <returns>The search result of regarding the cursus</returns>
-    Task<SearchResponseDto<Cursus>> SearchCursusAsync(SearchRequestDto request, PaginationParams pagination);
-
-    /// <summary>
-    /// Search for a specific learning goal.
-    /// </summary>
-    /// <param name="query">The query to use for searching.</param>
-    /// <returns>The search result of regarding the learning goal</returns>
-    Task<SearchResponseDto<LearningGoal>> SearchGoalAsync(SearchRequestDto request, PaginationParams pagination);
+    /// <typeparam name="T">An model entity.</typeparam>
+    /// <param name="data">The DTO</param>
+    /// <param name="pagination">The pagination parameters</param>
+    /// <param name="sorting">The sorting parameters</param>
+    /// <param name="query">The query used to search for on the model.</param>
+    /// <returns>A enumarable value of possible results.</returns>
+    Task<IEnumerable<T>> SearchAsync<T>(SearchRequestDTO data, PaginationParams pagination, Func<DbSet<T>, IQueryable<T>> query) where T : BaseEntity;
 }

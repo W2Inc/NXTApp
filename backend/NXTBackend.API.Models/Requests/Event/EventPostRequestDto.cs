@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NXTBackend.API.Models.Requests.Event;
 
-public class EventPostRequestDto : BaseRequestDto
+public class EventPostRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The title of the event

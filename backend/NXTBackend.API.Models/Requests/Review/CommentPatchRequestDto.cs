@@ -12,7 +12,7 @@ namespace NXTBackend.API.Models.Requests.Review;
 /// <summary>
 /// The post request for creating a new review
 /// </summary>
-public class CommentPatchRequestDto : BaseRequestDto
+public class CommentPatchRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The markdown content of the comment

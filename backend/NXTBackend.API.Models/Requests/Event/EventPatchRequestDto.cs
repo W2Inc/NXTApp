@@ -10,7 +10,7 @@ namespace NXTBackend.API.Models.Requests.Event;
     pub background_url: Option<String>,
 */
 
-public class EventPatchRequestDto : BaseRequestDto
+public class EventPatchRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The title of the event

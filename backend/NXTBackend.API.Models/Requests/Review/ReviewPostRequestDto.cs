@@ -13,7 +13,7 @@ namespace NXTBackend.API.Models.Requests.Review;
 /// <summary>
 /// The post request for creating a new review
 /// </summary>
-public class ReviewPostRequestDto : BaseRequestDto
+public class ReviewPostRequestDto : BaseRequestDTO
 {
     [Required]
     public ReviewKind? Kind { get; set; }

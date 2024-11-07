@@ -1,10 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Domain.Common;
+using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Filters;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
 using NXTBackend.API.Models.Responses;
+using NXTBackend.API.Models.Responses.Objects;
 
 namespace NXTBackend.API.Controllers;
 
@@ -12,37 +17,82 @@ namespace NXTBackend.API.Controllers;
 [ApiController]
 public class SearchController(ISearchService searchService) : ControllerBase
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum Category
-    {
-        User,
-        Project,
-        Cursus,
-        LearningGoal
-    }
-
     [HttpGet("{category}")]
-
-    //[ProducesResponseType(typeof(IEnumerable<SearchResult>)), 200]
-    //[ProducesResponseType(401)]
-    //[ProducesResponseType(400)]
-    //[ProducesResponseType(500)]
-    // public ProducesResponseTypeAttribute(Type type, int statusCode)
-    [ProducesResponseType(typeof(SearchResponseDto<User>), StatusCodes.Status200OK)] // Can respond like this if Category enum is User
-    //[ProducesResponseType(typeof(SearchResponseDto<Cursus>), 200)]
-    public async Task<IActionResult> Search(
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<BaseObjectDO<BaseEntity>>>> Search(
         Category category,
         [FromQuery] PaginationParams pagination,
-        [FromQuery] SearchRequestDto body
+        [FromQuery] SearchRequestDTO body
     )
     {
-        return Ok(category switch
+        var results = category switch
         {
-            Category.User => await searchService.SearchUserAsync(body, pagination),
-            Category.Project => await searchService.SearchProjectAsync(body, pagination),
-            Category.Cursus => await searchService.SearchCursusAsync(body, pagination),
-            Category.LearningGoal => await searchService.SearchGoalAsync(body, pagination),
+            Category.User => await SearchUsers(body, pagination),
+            Category.Project => await SearchProjects(body, pagination),
+            Category.Cursus => await SearchCursus(body, pagination),
+            Category.LearningGoal => await SearchLearningGoals(body, pagination),
+            Category.Any => await SearchAllCategories(body, pagination),
             _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
-        });
+        };
+
+        return Ok(results);
+    }
+
+    private async Task<IEnumerable<object>> SearchAllCategories(SearchRequestDTO body, PaginationParams pagination)
+    {
+        // Run each search sequentially to avoid concurrent DbContext access
+        var results = new List<object>();
+        // results.AddRange(await SearchUsers(body, pagination));
+        // results.AddRange(await SearchCursus(body, pagination));
+        results.AddRange(await SearchProjects(body, pagination));
+        // results.AddRange(await SearchLearningGoals(body, pagination));
+        return results;
+    }
+
+    private async Task<IEnumerable<UserDO>> SearchUsers(SearchRequestDTO body, PaginationParams pagination)
+    {
+        var users = await searchService.SearchAsync<User>(
+            body, pagination,
+            dbSet => dbSet
+                .Where(x => EF.Functions.Like(x.Login, $"%{body.Query}%"))
+                .Include(x => x.Details)
+        );
+        return users.Select(user => new UserDO(user));
+    }
+
+    private async Task<IEnumerable<ProjectDO>> SearchProjects(SearchRequestDTO body, PaginationParams pagination)
+    {
+        var projects = await searchService.SearchAsync<Project>(
+            body, pagination,
+            dbSet => dbSet
+                .Where(x => EF.Functions.Like(x.Name, $"%{body.Query}%"))
+                .Include(x => x.GitInfo)
+        );
+        return projects.Select(project => new ProjectDO(project));
+    }
+
+    private async Task<IEnumerable<CursusDO>> SearchCursus(SearchRequestDTO body, PaginationParams pagination)
+    {
+        var cursus = await searchService.SearchAsync<Cursus>(
+            body, pagination,
+            dbSet => dbSet
+                .Where(x => EF.Functions.Like(x.Name, $"%{body.Query}%"))
+                .Include(x => x.Creator)
+        );
+        return cursus.Select(cursusItem => new CursusDO(cursusItem));
+    }
+
+    private async Task<IEnumerable<LearningGoalDO>> SearchLearningGoals(SearchRequestDTO body, PaginationParams pagination)
+    {
+        var learningGoals = await searchService.SearchAsync<LearningGoal>(
+            body, pagination,
+            dbSet => dbSet
+                .Where(x => EF.Functions.Like(x.Name, $"%{body.Query}%"))
+                .Include(x => x.Creator)
+        );
+        return learningGoals.Select(learningGoal => new LearningGoalDO(learningGoal));
     }
 }

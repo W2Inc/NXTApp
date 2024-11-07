@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NXTBackend.API.Models.Requests;
 
-public class ProjectSubscriptionRequestDto : BaseRequestDto
+public class ProjectSubscriptionRequestDTO : BaseRequestDTO
 {
     /// <summary>
     /// Regarding which goal ...

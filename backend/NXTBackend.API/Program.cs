@@ -62,6 +62,7 @@ if (app.Environment.IsDevelopment())
 
 }
 
+app.UseResponseCompression();
 app.UseOutputCache();
 app.UseSerilogRequestLogging();
 app.UseRouting();

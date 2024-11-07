@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Infrastructure.Database;
@@ -13,57 +14,12 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// Temporary service to search for users, projects, cursi and learning goals.
 /// Later on this service SHOULD be converted to use a search engine like ElasticSearch.
 /// </summary>
-public sealed class SearchService : ISearchService
+public sealed class SearchService(DatabaseContext ctx) : ISearchService
 {
-    private readonly DatabaseContext _databaseContext;
-
-    public SearchService(DatabaseContext databaseContext)
+    public async Task<IEnumerable<T>> SearchAsync<T>(SearchRequestDTO data, PaginationParams pagination, Func<DbSet<T>, IQueryable<T>> query) where T : BaseEntity
     {
-        _databaseContext = databaseContext;
-    }
-
-    public async Task<SearchResponseDto<Cursus>> SearchCursusAsync(SearchRequestDto request, PaginationParams pagination)
-    {
-        var query = _databaseContext.Cursi.Where(x => EF.Functions.Like(x.Name, $"%{request.Query}%"));
-        var data = await PaginatedList<Cursus>.CreateAsync(query, pagination.Page, pagination.Size);
-
-        return new()
-        {
-            Results = data.Items
-        };
-    }
-
-    async Task<SearchResponseDto<LearningGoal>> ISearchService.SearchGoalAsync(SearchRequestDto request, PaginationParams pagination)
-    {
-        var query = _databaseContext.LearningGoals.Where(x => EF.Functions.Like(x.Name, $"%{request.Query}%"));
-        var data = await PaginatedList<LearningGoal>.CreateAsync(query, pagination.Page, pagination.Size);
-
-        return new()
-        {
-            Results = data.Items
-        };
-    }
-
-    async Task<SearchResponseDto<Project>> ISearchService.SearchProjectAsync(SearchRequestDto request, PaginationParams pagination)
-    {
-        var query = _databaseContext.Projects.Where(x => EF.Functions.Like(x.Name, $"%{request.Query}%"));
-        var data = await PaginatedList<Project>.CreateAsync(query, pagination.Page, pagination.Size);
-
-        return new()
-        {
-            Results = data.Items
-        };
-    }
-
-    async Task<SearchResponseDto<User>> ISearchService.SearchUserAsync(SearchRequestDto request, PaginationParams pagination)
-    {
-        var query = _databaseContext.Users
-            .Where(x => EF.Functions.Like(x.Login, $"%{request.Query.ToLower()}%"));
-        var data = await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
-
-        return new()
-        {
-            Results = data.Items
-        };
+        var source = query(ctx.Set<T>());
+        var items = await source.Skip((pagination.Page - 1) * pagination.Size).Take(pagination.Size).ToListAsync();
+        return items;
     }
 }

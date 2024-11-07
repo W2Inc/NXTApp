@@ -16,7 +16,7 @@ namespace NXTBackend.API.Models.Requests.LearningGoal;
 //    pub enabled: bool,
 //    pub owner_id: Uuid,
 
-public class GoalPostRequestDto : BaseRequestDto
+public class GoalPostRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The title of the event

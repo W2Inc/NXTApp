@@ -13,7 +13,7 @@ namespace NXTBackend.API.Models.Requests.User;
 /// <summary>
 /// Post request for creating a new cursus
 /// </summary>
-public class UserPatchRequestDTO : BaseRequestDto
+public class UserPatchRequestDTO : BaseRequestDTO
 {
     [UserDisplayNameValidation, StringLength(64, MinimumLength = 1)]
     public string? DisplayName { get; set; }

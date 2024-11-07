@@ -53,11 +53,11 @@ public class Git : BaseEntity
     public string? GitCommit { get; set; }
 
     [JsonIgnore]
-    public virtual IEnumerable<Project> Projects { get; set; } = [];
+    public virtual IEnumerable<Project> Projects { get; set; }
 
     [JsonIgnore]
-    public virtual IEnumerable<Rubric> Rubrics { get; set; } = [];
+    public virtual IEnumerable<Rubric> Rubrics { get; set; }
 
     [JsonIgnore]
-    public virtual IEnumerable<UserProject> UserProjects { get; set; } = [];
+    public virtual IEnumerable<UserProject> UserProjects { get; set; }
 }

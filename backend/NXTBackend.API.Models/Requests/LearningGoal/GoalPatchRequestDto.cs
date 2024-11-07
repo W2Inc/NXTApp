@@ -10,35 +10,35 @@ using System.ComponentModel.DataAnnotations;
 namespace NXTBackend.API.Models.Requests.LearningGoal;
 
 /// <summary>
-/// 
+///
 /// </summary>
-public class GoalPatchRequestDto : BaseRequestDto
+public class GoalPatchRequestDto : BaseRequestDTO
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [StringLength(128, MinimumLength = 4)]
     public string? Name { get; set; }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [StringLength(128, MinimumLength = 4)]
     public string? Description { get; set; }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [StringLength(2048, MinimumLength = 128)]
     public string? Markdown { get; set; }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public bool? Public { get; set; }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public bool? Enabled { get; set; }
 }

@@ -51,6 +51,7 @@ public class KeycloakUserMiddlerware(RequestDelegate next, ILogger<KeycloakUserM
 
     private static async Task<User> CreateUserAsync(HttpContext context, IUserService service, Guid guid)
     {
+        // NOTE(W2): Here we can sync things from the OpenIDConnect provider if necessary.
         string login = context.User.GetPreferredUsername()?.Value ?? RandomUserName(guid);
         return await service.CreateAsync(new()
         {

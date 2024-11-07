@@ -12,7 +12,7 @@ namespace NXTBackend.API.Models.Requests;
 /// <summary>
 /// Request for setting up a git repository
 /// </summary>
-public class GitInfoRequestDto : BaseRequestDto
+public class GitInfoRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The URL to the git repository

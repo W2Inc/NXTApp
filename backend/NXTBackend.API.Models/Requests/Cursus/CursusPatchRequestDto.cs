@@ -12,7 +12,7 @@ namespace NXTBackend.API.Models.Requests.Cursus;
 /// <summary>
 /// Patch request for updating a cursus
 /// </summary>
-public class CursusPatchRequestDto : BaseRequestDto
+public class CursusPatchRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The title of the event

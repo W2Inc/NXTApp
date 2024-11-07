@@ -16,7 +16,7 @@ public class UserDO : BaseObjectDO<User>
         Login = user.Login;
         DisplayName = user.DisplayName;
         AvatarUrl = user.AvatarUrl;
-        DetailsId = user.Details;
+        Details = user.Details;
     }
 
     public static implicit operator UserDO?(User? user) => user is null ? null : new(user);
@@ -27,5 +27,5 @@ public class UserDO : BaseObjectDO<User>
 
     public string? AvatarUrl { get; set; }
 
-    public virtual UserDetailsDO? DetailsId { get; set; }
+    public virtual UserDetailsDO? Details { get; set; }
 }

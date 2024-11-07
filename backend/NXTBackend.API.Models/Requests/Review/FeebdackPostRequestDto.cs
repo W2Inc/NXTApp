@@ -12,7 +12,7 @@ namespace NXTBackend.API.Models.Requests.Review;
 /// <summary>
 /// The patch request for updating a review
 /// </summary>
-public class FeebdackPostRequestDto : BaseRequestDto
+public class FeebdackPostRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The feedback id the comment was made on

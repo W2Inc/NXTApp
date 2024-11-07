@@ -10,9 +10,9 @@ using System.ComponentModel.DataAnnotations;
 namespace NXTBackend.API.Models.Requests.Project;
 
 /// <summary>
-/// 
+///
 /// </summary>
-public class ProjectPatchRequestDto : BaseRequestDto
+public class ProjectPatchRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The title of the project

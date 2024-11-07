@@ -47,6 +47,7 @@ public class UserProject : BaseEntity
         GitInfo = null!;
         RubricId = Guid.Empty;
         Rubric = null!;
+        Members = null!;
     }
 
     [Column("state")]
@@ -74,6 +75,6 @@ public class UserProject : BaseEntity
     /// All the members that are part of this project.
     /// At most N members to what the project allows.
     /// </summary>
-    public virtual ICollection<Member> Members { get; set; } = [];
+    public virtual ICollection<Member> Members { get; set; }
 
 }

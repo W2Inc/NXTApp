@@ -64,7 +64,6 @@ public class Project : BaseEntity
 
         CreatorId = Guid.Empty;
         Creator = null!;
-        Tags = [];
     }
 
     /// <summary>
@@ -118,15 +117,15 @@ public class Project : BaseEntity
     /// <summary>
     /// Rubrics that exist for this project.
     /// </summary>
-    public virtual ICollection<Rubric> Rubrics { get; set; } = null!;
+    public virtual ICollection<Rubric> Rubrics { get; set; }
 
     /// <summary>
     /// The goals that reference this project
     /// </summary>
-    public virtual ICollection<LearningGoal> Goals { get; set; } = null!;
+    public virtual ICollection<LearningGoal> Goals { get; set; }
 
     /// <summary>
     /// The different sessions that exist for this project
     /// </summary>
-    public virtual ICollection<UserProject> UserProjects { get; set; } = null!;
+    public virtual ICollection<UserProject> UserProjects { get; set; }
 }

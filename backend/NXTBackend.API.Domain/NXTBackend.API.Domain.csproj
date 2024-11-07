@@ -5,7 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;Deploy</Configurations>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- This async method lacks 'await' operators and will run synchronously. -->
+    <!-- For now, that's ok most routes aren't implemented, otherwise it should be re-enabled -->
+    <NoWarn>$(NoWarn);CS1998</NoWarn>
 	</PropertyGroup>
 
 </Project>

@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Filters;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
 using Serilog;
@@ -88,6 +89,9 @@ public static class Startup
             };
             c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
             c.AddSecurityRequirement(new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } });
+            c.SchemaFilter<SearchResponseSchemaFilter>();
+            // c.UseOneOfForPolymorphism();
+            // c.UseAllOfForInheritance();
         });
 
         // Database Context and Seeders
@@ -107,6 +111,7 @@ public static class Startup
             options.AddPolicy("2m", b => b.Expire(TimeSpan.FromSeconds(120)));
         });
         services.AddDistributedMemoryCache();
+        services.AddResponseCompression();
 
         // Dependency Injection for Services
         services.AddScoped<ISearchService, SearchService>();

@@ -13,7 +13,7 @@ namespace NXTBackend.API.Models.Requests.User;
 /// <summary>
 /// Put request to set details regarding a user.
 /// </summary>
-public class UserDetailsPutRequestDTO : BaseRequestDto
+public class UserDetailsPutRequestDTO : BaseRequestDTO
 {
     [EmailAddress]
     public string? Email { get; set; }

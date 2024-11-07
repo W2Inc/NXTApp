@@ -12,7 +12,7 @@ namespace NXTBackend.API.Models.Requests.Rubric;
 /// <summary>
 /// The post request for creating a new rubric
 /// </summary>
-public class RubricPostRequestDto : BaseRequestDto
+public class RubricPostRequestDto : BaseRequestDTO
 {
     /// <summary>
     /// The name / title of the rubric
