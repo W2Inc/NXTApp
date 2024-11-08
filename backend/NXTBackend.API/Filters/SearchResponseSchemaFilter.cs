@@ -19,7 +19,6 @@ public enum Category
     Project,
     Cursus,
     LearningGoal,
-    Any
 }
 
 
@@ -30,37 +29,33 @@ public class SearchResponseSchemaFilter : ISchemaFilter
         // Only apply this filter to the specific action or model that needs conditional response documentation
         if (context.Type == typeof(IEnumerable<object>)) // Assuming the Search response is IEnumerable<object>
         {
-            // Define individual response schemas for each category
+            // Define the possible response types for each Category value
+            var oneOfSchemas = new List<OpenApiSchema>();
+
+            // Define each schema with the relevant model type and add it to oneOf
             var userSchema = context.SchemaGenerator.GenerateSchema(typeof(IEnumerable<UserDO>), context.SchemaRepository);
+            if (userSchema != null)
+            {
+                oneOfSchemas.Add(userSchema);
+            }
+
             var projectSchema = context.SchemaGenerator.GenerateSchema(typeof(IEnumerable<ProjectDO>), context.SchemaRepository);
+            if (projectSchema != null)
+            {
+                oneOfSchemas.Add(projectSchema);
+            }
+
             var cursusSchema = context.SchemaGenerator.GenerateSchema(typeof(IEnumerable<CursusDO>), context.SchemaRepository);
+            if (cursusSchema != null)
+            {
+                oneOfSchemas.Add(cursusSchema);
+            }
+
             var learningGoalSchema = context.SchemaGenerator.GenerateSchema(typeof(IEnumerable<LearningGoalDO>), context.SchemaRepository);
-
-            // Combined schema for 'Any' which includes all types
-            var anySchema = new OpenApiSchema
+            if (learningGoalSchema != null)
             {
-                OneOf = [userSchema, projectSchema, cursusSchema, learningGoalSchema],
-                Type = "array"
-            };
-
-            // Add individual schemas to oneOf
-            var oneOfSchemas = new List<OpenApiSchema> { userSchema, projectSchema, cursusSchema, learningGoalSchema, anySchema }
-                .Where(s => s != null)
-                .ToList();
-
-            // Set up the discriminator for distinguishing categories
-            schema.Discriminator = new OpenApiDiscriminator
-            {
-                PropertyName = "category",
-                Mapping = new Dictionary<string, string>
-                {
-                    { nameof(Category.User), nameof(UserDO) },
-                    { nameof(Category.Project), nameof(ProjectDO) },
-                    { nameof(Category.Cursus), nameof(CursusDO) },
-                    { nameof(Category.LearningGoal), nameof(LearningGoalDO) },
-                    { nameof(Category.Any), "Any" } // Map 'Any' to combined schema
-                }
-            };
+                oneOfSchemas.Add(learningGoalSchema);
+            }
 
             // Apply the oneOf property to the schema to represent the conditional response types
             schema.OneOf = oneOfSchemas;

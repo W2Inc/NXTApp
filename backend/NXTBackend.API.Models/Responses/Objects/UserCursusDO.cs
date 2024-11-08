@@ -14,14 +14,14 @@ public class UserCursusDO : BaseObjectDO<UserCursus>
     {
         State = userCursus.State;
         UserId = userCursus.UserId;
-        CursusId = userCursus.CursusId;
+        Cursus = userCursus.Cursus;
     }
 
     public TaskState State { get; set; }
 
     public Guid UserId { get; set; }
 
-    public Guid CursusId { get; set; }
+    public CursusDO? Cursus { get; set; }
 
     public static implicit operator UserCursusDO?(UserCursus? entity) => entity is null ? null : new(entity);
 }

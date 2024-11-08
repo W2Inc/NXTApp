@@ -2,6 +2,7 @@
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Interface;
@@ -29,6 +30,36 @@ public interface IUserService : IDomainService<User>
     /// <param name="cursus"></param>
     /// <returns></returns>
     public Task<User> UpdateDetails(User entity, Details details);
+
+
+    /// <summary>
+    /// Get the cursus instances of a user.
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="details"></param>
+    /// <returns></returns>
+    public Task<PaginatedList<UserCursus>> GetUserCursi(User entity, PaginationParams pagination);
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public Task<PaginatedList<UserGoal>> GetUserGoals(User entity, PaginationParams pagination);
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public Task<PaginatedList<UserProject>> GetUserProjects(User entity, PaginationParams pagination);
+
+    /// <summary>
+    /// Invite a user to a project instance
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public Task<Member> InviteUserToProject(User entity, UserProject instance, MemberInviteState invitation);
 
     /// <summary>
     ///

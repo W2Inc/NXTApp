@@ -11,46 +11,6 @@ namespace NXTBackend.API.Models.Responses;
 
 public class UserDetailsDO : BaseObjectDO<Details>
 {
-    /// <summary>
-    ///
-    /// </summary>
-    public string Email { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string Bio { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string FirstName { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string LastName { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string GithubUrl { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string LinkedinUrl { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string TwitterUrl { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public string WebsiteUrl { get; set; }
-
     public UserDetailsDO(Details details) : base(details)
     {
         Email = details.Email;
@@ -64,4 +24,44 @@ public class UserDetailsDO : BaseObjectDO<Details>
     }
 
     public static implicit operator UserDetailsDO?(Details? data) => data is null ? null : new(data);
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string? Email { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string? Bio { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string? FirstName { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string? LastName { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string? GithubUrl { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string? LinkedinUrl { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string? TwitterUrl { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string? WebsiteUrl { get; set; }
 }

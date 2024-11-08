@@ -4,6 +4,7 @@ using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 
@@ -81,5 +82,42 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
         entity.Details = detailsEntity.Entity;
         await _context.SaveChangesAsync();
         return entity;
+    }
+
+    public async Task<PaginatedList<UserCursus>> GetUserCursi(User entity, PaginationParams pagination)
+    {
+        var query = _context.UserCursi
+            .Include(c => c.Cursus)
+            .Include(c => c.Cursus.Creator)
+            .AsQueryable();
+
+        return await PaginatedList<UserCursus>.CreateAsync(query, pagination.Page, pagination.Size);
+    }
+
+    public async Task<PaginatedList<UserGoal>> GetUserGoals(User entity, PaginationParams pagination)
+    {
+        var query = _context.UserGoals
+            .Include(c => c.Members)
+            .Include(c => c.User)
+            .AsQueryable();
+
+        return await PaginatedList<UserGoal>.CreateAsync(query, pagination.Page, pagination.Size);
+    }
+
+    public async Task<PaginatedList<UserProject>> GetUserProjects(User entity, PaginationParams pagination)
+    {
+        var query = _context.UserProject
+            .Include(c => c.GitInfo)
+            .Include(c => c.Project)
+            .Include(c => c.Rubric)
+            .Include(c => c.Members)
+            .AsQueryable();
+
+        return await PaginatedList<UserProject>.CreateAsync(query, pagination.Page, pagination.Size);
+    }
+
+    public Task<Member> InviteUserToProject(User entity, UserProject instance, MemberInviteState invitation)
+    {
+        throw new NotImplementedException();
     }
 }

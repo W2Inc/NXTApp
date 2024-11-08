@@ -28,6 +28,8 @@ public class CursusDO : BaseObjectDO<Cursus>
         Creator = cursus.Creator;
     }
 
+    public static implicit operator CursusDO?(Cursus? entity) => entity is null ? null : new(entity);
+
     /// <summary>
     /// The name of the cursus.
     /// </summary>
@@ -66,7 +68,6 @@ public class CursusDO : BaseObjectDO<Cursus>
     /// <summary>
     /// The creator of the cursus.
     /// </summary>
-    public UserDO? Creator { get; set; }
+    public SimpleUserDO? Creator { get; set; }
 
-    public static implicit operator CursusDO?(Cursus? entity) => entity is null ? null : new(entity);
 }

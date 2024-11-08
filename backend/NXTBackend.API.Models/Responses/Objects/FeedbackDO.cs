@@ -17,7 +17,7 @@ public class FeedbackDO : BaseObjectDO<Feedback>
 
     public Guid ReviewId { get; set; }
 
-    public virtual Review Review { get; set; }
+    public virtual ReviewDO? Review { get; set; }
 
     public static implicit operator FeedbackDO?(Feedback? entity) => entity is null ? null : new(entity);
 }

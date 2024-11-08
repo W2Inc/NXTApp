@@ -323,6 +323,7 @@ public class DatabaseContext : DbContext
     public DbSet<Cursus> Cursi { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<LearningGoal> LearningGoals { get; set; }
+    public DbSet<UserCursus> UserCursi { get; set; }
     public DbSet<UserGoal> UserGoals { get; set; }
     public DbSet<UserProject> UserProject { get; set; }
     public DbSet<Rubric> Rubric { get; set; }

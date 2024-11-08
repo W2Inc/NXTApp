@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
@@ -76,13 +77,13 @@ public class Project : BaseEntity
     /// The markdown content of the feature.
     /// </summary>
     [Column("description")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// The markdown content of the feature.
     /// </summary>
     [Column("markdown")]
-    public string Markdown { get; set; }
+    public string? Markdown { get; set; }
 
     [Column("slug")]
     public string Slug { get; set; }
@@ -90,13 +91,13 @@ public class Project : BaseEntity
     [Column("thumbnail_url")]
     public string? ThumbnailUrl { get; set; }
 
-    [Column("public")]
+    [Column("public"), DefaultValue(false)]
     public bool Public { get; set; }
 
-    [Column("enabled")]
+    [Column("enabled"), DefaultValue(false)]
     public bool Enabled { get; set; }
 
-    [Column("max_members")]
+    [Column("max_members"), DefaultValue(3)]
     public int MaxMembers { get; set; }
 
     [Column("git_info_id")]

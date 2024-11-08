@@ -25,7 +25,7 @@ public class MemberDO : BaseObjectDO<Member>
     /// </summary>
     public MemberInviteState State { get; set; }
 
-    public virtual UserDO? User { get; set; } // Assuming UserDO exists for the User class
+    public virtual SimpleUserDO? User { get; set; } // Assuming UserDO exists for the User class
 
     /// <summary>
     /// Which user goal this member is working on.

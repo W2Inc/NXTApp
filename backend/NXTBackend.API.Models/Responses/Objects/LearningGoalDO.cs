@@ -28,7 +28,7 @@ public class LearningGoalDO : BaseObjectDO<LearningGoal>
 
     public string Description { get; set; }
 
-    public UserDO? Creator { get; set; }
+    public SimpleUserDO? Creator { get; set; }
 
     public static implicit operator LearningGoalDO?(LearningGoal? entity) => entity is null ? null : new(entity);
 }
