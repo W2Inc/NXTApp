@@ -1,27 +1,18 @@
 {
 	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		// Base
-		"target": "es2022",
-		"moduleDetection": "force",
 		"allowJs": true,
 		"checkJs": true,
-		"resolveJsonModule": true,
 		"esModuleInterop": true,
-		"skipLibCheck": true,
-
-		// Strict
-		"strict": true,
-		"noUncheckedIndexedAccess": true,
 		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
 		"sourceMap": true,
-
-		// TS Stuff
-		"moduleResolution": "Bundler",
-		"module": "ESNext",
-		"noEmit": true,
-	},
-	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
+		"strict": true,
+		"moduleResolution": "bundler"
+	}
+	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
+	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
 	//
 	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
 	// from the referenced tsconfig.json - TypeScript does not merge them in
