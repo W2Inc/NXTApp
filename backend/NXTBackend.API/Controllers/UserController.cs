@@ -16,7 +16,8 @@ namespace NXTBackend.API.Controllers;
 public class UserController(
     ILogger<UserController> logger,
     IUserService userService,
-    INotificationService notificationService
+    ISpotlightEventService spotlightService,
+    ISpotlightEventActionService spotlightActionService
 ) : Controller
 {
     /// <summary>
@@ -43,7 +44,7 @@ public class UserController(
     /// <response code="401">Unauthorized</response>
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
-    [ProducesResponseType(typeof(IEnumerable<Notification>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<SpotlightEvent>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [HttpGet("/users/current/notifications"), Authorize]
@@ -66,7 +67,7 @@ public class UserController(
     /// <response code="401">Unauthorized</response>
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
-    [ProducesResponseType(typeof(NotificationActionDO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SpotlightEventActionDO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     [HttpDelete("/users/current/notifications/{id}"), Authorize]
@@ -79,12 +80,12 @@ public class UserController(
         if (user is null)
             return Forbid();
 
-        var notification = await notificationService.FindByIdAsync(id);
+        var notification = await spotlightService.FindByIdAsync(id);
         if (notification is null)
             return NotFound("Notification not found");
 
-        var action = await userService.DismissNotification(user, notification);
-        return Ok(new NotificationActionDO(action));
+        var action = await spotlightActionService.Upsert(user, notification, true);
+        return Ok(new SpotlightEventActionDO(action));
     }
 
     /// <summary>

@@ -5,6 +5,7 @@ using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Cursus;
+using NXTBackend.API.Models.Responses.Objects;
 using Serilog;
 
 namespace NXTBackend.API.Controllers;
@@ -27,7 +28,7 @@ public class CursusController(
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
     /// <response code="500">An Internal server error has occurred</response>
-    [ProducesResponseType<Notification>(200)]
+    [ProducesResponseType<IEnumerable<CursusDO>>(200)]
     [ProducesResponseType<ErrorResponseDto>(400)]
     [ProducesResponseType<ErrorResponseDto>(500)]
     [HttpGet("/cursus")]

@@ -163,8 +163,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReviewId")
-                        .IsUnique();
+                    b.HasIndex("ReviewId");
 
                     b.ToTable("tbl_feedback");
                 });
@@ -214,9 +213,13 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FeedbackId");
+
                     b.HasIndex("ReviewerId");
 
                     b.HasIndex("RubricId");
+
+                    b.HasIndex("UserProjectId");
 
                     b.ToTable("tbl_review");
                 });
@@ -391,7 +394,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.ToTable("tbl_learning_goal");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Notification.Notification", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Notification.SpotlightEvent", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -433,10 +436,10 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("tbl_notification");
+                    b.ToTable("tbl_spotlight_event");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Notification.NotificationAction", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Notification.SpotlightEventAction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -451,9 +454,9 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_dismissed");
 
-                    b.Property<Guid>("NotificationId")
+                    b.Property<Guid>("SpotlightId")
                         .HasColumnType("uuid")
-                        .HasColumnName("notification_id");
+                        .HasColumnName("spotlight_id");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -465,7 +468,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("tbl_notification_action");
+                    b.ToTable("tbl_spotlight_event_action");
                 });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Project", b =>
@@ -592,8 +595,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("tbl_user_details");
                 });
@@ -671,6 +673,8 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DetailsId");
 
                     b.ToTable("tbl_user");
                 });
@@ -839,9 +843,9 @@ namespace NXTBackend.API.Infrastructure.Migrations
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Feedback", b =>
                 {
                     b.HasOne("NXTBackend.API.Domain.Entities.Evaluation.Review", "Review")
-                        .WithOne("Feedback")
-                        .HasForeignKey("NXTBackend.API.Domain.Entities.Evaluation.Feedback", "ReviewId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany()
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Review");
@@ -849,19 +853,25 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Review", b =>
                 {
+                    b.HasOne("NXTBackend.API.Domain.Entities.Evaluation.Feedback", "Feedback")
+                        .WithMany()
+                        .HasForeignKey("FeedbackId");
+
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Reviewer")
                         .WithMany("Rubricer")
                         .HasForeignKey("ReviewerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("NXTBackend.API.Domain.Entities.Users.UserProject", "UserProject")
-                        .WithMany()
-                        .HasForeignKey("ReviewerId");
-
                     b.HasOne("NXTBackend.API.Domain.Entities.Evaluation.Rubric", "Rubric")
                         .WithMany("Reviews")
                         .HasForeignKey("RubricId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.UserProject", "UserProject")
+                        .WithMany()
+                        .HasForeignKey("UserProjectId");
+
+                    b.Navigation("Feedback");
 
                     b.Navigation("Reviewer");
 
@@ -930,9 +940,9 @@ namespace NXTBackend.API.Infrastructure.Migrations
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.Details", b =>
                 {
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
-                        .WithOne("Details")
-                        .HasForeignKey("NXTBackend.API.Domain.Entities.Users.Details", "UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -963,6 +973,15 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("UserGoal");
 
                     b.Navigation("UserProject");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.User", b =>
+                {
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.Details", "Details")
+                        .WithMany()
+                        .HasForeignKey("DetailsId");
+
+                    b.Navigation("Details");
                 });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserCursus", b =>
@@ -1047,11 +1066,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("Comments");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Review", b =>
-                {
-                    b.Navigation("Feedback");
-                });
-
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Evaluation.Rubric", b =>
                 {
                     b.Navigation("Reviews");
@@ -1091,8 +1105,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("CreatedProjects");
 
                     b.Navigation("CreatedRubrics");
-
-                    b.Navigation("Details");
 
                     b.Navigation("ProjectMember");
 

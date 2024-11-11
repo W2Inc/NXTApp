@@ -9,7 +9,7 @@ using NXTBackend.API.Domain.Entities.Notification;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class NotificationDO : BaseObjectDO<Notification>
+public class SpotlightEventDO : BaseObjectDO<SpotlightEvent>
 {
     public string Title { get; set; }
 
@@ -21,7 +21,7 @@ public class NotificationDO : BaseObjectDO<Notification>
 
     public string BackgroundUrl { get; set; }
 
-    public NotificationDO(Notification notification) : base(notification)
+    public SpotlightEventDO(SpotlightEvent notification) : base(notification)
     {
         Title = notification.Title;
         Description = notification.Description;
@@ -30,5 +30,5 @@ public class NotificationDO : BaseObjectDO<Notification>
         BackgroundUrl = notification.BackgroundUrl;
     }
 
-    public static implicit operator NotificationDO?(Notification? entity) => entity is null ? null : new(entity);
+    public static implicit operator SpotlightEventDO?(SpotlightEvent? entity) => entity is null ? null : new(entity);
 }

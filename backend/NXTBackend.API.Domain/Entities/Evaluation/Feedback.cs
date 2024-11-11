@@ -47,6 +47,5 @@ public class Feedback : BaseEntity
     [ForeignKey(nameof(ReviewId))]
     public virtual Review Review { get; set; }
 
-    [JsonIgnore]
     public virtual IEnumerable<Comment> Comments { get; set; }
 }

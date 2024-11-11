@@ -117,7 +117,8 @@ public static class Startup
         services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFeatureService, FeatureService>();
-        services.AddScoped<INotificationService, NotifcationService>();
+        services.AddScoped<ISpotlightEventService, SpotlightEventService>();
+        services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
         services.AddSingleton(TimeProvider.System);
 
         // Rate Limiting

@@ -7,12 +7,12 @@ using NXTBackend.API.Domain.Entities.Notification;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class NotificationActionDO : BaseObjectDO<NotificationAction>
+public class SpotlightEventActionDO : BaseObjectDO<SpotlightEventAction>
 {
-    public NotificationActionDO(NotificationAction notificationAction) : base(notificationAction)
+    public SpotlightEventActionDO(SpotlightEventAction notificationAction) : base(notificationAction)
     {
         UserId = notificationAction.UserId;
-        NotificationId = notificationAction.NotificationId;
+        NotificationId = notificationAction.SpotlightId;
         IsDismissed = notificationAction.IsDismissed;
     }
 

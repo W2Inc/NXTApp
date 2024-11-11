@@ -77,7 +77,7 @@ public class Review : BaseEntity
 
     /// <summary>
     /// Does this review indicate a successful completion of the project?
-    /// 
+    ///
     /// In most cases the reviewer is prompted to indicate wether the review
     /// passes or fails. For instance if the quality of the project was not sufficient.
     /// </summary>
@@ -98,7 +98,7 @@ public class Review : BaseEntity
     [Column("rubric_id")]
     public Guid? RubricId { get; set; }
 
-    [ForeignKey(nameof(ReviewerId))]
+    [ForeignKey(nameof(RubricId))]
     public virtual Rubric? Rubric { get; set; }
 
     /// <summary>
@@ -107,7 +107,7 @@ public class Review : BaseEntity
     [Column("feedback_id")]
     public Guid? FeedbackId { get; set; }
 
-    [ForeignKey(nameof(ReviewerId))]
+    [ForeignKey(nameof(FeedbackId))]
     public virtual Feedback? Feedback { get; set; }
 
     /// <summary>
@@ -116,6 +116,6 @@ public class Review : BaseEntity
     [Column("user_project_id")]
     public Guid? UserProjectId { get; set; }
 
-    [ForeignKey(nameof(ReviewerId))]
+    [ForeignKey(nameof(UserProjectId))]
     public virtual UserProject? UserProject { get; set; }
 }

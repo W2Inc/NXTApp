@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace NXTBackend.API.Models.Requests.Event;
+namespace NXTBackend.API.Models.Requests.Spotlight;
 
 /*
     pub title: String,
@@ -10,7 +10,7 @@ namespace NXTBackend.API.Models.Requests.Event;
     pub background_url: Option<String>,
 */
 
-public class EventPatchRequestDto : BaseRequestDTO
+public class SpotlightPatchRequestDTO : BaseRequestDTO
 {
     /// <summary>
     /// The title of the event

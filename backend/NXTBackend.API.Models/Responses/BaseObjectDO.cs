@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Models.Responses;
@@ -23,15 +24,18 @@ public abstract class BaseObjectDO<T>(T entity) where T : BaseEntity
     /// <summary>
     /// The unique identifier for this object.
     /// </summary>
+    [JsonPropertyOrder(-3)]
     public Guid Id { get; set; } = entity.Id;
 
     /// <summary>
     /// Was created at.
     /// </summary>
+    [JsonPropertyOrder(-2)]
     public DateTimeOffset CreatedAt { get; set; } = entity.CreatedAt;
 
     /// <summary>
     /// Updated at.
     /// </summary>
+    [JsonPropertyOrder(-1)]
     public DateTimeOffset UpdatedAt { get; set; } = entity.UpdatedAt;
 }

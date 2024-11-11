@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace NXTBackend.API.Models.Requests.Event;
+namespace NXTBackend.API.Models.Requests.Spotlight;
 
-public class EventPostRequestDto : BaseRequestDTO
+public class SpotlightPostRequestDTO : BaseRequestDTO
 {
     /// <summary>
     /// The title of the event

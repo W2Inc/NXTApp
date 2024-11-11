@@ -53,13 +53,7 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
     }
 
     /// <inheritdoc/>
-    public Task<PaginatedList<Notification>> GetNotifications(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public Task<NotificationAction> DismissNotification(User entity, Notification notification)
+    public Task<PaginatedList<SpotlightEvent>> GetNotifications(User entity)
     {
         throw new NotImplementedException();
     }
