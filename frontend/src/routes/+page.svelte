@@ -1,2 +1,36 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+	import { page } from "$app/stores";
+	import Button from "$lib/components/ui/button/button.svelte";
+	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
+	import { SignIn, SignOut } from "@auth/sveltekit/components";
+
+	const { data } = $props();
+</script>
+
+<div>
+	<!-- TODO: Don't use their components... -->
+	{#if data.session}
+		<SignOut provider="keycloak" signOutPage="signout">
+			<Button inert slot="submitButton">Logout</Button>
+		</SignOut>
+	{:else}
+		<SignIn provider="keycloak" signInPage="signin">
+			<Button inert slot="submitButton">Signin</Button>
+		</SignIn>
+	{/if}
+	{#if $page.data.session}
+		{#await data.data}
+			<div class="flex items-center space-x-4">
+				<Skeleton class="size-12 rounded-full" />
+				<div class="space-y-2">
+					<Skeleton class="h-4 w-[250px]" />
+					<Skeleton class="h-4 w-[200px]" />
+				</div>
+			</div>
+		{:then user}
+			<pre><code>{JSON.stringify(user)}</code></pre>
+		{/await}
+	{:else}
+		<p>Fuck off</p>
+	{/if}
+</div>
