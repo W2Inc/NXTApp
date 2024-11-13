@@ -23,7 +23,7 @@ public class CursusController(
     /// </summary>
     /// <returns>All current existing events</returns>
     /// <response code="200">The updated feature</response>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
@@ -132,7 +132,7 @@ public class CursusController(
     /// Get the track data for a specific cursus
     /// </summary>
     /// <response code="200">Ok</response>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="404">Not found</response>
     /// <response code="429">Too many requests</response>

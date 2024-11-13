@@ -9,9 +9,11 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint ."
+		"lint": "prettier --check . && eslint .",
+        "api:types": "openapi-typescript http://localhost:3000/swagger/v1/swagger.json -o ./src/lib/api/types.d.ts"
 	},
 	"devDependencies": {
+        "@types/bun": "latest",
 		"@sveltejs/adapter-auto": "^3.3.1",
 		"@sveltejs/enhanced-img": "^0.4.1",
 		"@sveltejs/kit": "^2.8.0",

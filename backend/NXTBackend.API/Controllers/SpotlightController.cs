@@ -21,7 +21,7 @@ public class EventController(ISpotlightEventService notificationService) : Contr
     /// Get all events
     /// </summary>
     /// <response code="200">Ok</response>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
     /// <response code="400">Bad Request</response>
@@ -38,7 +38,7 @@ public class EventController(ISpotlightEventService notificationService) : Contr
     /// Create a new event
     /// </summary>
     /// <response code="200">Ok</response>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="409">Conflict</response>
     /// <response code="429">Too many requests</response>
@@ -66,7 +66,7 @@ public class EventController(ISpotlightEventService notificationService) : Contr
     /// Get a specific event
     /// </summary>
     /// <response code="200">Ok</response>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="404">Not found</response>
     /// <response code="429">Too many requests</response>
@@ -84,7 +84,7 @@ public class EventController(ISpotlightEventService notificationService) : Contr
     /// Patch a specific event
     /// </summary>
     /// <response code="200">Ok</response>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="404">Not found</response>
     /// <response code="429">Too many requests</response>
@@ -112,7 +112,7 @@ public class EventController(ISpotlightEventService notificationService) : Contr
     /// Delete a specific event
     /// </summary>
     /// <response code="200">Ok</response>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="404">Not found</response>
     /// <response code="429">Too many requests</response>

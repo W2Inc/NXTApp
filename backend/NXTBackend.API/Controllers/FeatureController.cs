@@ -23,7 +23,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     /// </summary>
     /// <param name="pagination">The pagination parameters</param>
     /// <param name="sorting">The sorting parameters</param>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="429">Too many requests</response>
     [HttpGet("/features")]
@@ -41,7 +41,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     /// Get a specific feature
     /// </summary>
     /// <param name="id">The feature ID</param>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="409">Feature by that name exists</response>
     [HttpGet("/features/{id}")]
@@ -58,7 +58,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     /// Creates a new feature.
     /// </summary>
     /// <param name="body">The DTO to post with.</param>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="409">Feature by that name exists</response>
     [HttpPost("/features"), Authorize("admin")]
@@ -81,7 +81,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     /// </summary>
     /// <param name="id">The feature to update.</param>
     /// <param name="body">The DTO to post with.</param>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="404">Not found</response>
     [HttpPatch("/features/{id}"), Authorize("admin")]
@@ -104,7 +104,7 @@ public class FeatureController(IFeatureService featureService) : ControllerBase
     /// Delete a feature.
     /// </summary>
     /// <param name="id">The feature to delete.</param>
-    /// <response code="401">Unauthorized</response>
+    ///
     /// <response code="403">Forbidden</response>
     /// <response code="404">Not found</response>
     [HttpDelete("/features/{id}"), Authorize("admin")]

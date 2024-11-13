@@ -16,7 +16,7 @@ public class ProjectController(IProjectService projectService) : ControllerBase
     private readonly IProjectService _projectService = projectService;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
@@ -28,14 +28,13 @@ public class ProjectController(IProjectService projectService) : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="pagination"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPost("/project")]
     [ProducesResponseType<Project>(200)]
-    [ProducesResponseType<BaseResponseDto>(401)]
     [ProducesResponseType<BaseResponseDto>(403)]
     [ProducesResponseType<BaseResponseDto>(500)]
     public async Task<IActionResult> AddProject(ProjectPostRequestDto request)
@@ -49,7 +48,7 @@ public class ProjectController(IProjectService projectService) : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -62,7 +61,7 @@ public class ProjectController(IProjectService projectService) : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -77,7 +76,7 @@ public class ProjectController(IProjectService projectService) : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -92,7 +91,7 @@ public class ProjectController(IProjectService projectService) : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -105,7 +104,7 @@ public class ProjectController(IProjectService projectService) : ControllerBase
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

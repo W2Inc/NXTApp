@@ -20,7 +20,6 @@ public class SearchController(ISearchService searchService) : ControllerBase
     [HttpGet("{category}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<object>>> Search(
         Category category,

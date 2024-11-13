@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using Keycloak.AuthServices.Authentication;
@@ -48,51 +49,54 @@ public static class Startup
         services.AddAuthorizationBuilder().AddPolicy("admin", b => b.RequireRole("admin"));
 
         // Swagger / OpenAPI Configuration
-        services.AddSwaggerGen(c =>
+        services.AddOpenApi(o =>
         {
-            c.EnableAnnotations();
-            c.SwaggerDoc("v1", new OpenApiInfo
+            // Add Document Transformers
+            o.AddDocumentTransformer<InfoSchemeTransformer>();
+            o.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+            o.AddOperationTransformer<BasicResponsesOperationTransformer>();
+            o.AddSchemaTransformer((schema, context, cancellationToken) =>
             {
-                Title = "NXTBackend",
-                Version = "0.0.1-alpha",
-                Description = "The NXTBackend is the public backend used for handling all this stuff.",
-                Contact = new OpenApiContact
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                schema.Xml = new OpenApiXml
                 {
-                    Email = "info@nextdemy.com",
-                    Name = "W2Wizard"
-                }
+                    Name = xmlPath,
+                };
+
+                return Task.CompletedTask;
             });
 
-            string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
-            string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            c.IncludeXmlComments(xmlPath);
-
-            var options = builder.Configuration.GetKeycloakOptions<KeycloakAuthenticationOptions>()!;
-            var securityScheme = new OpenApiSecurityScheme
+            // Keycloak Authentication
+            o.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                Name = "Auth",
-                Type = SecuritySchemeType.OAuth2,
-                Reference = new OpenApiReference
+                // string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                // string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                // c.IncludeXmlComments(xmlPath);
+
+
+                document.Components ??= new OpenApiComponents();
+
+                var options = builder.Configuration.GetKeycloakOptions<KeycloakAuthenticationOptions>()!;
+                document.Components.SecuritySchemes.Add("OAuth2", new OpenApiSecurityScheme
                 {
-                    Id = JwtBearerDefaults.AuthenticationScheme,
-                    Type = ReferenceType.SecurityScheme
-                },
-                Flows = new OpenApiOAuthFlows
-                {
-                    Implicit = new OpenApiOAuthFlow
+                    Name = "Keycloak Server",
+                    OpenIdConnectUrl = new Uri($"{options.KeycloakUrlRealm}protocol/openid-connect"),
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {
-                        AuthorizationUrl = new Uri($"{options.KeycloakUrlRealm}protocol/openid-connect/auth"),
-                        TokenUrl = new Uri($"{options.KeycloakUrlRealm}protocol/openid-connect/token"),
-                        Scopes = new Dictionary<string, string>()
+                        Implicit = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri($"{options.KeycloakUrlRealm}protocol/openid-connect/auth"),
+                            TokenUrl = new Uri($"{options.KeycloakUrlRealm}protocol/openid-connect/token"),
+                        }
                     }
-                }
-            };
-            c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } });
-            c.SchemaFilter<SearchResponseSchemaFilter>();
-            // c.UseOneOfForPolymorphism();
-            // c.UseAllOfForInheritance();
+                });
+
+                return Task.CompletedTask;
+            });
         });
+
 
         // Database Context and Seeders
         services.AddDbContext<DatabaseContext>((sp, options) =>
@@ -140,9 +144,9 @@ public static class Startup
             options.AddPolicy("AllowSpecificOrigin", builder =>
             {
                 builder.WithOrigins("http://localhost:5173")
-                       .AllowAnyMethod()
-                       .AllowAnyHeader()
-                       .AllowCredentials();
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
             });
         });
 
