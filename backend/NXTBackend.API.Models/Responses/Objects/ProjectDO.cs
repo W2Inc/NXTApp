@@ -29,7 +29,7 @@ public class ProjectDO : BaseObjectDO<Project>
 
     public string Name { get; set; }
 
-    public string Markdown { get; set; }
+    public string? Markdown { get; set; }
 
     public string Slug { get; set; }
 

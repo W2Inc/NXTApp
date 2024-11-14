@@ -23,9 +23,4 @@ public sealed class SpotlightEventService(DatabaseContext ctx) : BaseService<Spo
         await _context.SaveChangesAsync();
         return eventData;
     }
-
-    public async Task<SpotlightEvent?> FindByTitleAsync(string name)
-    {
-        return await _dbSet.FirstOrDefaultAsync(n => n.Title == name);
-    }
 }

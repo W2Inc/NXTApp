@@ -11,9 +11,5 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// </summary>
 public sealed class SpotlightEventActionService(DatabaseContext ctx) : BaseService<SpotlightEventAction>(ctx), ISpotlightEventActionService
 {
-    /// <inheritdoc/>
-    public Task<SpotlightEventAction?> Upsert(User user, SpotlightEvent spotlight, bool action)
-    {
-        throw new NotImplementedException();
-    }
+
 }

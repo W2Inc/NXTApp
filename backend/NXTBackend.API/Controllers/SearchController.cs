@@ -5,13 +5,21 @@ using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
-using NXTBackend.API.Filters;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
 using NXTBackend.API.Models.Responses;
 using NXTBackend.API.Models.Responses.Objects;
 
 namespace NXTBackend.API.Controllers;
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum Category
+{
+    User,
+    Project,
+    Cursus,
+    LearningGoal,
+}
 
 [Route("search")]
 [ApiController]

@@ -20,7 +20,7 @@ public class UserGoalDO : BaseObjectDO<UserGoal>
     }
 
 
-    public virtual UserDO? User { get; set; }
+    public virtual SimpleUserDO? User { get; set; }
 
     public Guid GoalId { get; set; }
 

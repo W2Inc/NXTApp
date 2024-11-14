@@ -15,7 +15,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Filters;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
 using Serilog;
@@ -55,26 +54,13 @@ public static class Startup
             o.AddDocumentTransformer<InfoSchemeTransformer>();
             o.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             o.AddOperationTransformer<BasicResponsesOperationTransformer>();
-            o.AddSchemaTransformer((schema, context, cancellationToken) =>
-            {
-                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
-                string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                schema.Xml = new OpenApiXml
-                {
-                    Name = xmlPath,
-                };
-
-                return Task.CompletedTask;
-            });
 
             // Keycloak Authentication
             o.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                // string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
-                // string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                // c.IncludeXmlComments(xmlPath);
-
-
+                // TODO: Get from config
+                if (builder.Environment.IsDevelopment())
+                    document.Servers = [new() { Url = "http://localhost:3000" }];
                 document.Components ??= new OpenApiComponents();
 
                 var options = builder.Configuration.GetKeycloakOptions<KeycloakAuthenticationOptions>()!;
@@ -97,7 +83,6 @@ public static class Startup
             });
         });
 
-
         // Database Context and Seeders
         services.AddDbContext<DatabaseContext>((sp, options) =>
         {
@@ -111,8 +96,9 @@ public static class Startup
         {
             options.AddBasePolicy(b => b.Expire(TimeSpan.FromSeconds(30)));
             options.AddPolicy("NoCache", builder => builder.NoCache());
-            options.AddPolicy("1m", b => b.Expire(TimeSpan.FromSeconds(60)));
-            options.AddPolicy("2m", b => b.Expire(TimeSpan.FromSeconds(120)));
+            options.AddPolicy("1m", b => b.Expire(TimeSpan.FromMinutes(1)));
+            options.AddPolicy("2m", b => b.Expire(TimeSpan.FromMinutes(2)));
+            options.AddPolicy("1h", b => b.Expire(TimeSpan.FromHours(1)));
         });
         services.AddDistributedMemoryCache();
         services.AddResponseCompression();
@@ -139,16 +125,16 @@ public static class Startup
         });
 
         // CORS Policy
-        services.AddCors(options =>
-        {
-            options.AddPolicy("AllowSpecificOrigin", builder =>
-            {
-                builder.WithOrigins("http://localhost:5173")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            });
-        });
+        // services.AddCors(options =>
+        // {
+        //     options.AddPolicy("AllowSpecificOrigin", builder =>
+        //     {
+        //         builder.WithOrigins("http://localhost:5173")
+        //             .AllowAnyMethod()
+        //             .AllowAnyHeader()
+        //             .AllowCredentials();
+        //     });
+        // });
 
         // Serilog Logging
         services.AddSerilog((services, lc) => lc

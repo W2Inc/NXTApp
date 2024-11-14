@@ -43,60 +43,48 @@ public class User : BaseEntity
     [ForeignKey(nameof(DetailsId))]
     public virtual Details? Details { get; set; }
 
-    //[JsonIgnore]
-    //public ICollection<UserCursus> Cursi { get; set; }
-
     /// <summary>
     /// The user was the evaluator on the following reviews.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<Review> Rubricer { get; set; }
 
     /// <summary>
     /// The projects the user created.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<Project> CreatedProjects { get; set; }
 
     /// <summary>
     /// The rubrics the user created.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<Rubric> CreatedRubrics { get; set; }
 
     /// <summary>
     /// The Learning goals the user created.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<LearningGoal> CreatedGoals { get; set; }
 
     /// <summary>
     /// The cursi the user created.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<Cursus> CreatedCursus { get; set; }
 
     /// <summary>
     /// The user goals of the user.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<UserGoal> UserGoals { get; set; }
 
     /// <summary>
     /// The user goals of the user.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<UserCursus> UserCursi { get; set; }
 
     /// <summary>
     /// The comments the user made.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<Comment> Comments { get; set; }
 
     /// <summary>
     /// All membership instances towards a user project.
     /// </summary>
-    [JsonIgnore]
     public virtual ICollection<Member> ProjectMember { get; set; }
 }

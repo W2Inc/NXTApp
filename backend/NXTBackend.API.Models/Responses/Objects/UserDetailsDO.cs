@@ -14,7 +14,7 @@ public class UserDetailsDO : BaseObjectDO<Details>
     public UserDetailsDO(Details details) : base(details)
     {
         Email = details.Email;
-        Bio = details.Bio;
+        // Bio = details.Bio;
         FirstName = details.FirstName;
         LastName = details.LastName;
         GithubUrl = details.GithubUrl;
@@ -31,9 +31,11 @@ public class UserDetailsDO : BaseObjectDO<Details>
     public string? Email { get; set; }
 
     /// <summary>
-    ///
+    /// NOTE: Not included in DO, use separate endpoint
+    /// Why ? Some Markdown Biographies can be full of shit. We won't want that
+    /// for EVERY single user we request.
     /// </summary>
-    public string? Bio { get; set; }
+    // public string? Bio { get; set; }
 
     /// <summary>
     ///

@@ -16,6 +16,7 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// </summary>
 public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), IUserService
 {
+
     /// <inheritdoc/>
     public async Task<User?> FindByLoginAsync(string login)
     {
@@ -29,36 +30,6 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
     }
 
     /// <inheritdoc/>
-    public Task<User> SubscribeToCursus(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public Task<Review?> didRecentReviewOnUserProject(User entity, UserProject userProject)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public Task<User> SubscribeToCursus(User entity, Cursus cursus)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public Task<User> UnsubscribeFromCursus(User entity, Cursus cursus)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public Task<PaginatedList<SpotlightEvent>> GetNotifications(User entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
     public override async Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, SortingParams sorting)
     {
         var query = _dbSet
@@ -69,49 +40,75 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
         return await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 
-    public async Task<User> UpdateDetails(User entity, Details details)
+    public async Task<IEnumerable<SpotlightEvent>> GetSpotlights(Guid id)
     {
-        var detailsEntity = await _context.Details.AddAsync(details);
-        entity.DetailsId = detailsEntity.Entity.Id;
-        entity.Details = detailsEntity.Entity;
+        var spotlights = await _context.SpotlightEvents
+            .Where(se => !_context.SpotlightEventsActions
+                .Any(sa => sa.UserId == id && sa.IsDismissed && sa.SpotlightId == se.Id))
+            .ToListAsync();
+
+        return spotlights;
+    }
+
+
+    public async Task<SpotlightEventAction> SetSpotlight(Guid userId, Guid spotlightId, bool action)
+    {
+        // Verify the spotlight event exists
+        if (!await _context.SpotlightEvents.AnyAsync(se => se.Id == spotlightId))
+            throw new ArgumentException("The specified spotlight event does not exist.");
+
+        // Retrieve or create the SpotlightEventAction entry
+        var spotlightAction = await _context.SpotlightEventsActions
+            .FirstOrDefaultAsync(sa => sa.UserId == userId && sa.SpotlightId == spotlightId);
+        if (spotlightAction is not null)
+        {
+            spotlightAction.IsDismissed = action;
+            await _context.SaveChangesAsync();
+            return spotlightAction;
+        }
+
+        var actionEvent = await _context.SpotlightEventsActions.AddAsync(new()
+        {
+            UserId = userId,
+            SpotlightId = spotlightId,
+            IsDismissed = action,
+        });
         await _context.SaveChangesAsync();
-        return entity;
+        return actionEvent.Entity;
     }
 
-    public async Task<PaginatedList<UserCursus>> GetUserCursi(User entity, PaginationParams pagination)
+
+    public async Task<User?> UpsertDetails(Guid id, Details details)
     {
-        var query = _context.UserCursi
-            .Include(c => c.Cursus)
-            .Include(c => c.Cursus.Creator)
-            .AsQueryable();
+        var user = await _context.Users
+            .Include(u => u.Details)
+            .FirstOrDefaultAsync(u => u.Id == id);
 
-        return await PaginatedList<UserCursus>.CreateAsync(query, pagination.Page, pagination.Size);
+        if (user is null)
+            return null;
+        if (user.Details is null || user.DetailsId is null)
+        {
+            // NOTE(W2): A bit finicky, details can't exist without
+            // a user and vice verse.
+            details.UserId = id;
+            await _context.Details.AddAsync(details);
+            user.Details = details;
+        }
+        else
+        {
+            user.Details.Bio = details.Bio;
+            user.Details.Email = details.Email;
+            user.Details.FirstName = details.FirstName;
+            user.Details.LastName = details.LastName;
+            user.Details.GithubUrl = details.GithubUrl;
+            user.Details.WebsiteUrl = details.WebsiteUrl;
+            user.Details.TwitterUrl = details.TwitterUrl;
+            user.Details.LinkedinUrl = details.LinkedinUrl;
+        }
+
+        await _context.SaveChangesAsync();
+        return user;
     }
 
-    public async Task<PaginatedList<UserGoal>> GetUserGoals(User entity, PaginationParams pagination)
-    {
-        var query = _context.UserGoals
-            .Include(c => c.Members)
-            .Include(c => c.User)
-            .AsQueryable();
 
-        return await PaginatedList<UserGoal>.CreateAsync(query, pagination.Page, pagination.Size);
-    }
-
-    public async Task<PaginatedList<UserProject>> GetUserProjects(User entity, PaginationParams pagination)
-    {
-        var query = _context.UserProject
-            .Include(c => c.GitInfo)
-            .Include(c => c.Project)
-            .Include(c => c.Rubric)
-            .Include(c => c.Members)
-            .AsQueryable();
-
-        return await PaginatedList<UserProject>.CreateAsync(query, pagination.Page, pagination.Size);
-    }
-
-    public Task<Member> InviteUserToProject(User entity, UserProject instance, MemberInviteState invitation)
-    {
-        throw new NotImplementedException();
-    }
 }
