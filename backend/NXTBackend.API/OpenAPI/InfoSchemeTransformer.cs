@@ -1,7 +1,13 @@
-using Keycloak.AuthServices.Authentication;
+// ============================================================================
+// Copyright (c) 2024 - W2Wizard.
+// See README.md in the project root for license information.
+// ============================================================================
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
+
+// ============================================================================
 
 internal sealed class InfoSchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {

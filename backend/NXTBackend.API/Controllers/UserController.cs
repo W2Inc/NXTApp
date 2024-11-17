@@ -14,6 +14,7 @@ using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.User;
 using NXTBackend.API.Models.Responses.Objects;
+using NXTBackend.API.Utils;
 
 // ============================================================================
 
@@ -58,15 +59,8 @@ public class UserController(
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<SpotlightEventActionDO>> DismissSpotlight(Guid id)
     {
-        try
-        {
-            var action = await userService.SetSpotlight(User.GetSID(), id, true);
-            return Ok(new SpotlightEventActionDO(action));
-        }
-        catch (ArgumentException e)
-        {
-            return UnprocessableEntity(e.Message);
-        }
+        var action = await userService.SetSpotlight(User.GetSID(), id, true);
+        return Ok(new SpotlightEventActionDO(action));
     }
 
     [HttpGet("/users/current/notifications"), Authorize]
@@ -191,6 +185,39 @@ public class UserController(
             return NotFound("User not found");
 
         return Ok(new UserDO(updatedUser));
+    }
+
+    [HttpGet("/users/{id}/bio")]
+    [EndpointSummary("Gets the user defined biography")]
+    [EndpointDescription("A user can have a markdown biography to present themselves to others.")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK, contentType: "text/plain")]
+    public async Task<ActionResult<UserDO>> GetUserBio(Guid id)
+    {
+        var user = await userService.FindByIdAsync(id);
+        if (user is null)
+            return NotFound();
+        if (user.Details is null)
+            return NoContent();
+        return Ok(user.Details.Bio);
+    }
+
+    [HttpPut("/users/{id}/bio")]
+    [Consumes("text/plain")]
+    [EndpointSummary("Sets the user defined biography")]
+    [EndpointDescription("A user can have a markdown biography to present themselves to others.")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> SetUserBio(Guid id, [FromBody] string markdown)
+    {
+        var user = await userService.UpsertDetails(id, new()
+        {
+            Bio = markdown
+        });
+
+        if (user is null)
+            return NotFound();
+
+        return Created();
     }
 
     [HttpGet("/users/{id}/user_cursus")]

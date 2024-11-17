@@ -17,6 +17,7 @@ using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
+using NXTBackend.API.Utils;
 using Serilog;
 using Serilog.Templates;
 using Serilog.Templates.Themes;
@@ -41,6 +42,12 @@ public static class Startup
         services.AddControllers().AddJsonOptions(o =>
         {
             o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+        });
+
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<ServiceExceptionFilter>();
+            options.InputFormatters.Add(new TextPlainInputFormatter());
         });
 
         // Authentication and Authorization (Keycloak)

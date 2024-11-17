@@ -16,7 +16,7 @@ Log.Logger = new LoggerConfiguration()
     .CreateBootstrapLogger();
 
 Log.Information("Starting up!");
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
 Startup.RegisterServices(builder);
 
 var app = builder.Build();

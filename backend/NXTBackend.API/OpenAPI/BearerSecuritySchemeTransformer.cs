@@ -1,6 +1,13 @@
+// ============================================================================
+// Copyright (c) 2024 - W2Wizard.
+// See README.md in the project root for license information.
+// ============================================================================
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
+
+// ============================================================================
 
 internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {

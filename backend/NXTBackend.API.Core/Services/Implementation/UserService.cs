@@ -7,6 +7,7 @@ using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
+using NXTBackend.API.Core.Utils;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -50,12 +51,12 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
         return spotlights;
     }
 
-
+    /// <inheritdoc/>
     public async Task<SpotlightEventAction> SetSpotlight(Guid userId, Guid spotlightId, bool action)
     {
         // Verify the spotlight event exists
         if (!await _context.SpotlightEvents.AnyAsync(se => se.Id == spotlightId))
-            throw new ArgumentException("The specified spotlight event does not exist.");
+            throw new ServiceException("The specified spotlight event does not exist.");
 
         // Retrieve or create the SpotlightEventAction entry
         var spotlightAction = await _context.SpotlightEventsActions
@@ -80,6 +81,10 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
 
     public async Task<User?> UpsertDetails(Guid id, Details details)
     {
+        const int C_MAX_BIO = 16384;
+        if (details.Bio is not null && details.Bio.Length > C_MAX_BIO)
+            throw new ServiceException($"Biographies can only be {C_MAX_BIO} characters long");
+
         var user = await _context.Users
             .Include(u => u.Details)
             .FirstOrDefaultAsync(u => u.Id == id);
@@ -109,6 +114,4 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
         await _context.SaveChangesAsync();
         return user;
     }
-
-
 }

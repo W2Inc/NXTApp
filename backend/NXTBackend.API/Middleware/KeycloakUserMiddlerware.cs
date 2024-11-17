@@ -3,14 +3,11 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using System.Security.Claims;
 using Bogus;
-using Castle.Core.Internal;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Utils;
 
 // ============================================================================
 
@@ -44,7 +41,6 @@ public class KeycloakUserMiddlerware(RequestDelegate next, ILogger<KeycloakUserM
 
         var user = await service.FindByIdAsync(guid);
         user ??= await CreateUserAsync(context, service, guid);
-
         await cache.SetStringAsync(cacheKey, user.Login, options);
         await next(context);
     }

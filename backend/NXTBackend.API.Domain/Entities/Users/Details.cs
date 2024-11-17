@@ -3,43 +3,19 @@ using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Domain.Entities.Users;
 
-/*
- model UserDetails {
-    id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    user_id String @unique @db.Uuid
-    user    User   @relation(fields: [user_id], references: [id])
-
-    email      String?  @unique
-    bio        String?
-    first_name String?
-    last_name  String?
-    features   String[] @default([]) @db.Uuid
-
-    github_url   String?
-    linkedin_url String?
-    twitter_url  String?
-    website_url  String?
-
-    created_at DateTime @default(now())
-    updated_at DateTime @default(now()) @updatedAt
-
-    @@map("user_details")
-}
- */
-
 [Table("tbl_user_details")]
 public class Details : BaseEntity
 {
     public Details()
     {
-        Email = string.Empty;
-        Bio = string.Empty;
-        FirstName = string.Empty;
-        LastName = string.Empty;
-        GithubUrl = string.Empty;
-        LinkedinUrl = string.Empty;
-        TwitterUrl = string.Empty;
-        WebsiteUrl = string.Empty;
+        Email = null;
+        Bio = null;
+        FirstName = null;
+        LastName = null;
+        GithubUrl = null;
+        LinkedinUrl = null;
+        TwitterUrl = null;
+        WebsiteUrl = null;
         User = null!;
     }
 
