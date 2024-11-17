@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Domain.Entities.Users;
@@ -28,7 +29,7 @@ public class Details : BaseEntity
     [Column("email")]
     public string? Email { get; set; }
 
-    [Column("bio")]
+    [Column("bio"), MaxLength(16384)]
     public string? Bio { get; set; }
 
     [Column("first_name")]

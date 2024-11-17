@@ -3,6 +3,7 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
+using Microsoft.AspNetCore.RateLimiting;
 using NXTBackend.API;
 using NXTBackend.API.Middleware;
 using Scalar.AspNetCore;
@@ -46,10 +47,10 @@ if (app.Environment.IsDevelopment())
 
 // Middleware
 // ============================================================================
-app.UseResponseCompression();
-app.UseOutputCache();
-app.UseSerilogRequestLogging();
 app.UseRouting();
+app.UseResponseCompression();
+app.UseSerilogRequestLogging();
+app.UseOutputCache();
 app.UseRateLimiter();
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
@@ -57,5 +58,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseMiddleware<KeycloakUserMiddlerware>();
 app.UseAuthorization();
-app.MapControllers().RequireRateLimiting("fixed");
+app.MapControllers().RequireRateLimiting("DynamicPolicy");
+// app.UseMiddleware<RatelimitMiddleware>();
 app.Run();

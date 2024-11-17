@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
@@ -21,7 +22,7 @@ using NXTBackend.API.Utils;
 namespace NXTBackend.API.Controllers;
 
 [Route("user")]
-[ApiController]
+[ApiController, Authorize]
 public class UserController(
     ILogger<UserController> logger,
     IUserService userService,
@@ -33,7 +34,7 @@ public class UserController(
     // ============================================================================
 
 
-    [HttpGet("/users/current"), Authorize]
+    [HttpGet("/users/current")]
     [EndpointSummary("Get the currently authenticated user.")]
     [EndpointDescription("When authenticated it's useful to know who you currently are logged in as.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -43,7 +44,7 @@ public class UserController(
         return user is null ? Forbid() : Ok(new UserDO(user));
     }
 
-    [HttpGet("/users/current/spotlights"), Authorize, OutputCache(Duration = 20)]
+    [HttpGet("/users/current/spotlights")]
     [EndpointSummary("Get the currently authenticated user's spotlights.")]
     [EndpointDescription("If they were dismissed they will get filtered out.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -52,7 +53,7 @@ public class UserController(
         return Ok(await userService.GetSpotlights(User.GetSID()));
     }
 
-    [HttpDelete("/users/current/spotlights/{id}"), Authorize]
+    [HttpDelete("/users/current/spotlights/{id}")]
     [EndpointSummary("As the current user, dismiss a specific spotlight.")]
     [EndpointDescription("If users dismiss a spotlight event, they won't getit shown in the future.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -63,7 +64,7 @@ public class UserController(
         return Ok(new SpotlightEventActionDO(action));
     }
 
-    [HttpGet("/users/current/notifications"), Authorize]
+    [HttpGet("/users/current/notifications")]
     [EndpointSummary("Get your notifications")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -76,7 +77,7 @@ public class UserController(
         return Problem(statusCode: StatusCodes.Status501NotImplemented);
     }
 
-    [HttpPost("/users/current/notifications/read"), Authorize]
+    [HttpPost("/users/current/notifications/read")]
     [EndpointSummary("Mark all your notifications as read")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -89,7 +90,7 @@ public class UserController(
         return Problem(statusCode: StatusCodes.Status501NotImplemented);
     }
 
-    [HttpGet("/users/current/notifications/{id}/read"), Authorize]
+    [HttpGet("/users/current/notifications/{id}/read")]
     [EndpointSummary("Mark a given notifications as read")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -103,7 +104,7 @@ public class UserController(
     }
 
 
-    [HttpGet("/users/current/events"), Authorize]
+    [HttpGet("/users/current/events")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -119,10 +120,10 @@ public class UserController(
     // Users
     // ============================================================================
 
-    [HttpGet("/users")]
     [EndpointSummary("Get all users.")]
     [EndpointDescription("All users that exists in the database.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpGet("/users"), OutputCache(PolicyName = "1m")]
     public async Task<ActionResult<IEnumerable<UserDO>>> GetAll([FromQuery] PaginationParams paging, [FromQuery] SortingParams sorting)
     {
         var page = await userService.GetAllAsync(paging, sorting);
@@ -130,10 +131,10 @@ public class UserController(
         return Ok(page.Items.Select(e => new UserDO(e)));
     }
 
-    [HttpGet("/users/{id}")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [HttpGet("/users/{id}"), OutputCache(PolicyName = "1m")]
     public async Task<ActionResult<UserDO>> GetUser(Guid id)
     {
         var user = await userService.FindByIdAsync(id);
@@ -147,7 +148,7 @@ public class UserController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<UserDO>> UpdateUser(Guid id, [FromBody] UserPatchRequestDTO data)
     {
-        if (User.GetSID() != id && !User.IsInRole(Role.Admin.ToString()))
+        if (User.GetSID() != id && !User.IsAdmin())
             return Forbid();
 
         var user = await userService.FindByIdAsync(id);
@@ -166,7 +167,7 @@ public class UserController(
     public async Task<ActionResult<UserDO>> UpdateUserDetails(Guid id, [FromBody] UserDetailsPutRequestDTO data)
     {
         var userID = User.GetSID();
-        if (userID != id && !User.IsInRole(Role.Admin.ToString()))
+        if (userID != id && !User.IsAdmin())
             return Forbid();
 
         var updatedUser = await userService.UpsertDetails(userID, new()

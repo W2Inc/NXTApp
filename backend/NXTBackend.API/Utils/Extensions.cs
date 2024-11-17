@@ -5,6 +5,7 @@
 
 using System.Security.Claims;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Enums;
 
 // ============================================================================
 
@@ -37,5 +38,10 @@ public static class Extensions
     {
         var identity = principal.Identities.First();
         return identity != null && identity.IsAuthenticated;
+    }
+
+    public static bool IsAdmin(this ClaimsPrincipal principal)
+    {
+        return principal.IsInRole(Role.Admin.ToString());
     }
 }

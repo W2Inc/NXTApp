@@ -10,14 +10,14 @@ public sealed class GraphReader(Stream? stream) : EndianStreamReader(stream, nul
     public void ReadData()
     {
         if (!Header.Read(this))
-            throw new InvalidDataException("Invalid graph file.");
+            throw new InvalidDataException("Invalid graph file");
         ReadNode(0, null); // Start reading nodes with depth 0 and no parent
     }
 
     private void ReadNode(byte depth, GraphNode? parent)
     {
         if (depth > GraphNode.C_MAX_DEPTH)
-            throw new InvalidDataException($"Graph with a depth of: {depth} is too large!");
+            throw new InvalidDataException($"Graph with a depth of: {depth} is too large");
 
         ushort id = ReadUInt16();
         ushort parentId = ReadUInt16();
@@ -26,9 +26,9 @@ public sealed class GraphReader(Stream? stream) : EndianStreamReader(stream, nul
         ushort childrenCount = ReadUInt16();
 
         if (goalCount > GraphNode.C_MAX_GOALS)
-            throw new InvalidDataException($"Node can't have more than {GraphNode.C_MAX_GOALS} goals.");
+            throw new InvalidDataException($"Node can't have more than {GraphNode.C_MAX_GOALS} goals");
         if (childrenCount > GraphNode.C_MAX_NODES)
-            throw new InvalidDataException($"Node can't have more than {GraphNode.C_MAX_NODES} children.");
+            throw new InvalidDataException($"Node can't have more than {GraphNode.C_MAX_NODES} children");
 
         var node = new GraphNode
         {
@@ -44,7 +44,7 @@ public sealed class GraphReader(Stream? stream) : EndianStreamReader(stream, nul
         {
             string? goalName = ReadCString();
             if (string.IsNullOrEmpty(goalName))
-                throw new InvalidDataException($"Node: {id} has a goal with an invalid name.");
+                throw new InvalidDataException($"Node: {id} has a goal with an invalid name");
 
             var goalId = ReadGuid();
             node.Goals.Add(new GoalEntry

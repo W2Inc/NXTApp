@@ -38,7 +38,7 @@ public interface IUserService : IDomainService<User>
     public Task<IEnumerable<SpotlightEvent>> GetSpotlights(Guid id);
 
     /// <summary>
-    ///
+    /// Set the action state of a spotlight
     /// </summary>
     /// <param name="userId"></param>
     /// <param name="spotlightId"></param>

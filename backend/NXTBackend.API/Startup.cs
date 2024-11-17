@@ -112,6 +112,7 @@ public static class Startup
 
         // Dependency Injection for Services
         services.AddScoped<ISearchService, SearchService>();
+        services.AddScoped<ICursusService, CursusService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFeatureService, FeatureService>();
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
@@ -119,29 +120,51 @@ public static class Startup
         services.AddSingleton(TimeProvider.System);
 
         // Rate Limiting
-        services.AddRateLimiter(limiter =>
+        services.AddRateLimiter(options =>
         {
-            limiter.RejectionStatusCode = 429;
-            limiter.AddFixedWindowLimiter("fixed", options =>
+            options.RejectionStatusCode = 429;
+            options.AddPolicy("DynamicPolicy", context =>
             {
-                options.PermitLimit = 10;
-                options.Window = TimeSpan.FromSeconds(10);
-                options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                options.QueueLimit = 5;
+                if (!(context.User?.Identity?.IsAuthenticated ?? false))
+                {
+                    return RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: "UnauthenticatedUsers",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = 5, // Fewer requests
+                            Window = TimeSpan.FromSeconds(10),
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 2
+                        });
+                }
+
+                return RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: "AuthenticatedUsers",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 20, // More requests
+                        Window = TimeSpan.FromSeconds(10),
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                        QueueLimit = 5
+                    });
             });
         });
 
+
         // CORS Policy
-        // services.AddCors(options =>
-        // {
-        //     options.AddPolicy("AllowSpecificOrigin", builder =>
-        //     {
-        //         builder.WithOrigins("http://localhost:5173")
-        //             .AllowAnyMethod()
-        //             .AllowAnyHeader()
-        //             .AllowCredentials();
-        //     });
-        // });
+        if (!builder.Environment.IsDevelopment())
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                {
+                    builder.WithOrigins("http://localhost:5173")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+        }
 
         // Serilog Logging
         services.AddSerilog((services, lc) => lc

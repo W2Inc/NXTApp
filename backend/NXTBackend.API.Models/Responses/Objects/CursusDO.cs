@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Enums;
 
@@ -53,11 +54,13 @@ public class CursusDO : BaseObjectDO<Cursus>
     /// <summary>
     /// Whether the cursus is public.
     /// </summary>
+    [Description("Whether the cursus is public")]
     public bool Public { get; set; }
 
     /// <summary>
     /// Whether the cursus is enabled.
     /// </summary>
+    [Description("If true, the cursus is subscribable")]
     public bool Enabled { get; set; }
 
     /// <summary>

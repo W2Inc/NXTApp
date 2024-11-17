@@ -81,13 +81,13 @@ public class Cursus : BaseEntity
     /// <summary>
     /// A short description of the Cursus.
     /// </summary>
-    [Column("description"), StringLength(256)]
+    [Column("description"), StringLength(256), Required]
     public string Description { get; set; }
 
     /// <summary>
     /// The markdown description of the Cursus.
     /// </summary>
-    [Column("markdown"), StringLength(4096, MinimumLength = 256), Required]
+    [Column("markdown")]
     public string Markdown { get; set; }
 
     /// <summary>
@@ -123,7 +123,6 @@ public class Cursus : BaseEntity
     /// <summary>
     /// The track / path of the Cursus stored in the .graph format.
     /// </summary>
-    [JsonIgnore]
     [Column("track")]
     public byte[] Track { get; set; } = [];
 

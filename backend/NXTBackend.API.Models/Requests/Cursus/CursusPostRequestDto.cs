@@ -13,7 +13,7 @@ namespace NXTBackend.API.Models.Requests.Cursus;
 /// <summary>
 /// Post request for creating a new cursus
 /// </summary>
-public class CursusPostRequestDto : BaseRequestDTO
+public class CursusPostRequestDTO : BaseRequestDTO
 {
     /// <summary>
     /// The title of the event

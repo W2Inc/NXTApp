@@ -8,6 +8,7 @@ using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 using NXTBackend.API.Core.Utils;
+using NXTBackend.API.Models.Responses.Objects;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -77,7 +78,6 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
         await _context.SaveChangesAsync();
         return actionEvent.Entity;
     }
-
 
     public async Task<User?> UpsertDetails(Guid id, Details details)
     {
