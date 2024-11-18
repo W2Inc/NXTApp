@@ -49,5 +49,5 @@ public interface IDomainService<T> where T : BaseEntity
     /// </summary>
     /// <param name="pagination">Specific pagination parameters (as to avoid large queries)</param>
     /// <returns>A paginated list of entities.</returns>
-    public Task<PaginatedList<T>> GetAllAsync(PaginationParams pagination, SortingParams sorting);
+    public Task<PaginatedList<T>> GetAllAsync(PaginationParams pagination, SortingParams sorting, QueryFilters? filter = null);
 }

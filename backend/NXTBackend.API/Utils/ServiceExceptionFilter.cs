@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using NXTBackend.API.Core.Utils;
@@ -28,11 +29,14 @@ public class ServiceExceptionFilter : IExceptionFilter
                     Detail = serviceException.Detail,
                     Status = serviceException.StatusCode,
                     Instance = context.HttpContext.Request.Path,
+                    Extensions = new Dictionary<string, object?>
+                    {
+                        ["traceId"] = Activity.Current?.Id ?? context.HttpContext.TraceIdentifier
+                    }
                 };
 
                 var objectResult = new ObjectResult(problemDetails)
                 {
-
                     ContentTypes = { "application/problem+json" }
                 };
 

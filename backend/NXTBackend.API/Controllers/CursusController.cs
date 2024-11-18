@@ -3,6 +3,7 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
+using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
 using NXTBackend.API.Core.Graph;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
@@ -23,6 +25,19 @@ using NXTBackend.API.Utils;
 
 namespace NXTBackend.API.Controllers;
 
+public class QueryParams
+{
+    [Description("URL slug to filter on")]
+    [FromQuery(Name = "filter[slug]")]
+    public string? Slug { get; set; }
+
+    [Description("The entity id to filter on")]
+    [FromQuery(Name = "filter[id]")]
+    public Guid? Id { get; set; }
+}
+
+// ============================================================================
+
 [Route("cursus")]
 [ApiController]
 public class CursusController(
@@ -35,9 +50,18 @@ public class CursusController(
     [EndpointSummary("Get all exisiting cursi")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<CursusDO>>> GetAll([FromQuery] PaginationParams paging, [FromQuery] SortingParams sorting)
+    public async Task<ActionResult<IEnumerable<CursusDO>>> GetAll(
+        [FromQuery] PaginationParams paging,
+        [FromQuery] SortingParams sorting,
+        [FromQuery] QueryParams filter
+    )
     {
-        var page = await cursusService.GetAllAsync(paging, sorting);
+        var page = await cursusService.GetAllAsync(paging, sorting, new()
+        {
+            Id = filter.Id,
+            Slug = filter.Slug
+        });
+
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(c => new CursusDO(c)));
     }
@@ -48,16 +72,17 @@ public class CursusController(
     [ProducesResponseType(StatusCodes.Status200OK),]
     public async Task<ActionResult<CursusDO>> Create([FromBody] CursusPostRequestDTO data)
     {
-        var cursus = cursusService.CreateAsync(new()
+        var cursus = await cursusService.CreateAsync(new()
         {
             CreatorId = User.GetSID(),
             Markdown = data.Markdown,
             Enabled = data.Enabled,
+            Name = data.Name,
+            Slug = data.Name.ToUrlSlug(),
             Description = data.Description,
-
         });
 
-        return Ok(cursus);
+        return Ok(new CursusDO(cursus));
     }
 
     [HttpGet("/cursus/{id}")]
@@ -71,29 +96,34 @@ public class CursusController(
 
     [HttpPatch("/cursus/{id}")]
     [EndpointSummary("Update a cursus")]
-    [EndpointDescription("")]
+    [EndpointDescription("Updates a cursus partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CursusDO>> Update(Guid id, [FromBody] CursusPatchRequestDTO data)
     {
         var cursus = await cursusService.FindByIdAsync(id);
         if (cursus is null)
             return NotFound();
-
-        if (User.GetSID() != cursus.CreatorId && User.IsAdmin())
+        if (User.GetSID() != cursus.CreatorId && !User.IsAdmin())
             return Forbid();
 
-        // TODO: Bad, it updates EVERYTHING!
-        cursus.Enabled = data.Enabled ?? cursus.Enabled;
-        cursus.Markdown = data.Markdown ?? cursus.Markdown;
-        cursus.Description = data.Description ?? cursus.Description;
+        if (data.Enabled.HasValue)
+            cursus.Enabled = data.Enabled.Value;
+        if (data.Markdown is not null)
+            cursus.Markdown = data.Markdown;
+        if (data.Description is not null)
+            cursus.Description = data.Description;
         if (data.Name is not null)
         {
-            cursus.Name = data.Name ?? cursus.Name;
+            cursus.Name = data.Name;
             cursus.Slug = cursus.Name.ToUrlSlug();
         }
 
-        return Ok(new CursusDO(await cursusService.UpdateAsync(cursus)));
+        var updatedCursus = await cursusService.UpdateAsync(cursus);
+        return Ok(new CursusDO(updatedCursus));
     }
+
 
     [HttpDelete("/cursus/{id}")]
     [EndpointSummary("Delete a cursus")]
@@ -105,9 +135,7 @@ public class CursusController(
         if (cursus is null)
             return NotFound("Cursus not found");
 
-        cursus.Enabled = false;
-        await cursusService.UpdateAsync(cursus);
-        return Ok(cursus);
+        return Ok(await cursusService.DeleteAsync(cursus));
     }
 
     [HttpPut("/cursus/{id}/path")]

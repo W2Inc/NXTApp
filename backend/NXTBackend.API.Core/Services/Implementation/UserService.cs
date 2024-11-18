@@ -32,7 +32,7 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
     }
 
     /// <inheritdoc/>
-    public override async Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, SortingParams sorting)
+    public override async Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, SortingParams sorting, QueryFilters? filter)
     {
         var query = _dbSet
             .Include(user => user.Details)

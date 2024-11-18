@@ -124,9 +124,12 @@ public class UserController(
     [EndpointDescription("All users that exists in the database.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpGet("/users"), OutputCache(PolicyName = "1m")]
-    public async Task<ActionResult<IEnumerable<UserDO>>> GetAll([FromQuery] PaginationParams paging, [FromQuery] SortingParams sorting)
+    public async Task<ActionResult<IEnumerable<UserDO>>> GetAll(
+        [FromQuery] PaginationParams paging,
+        [FromQuery] SortingParams sorting
+    )
     {
-        var page = await userService.GetAllAsync(paging, sorting);
+        var page = await userService.GetAllAsync(paging, sorting, null);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(e => new UserDO(e)));
     }

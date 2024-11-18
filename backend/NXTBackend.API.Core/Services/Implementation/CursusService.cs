@@ -1,16 +1,30 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Infrastructure.Database;
+using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
 public sealed class CursusService(DatabaseContext ctx) : BaseService<Cursus>(ctx), ICursusService
 {
-    public Task<Cursus?> FindByNameAsync(string name)
+    /// <inheritdoc />
+    public async Task<Cursus?> FindByNameAsync(string name)
     {
-        throw new NotImplementedException();
+        return await _dbSet
+            .Where(x => EF.Functions.Like(x.Name, $"%{name}%"))
+            .FirstOrDefaultAsync();
+    }
+
+    /// <inheritdoc />
+    public override IQueryable<Cursus> ApplyFilters(IQueryable<Cursus> query, QueryFilters? filter)
+    {
+        query = base.ApplyFilters(query, filter);
+        if (filter?.Slug is not null)
+            query = query.Where(x => EF.Functions.Like(x.Slug, $"%{filter.Slug}%"));
+        return query;
     }
 
     /// <summary>
@@ -32,13 +46,9 @@ public sealed class CursusService(DatabaseContext ctx) : BaseService<Cursus>(ctx
         // If no references exist, we can't hard delete.
         entity.Enabled = false;
         if (entity.UserCursi.Count < 1)
-        {
             _dbSet.Remove(entity);
-        }
         else
-        {
             await UpdateAsync(entity);
-        }
         await _context.SaveChangesAsync();
         return entity;
     }

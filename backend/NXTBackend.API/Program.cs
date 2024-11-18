@@ -50,7 +50,8 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseResponseCompression();
 app.UseSerilogRequestLogging();
-app.UseOutputCache();
+if (!app.Environment.IsDevelopment())
+    app.UseOutputCache();
 app.UseRateLimiter();
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
@@ -59,5 +60,4 @@ app.UseAuthentication();
 app.UseMiddleware<KeycloakUserMiddlerware>();
 app.UseAuthorization();
 app.MapControllers().RequireRateLimiting("DynamicPolicy");
-// app.UseMiddleware<RatelimitMiddleware>();
 app.Run();

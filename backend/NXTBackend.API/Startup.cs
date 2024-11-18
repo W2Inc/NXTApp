@@ -131,8 +131,8 @@ public static class Startup
                         partitionKey: "UnauthenticatedUsers",
                         factory: _ => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 5, // Fewer requests
-                            Window = TimeSpan.FromSeconds(10),
+                            PermitLimit = 60, // Fewer requests
+                            Window = TimeSpan.FromMinutes(20),
                             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                             QueueLimit = 2
                         });
@@ -142,8 +142,8 @@ public static class Startup
                     partitionKey: "AuthenticatedUsers",
                     factory: _ => new FixedWindowRateLimiterOptions
                     {
-                        PermitLimit = 20, // More requests
-                        Window = TimeSpan.FromSeconds(10),
+                        PermitLimit = 240, // More requests
+                        Window = TimeSpan.FromMinutes(20),
                         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                         QueueLimit = 5
                     });
