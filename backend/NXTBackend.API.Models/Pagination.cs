@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using NXTBackend.API.Domain.Common;
 
 namespace NXTBackend.API.Models;
 
@@ -39,7 +40,7 @@ public class PaginationParams
 /// Paginated list of items.
 /// </summary>
 /// <typeparam name="T">The object type</typeparam>
-public class PaginatedList<T>
+public class PaginatedList<T> where T : BaseEntity
 {
     public PaginatedList(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize)
     {
@@ -58,7 +59,11 @@ public class PaginatedList<T>
     public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
     {
         int count = await source.CountAsync();
-        var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        var items = await source
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            // .OrderBy(e => e.Id)
+            .ToListAsync();
 
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
     }
@@ -71,7 +76,6 @@ public class PaginatedList<T>
     {
         headers.Add("X-Page", Page.ToString());
         headers.Add("X-Pages", TotalPages.ToString());
-
     }
 
     public IReadOnlyCollection<T> Items { get; }

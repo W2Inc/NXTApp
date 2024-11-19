@@ -28,7 +28,7 @@ public interface IGoalService : IDomainService<LearningGoal>
     /// <param name="goal"></param>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    Task<PaginatedList<Project>> GetProjects(LearningGoal goal, PaginationParams pagination);
+    Task<PaginatedList<Project>> GetProjects(LearningGoal goal, PaginationParams pagination, SortingParams sorting);
 
     /// <summary>
     /// Get all the users that are doing this learning goal.
@@ -36,5 +36,5 @@ public interface IGoalService : IDomainService<LearningGoal>
     /// <param name="goal"></param>
     /// <param name="pagination"></param>
     /// <returns></returns>
-    Task<PaginatedList<User>> GetUsers(LearningGoal goal, PaginationParams pagination);
+    Task<PaginatedList<User>> GetUsers(LearningGoal goal, PaginationParams pagination, SortingParams sorting);
 }

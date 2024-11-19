@@ -115,6 +115,8 @@ public static class Startup
         services.AddScoped<ICursusService, CursusService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFeatureService, FeatureService>();
+        services.AddScoped<IGoalService, GoalService>();
+        services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
         services.AddSingleton(TimeProvider.System);

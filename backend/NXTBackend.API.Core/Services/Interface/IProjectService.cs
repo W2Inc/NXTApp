@@ -20,7 +20,7 @@ public interface IProjectService : IDomainService<Project>
     /// </summary>
     /// <param name="pagination"> The pagination parameters. </param>
     /// <returns></returns>
-    public Task<PaginatedList<User>> GetUsers(Project project, PaginationParams pagination);
+    public Task<PaginatedList<User>> GetUsers(Project project, PaginationParams pagination, SortingParams sorting);
 
     /// <summary>
     /// Get the git information of a project.

@@ -44,7 +44,7 @@ public sealed class GraphReader(Stream? stream) : EndianStreamReader(stream, nul
         {
             string? goalName = ReadCString();
             if (string.IsNullOrEmpty(goalName))
-                throw new InvalidDataException($"Node: {id} has a goal with an invalid name");
+                throw new InvalidDataException($"Node: {id:guid} has a goal with an invalid name");
 
             var goalId = ReadGuid();
             node.Goals.Add(new GoalEntry

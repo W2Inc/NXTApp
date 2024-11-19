@@ -53,7 +53,7 @@ public class UserController(
         return Ok(await userService.GetSpotlights(User.GetSID()));
     }
 
-    [HttpDelete("/users/current/spotlights/{id}")]
+    [HttpDelete("/users/current/spotlights/{id:guid}")]
     [EndpointSummary("As the current user, dismiss a specific spotlight.")]
     [EndpointDescription("If users dismiss a spotlight event, they won't getit shown in the future.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -90,7 +90,7 @@ public class UserController(
         return Problem(statusCode: StatusCodes.Status501NotImplemented);
     }
 
-    [HttpGet("/users/current/notifications/{id}/read")]
+    [HttpGet("/users/current/notifications/{id:guid}/read")]
     [EndpointSummary("Mark a given notifications as read")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -137,7 +137,7 @@ public class UserController(
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [HttpGet("/users/{id}"), OutputCache(PolicyName = "1m")]
+    [HttpGet("/users/{id:guid}"), OutputCache(PolicyName = "1m")]
     public async Task<ActionResult<UserDO>> GetUser(Guid id)
     {
         var user = await userService.FindByIdAsync(id);
@@ -145,7 +145,7 @@ public class UserController(
     }
 
     // [ProducesResponseType<UserDO>(StatusCodes.Status200OK)]
-    [HttpPatch("/users/{id}"), Authorize]
+    [HttpPatch("/users/{id:guid}"), Authorize]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -163,7 +163,7 @@ public class UserController(
         return Ok(new UserDO(user));
     }
 
-    [HttpPut("/users/{id}/details"), Authorize]
+    [HttpPut("/users/{id:guid}/details"), Authorize]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -191,7 +191,7 @@ public class UserController(
         return Ok(new UserDO(updatedUser));
     }
 
-    [HttpGet("/users/{id}/bio")]
+    [HttpGet("/users/{id:guid}/bio")]
     [EndpointSummary("Gets the user defined biography")]
     [EndpointDescription("A user can have a markdown biography to present themselves to others.")]
     [ProducesResponseType<string>(StatusCodes.Status200OK, contentType: "text/plain")]
@@ -205,7 +205,7 @@ public class UserController(
         return Ok(user.Details.Bio);
     }
 
-    [HttpPut("/users/{id}/bio")]
+    [HttpPut("/users/{id:guid}/bio")]
     [Consumes("text/plain")]
     [EndpointSummary("Sets the user defined biography")]
     [EndpointDescription("A user can have a markdown biography to present themselves to others.")]
@@ -224,7 +224,7 @@ public class UserController(
         return Created();
     }
 
-    [HttpGet("/users/{id}/user_cursus")]
+    [HttpGet("/users/{id:guid}/user_cursus")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserCursusDO[]>(StatusCodes.Status200OK)]
@@ -239,7 +239,7 @@ public class UserController(
         // return Ok(cursi.Items.Select(c => new UserCursusDO(c)));
     }
 
-    [HttpGet("/users/{id}/user_goals")]
+    [HttpGet("/users/{id:guid}/user_goals")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserGoalDO[]>(StatusCodes.Status200OK)]
@@ -255,7 +255,7 @@ public class UserController(
     }
 
 
-    [HttpGet("/users/{id}/user_projects")]
+    [HttpGet("/users/{id:guid}/user_projects")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]

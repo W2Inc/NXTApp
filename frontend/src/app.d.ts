@@ -1,3 +1,4 @@
+/// <reference types="./types.d.ts" />
 /// <reference types="@auth/sveltekit" />
 
 // See https://svelte.dev/docs/kit/types#app.d.ts

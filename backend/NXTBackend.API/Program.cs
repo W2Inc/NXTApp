@@ -50,7 +50,7 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseResponseCompression();
 app.UseSerilogRequestLogging();
-if (!app.Environment.IsDevelopment())
+// if (!app.Environment.IsDevelopment())
     app.UseOutputCache();
 app.UseRateLimiter();
 app.UseHttpsRedirection();

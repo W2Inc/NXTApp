@@ -25,7 +25,7 @@ using NXTBackend.API.Utils;
 
 namespace NXTBackend.API.Controllers;
 
-public class QueryParams
+public class CursusQueryParams
 {
     [Description("URL slug to filter on")]
     [FromQuery(Name = "filter[slug]")]
@@ -38,22 +38,22 @@ public class QueryParams
 
 // ============================================================================
 
-[Route("cursus")]
 [ApiController]
+[Route("cursus"), Authorize]
 public class CursusController(
     ILogger<CursusController> logger,
     ICursusService cursusService,
     IUserService userService
 ) : Controller
 {
-    [HttpGet("/cursus")]
+    [HttpGet("/cursus"), AllowAnonymous]
     [EndpointSummary("Get all exisiting cursi")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<CursusDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
-        [FromQuery] QueryParams filter
+        [FromQuery] CursusQueryParams filter
     )
     {
         var page = await cursusService.GetAllAsync(paging, sorting, new()
@@ -66,7 +66,7 @@ public class CursusController(
         return Ok(page.Items.Select(c => new CursusDO(c)));
     }
 
-    [HttpPost("/cursus"), Authorize]
+    [HttpPost("/cursus")]
     [EndpointSummary("Create a cursus")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK),]
@@ -85,16 +85,19 @@ public class CursusController(
         return Ok(new CursusDO(cursus));
     }
 
-    [HttpGet("/cursus/{id}")]
+    [HttpGet("/cursus/{id:guid}"), AllowAnonymous]
     [EndpointSummary("Get a cursus")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<CursusDO>> Get(Guid id)
     {
-        return Ok(await cursusService.FindByIdAsync(id));
+        var cursus = await cursusService.FindByIdAsync(id);
+        if (cursus is null)
+            return NotFound();
+        return Ok(new CursusDO(cursus));
     }
 
-    [HttpPatch("/cursus/{id}")]
+    [HttpPatch("/cursus/{id:guid}")]
     [EndpointSummary("Update a cursus")]
     [EndpointDescription("Updates a cursus partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -125,7 +128,7 @@ public class CursusController(
     }
 
 
-    [HttpDelete("/cursus/{id}")]
+    [HttpDelete("/cursus/{id:guid}")]
     [EndpointSummary("Delete a cursus")]
     [EndpointDescription("Cursus deletion is rarely done, and only result in deprecations if they have dependencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -135,10 +138,11 @@ public class CursusController(
         if (cursus is null)
             return NotFound("Cursus not found");
 
-        return Ok(await cursusService.DeleteAsync(cursus));
+        await cursusService.DeleteAsync(cursus);
+        return Ok(new CursusDO(cursus));
     }
 
-    [HttpPut("/cursus/{id}/path")]
+    [HttpPut("/cursus/{id:guid}/path")]
     [Consumes("application/octet-stream")]
     [EndpointSummary("Define the track / path of a cursus")]
     [EndpointDescription("Cursi can have a set track of goals ")]
@@ -181,7 +185,7 @@ public class CursusController(
         return Ok();
     }
 
-    [HttpGet("/cursus/{id}/path")]
+    [HttpGet("/cursus/{id:guid}/path"), AllowAnonymous]
     [Produces(contentType: "application/octet-stream")]
     public async Task<IActionResult> GetPath(Guid id)
     {
@@ -198,7 +202,7 @@ public class CursusController(
 
             return new FileStreamResult(memoryStream, "application/octet-stream")
             {
-                FileDownloadName = $"{id}.graph"
+                FileDownloadName = $"{id:guid}.graph"
             };
         }
         catch (InvalidDataException e)
