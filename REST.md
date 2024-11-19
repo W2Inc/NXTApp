@@ -65,6 +65,9 @@ spotlights => (GET, POST)
 events => (GET, POST)
   {id} => (GET, PATCH, DELETE)
     ---------------------------
+reviews => (GET, POST)
+  {id} => (GET, PATCH, DELETE)
+    ---------------------------
 notifications => (GET, POST)
   {id} => (GET, PATCH, DELETE)
     ---------------------------

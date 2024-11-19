@@ -1,5 +1,5 @@
 ﻿// ============================================================================
-// Nextdemy B.V, Amsterdam 2023, All Rights Reserved.
+// W2Inc, Amsterdam 2023-2024, All Rights Reserved.
 // See README in the root project for more information.
 // ============================================================================
 
@@ -9,7 +9,7 @@ namespace NXTBackend.API.Domain.Enums;
 
 /// <summary>
 /// The different states that an entity can have.
-/// 
+///
 /// For example the state of a project
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]

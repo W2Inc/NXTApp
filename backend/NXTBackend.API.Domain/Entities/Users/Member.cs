@@ -1,5 +1,5 @@
 ﻿// ============================================================================
-// Nextdemy B.V, Amsterdam 2023, All Rights Reserved.
+// W2Inc, Amsterdam 2023-2024, All Rights Reserved.
 // See README in the root project for more information.
 // ============================================================================
 
@@ -73,7 +73,7 @@ public class Member : BaseEntity
 
     /// <summary>
     /// The user project this member is part of.
-    /// 
+    ///
     /// For users this "session" is shared amongst all members.
     /// </summary>
     [Column("user_project_id")]

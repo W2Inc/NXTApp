@@ -1,5 +1,5 @@
 ﻿// ============================================================================
-// Nextdemy B.V, Amsterdam 2023, All Rights Reserved.
+// W2Inc, Amsterdam 2023-2024, All Rights Reserved.
 // See README in the root project for more information.
 // ============================================================================
 
@@ -15,10 +15,10 @@ public enum CursusKind
 {
     /// <summary>
     /// A dynamic cursus is one whose content is generated on the fly.
-    /// 
+    ///
     /// For instance if the user is learning a new programming language, the content of the cursus
     /// can be generated based on the user's choice.
-    /// 
+    ///
     /// Perhaps it starts of with a project about creating a simple calculator, and then the user
     /// can choose to learn about creating a simple game next.
     /// </summary>

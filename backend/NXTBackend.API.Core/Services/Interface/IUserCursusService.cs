@@ -3,14 +3,13 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Interface;
-
-/// <summary>
-/// Service for the Rubric entity.
-/// </summary>
-public interface IRubricService : IDomainService<Rubric>
+public interface IUserCursusService : IDomainService<UserCursus>
 {
 
 }
