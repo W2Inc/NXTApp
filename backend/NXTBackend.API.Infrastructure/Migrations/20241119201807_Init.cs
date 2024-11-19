@@ -112,7 +112,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     description = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    markdown = table.Column<string>(type: "character varying(4096)", maxLength: 4096, nullable: false),
+                    markdown = table.Column<string>(type: "text", nullable: false),
                     slug = table.Column<string>(type: "text", nullable: false),
                     @public = table.Column<bool>(name: "public", type: "boolean", nullable: false),
                     enabled = table.Column<bool>(type: "boolean", nullable: false),
@@ -196,11 +196,11 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<int>(type: "integer", nullable: false),
                     description = table.Column<int>(type: "integer", maxLength: 256, nullable: false),
-                    Validated = table.Column<bool>(type: "boolean", nullable: false),
+                    validated = table.Column<bool>(type: "boolean", nullable: false),
                     reviewer_id = table.Column<Guid>(type: "uuid", nullable: true),
                     rubric_id = table.Column<Guid>(type: "uuid", nullable: true),
                     feedback_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    user_project_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    user_project_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -333,7 +333,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     email = table.Column<string>(type: "text", nullable: true),
-                    bio = table.Column<string>(type: "text", nullable: true),
+                    bio = table.Column<string>(type: "character varying(16384)", maxLength: 16384, nullable: true),
                     first_name = table.Column<string>(type: "text", nullable: true),
                     last_name = table.Column<string>(type: "text", nullable: true),
                     github_url = table.Column<string>(type: "text", nullable: true),
@@ -635,7 +635,8 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 table: "tbl_review",
                 column: "user_project_id",
                 principalTable: "tbl_user_project",
-                principalColumn: "id");
+                principalColumn: "id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_tbl_review_tbl_user_reviewer_id",

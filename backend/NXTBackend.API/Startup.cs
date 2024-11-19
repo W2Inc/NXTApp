@@ -47,7 +47,7 @@ public static class Startup
         services.AddControllers(options =>
         {
             options.Filters.Add<ServiceExceptionFilter>();
-            options.InputFormatters.Add(new TextPlainInputFormatter());
+            // options.InputFormatters.Add(new TextPlainInputFormatter());
         });
 
         // Authentication and Authorization (Keycloak)
@@ -111,12 +111,15 @@ public static class Startup
         services.AddResponseCompression();
 
         // Dependency Injection for Services
-        services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<ICursusService, CursusService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserCursusService, UserCursusService>();
+        services.AddScoped<IUserGoalService, UserGoalService>();
+        services.AddScoped<IUserProjectService, UserProjectService>();
         services.AddScoped<IFeatureService, FeatureService>();
         services.AddScoped<IGoalService, GoalService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
         services.AddSingleton(TimeProvider.System);

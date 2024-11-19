@@ -13,17 +13,14 @@ public class TextPlainInputFormatter : InputFormatter
 
     public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
     {
-        var request = context.HttpContext.Request;
-        using (var reader = new StreamReader(request.Body))
-        {
-            var content = await reader.ReadToEndAsync();
-            return await InputFormatterResult.SuccessAsync(content);
-        }
+        using var reader = new StreamReader(context.HttpContext.Request.Body);
+        string content = await reader.ReadToEndAsync();
+        return await InputFormatterResult.SuccessAsync(content);
     }
 
     public override bool CanRead(InputFormatterContext context)
     {
-        var contentType = context.HttpContext.Request.ContentType;
-        return contentType.StartsWith(ContentType);
+        string? contentType = context.HttpContext.Request.ContentType;
+        return contentType?.StartsWith(ContentType) ?? false;
     }
 }

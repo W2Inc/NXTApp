@@ -17,7 +17,7 @@ public class UserProjectDO : BaseObjectDO<UserProject>
         State = userProject.State;
         Project = userProject.Project;
         GitInfo = userProject.GitInfo;
-        Rubric = userProject.Rubric;
+        // Rubric = userProject.Rubric;
     }
 
     public TaskState State { get; set; }
@@ -26,7 +26,7 @@ public class UserProjectDO : BaseObjectDO<UserProject>
 
     public virtual GitDO? GitInfo { get; set; }
 
-    public virtual RubricDO? Rubric { get; set; }
+    // public virtual RubricDO? Rubric { get; set; }
 
     public static implicit operator UserProjectDO?(UserProject? entity) => entity is null ? null : new(entity);
 }

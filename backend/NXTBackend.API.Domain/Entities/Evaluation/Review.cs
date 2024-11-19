@@ -5,6 +5,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
@@ -61,18 +62,15 @@ public class Review : BaseEntity
 
         FeedbackId = null;
         Feedback = null;
-
-        UserProjectId = null;
-        UserProject = null;
     }
 
-    [Column("name"), Required]
+    [Column("kind")]
     public ReviewKind Kind { get; set; }
 
     /// <summary>
     /// A short description of the Cursus.
     /// </summary>
-    [Column("description"), StringLength(256)]
+    [Column("state")]
     public ReviewState State { get; set; }
 
     /// <summary>
@@ -81,6 +79,7 @@ public class Review : BaseEntity
     /// In most cases the reviewer is prompted to indicate wether the review
     /// passes or fails. For instance if the quality of the project was not sufficient.
     /// </summary>
+    [Column("validated")]
     public bool Validated { get; set; }
 
     /// <summary>
@@ -113,9 +112,9 @@ public class Review : BaseEntity
     /// <summary>
     /// The user project that this review is targeting.
     /// </summary>
-    [Column("user_project_id")]
-    public Guid? UserProjectId { get; set; }
+    [Column("user_project_id"), NotNull]
+    public Guid UserProjectId { get; set; }
 
-    [ForeignKey(nameof(UserProjectId))]
-    public virtual UserProject? UserProject { get; set; }
+    [ForeignKey(nameof(UserProjectId)), NotNull]
+    public virtual UserProject UserProject { get; set; }
 }

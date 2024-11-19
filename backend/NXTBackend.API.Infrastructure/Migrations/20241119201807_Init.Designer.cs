@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NXTBackend.API.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241111122046_Init")]
+    [Migration("20241119201807_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -74,8 +74,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.Property<string>("Markdown")
                         .IsRequired()
-                        .HasMaxLength(4096)
-                        .HasColumnType("character varying(4096)")
+                        .HasColumnType("text")
                         .HasColumnName("markdown");
 
                     b.Property<string>("Name")
@@ -207,12 +206,13 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<Guid?>("UserProjectId")
+                    b.Property<Guid>("UserProjectId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_project_id");
 
                     b.Property<bool>("Validated")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("validated");
 
                     b.HasKey("Id");
 
@@ -523,7 +523,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("slug");
 
-                    b.Property<string[]>("Tags")
+                    b.PrimitiveCollection<string[]>("Tags")
                         .IsRequired()
                         .HasColumnType("text[]")
                         .HasColumnName("tags");
@@ -553,7 +553,8 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Bio")
-                        .HasColumnType("text")
+                        .HasMaxLength(16384)
+                        .HasColumnType("character varying(16384)")
                         .HasColumnName("bio");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -872,7 +873,9 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.UserProject", "UserProject")
                         .WithMany()
-                        .HasForeignKey("UserProjectId");
+                        .HasForeignKey("UserProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Feedback");
 

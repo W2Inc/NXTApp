@@ -12,7 +12,10 @@ namespace NXTBackend.API.Core;
 
 /// <summary>
 /// Interface for Domain models.
+///
+/// Ensure that basic CRUD functions are defined.
 /// </summary>
+/// <remarks></remarks>
 /// <typeparam name="T">The model type.</typeparam>
 public interface IDomainService<T> where T : BaseEntity
 {

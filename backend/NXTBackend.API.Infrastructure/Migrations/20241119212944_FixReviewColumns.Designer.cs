@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NXTBackend.API.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241117171233_More")]
-    partial class More
+    [Migration("20241119212944_FixReviewColumns")]
+    partial class FixReviewColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -187,7 +187,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.Property<int>("Kind")
                         .HasColumnType("integer")
-                        .HasColumnName("name");
+                        .HasColumnName("kind");
 
                     b.Property<Guid?>("ReviewerId")
                         .HasColumnType("uuid")
@@ -198,20 +198,20 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnName("rubric_id");
 
                     b.Property<int>("State")
-                        .HasMaxLength(256)
                         .HasColumnType("integer")
-                        .HasColumnName("description");
+                        .HasColumnName("state");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<Guid?>("UserProjectId")
+                    b.Property<Guid>("UserProjectId")
                         .HasColumnType("uuid")
                         .HasColumnName("user_project_id");
 
                     b.Property<bool>("Validated")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("validated");
 
                     b.HasKey("Id");
 
@@ -872,7 +872,9 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.UserProject", "UserProject")
                         .WithMany()
-                        .HasForeignKey("UserProjectId");
+                        .HasForeignKey("UserProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Feedback");
 

@@ -35,7 +35,7 @@ public class ProjectQueryParams
 // ============================================================================
 
 [ApiController]
-[Route("projects"), Authorize]
+[Route("projects")]
 public class ProjectController(
     ILogger<ProjectController> logger,
     IProjectService projectService

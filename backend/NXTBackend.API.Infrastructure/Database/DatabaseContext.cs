@@ -63,11 +63,11 @@ public class DatabaseContext : DbContext
             .HasForeignKey(up => up.GitInfoId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<UserProject>()
-            .HasOne(up => up.Rubric)
-            .WithMany(r => r.UserProjects)
-            .HasForeignKey(up => up.RubricId)
-            .OnDelete(DeleteBehavior.Restrict);
+        // modelBuilder.Entity<UserProject>()
+        //     .HasOne(up => up.Rubric)
+        //     .WithMany(r => r.UserProjects)
+        //     .HasForeignKey(up => up.RubricId)
+        //     .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<UserProject>()
             .HasMany(up => up.Members)
@@ -229,10 +229,10 @@ public class DatabaseContext : DbContext
             .WithOne(rv => rv.Rubric)
             .HasForeignKey(rv => rv.RubricId);
 
-        modelBuilder.Entity<Rubric>()
-            .HasMany(r => r.UserProjects)
-            .WithOne(up => up.Rubric)
-            .HasForeignKey(up => up.RubricId);
+        // modelBuilder.Entity<Rubric>()
+        //     .HasMany(r => r.UserProjects)
+        //     .WithOne(up => up.Rubric)
+        //     .HasForeignKey(up => up.RubricId);
 
         modelBuilder.Entity<Rubric>()
             .HasOne(r => r.GitInfo)

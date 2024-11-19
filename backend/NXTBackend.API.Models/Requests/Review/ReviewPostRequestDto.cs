@@ -10,13 +10,10 @@ using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Models.Requests.Review;
 
-/// <summary>
-/// The post request for creating a new review
-/// </summary>
-public class ReviewPostRequestDto : BaseRequestDTO
+public class ReviewPostRequestDTO : BaseRequestDTO
 {
     [Required]
-    public ReviewKind? Kind { get; set; }
+    public ReviewKind Kind { get; set; }
 
     [Required]
     public Guid RubricId { get; set; }
@@ -24,6 +21,5 @@ public class ReviewPostRequestDto : BaseRequestDTO
     [Required]
     public Guid UserProjectId { get; set; }
 
-    [Required]
-    public Guid? ReviewerId { get; set; }
+    public Guid? ReviewerId { get; set; } = null;
 }

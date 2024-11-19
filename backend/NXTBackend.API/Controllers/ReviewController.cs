@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore.Query;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Cursus;
 using NXTBackend.API.Models.Requests.LearningGoal;
@@ -35,11 +37,12 @@ namespace NXTBackend.API.Controllers;
 // ============================================================================
 
 [ApiController]
-[Route("reviews"), Authorize]
+[Route("reviews")]
 public class ReviewController(
     ILogger<ReviewController> logger,
-    IReviewService reviewService
-    // IUserProjectService userProjectService
+    IReviewService reviewService,
+    IUserProjectService userProjectService,
+    IUserService userService
 ) : Controller
 {
     [HttpGet("/reviews"), AllowAnonymous]
@@ -56,40 +59,68 @@ public class ReviewController(
         return Ok(page.Items.Select(c => new ReviewDO(c)));
     }
 
-    [HttpPost("/reviews")]
-    [EndpointSummary("Create a goal")]
-    [EndpointDescription("")]
-    [ProducesResponseType(StatusCodes.Status200OK),]
-    public async Task<ActionResult<LearningGoalDO>> Create([FromBody] ReviewPostRequestDto data)
+    [HttpPost("/reviews"), Consumes("application/json")]
+    [EndpointSummary("Create a review")]
+    [EndpointDescription(@"
+If the kind of review and reviewerId are null.It will signal that the project instance is *requesting* a review"
+    )]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<ReviewDO>> Create(ReviewPostRequestDTO data)
     {
-        // If neither exists, then user who is making the request is asking to *be* reviewed.
-        // In return the review we create will have a pending state
-        if (data.Kind is null && data.ReviewerId is null)
-        {
-            // First check that the user requesting this review
-            // is actually a member or an admin
+        logger.LogCritical("{@shit}", data);
+        // 1. If self review, the reviewerId in data must not be null and the kind be self
+        // 2. If peer / async review
+        //      - If we are requesting a review, requester must be a member and reviewerId is null
+        //      - If we are trying to review an instance that is maybe requesting a review then make sure we are not a member
+        // 3. If Auto then reviewerId will be that of the BO
 
+        if (data.Kind is ReviewKind.Self && (data.ReviewerId is null || User.GetSID() != data.ReviewerId))
+            throw new ServiceException("Reviewer ID is required and must be the authenticated user");
+
+        var userProject = await userProjectService.FindByIdAsync(data.UserProjectId);
+        if (userProject is null)
+            throw new ServiceException("Project instance does not exist");
+
+        bool userIsMember = userProject.Members.Any(m => m.UserId == User.GetSID());
+        if (data.ReviewerId is null)
+        {
+            if (!userIsMember)
+                throw new ServiceException(StatusCodes.Status403Forbidden, "You need to be a member of this project instance");
+
+            var review = await reviewService.CreateAsync(new()
+            {
+                Kind = data.Kind,
+                State = ReviewState.Pending,
+                UserProjectId = data.UserProjectId,
+            });
+
+            return Ok(new ReviewDO(review));
         }
-            // return UnprocessableEntity(new ProblemDetails() { Title = "" });
 
-        var review = await reviewService.CreateAsync(new()
+        if (userProject.Members.Any(m => m.UserId == data.ReviewerId))
+            throw new ServiceException("Reviewer must not be a member of the project");
+        if (await userService.FindByIdAsync(data.ReviewerId.Value) is not null)
+            throw new ServiceException("Reviewer does not exist");
+
+        return Ok(new ReviewDO(await reviewService.CreateAsync(new()
         {
-
-        });
-
-        return Ok(new ReviewDO(review));
+            Kind = data.Kind,
+            State = ReviewState.InProgress,
+            ReviewerId = data.ReviewerId,
+            UserProjectId = data.UserProjectId,
+        })));
     }
 
     [HttpGet("/goals/{id:guid}"), AllowAnonymous]
     [EndpointSummary("Get a goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<LearningGoalDO>> Get(Guid id)
+    public async Task<ActionResult<ReviewDO>> Get(Guid id)
     {
-        var goal = await goalService.FindByIdAsync(id);
-        if (goal is null)
+        var review = await reviewService.FindByIdAsync(id);
+        if (review is null)
             return NotFound();
-        return Ok(new LearningGoalDO(goal));
+        return Ok(new ReviewDO(review));
     }
 
     [HttpPatch("/goals/{id:guid}")]
@@ -98,26 +129,27 @@ public class ReviewController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<LearningGoalDO>> Update(Guid id, [FromBody] GoalPatchRequestDto data)
+    public async Task<ActionResult<ReviewDO>> Update(Guid id, [FromBody] ReviewPatchRequestDto data)
     {
-        var goal = await goalService.FindByIdAsync(id);
-        if (goal is null)
-            return NotFound();
-        if (User.GetSID() != goal.CreatorId && !User.IsAdmin())
-            return Forbid();
+        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
+        // var goal = await reviewService.FindByIdAsync(id);
+        // if (goal is null)
+        //     return NotFound();
+        // if (User.GetSID() != goal.CreatorId && !User.IsAdmin())
+        //     return Forbid();
 
-        if (data.Markdown is not null)
-            goal.Markdown = data.Markdown;
-        if (data.Description is not null)
-            goal.Description = data.Description;
-        if (data.Name is not null)
-        {
-            goal.Name = data.Name;
-            goal.Slug = goal.Name.ToUrlSlug();
-        }
+        // if (data.Markdown is not null)
+        //     goal.Markdown = data.Markdown;
+        // if (data.Description is not null)
+        //     goal.Description = data.Description;
+        // if (data.Name is not null)
+        // {
+        //     goal.Name = data.Name;
+        //     goal.Slug = goal.Name.ToUrlSlug();
+        // }
 
-        var updatedGoal = await goalService.UpdateAsync(goal);
-        return Ok(new LearningGoalDO(updatedGoal));
+        // var updatedGoal = await goalService.UpdateAsync(goal);
+        // return Ok(new ReviewDO(updatedGoal));
     }
 
 
@@ -127,49 +159,11 @@ public class ReviewController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<LearningGoalDO>> Deprecate(Guid id)
     {
-        var goal = await goalService.FindByIdAsync(id);
-        if (goal is null)
+        var review = await reviewService.FindByIdAsync(id);
+        if (review is null)
             return NotFound("Cursus not found");
 
-        await goalService.DeleteAsync(goal);
-        return Ok(new LearningGoalDO(goal));
-    }
-
-    [HttpGet("/goals/{id:guid}/projects"), AllowAnonymous]
-    [EndpointSummary("Get the projects that are part of this goal")]
-    [EndpointDescription("")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<LearningGoalDO>>> GetProjects(
-        Guid id,
-        [FromQuery] PaginationParams paging,
-        [FromQuery] SortingParams sorting
-    )
-    {
-        var goal = await goalService.FindByIdAsync(id);
-        if (goal is null)
-            return NotFound("Cursus not found");
-
-        var page = await goalService.GetProjects(goal, paging, sorting);
-        page.AppendHeaders(Response.Headers);
-        return Ok(page.Items.Select(p => new ProjectDO(p)));
-    }
-
-    [HttpGet("/goals/{id:guid}/users"), AllowAnonymous]
-    [EndpointSummary("Get the projects that are part of this goal")]
-    [EndpointDescription("")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<LearningGoalDO>>> GetUsers(
-        Guid id,
-        [FromQuery] PaginationParams paging,
-        [FromQuery] SortingParams sorting
-    )
-    {
-        var goal = await goalService.FindByIdAsync(id);
-        if (goal is null)
-            return NotFound("Cursus not found");
-
-        var page = await goalService.GetUsers(goal, paging, sorting);
-        page.AppendHeaders(Response.Headers);
-        return Ok(page.Items.Select(p => new SimpleUserDO(p)));
+        await reviewService.DeleteAsync(review);
+        return Ok(new ReviewDO(review));
     }
 }

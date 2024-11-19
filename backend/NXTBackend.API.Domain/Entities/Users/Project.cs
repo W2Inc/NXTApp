@@ -45,8 +45,8 @@ public class UserProject : BaseEntity
         Project = null!;
         GitInfoId = Guid.Empty;
         GitInfo = null!;
-        RubricId = Guid.Empty;
-        Rubric = null!;
+        // RubricId = Guid.Empty;
+        // Rubric = null!;
         Members = null!;
     }
 
@@ -65,11 +65,11 @@ public class UserProject : BaseEntity
     [ForeignKey(nameof(GitInfoId))]
     public virtual Git GitInfo { get; set; }
 
-    [Column("rubric_id")]
-    public Guid RubricId { get; set; }
+    // [Column("rubric_id")]
+    // public Guid RubricId { get; set; }
 
-    [ForeignKey(nameof(RubricId))]
-    public virtual Rubric Rubric { get; set; }
+    // [ForeignKey(nameof(RubricId))]
+    // public virtual Rubric Rubric { get; set; }
 
     /// <summary>
     /// All the members that are part of this project.
