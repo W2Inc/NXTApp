@@ -67,6 +67,7 @@ public class GoalController(
     [ProducesResponseType(StatusCodes.Status200OK),]
     public async Task<ActionResult<LearningGoalDO>> Create([FromBody] GoalPostRequestDto data)
     {
+
         var goal = await goalService.CreateAsync(new()
         {
             CreatorId = User.GetSID(),

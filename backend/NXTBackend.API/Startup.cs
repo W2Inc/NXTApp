@@ -47,7 +47,7 @@ public static class Startup
         services.AddControllers(options =>
         {
             options.Filters.Add<ServiceExceptionFilter>();
-            // options.InputFormatters.Add(new TextPlainInputFormatter());
+            options.InputFormatters.Add(new TextPlainInputFormatter());
         });
 
         // Authentication and Authorization (Keycloak)
