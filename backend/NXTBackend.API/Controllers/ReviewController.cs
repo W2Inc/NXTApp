@@ -65,49 +65,54 @@ public class ReviewController(
 If the kind of review and reviewerId are null.It will signal that the project instance is *requesting* a review"
     )]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<ReviewDO>> Create(ReviewPostRequestDTO data)
+    public async Task<ActionResult<ReviewDO>> Create(ReviewPostRequestDTO requestedReview)
     {
-        logger.LogCritical("{@shit}", data);
         // 1. If self review, the reviewerId in data must not be null and the kind be self
         // 2. If peer / async review
         //      - If we are requesting a review, requester must be a member and reviewerId is null
         //      - If we are trying to review an instance that is maybe requesting a review then make sure we are not a member
         // 3. If Auto then reviewerId will be that of the BO
 
-        if (data.Kind is ReviewKind.Self && (data.ReviewerId is null || User.GetSID() != data.ReviewerId))
-            throw new ServiceException("Reviewer ID is required and must be the authenticated user");
-
-        var userProject = await userProjectService.FindByIdAsync(data.UserProjectId);
+        // TODO: Other apps might want to post to this and makes no sense to check claims
+        // Instead we need see if reviewer id is member of instance.
+        var userProject = await userProjectService.FindByIdAsync(requestedReview.UserProjectId);
         if (userProject is null)
-            throw new ServiceException("Project instance does not exist");
+            return UnprocessableEntity(new ProblemDetails() { Title = "Project instance does not exist" });
+        if (userProject.GitInfo is null)
+            return UnprocessableEntity(new ProblemDetails() { Title = "Project has no git repository specified" });
 
-        bool userIsMember = userProject.Members.Any(m => m.UserId == User.GetSID());
-        if (data.ReviewerId is null)
+        bool userIsMember = userProject.Members.Any(m => m.UserId == requestedReview.ReviewerId);
+        if (requestedReview.Kind is ReviewKind.Self && !userIsMember)
+            return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer must be a member of project instance" });
+
+        // TODO: Implement code evaluation service
+        if (requestedReview.Kind is ReviewKind.Auto)
+            throw new ServiceException(StatusCodes.Status501NotImplemented, "Auto reviews are not yet implemented");
+
+        if (requestedReview.ReviewerId is null)
         {
-            if (!userIsMember)
-                throw new ServiceException(StatusCodes.Status403Forbidden, "You need to be a member of this project instance");
-
             var review = await reviewService.CreateAsync(new()
             {
-                Kind = data.Kind,
+                Kind = requestedReview.Kind,
                 State = ReviewState.Pending,
-                UserProjectId = data.UserProjectId,
+                UserProjectId = requestedReview.UserProjectId,
             });
 
             return Ok(new ReviewDO(review));
         }
 
-        if (userProject.Members.Any(m => m.UserId == data.ReviewerId))
-            throw new ServiceException("Reviewer must not be a member of the project");
-        if (await userService.FindByIdAsync(data.ReviewerId.Value) is not null)
-            throw new ServiceException("Reviewer does not exist");
+        if (userProject.Members.Any(m => m.UserId == requestedReview.ReviewerId))
+            return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer must not be a member of the project" });
+        if (await userService.FindByIdAsync(requestedReview.ReviewerId.Value) is not null)
+            return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer does not exist" });
 
+        // NOTE: Still pending but user who is reviewer gets notified to start whenever possible
         return Ok(new ReviewDO(await reviewService.CreateAsync(new()
         {
-            Kind = data.Kind,
-            State = ReviewState.InProgress,
-            ReviewerId = data.ReviewerId,
-            UserProjectId = data.UserProjectId,
+            Kind = requestedReview.Kind,
+            State = ReviewState.Pending,
+            ReviewerId = requestedReview.ReviewerId,
+            UserProjectId = requestedReview.UserProjectId,
         })));
     }
 
