@@ -46,8 +46,6 @@ public class LearningGoal : BaseEntity
         Description = string.Empty;
         CreatorId = Guid.Empty;
         Creator = null!;
-        Projects = [];
-        UserGoals = [];
     }
 
     [Column("name")]

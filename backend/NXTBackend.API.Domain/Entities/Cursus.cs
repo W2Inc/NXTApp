@@ -124,11 +124,11 @@ public class Cursus : BaseEntity
     /// The track / path of the Cursus stored in the .graph format.
     /// </summary>
     [Column("track")]
-    public byte[] Track { get; set; } = [];
+    public byte[] Track { get; set; }
 
     /// <summary>
     /// The different cursus sessions that exist for this cursus.
     /// </summary>
     [JsonIgnore]
-    public virtual ICollection<UserCursus> UserCursi { get; set; } = [];
+    public virtual ICollection<UserCursus> UserCursi { get; set; }
 }
