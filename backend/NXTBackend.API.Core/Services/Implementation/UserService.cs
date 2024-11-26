@@ -9,6 +9,7 @@ using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Models.Responses.Objects;
+using Microsoft.AspNetCore.Http;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -77,6 +78,99 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
         });
         await _context.SaveChangesAsync();
         return actionEvent.Entity;
+    }
+
+    public async Task<UserProject> SubscribeToProject(Guid userId, Guid projectId)
+    {
+        // First try to find any inactive project this user might have an activate it again.
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId) ?? throw new ServiceException("Project not found");
+        var user = await FindByIdAsync(userId) ?? throw new ServiceException("User not found");
+        var exisitingUserProject = await _context
+            .UserProject
+            .Where(up => up.Members.Any(m => m.UserId == userId) && up.ProjectId == projectId)
+            .FirstOrDefaultAsync();
+
+        // TODO: Execute custom rules!
+
+        if (exisitingUserProject is null)
+        {
+            var userProject = await _context.UserProject.AddAsync(new()
+            {
+                State = TaskState.Active,
+                ProjectId = projectId,
+                GitInfoId = null,
+                Members = []
+            });
+
+            await _context.Members.AddAsync(new()
+            {
+                UserId = userId,
+                State = MemberInviteState.Accepted,
+                UserProjectId = userProject.Entity.Id
+            });
+
+            await _context.SaveChangesAsync();
+            return userProject.Entity;
+        }
+
+        switch (exisitingUserProject.State)
+        {
+            case TaskState.Completed:
+                throw new ServiceException("Cannot Re-subscribe to a completed project");
+            case TaskState.Active:
+            case TaskState.Awaiting:
+                throw new ServiceException("User is already subscribed");
+            case TaskState.Inactive:
+                exisitingUserProject.State = TaskState.Active;
+                var userProject = _context.UserProject.Update(exisitingUserProject);
+                await _context.SaveChangesAsync();
+                return userProject.Entity;
+            default:
+                throw new NotImplementedException("TaskState not being handled");
+        }
+    }
+
+    public async Task<UserProject> UnsubscribeFromProject(Guid userId, Guid projectId)
+    {
+        // 1. State must only be active
+        // 2. Must not be the last user to leave
+        // 3. If last user and no git info or reviews on user project then hard delete
+        // 4. Switch state to Inactive instead
+
+        var userProject = await _context
+            .UserProject
+            .Include(up => up.Project)
+            .Include(up => up.GitInfo)
+            .Where(up => up.Members.Any(m => m.UserId == userId) && up.ProjectId == projectId)
+            .FirstOrDefaultAsync();
+
+        if (userProject is null)
+            throw new ServiceException("User project does not exist");
+        if (userProject.State != TaskState.Active)
+        {
+            string detail = $"The project can't be unsubscribed from when in the following state: {userProject.State}";
+            throw new ServiceException(StatusCodes.Status422UnprocessableEntity, "Unable to unsubscribe", detail);
+        }
+
+        bool isLastMember = userProject.Members.Count == 1;
+        bool hasReviews = _context
+            .Reviews
+            .Where(r => r.UserProjectId == userProject.Id)
+            .Any();
+
+        if (isLastMember && !hasReviews)
+        {
+            _context.UserProject.Remove(userProject);
+            _context.Members.RemoveRange(userProject.Members);
+        }
+        else
+        {
+            userProject.State = TaskState.Inactive;
+            _context.UserProject.Update(userProject);
+        }
+
+        await _context.SaveChangesAsync();
+        return userProject;
     }
 
     public async Task<User?> UpsertDetails(Guid id, Details details)

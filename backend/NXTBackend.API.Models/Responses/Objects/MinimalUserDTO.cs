@@ -9,9 +9,12 @@ using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
-public class SimpleUserDO : BaseObjectDO<User>
+/// <summary>
+/// Minimal representation of a user.
+/// </summary>
+public class MinimalUserDTO : BaseObjectDO<User>
 {
-    public SimpleUserDO(User user) : base(user)
+    public MinimalUserDTO(User user) : base(user)
     {
         Login = user.Login;
         DisplayName = user.DisplayName;
@@ -19,7 +22,7 @@ public class SimpleUserDO : BaseObjectDO<User>
         DetailsId = user.DetailsId;
     }
 
-    public static implicit operator SimpleUserDO?(User? user) => user is null ? null : new(user);
+    public static implicit operator MinimalUserDTO?(User? user) => user is null ? null : new(user);
 
     public string Login { get; set; }
 

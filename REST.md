@@ -9,18 +9,18 @@ users => (GET) ✔️
       read => (POST) - Mark all as read ✔️
     events => (GET) ✔️
     ---------------------------
-  projects => (GET)
+  projects => (GET, POST)
     {user_projects_id} => (GET, PATCH)
-        git  => (GET, PUT)
-        reviews  => (GET, POST)
+        git  => (GET ❌, PUT)
+        reviews  => (GET, POST) ❌
         invitation  => (PUT, DELETE)
     ---------------------------
-  goals => (GET)
+  goals => (GET, POST)
     {user_goals_id} => (GET, PATCH)
         projects => (GET)
     ---------------------------
 
-  cursus => (GET)
+  cursus => (GET, POST)
     {user_cursus_id} => (GET, PATCH)
         projects
         goals
@@ -49,15 +49,14 @@ users => (GET) ✔️
         (DELETE): ... -> "Unsubscribe" from a cursus -> Halts everything!
         ---------------------------
 
-projects => (GET, POST)
-  {id} => (GET, PATCH, DELETE) <- Delete deprecate, not hard
-
+projects => (GET, POST) ✔️
+  {id} => (GET, PATCH, DELETE) <- Delete deprecate, not hard ✔️
   ---------------------------
-cursus => (GET, POST)
-  {id} => (GET, PATCH, DELETE) <- Delete deprecate, not hard
+cursus => (GET, POST) ✔️
+  {id} => (GET, PATCH, DELETE) <- Delete deprecate, not hard ✔️
   ---------------------------
-goals => (GET, POST)
-  {id} => (GET, PATCH, DELETE) <- Delete deprecate, not hard
+goals => (GET, POST) ✔️
+  {id} => (GET, PATCH, DELETE) <- Delete deprecate, not hard ✔️
   ---------------------------
 spotlights => (GET, POST)
   {id} => (GET, PATCH, DELETE)

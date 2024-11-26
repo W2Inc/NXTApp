@@ -16,7 +16,6 @@ public class MemberDO : BaseObjectDO<Member>
     {
         State = member.State;
         User = member.User;
-        UserGoalId = member.UserGoalId;
         UserProjectId = member.UserProjectId;
     }
 
@@ -25,12 +24,7 @@ public class MemberDO : BaseObjectDO<Member>
     /// </summary>
     public MemberInviteState State { get; set; }
 
-    public virtual SimpleUserDO? User { get; set; } // Assuming UserDO exists for the User class
-
-    /// <summary>
-    /// Which user goal this member is working on.
-    /// </summary>
-    public Guid? UserGoalId { get; set; }
+    public virtual MinimalUserDTO? User { get; set; } // Assuming UserDO exists for the User class
 
     /// <summary>
     /// The user project this member is part of.

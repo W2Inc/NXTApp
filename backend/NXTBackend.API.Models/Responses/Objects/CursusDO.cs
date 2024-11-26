@@ -71,6 +71,6 @@ public class CursusDO : BaseObjectDO<Cursus>
     /// <summary>
     /// The creator of the cursus.
     /// </summary>
-    public SimpleUserDO? Creator { get; set; }
+    public MinimalUserDTO? Creator { get; set; }
 
 }

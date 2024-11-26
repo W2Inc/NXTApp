@@ -43,7 +43,7 @@ public class ProjectDO : BaseObjectDO<Project>
 
     public virtual GitDO? GitInfo { get; set; }
 
-    public virtual SimpleUserDO? Creator { get; set; }
+    public virtual MinimalUserDTO? Creator { get; set; }
 
     public string[] Tags { get; set; }
 }

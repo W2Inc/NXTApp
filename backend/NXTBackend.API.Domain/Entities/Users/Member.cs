@@ -41,8 +41,6 @@ public class Member : BaseEntity
         State = MemberInviteState.Pending;
         UserId = Guid.Empty;
         User = null!;
-        UserGoalId = null;
-        UserGoal = null;
         UserProjectId = Guid.Empty;
         UserProject = null!;
     }
@@ -61,15 +59,6 @@ public class Member : BaseEntity
 
     [ForeignKey(nameof(UserId))]
     public virtual User User { get; set; }
-
-    /// <summary>
-    /// Which user goal this member is working on.
-    /// </summary>
-    [Column("user_goal_id")]
-    public Guid? UserGoalId { get; set; }
-
-    [ForeignKey(nameof(UserGoalId))]
-    public virtual UserGoal? UserGoal { get; set; }
 
     /// <summary>
     /// The user project this member is part of.

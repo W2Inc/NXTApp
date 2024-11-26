@@ -52,4 +52,20 @@ public interface IUserService : IDomainService<User>
     /// <param name="action"></param>
     /// <returns></returns>
     public Task<SpotlightEventAction> SetSpotlight(Guid userId, Guid spotlightId, bool action);
+
+    /// <summary>
+    /// Subscribe a user to project
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="projectId"></param>
+    /// <returns></returns>
+    public Task<UserProject> SubscribeToProject(Guid userId, Guid projectId);
+
+    /// <summary>
+    /// Unsubscribe a user to project
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="projectId"></param>
+    /// <returns></returns>
+    public Task<UserProject> UnsubscribeFromProject(Guid userId, Guid projectId);
 }

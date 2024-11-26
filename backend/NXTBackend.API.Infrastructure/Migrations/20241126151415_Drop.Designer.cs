@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NXTBackend.API.Infrastructure.Database;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NXTBackend.API.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20241126151415_Drop")]
+    partial class Drop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,12 +26,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "cursus_kind", new[] { "dynamic", "fixed" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "member_invite_state", new[] { "pending", "accepted" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "notification_kind", new[] { "default", "new_cursus", "new_project", "new_goal", "new_event" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "review_kind", new[] { "self", "peer", "async", "auto" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "review_state", new[] { "pending", "in_progress", "finished" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "task_state", new[] { "inactive", "active", "awaiting", "completed" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("LearningGoalProject", b =>
@@ -962,7 +959,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.UserProject", "UserProject")
                         .WithMany("Members")
                         .HasForeignKey("UserProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");

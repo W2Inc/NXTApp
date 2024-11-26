@@ -16,17 +16,14 @@ public class UserGoalDO : BaseObjectDO<UserGoal>
         User = userGoal.User;
         GoalId = userGoal.GoalId;
         UserCursusId = userGoal.UserCursusId;
-        Members = userGoal.Members.Select(c => new MemberDO(c));
     }
 
 
-    public virtual SimpleUserDO? User { get; set; }
+    public virtual MinimalUserDTO? User { get; set; }
 
     public Guid GoalId { get; set; }
 
     public Guid? UserCursusId { get; set; }
-
-    public IEnumerable<MemberDO> Members { get; set; }
 
     public static implicit operator UserGoalDO?(UserGoal? entity) => entity is null ? null : new UserGoalDO(entity);
 }

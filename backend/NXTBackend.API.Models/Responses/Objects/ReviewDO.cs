@@ -30,7 +30,7 @@ public class ReviewDO : BaseObjectDO<Review>
 
     public Guid? ReviewerId { get; set; }
 
-    public SimpleUserDO? Reviewer { get; set; }
+    public MinimalUserDTO? Reviewer { get; set; }
 
     public RubricDO? Rubric { get; set; }
 

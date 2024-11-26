@@ -170,6 +170,6 @@ public class GoalController(
 
         var page = await goalService.GetUsers(goal, paging, sorting);
         page.AppendHeaders(Response.Headers);
-        return Ok(page.Items.Select(p => new SimpleUserDO(p)));
+        return Ok(page.Items.Select(p => new MinimalUserDTO(p)));
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
@@ -224,7 +225,7 @@ public class UserController(
         return Created();
     }
 
-    [HttpGet("/users/{id:guid}/user_cursus")]
+    [HttpGet("/users/{id:guid}/cursus")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserCursusDO[]>(StatusCodes.Status200OK)]
@@ -239,7 +240,7 @@ public class UserController(
         // return Ok(cursi.Items.Select(c => new UserCursusDO(c)));
     }
 
-    [HttpGet("/users/{id:guid}/user_goals")]
+    [HttpGet("/users/{id:guid}/goals")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserGoalDO[]>(StatusCodes.Status200OK)]
@@ -255,7 +256,7 @@ public class UserController(
     }
 
 
-    [HttpGet("/users/{id:guid}/user_projects")]
+    [HttpGet("/users/{id:guid}/projects")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
@@ -268,5 +269,91 @@ public class UserController(
         return Ok();
         // var cursi = await userService.GetUserProjects(user, pagination);
         // return Ok(cursi.Items.Select(c => new UserProjectDO(c)));
+    }
+
+    [HttpPost("/users/{id:guid}/projects/{projectId:guid}")]
+    [EndpointSummary("Subscribe a user to a project")]
+    [EndpointDescription("Subscribe a user to a project")]
+    [ProducesResponseType<UserProjectDO>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> SubscribeToProject(Guid id, Guid projectId)
+    {
+        var userID = User.GetSID();
+        if (userID != id && !User.IsAdmin())
+            return Forbid();
+
+        var userProject = await userService.SubscribeToProject(userID, projectId);
+        return Ok(new UserProjectDO(userProject));
+    }
+
+    [HttpDelete("/users/{id:guid}/projects/{projectId:guid}")]
+    [EndpointSummary("Unsubscribe a user from a project")]
+    [EndpointDescription("Unsubscribe a user from a project")]
+    [ProducesResponseType<UserProjectDO>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UnsubscribeToProject(Guid id, Guid projectId)
+    {
+        var userID = User.GetSID();
+        if (userID != id && !User.IsAdmin())
+            return Forbid();
+
+        var userProject = await userService.UnsubscribeFromProject(userID, projectId);
+        return Ok(new UserProjectDO(userProject));
+    }
+
+    // TODO: /users/{id:guid}/cursus{cursusId:guid} -> GET, POST, DELETE,
+    // TODO: /users/{id:guid}/goals{goalId:guid}
+    // TODO: /users/{id:guid}/projects{projectId:guid}
+
+    // ============================================================================
+    // User Projects (a.k.a Project Instances)
+    // ============================================================================
+
+    [Tags(["Project Instances"])]
+    [HttpGet("/users/projects/")]
+    [EndpointSummary("Get all project instances")]
+    [EndpointDescription("Get all project instances")]
+    [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserProjects([FromQuery] PaginationParams pagination)
+    {
+        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
+    }
+
+    [Tags(["Project Instances"])]
+    [HttpGet("/users/projects/{id:guid}")]
+    [EndpointSummary("")]
+    [EndpointDescription("")]
+    [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUserProject(Guid id, [FromQuery] PaginationParams pagination)
+    {
+        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
+    }
+
+    [Tags(["Project Instances"])]
+    [HttpPut("/users/projects/{id:guid}/git")]
+    [EndpointSummary("Set the Git info")]
+    [EndpointDescription("Set the git info")]
+    [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> SetUserProjectGit(Guid id)
+    {
+        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
+    }
+
+    [Tags(["Project Instances"])]
+    [HttpPost("/users/projects/{id:guid}/invitation")]
+    [EndpointSummary("Send a invitation to a user project")]
+    [EndpointDescription("Send a invitation to a user project")]
+    [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> InviteUserToUserPorject(Guid id)
+    {
+        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
+    }
+
+    [Tags(["Project Instances"])]
+    [HttpDelete("/users/projects/{id:guid}/invitation")]
+    [EndpointSummary("Decline a invitation to a user project")]
+    [EndpointDescription("Decline a invitation to a user project")]
+    [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeclineInvitationToUserPorject(Guid id)
+    {
+        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
     }
 }

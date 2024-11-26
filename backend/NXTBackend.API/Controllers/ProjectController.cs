@@ -61,10 +61,10 @@ public class ProjectController(
         return Ok(page.Items.Select(c => new ProjectDO(c)));
     }
 
-    [HttpPost("/projects")]
+    [HttpPost("/projects"), Authorize]
     [EndpointSummary("Create a project")]
     [EndpointDescription("")]
-    [ProducesResponseType(StatusCodes.Status200OK),]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDto data)
     {
         var project = await projectService.CreateAsync(new()
@@ -74,6 +74,10 @@ public class ProjectController(
             Name = data.Name,
             Slug = data.Name.ToUrlSlug(),
             Description = data.Description,
+            MaxMembers = data.MaxMembers,
+            ThumbnailUrl = data.ThumbnailUrl,
+            GitInfoId = new Guid("402c6744-1c60-46d1-a524-fd2a82abb112"),
+            Tags = []
         });
 
         return Ok(new ProjectDO(project));
@@ -169,6 +173,6 @@ public class ProjectController(
 
         var page = await projectService.GetUsers(project, paging, sorting);
         page.AppendHeaders(Response.Headers);
-        return Ok(page.Items.Select(p => new SimpleUserDO(p)));
+        return Ok(page.Items.Select(p => new MinimalUserDTO(p)));
     }
 }

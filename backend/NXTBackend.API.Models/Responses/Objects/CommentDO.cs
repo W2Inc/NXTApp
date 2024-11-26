@@ -19,7 +19,7 @@ public class CommentDO : BaseObjectDO<Comment>
 
     public string Markdown { get; set; }
 
-    public virtual SimpleUserDO User { get; set; }
+    public virtual MinimalUserDTO User { get; set; }
 
     public virtual FeedbackDO Feedback { get; set; }
 

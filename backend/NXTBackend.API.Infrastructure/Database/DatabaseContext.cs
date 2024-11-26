@@ -3,6 +3,7 @@ using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Infrastructure.Database;
 
@@ -21,6 +22,14 @@ public class DatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresEnum<TaskState>();
+        modelBuilder.HasPostgresEnum<CursusKind>();
+        modelBuilder.HasPostgresEnum<MemberInviteState>();
+        modelBuilder.HasPostgresEnum<NotificationKind>();
+        modelBuilder.HasPostgresEnum<ReviewKind>();
+        modelBuilder.HasPostgresEnum<ReviewState>();
+        // modelBuilder.HasPostgresEnum<OwnerKind>(); // TODO: Figure out namespacing for projects / goals and cursi
+
         /**
          * We avoid using unique constraints in preference to just checking before
          * if the entity exists for example. This is because we want to avoid having 500 errors
@@ -63,17 +72,11 @@ public class DatabaseContext : DbContext
             .HasForeignKey(up => up.GitInfoId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // modelBuilder.Entity<UserProject>()
-        //     .HasOne(up => up.Rubric)
-        //     .WithMany(r => r.UserProjects)
-        //     .HasForeignKey(up => up.RubricId)
-        //     .OnDelete(DeleteBehavior.Restrict);
-
         modelBuilder.Entity<UserProject>()
             .HasMany(up => up.Members)
             .WithOne(pm => pm.UserProject)
             .HasForeignKey(up => up.UserProjectId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     /// <summary>
@@ -138,12 +141,6 @@ public class DatabaseContext : DbContext
         modelBuilder.Entity<Member>()
             .HasOne(m => m.UserProject)
             .WithMany(up => up.Members)
-            .HasForeignKey(m => m.UserProjectId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Member>()
-            .HasOne(m => m.UserGoal)
-            .WithMany(ug => ug.Members)
             .HasForeignKey(m => m.UserProjectId)
             .OnDelete(DeleteBehavior.Restrict);
     }
@@ -354,5 +351,6 @@ public class DatabaseContext : DbContext
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Git> GitInfo { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
+    public DbSet<Member> Members { get; set; }
 #nullable restore
 }

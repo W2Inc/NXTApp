@@ -64,10 +64,4 @@ public class UserGoal : BaseEntity
 
     [ForeignKey(nameof(UserCursusId))]
     public virtual UserCursus? UserCursus { get; set; }
-
-    /// <summary>
-    /// All the members that are part of this project.
-    /// At most N members to what the project allows.
-    /// </summary>
-    public virtual ICollection<Member> Members { get; set; } = [];
 }
