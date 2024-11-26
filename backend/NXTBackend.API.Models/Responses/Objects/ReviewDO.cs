@@ -15,11 +15,10 @@ public class ReviewDO : BaseObjectDO<Review>
         Kind = review.Kind;
         State = review.State;
         Validated = review.Validated;
-        ReviewerId = review.ReviewerId;
         Reviewer = review.Reviewer;
         // Rubric = review.Rubric;
         // Feedback = review.Feedback;
-        // UserProject = review.UserProject;
+        UserProjectId = review.UserProject.Id;
     }
 
     public ReviewKind Kind { get; set; }
@@ -28,7 +27,6 @@ public class ReviewDO : BaseObjectDO<Review>
 
     public bool Validated { get; set; }
 
-    public Guid? ReviewerId { get; set; }
 
     public MinimalUserDTO? Reviewer { get; set; }
 
@@ -36,6 +34,7 @@ public class ReviewDO : BaseObjectDO<Review>
 
     // public FeedbackDO? Feedback { get; set; }
 
+    public Guid UserProjectId { get; set; }
     // public UserProjectDO? UserProject { get; set; }
 
     public static implicit operator ReviewDO?(Review? entity) => entity is null ? null : new(entity);
