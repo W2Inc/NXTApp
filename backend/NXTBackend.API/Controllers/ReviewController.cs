@@ -41,6 +41,7 @@ namespace NXTBackend.API.Controllers;
 public class ReviewController(
     ILogger<ReviewController> logger,
     IReviewService reviewService,
+    IRubricService rubricService,
     IUserProjectService userProjectService,
     IUserService userService
 ) : Controller
@@ -62,57 +63,62 @@ public class ReviewController(
     [HttpPost("/reviews"), Consumes("application/json")]
     [EndpointSummary("Create a review")]
     [EndpointDescription(@"
-If the kind of review and reviewerId are null.It will signal that the project instance is *requesting* a review"
+If the kind of review and reviewerId are null. It will signal that the project instance is *requesting* a review"
     )]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<ReviewDO>> Create(ReviewPostRequestDTO requestedReview)
     {
-        // 1. If self review, the reviewerId in data must not be null and the kind be self
-        // 2. If peer / async review
-        //      - If we are requesting a review, requester must be a member and reviewerId is null
-        //      - If we are trying to review an instance that is maybe requesting a review then make sure we are not a member
-        // 3. If Auto then reviewerId will be that of the BO
+        // 1. Check user project
+        logger.LogCritical("{@shit}", requestedReview);
+        if (requestedReview.RubricId == Guid.Empty)
+            return UnprocessableEntity(new ProblemDetails() { Title = "Rubric does not exist" });
 
-        // TODO: Other apps might want to post to this and makes no sense to check claims
-        // Instead we need see if reviewer id is member of instance.
+        // TODO: Check for exisiting reviews
+
         var userProject = await userProjectService.FindByIdAsync(requestedReview.UserProjectId);
         if (userProject is null)
             return UnprocessableEntity(new ProblemDetails() { Title = "Project instance does not exist" });
-        if (userProject.GitInfo is null)
+        if (userProject.GitInfoId is null)
             return UnprocessableEntity(new ProblemDetails() { Title = "Project has no git repository specified" });
 
+        var rubric = await rubricService.FindByIdAsync(requestedReview.RubricId);
+        if (rubric is null)
+            return UnprocessableEntity(new ProblemDetails() { Title = "Rubric does not exist" });
+        if (userProject.ProjectId != rubric.ProjectId)
+            return UnprocessableEntity(new ProblemDetails() { Title = "Rubric can't be used for project instance" });
+
         bool userIsMember = userProject.Members.Any(m => m.UserId == requestedReview.ReviewerId);
-        if (requestedReview.Kind is ReviewKind.Self && !userIsMember)
-            return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer must be a member of project instance" });
-
-        // TODO: Implement code evaluation service
-        if (requestedReview.Kind is ReviewKind.Auto)
-            throw new ServiceException(StatusCodes.Status501NotImplemented, "Auto reviews are not yet implemented");
-
-        if (requestedReview.ReviewerId is null)
+        switch (requestedReview.Kind)
         {
-            var review = await reviewService.CreateAsync(new()
-            {
-                Kind = requestedReview.Kind,
-                State = ReviewState.Pending,
-                UserProjectId = requestedReview.UserProjectId,
-            });
-
-            return Ok(new ReviewDO(review));
+            case ReviewKind.Self:
+                if (!userIsMember)
+                    return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer must be a member of project instance" });
+                break;
+            case ReviewKind.Peer:
+            case ReviewKind.Async:
+                // TODO: Check if request has the privilege to assign user to a review
+                if (requestedReview.ReviewerId is not null)
+                {
+                    if (userIsMember)
+                        return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer must not be a member of project instance" });
+                    // var user = userService.FindByIdAsync(requestedReview.ReviewerId.Value);
+                    // if (user is null)
+                    //     return UnprocessableEntity(new ProblemDetails() { Title = "User does not exist" });
+                }
+                break;
+            case ReviewKind.Auto:
+                throw new ServiceException(StatusCodes.Status501NotImplemented, "Auto reviews are not yet implemented");
+            default:
+                throw new NotImplementedException($"Review kind: {requestedReview.Kind} is not supported.");
         }
 
-        if (userProject.Members.Any(m => m.UserId == requestedReview.ReviewerId))
-            return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer must not be a member of the project" });
-        if (await userService.FindByIdAsync(requestedReview.ReviewerId.Value) is not null)
-            return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer does not exist" });
-
-        // NOTE: Still pending but user who is reviewer gets notified to start whenever possible
         return Ok(new ReviewDO(await reviewService.CreateAsync(new()
         {
             Kind = requestedReview.Kind,
             State = ReviewState.Pending,
-            ReviewerId = requestedReview.ReviewerId,
+            ReviewerId = requestedReview.Kind is ReviewKind.Self ? requestedReview.ReviewerId : null,
             UserProjectId = requestedReview.UserProjectId,
+            RubricId = requestedReview.RubricId
         })));
     }
 

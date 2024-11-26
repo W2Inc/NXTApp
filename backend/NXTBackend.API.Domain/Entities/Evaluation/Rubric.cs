@@ -60,9 +60,6 @@ public class Rubric : BaseEntity
 
         GitInfoId = Guid.Empty;
         GitInfo = null!;
-
-        Reviews = [];
-        UserProjects = [];
     }
 
     [Column("name")]

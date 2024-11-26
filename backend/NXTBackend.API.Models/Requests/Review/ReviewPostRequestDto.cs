@@ -21,5 +21,6 @@ public class ReviewPostRequestDTO : BaseRequestDTO
     [Required]
     public Guid UserProjectId { get; set; }
 
+    [Required]
     public Guid? ReviewerId { get; set; } = null;
 }

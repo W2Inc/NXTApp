@@ -119,6 +119,7 @@ public static class Startup
         services.AddScoped<IFeatureService, FeatureService>();
         services.AddScoped<IGoalService, GoalService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IRubricService, RubricService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
