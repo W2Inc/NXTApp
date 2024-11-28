@@ -16,4 +16,5 @@ jobs:
         working-directory: frontend
         run: bun --bun install
       - name: Build
+        working-directory: frontend
         run: bun --bun run build
