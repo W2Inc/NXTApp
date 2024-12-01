@@ -1,0 +1,16 @@
+Backend Options:
+- PHP Laravel: The standard.
+  - Haves everything.
+- BunSH (TS): Faster than node in terms of request handling, built in HTTP Server / TS / etc support
+  - Would be quite nice and fast to work with
+  - We can implement rules to ban the any keyword (TS prefers to use unknown anyway)
+  - Really fast: Bun can handle up to 80K Request per instance, Node dies at around 30-40K.
+    - Crucial as who knows how many requests come in and if 1 instance can handle that much, cheaper to run.
+- C#
+  - Wild idea but depending on the size of the backend not actually a bad idea
+  - Perfect balance between Typesafety, Speed. (You can do dynamic but you will get shunned for it)
+  - AOT Support
+  - Sander could work on it as well if necessary.
+  - Not sure if would like *another* language ontop of the stack but it is similar enough to what we use anyway?
+  - Provides ALOT of support with migrations, controllers, built-in OpenAPI support, Authorization, ....
+  - Recent .NET9 Has massive performance boosts

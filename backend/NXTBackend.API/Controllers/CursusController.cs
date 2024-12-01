@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
 using NXTBackend.API.Core.Graph;
+using NXTBackend.API.Core.Graph.V1;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities.Notification;
@@ -159,8 +160,8 @@ public class CursusController(
 
         try
         {
-            using var reader = new GraphReader(memoryStream);
-            reader.ReadData();
+            using var reader = new Reader(memoryStream);
+            // reader.ReadData();
             //reader.RootNode;
             // TODO(W2): Verify the data inside the graph
             // - Do goals exist...
@@ -187,7 +188,7 @@ public class CursusController(
 
     [HttpGet("/cursus/{id:guid}/path"), AllowAnonymous]
     [Produces(contentType: "application/octet-stream")]
-    public async Task<IActionResult> GetPath(Guid id)
+    public async Task<IActionResult> GetTrack(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
         if (cursus is null)
