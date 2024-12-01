@@ -11,12 +11,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all comments */
+        /** Get all exisiting cursi */
         get: {
             parameters: {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                    "filter[slug]"?: string;
+                    "filter[id]"?: string;
                 };
                 header?: never;
                 path?: never;
@@ -24,7 +28,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The updated feature */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -33,17 +37,6 @@ export interface paths {
                         "text/plain": components["schemas"]["CursusDO"][];
                         "application/json": components["schemas"]["CursusDO"][];
                         "text/json": components["schemas"]["CursusDO"][];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ErrorResponseDto"];
-                        "application/json": components["schemas"]["ErrorResponseDto"];
-                        "text/json": components["schemas"]["ErrorResponseDto"];
                     };
                 };
                 /** @description Unauthorized */
@@ -60,27 +53,24 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
                 429: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description An Internal server error has occurred */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ErrorResponseDto"];
-                        "application/json": components["schemas"]["ErrorResponseDto"];
-                        "text/json": components["schemas"]["ErrorResponseDto"];
-                    };
-                };
             };
         };
         put?: never;
+        /** Create a cursus */
         post: {
             parameters: {
                 query?: never;
@@ -88,16 +78,49 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: {
+            requestBody: {
                 content: {
-                    "application/json": components["schemas"]["CursusPostRequestDto"];
-                    "text/json": components["schemas"]["CursusPostRequestDto"];
-                    "application/*+json": components["schemas"]["CursusPostRequestDto"];
+                    "application/json": components["schemas"]["CursusPostRequestDTO"];
+                    "text/json": components["schemas"]["CursusPostRequestDTO"];
+                    "application/*+json": components["schemas"]["CursusPostRequestDTO"];
+                    "text/plain": components["schemas"]["CursusPostRequestDTO"];
                 };
             };
             responses: {
                 /** @description OK */
                 200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CursusDO"];
+                        "application/json": components["schemas"]["CursusDO"];
+                        "text/json": components["schemas"]["CursusDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -118,6 +141,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Get a cursus */
         get: {
             parameters: {
                 query?: never;
@@ -134,12 +158,48 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
+                    content: {
+                        "text/plain": components["schemas"]["CursusDO"];
+                        "application/json": components["schemas"]["CursusDO"];
+                        "text/json": components["schemas"]["CursusDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
                     content?: never;
                 };
             };
         };
         put?: never;
         post?: never;
+        /**
+         * Delete a cursus
+         * @description Cursus deletion is rarely done, and only result in deprecations if they have dependencies
+         */
         delete: {
             parameters: {
                 query?: never;
@@ -156,12 +216,48 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
+                    content: {
+                        "text/plain": components["schemas"]["CursusDO"];
+                        "application/json": components["schemas"]["CursusDO"];
+                        "text/json": components["schemas"]["CursusDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
                     content?: never;
                 };
             };
         };
         options?: never;
         head?: never;
+        /**
+         * Update a cursus
+         * @description Updates a cursus partially based on the provided fields.
+         */
         patch: {
             parameters: {
                 query?: never;
@@ -171,16 +267,57 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: {
+            requestBody: {
                 content: {
-                    "application/json": components["schemas"]["CursusPatchRequestDto"];
-                    "text/json": components["schemas"]["CursusPatchRequestDto"];
-                    "application/*+json": components["schemas"]["CursusPatchRequestDto"];
+                    "application/json": components["schemas"]["CursusPatchRequestDTO"];
+                    "text/json": components["schemas"]["CursusPatchRequestDTO"];
+                    "application/*+json": components["schemas"]["CursusPatchRequestDTO"];
+                    "text/plain": components["schemas"]["CursusPatchRequestDTO"];
                 };
             };
             responses: {
                 /** @description OK */
                 200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CursusDO"];
+                        "application/json": components["schemas"]["CursusDO"];
+                        "text/json": components["schemas"]["CursusDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -197,13 +334,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get the track data for a specific cursus */
         get: {
             parameters: {
-                query?: {
-                    Page?: number;
-                    Size?: number;
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
@@ -212,21 +345,14 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/octet-stream": string;
+                        "application/octet-stream": unknown;
                     };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
                 /** @description Unauthorized */
                 401: {
@@ -242,22 +368,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Not found */
+                /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Too Many Requests */
                 429: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description An Internal server error has occurred */
-                500: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -265,6 +384,10 @@ export interface paths {
                 };
             };
         };
+        /**
+         * Define the track / path of a cursus
+         * @description Cursi can have a set track of goals
+         */
         put: {
             parameters: {
                 query?: never;
@@ -281,6 +404,38 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
+                    content: {
+                        "text/plain": components["schemas"]["CursusDO"];
+                        "application/json": components["schemas"]["CursusDO"];
+                        "text/json": components["schemas"]["CursusDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
                     content?: never;
                 };
             };
@@ -292,19 +447,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/spotlights": {
+    "/goals": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get all events */
+        /** Get all exisiting goals */
         get: {
             parameters: {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                    "filter[slug]"?: string;
+                    "filter[id]"?: string;
                 };
                 header?: never;
                 path?: never;
@@ -312,23 +471,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["SpotlightEvent"][];
-                        "application/json": components["schemas"]["SpotlightEvent"][];
-                        "text/json": components["schemas"]["SpotlightEvent"][];
+                        "text/plain": components["schemas"]["LearningGoalDO"][];
+                        "application/json": components["schemas"]["LearningGoalDO"][];
+                        "text/json": components["schemas"]["LearningGoalDO"][];
                     };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
                 /** @description Unauthorized */
                 401: {
@@ -344,15 +496,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
-                429: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description An Internal server error has occurred */
-                500: {
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -361,7 +513,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** Create a new event */
+        /** Create a goal */
         post: {
             parameters: {
                 query?: never;
@@ -369,31 +521,25 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: {
+            requestBody: {
                 content: {
-                    "application/json": components["schemas"]["SpotlightPostRequestDTO"];
-                    "text/json": components["schemas"]["SpotlightPostRequestDTO"];
-                    "application/*+json": components["schemas"]["SpotlightPostRequestDTO"];
+                    "application/json": components["schemas"]["GoalPostRequestDto"];
+                    "text/json": components["schemas"]["GoalPostRequestDto"];
+                    "application/*+json": components["schemas"]["GoalPostRequestDto"];
+                    "text/plain": components["schemas"]["GoalPostRequestDto"];
                 };
             };
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["SpotlightEvent"];
-                        "application/json": components["schemas"]["SpotlightEvent"];
-                        "text/json": components["schemas"]["SpotlightEvent"];
+                        "text/plain": components["schemas"]["LearningGoalDO"];
+                        "application/json": components["schemas"]["LearningGoalDO"];
+                        "text/json": components["schemas"]["LearningGoalDO"];
                     };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
                 /** @description Unauthorized */
                 401: {
@@ -409,30 +555,19 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Conflict */
-                409: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Too Many Requests */
                 429: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
-                };
-                /** @description An Internal server error has occurred */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
                 };
             };
         };
@@ -442,14 +577,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/events/{id}": {
+    "/goals/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get a specific event */
+        /** Get a goal */
         get: {
             parameters: {
                 query?: never;
@@ -461,23 +596,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["SpotlightEvent"];
-                        "application/json": components["schemas"]["SpotlightEvent"];
-                        "text/json": components["schemas"]["SpotlightEvent"];
+                        "text/plain": components["schemas"]["ReviewDO"];
+                        "application/json": components["schemas"]["ReviewDO"];
+                        "text/json": components["schemas"]["ReviewDO"];
                     };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
                 /** @description Unauthorized */
                 401: {
@@ -493,22 +621,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Not found */
+                /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Too Many Requests */
                 429: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description An Internal server error has occurred */
-                500: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -518,7 +639,10 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        /** Delete a specific event */
+        /**
+         * Delete a goal
+         * @description Goal deletion is rarely done, and only result in deprecations if they have dependencies
+         */
         delete: {
             parameters: {
                 query?: never;
@@ -530,23 +654,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["SpotlightEvent"];
-                        "application/json": components["schemas"]["SpotlightEvent"];
-                        "text/json": components["schemas"]["SpotlightEvent"];
+                        "text/plain": components["schemas"]["LearningGoalDO"];
+                        "application/json": components["schemas"]["LearningGoalDO"];
+                        "text/json": components["schemas"]["LearningGoalDO"];
                     };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
                 /** @description Unauthorized */
                 401: {
@@ -562,22 +679,15 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Not found */
+                /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Too Many Requests */
                 429: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description An Internal server error has occurred */
-                500: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -587,7 +697,10 @@ export interface paths {
         };
         options?: never;
         head?: never;
-        /** Patch a specific event */
+        /**
+         * Update a goal
+         * @description Updates a goal partially based on the provided fields.
+         */
         patch: {
             parameters: {
                 query?: never;
@@ -597,31 +710,25 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: {
+            requestBody: {
                 content: {
-                    "application/json": components["schemas"]["SpotlightPatchRequestDTO"];
-                    "text/json": components["schemas"]["SpotlightPatchRequestDTO"];
-                    "application/*+json": components["schemas"]["SpotlightPatchRequestDTO"];
+                    "application/json": components["schemas"]["ReviewPatchRequestDto"];
+                    "text/json": components["schemas"]["ReviewPatchRequestDto"];
+                    "application/*+json": components["schemas"]["ReviewPatchRequestDto"];
+                    "text/plain": components["schemas"]["ReviewPatchRequestDto"];
                 };
             };
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["SpotlightEvent"];
-                        "application/json": components["schemas"]["SpotlightEvent"];
-                        "text/json": components["schemas"]["SpotlightEvent"];
+                        "text/plain": components["schemas"]["ReviewDO"];
+                        "application/json": components["schemas"]["ReviewDO"];
+                        "text/json": components["schemas"]["ReviewDO"];
                     };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
                 };
                 /** @description Unauthorized */
                 401: {
@@ -635,24 +742,25 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
                 };
-                /** @description Not found */
+                /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
-                };
-                /** @description Too many requests */
-                429: {
-                    headers: {
-                        [name: string]: unknown;
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
-                    content?: never;
                 };
-                /** @description An Internal server error has occurred */
-                500: {
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -662,14 +770,14 @@ export interface paths {
         };
         trace?: never;
     };
-    "/features": {
+    "/goals/{id}/projects": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get all features */
+        /** Get the projects that are part of this goal */
         get: {
             parameters: {
                 query?: {
@@ -679,7 +787,9 @@ export interface paths {
                     Order?: components["schemas"]["Order"];
                 };
                 header?: never;
-                path?: never;
+                path: {
+                    id: string;
+                };
                 cookie?: never;
             };
             requestBody?: never;
@@ -690,9 +800,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["FeatureDO"];
-                        "application/json": components["schemas"]["FeatureDO"];
-                        "text/json": components["schemas"]["FeatureDO"];
+                        "text/plain": components["schemas"]["LearningGoalDO"][];
+                        "application/json": components["schemas"]["LearningGoalDO"][];
+                        "text/json": components["schemas"]["LearningGoalDO"][];
                     };
                 };
                 /** @description Unauthorized */
@@ -714,115 +824,43 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Too Many Requests */
                 429: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
-        /** Creates a new feature. */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description The DTO to post with. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["FeaturePostRequestDTO"];
-                    "text/json": components["schemas"]["FeaturePostRequestDTO"];
-                    "application/*+json": components["schemas"]["FeaturePostRequestDTO"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FeatureDO"];
-                        "application/json": components["schemas"]["FeatureDO"];
-                        "text/json": components["schemas"]["FeatureDO"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Feature by that name exists */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/features/{id}": {
+    "/goals/{id}/users": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get a specific feature */
+        /** Get the projects that are part of this goal */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    Page?: number;
+                    Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                };
                 header?: never;
                 path: {
-                    /** @description The feature ID */
                     id: string;
                 };
                 cookie?: never;
@@ -835,9 +873,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["FeatureDO"];
-                        "application/json": components["schemas"]["FeatureDO"];
-                        "text/json": components["schemas"]["FeatureDO"];
+                        "text/plain": components["schemas"]["LearningGoalDO"][];
+                        "application/json": components["schemas"]["LearningGoalDO"][];
+                        "text/json": components["schemas"]["LearningGoalDO"][];
                     };
                 };
                 /** @description Unauthorized */
@@ -859,181 +897,42 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
-                /** @description Feature by that name exists */
-                409: {
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
                 };
             };
         };
         put?: never;
         post?: never;
-        /** Delete a feature. */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The feature to delete. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FeatureDO"];
-                        "application/json": components["schemas"]["FeatureDO"];
-                        "text/json": components["schemas"]["FeatureDO"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
+        delete?: never;
         options?: never;
         head?: never;
-        /** Updates a new feature. */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description The feature to update. */
-                    id: string;
-                };
-                cookie?: never;
-            };
-            /** @description The DTO to post with. */
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["FeaturePatchRequestDTO"];
-                    "text/json": components["schemas"]["FeaturePatchRequestDTO"];
-                    "application/*+json": components["schemas"]["FeaturePatchRequestDTO"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["FeatureDO"];
-                        "application/json": components["schemas"]["FeatureDO"];
-                        "text/json": components["schemas"]["FeatureDO"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
+        patch?: never;
         trace?: never;
     };
-    "/project": {
+    "/projects": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+        /** Get all exisiting projects */
         get: {
             parameters: {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                    "filter[slug]"?: string;
+                    "filter[id]"?: string;
                 };
                 header?: never;
                 path?: never;
@@ -1047,14 +946,43 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Project"][];
-                        "application/json": components["schemas"]["Project"][];
-                        "text/json": components["schemas"]["Project"][];
+                        "text/plain": components["schemas"]["ProjectDO"][];
+                        "application/json": components["schemas"]["ProjectDO"][];
+                        "text/json": components["schemas"]["ProjectDO"][];
                     };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
         put?: never;
+        /** Create a project */
         post: {
             parameters: {
                 query?: never;
@@ -1062,11 +990,12 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: {
+            requestBody: {
                 content: {
                     "application/json": components["schemas"]["ProjectPostRequestDto"];
                     "text/json": components["schemas"]["ProjectPostRequestDto"];
                     "application/*+json": components["schemas"]["ProjectPostRequestDto"];
+                    "text/plain": components["schemas"]["ProjectPostRequestDto"];
                 };
             };
             responses: {
@@ -1076,9 +1005,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Project"];
-                        "application/json": components["schemas"]["Project"];
-                        "text/json": components["schemas"]["Project"];
+                        "text/plain": components["schemas"]["ProjectDO"];
+                        "application/json": components["schemas"]["ProjectDO"];
+                        "text/json": components["schemas"]["ProjectDO"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1086,11 +1015,196 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["BaseResponseDto"];
-                        "application/json": components["schemas"]["BaseResponseDto"];
-                        "text/json": components["schemas"]["BaseResponseDto"];
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
                     };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/projects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a project */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectDO"];
+                        "application/json": components["schemas"]["ProjectDO"];
+                        "text/json": components["schemas"]["ProjectDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a project
+         * @description Goal deletion is rarely done, and only result in deprecations if they have dependencies
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectDO"];
+                        "application/json": components["schemas"]["ProjectDO"];
+                        "text/json": components["schemas"]["ProjectDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Update a project
+         * @description Updates a goal partially based on the provided fields.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ProjectPatchRequestDto"];
+                    "text/json": components["schemas"]["ProjectPatchRequestDto"];
+                    "application/*+json": components["schemas"]["ProjectPatchRequestDto"];
+                    "text/plain": components["schemas"]["ProjectPatchRequestDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectDO"];
+                        "application/json": components["schemas"]["ProjectDO"];
+                        "text/json": components["schemas"]["ProjectDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
                 /** @description Forbidden */
                 403: {
@@ -1098,81 +1212,48 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["BaseResponseDto"];
-                        "application/json": components["schemas"]["BaseResponseDto"];
-                        "text/json": components["schemas"]["BaseResponseDto"];
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Internal Server Error */
-                500: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["BaseResponseDto"];
-                        "application/json": components["schemas"]["BaseResponseDto"];
-                        "text/json": components["schemas"]["BaseResponseDto"];
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
-    "/project/{id}": {
+    "/projects/{id}/users": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Project"];
-                        "application/json": components["schemas"]["Project"];
-                        "text/json": components["schemas"]["Project"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/project/{id}/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
+        /** Get the projects that are part of this goal */
         get: {
             parameters: {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
                 };
                 header?: never;
                 path: {
@@ -1188,118 +1269,42 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["User"][];
-                        "application/json": components["schemas"]["User"][];
-                        "text/json": components["schemas"]["User"][];
+                        "text/plain": components["schemas"]["LearningGoalDO"][];
+                        "application/json": components["schemas"]["LearningGoalDO"][];
+                        "text/json": components["schemas"]["LearningGoalDO"][];
                     };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/project/{id}/rubrics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    Page?: number;
-                    Size?: number;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Rubric"][];
-                        "application/json": components["schemas"]["Rubric"][];
-                        "text/json": components["schemas"]["Rubric"][];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/project/{id}/git": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Git"];
-                        "application/json": components["schemas"]["Git"];
-                        "text/json": components["schemas"]["Git"];
-                    };
-                };
-            };
-        };
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Git"];
-                        "application/json": components["schemas"]["Git"];
-                        "text/json": components["schemas"]["Git"];
-                    };
-                };
-            };
-        };
         post?: never;
         delete?: never;
         options?: never;
@@ -1314,6 +1319,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Get all exisiting goals */
         get: {
             parameters: {
                 query?: {
@@ -1334,67 +1340,34 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Review"][];
-                        "application/json": components["schemas"]["Review"][];
-                        "text/json": components["schemas"]["Review"][];
+                        "text/plain": components["schemas"]["ReviewDO"][];
+                        "application/json": components["schemas"]["ReviewDO"][];
+                        "text/json": components["schemas"]["ReviewDO"][];
                     };
                 };
-            };
-        };
-        put?: never;
-        post: {
-            parameters: {
-                query?: {
-                    Page?: number;
-                    Size?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["ReviewPostRequestDto"];
-                    "text/json": components["schemas"]["ReviewPostRequestDto"];
-                    "application/*+json": components["schemas"]["ReviewPostRequestDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
+                /** @description Unauthorized */
+                401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/reviews/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1403,29 +1376,59 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: {
+        /**
+         * Create a review
+         * @description
+         *     If the kind of review and reviewerId are null. It will signal that the project instance is *requesting* a review
+         */
+        post: {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    id: string;
-                };
+                path?: never;
                 cookie?: never;
             };
-            requestBody?: {
+            requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ReviewPatchRequestDto"];
-                    "text/json": components["schemas"]["ReviewPatchRequestDto"];
-                    "application/*+json": components["schemas"]["ReviewPatchRequestDto"];
+                    "application/json": components["schemas"]["ReviewPostRequestDTO"];
+                    "application/*+json": components["schemas"]["ReviewPostRequestDTO"];
                 };
             };
             responses: {
                 /** @description OK */
                 200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReviewDO"];
+                        "application/json": components["schemas"]["ReviewDO"];
+                        "text/json": components["schemas"]["ReviewDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1433,258 +1436,6 @@ export interface paths {
                 };
             };
         };
-        trace?: never;
-    };
-    "/feedback": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["FeebdackPostRequestDto"];
-                    "text/json": components["schemas"]["FeebdackPostRequestDto"];
-                    "application/*+json": components["schemas"]["FeebdackPostRequestDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Feedback"];
-                        "application/json": components["schemas"]["Feedback"];
-                        "text/json": components["schemas"]["Feedback"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/feedback/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    Page?: number;
-                    Size?: number;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["CommentPostRequestDto"];
-                    "text/json": components["schemas"]["CommentPostRequestDto"];
-                    "application/*+json": components["schemas"]["CommentPostRequestDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Feedback"];
-                        "application/json": components["schemas"]["Feedback"];
-                        "text/json": components["schemas"]["Feedback"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/feedback/{id}/comments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    Page?: number;
-                    Size?: number;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["CommentPostRequestDto"];
-                    "text/json": components["schemas"]["CommentPostRequestDto"];
-                    "application/*+json": components["schemas"]["CommentPostRequestDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Comment"][];
-                        "application/json": components["schemas"]["Comment"][];
-                        "text/json": components["schemas"]["Comment"][];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post: {
-            parameters: {
-                query?: {
-                    Page?: number;
-                    Size?: number;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["CommentPostRequestDto"];
-                    "text/json": components["schemas"]["CommentPostRequestDto"];
-                    "application/*+json": components["schemas"]["CommentPostRequestDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Comment"];
-                        "application/json": components["schemas"]["Comment"];
-                        "text/json": components["schemas"]["Comment"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/comment": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    Page?: number;
-                    Size?: number;
-                };
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["CommentPostRequestDto"];
-                    "text/json": components["schemas"]["CommentPostRequestDto"];
-                    "application/*+json": components["schemas"]["CommentPostRequestDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Comment"][];
-                        "application/json": components["schemas"]["Comment"][];
-                        "text/json": components["schemas"]["Comment"][];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/comment/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["Comment"];
-                        "application/json": components["schemas"]["Comment"];
-                        "text/json": components["schemas"]["Comment"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1700,14 +1451,14 @@ export interface paths {
         };
         get: {
             parameters: {
-                query: {
+                query?: {
                     Page?: number;
                     Size?: number;
-                    Query: string;
+                    Query?: string;
                 };
                 header?: never;
                 path: {
-                    category: components["schemas"]["Category"];
+                    category: "User" | "Project" | "Cursus" | "LearningGoal";
                 };
                 cookie?: never;
             };
@@ -1719,9 +1470,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": unknown[] & (components["schemas"]["UserDO"][] | components["schemas"]["ProjectDO"][] | components["schemas"]["CursusDO"][] | components["schemas"]["LearningGoalDO"][]);
-                        "application/json": unknown[] & (components["schemas"]["UserDO"][] | components["schemas"]["ProjectDO"][] | components["schemas"]["CursusDO"][] | components["schemas"]["LearningGoalDO"][]);
-                        "text/json": unknown[] & (components["schemas"]["UserDO"][] | components["schemas"]["ProjectDO"][] | components["schemas"]["CursusDO"][] | components["schemas"]["LearningGoalDO"][]);
+                        "text/plain": unknown[];
+                        "application/json": unknown[];
+                        "text/json": unknown[];
                     };
                 };
                 /** @description Bad Request */
@@ -1740,11 +1491,28 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
                     };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
                 /** @description Internal Server Error */
                 500: {
@@ -1770,7 +1538,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get the currently authenticated user. */
+        /**
+         * Get the currently authenticated user.
+         * @description When authenticated it's useful to know who you currently are logged in as.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -1791,17 +1562,6 @@ export interface paths {
                         "text/json": components["schemas"]["UserDO"];
                     };
                 };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -1816,23 +1576,19 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
-                429: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Server Error */
-                500: {
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
             };
         };
@@ -1844,14 +1600,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/current/notifications": {
+    "/users/current/spotlights": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get the current user's events */
+        /**
+         * Get the currently authenticated user's spotlights.
+         * @description If they were dismissed they will get filtered out.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -1872,17 +1631,6 @@ export interface paths {
                         "text/json": components["schemas"]["SpotlightEvent"][];
                     };
                 };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -1897,23 +1645,19 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
-                429: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Server Error */
-                500: {
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
             };
         };
@@ -1925,7 +1669,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/current/notifications/{id}": {
+    "/users/current/spotlights/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1935,13 +1679,15 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Dismiss a notification, making sure it is not shown again to the user. */
+        /**
+         * As the current user, dismiss a specific spotlight.
+         * @description If users dismiss a spotlight event, they won't getit shown in the future.
+         */
         delete: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description The notifications id to dismiss. */
                     id: string;
                 };
                 cookie?: never;
@@ -1959,8 +1705,29 @@ export interface paths {
                         "text/json": components["schemas"]["SpotlightEventActionDO"];
                     };
                 };
-                /** @description Bad Request */
-                400: {
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unprocessable Entity */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1969,6 +1736,44 @@ export interface paths {
                         "application/json": components["schemas"]["ProblemDetails"];
                         "text/json": components["schemas"]["ProblemDetails"];
                     };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/current/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get your notifications */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
                 /** @description Unauthorized */
                 401: {
@@ -1984,26 +1789,212 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
                 429: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Server Error */
-                500: {
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/current/notifications/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark all your notifications as read */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
                     };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/current/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mark a given notifications as read */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/current/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -2016,7 +2007,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get all users */
+        /**
+         * Get all users.
+         * @description All users that exists in the database.
+         */
         get: {
             parameters: {
                 query?: {
@@ -2042,17 +2036,6 @@ export interface paths {
                         "text/json": components["schemas"]["UserDO"][];
                     };
                 };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2067,23 +2050,19 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
-                429: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Error */
-                500: {
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
             };
         };
@@ -2102,88 +2081,18 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a specific user */
         get: {
             parameters: {
                 query?: never;
                 header?: never;
                 path: {
-                    /** @description The user to get */
                     id: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Ok */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["UserDO"][];
-                        "application/json": components["schemas"]["UserDO"][];
-                        "text/json": components["schemas"]["UserDO"][];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Too many requests */
-                429: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** Update a user */
-        patch: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["UserPatchRequestDTO"];
-                    "text/json": components["schemas"]["UserPatchRequestDTO"];
-                    "application/*+json": components["schemas"]["UserPatchRequestDTO"];
-                };
-            };
-            responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -2192,17 +2101,6 @@ export interface paths {
                         "text/plain": components["schemas"]["UserDO"];
                         "application/json": components["schemas"]["UserDO"];
                         "text/json": components["schemas"]["UserDO"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -2219,23 +2117,83 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
                 429: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Error */
-                500: {
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UserPatchRequestDTO"];
+                    "text/json": components["schemas"]["UserPatchRequestDTO"];
+                    "application/*+json": components["schemas"]["UserPatchRequestDTO"];
+                    "text/plain": components["schemas"]["UserPatchRequestDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                        "text/plain": components["schemas"]["UserDO"];
+                        "application/json": components["schemas"]["UserDO"];
+                        "text/json": components["schemas"]["UserDO"];
                     };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -2249,7 +2207,6 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        /** Update a user's details */
         put: {
             parameters: {
                 query?: never;
@@ -2259,15 +2216,16 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: {
+            requestBody: {
                 content: {
                     "application/json": components["schemas"]["UserDetailsPutRequestDTO"];
                     "text/json": components["schemas"]["UserDetailsPutRequestDTO"];
                     "application/*+json": components["schemas"]["UserDetailsPutRequestDTO"];
+                    "text/plain": components["schemas"]["UserDetailsPutRequestDTO"];
                 };
             };
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -2278,15 +2236,72 @@ export interface paths {
                         "text/json": components["schemas"]["UserDO"];
                     };
                 };
-                /** @description Bad Request */
-                400: {
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/bio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Gets the user defined biography
+         * @description A user can have a markdown biography to present themselves to others.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                        "text/plain": string;
                     };
                 };
                 /** @description Unauthorized */
@@ -2303,15 +2318,71 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
                 429: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Error */
-                500: {
+            };
+        };
+        /**
+         * Sets the user defined biography
+         * @description A user can have a markdown biography to present themselves to others.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "text/plain": string;
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unprocessable Entity */
+                422: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -2320,6 +2391,13 @@ export interface paths {
                         "application/json": components["schemas"]["ProblemDetails"];
                         "text/json": components["schemas"]["ProblemDetails"];
                     };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -2330,17 +2408,13 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{id}/user_cursus": {
+    "/users/{id}/cursus": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get all the cursus instances of a user.
-         * @description Gets you all the instances of a user's cursus. Essentially "which cursi am I subscribed to ?"
-         */
         get: {
             parameters: {
                 query?: {
@@ -2349,14 +2423,13 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    /** @description The user id */
                     id: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -2367,17 +2440,6 @@ export interface paths {
                         "text/json": components["schemas"]["UserCursusDO"][];
                     };
                 };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2392,23 +2454,19 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
-                429: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Error */
-                500: {
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
             };
         };
@@ -2420,17 +2478,13 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{id}/user_goals": {
+    "/users/{id}/goals": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get all the goal instances of a user.
-         * @description Gets you all the instances of a user's cursus. Essentially "which cursi am I subscribed to ?"
-         */
         get: {
             parameters: {
                 query?: {
@@ -2439,14 +2493,13 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    /** @description The user id */
                     id: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -2457,17 +2510,6 @@ export interface paths {
                         "text/json": components["schemas"]["UserGoalDO"][];
                     };
                 };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2482,23 +2524,19 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
-                429: {
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Error */
-                500: {
+                /** @description Too Many Requests */
+                429: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
             };
         };
@@ -2510,17 +2548,13 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{id}/user_projects": {
+    "/users/{id}/projects": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get all the goal instances of a user.
-         * @description Gets you all the instances of a user's cursus. Essentially "which cursi am I subscribed to ?"
-         */
         get: {
             parameters: {
                 query?: {
@@ -2529,14 +2563,13 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    /** @description The user id */
                     id: string;
                 };
                 cookie?: never;
             };
             requestBody?: never;
             responses: {
-                /** @description Ok */
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -2547,15 +2580,78 @@ export interface paths {
                         "text/json": components["schemas"]["UserProjectDO"][];
                     };
                 };
-                /** @description Bad Request */
-                400: {
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/projects/{projectId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Subscribe a user to a project
+         * @description Subscribe a user to a project
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                        "text/plain": components["schemas"]["UserProjectDO"];
+                        "application/json": components["schemas"]["UserProjectDO"];
+                        "text/json": components["schemas"]["UserProjectDO"];
                     };
                 };
                 /** @description Unauthorized */
@@ -2572,23 +2668,145 @@ export interface paths {
                     };
                     content?: never;
                 };
-                /** @description Too many requests */
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
                 429: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content?: never;
                 };
-                /** @description Internal Error */
-                500: {
+            };
+        };
+        /**
+         * Unsubscribe a user from a project
+         * @description Unsubscribe a user from a project
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    projectId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
+                        "text/plain": components["schemas"]["UserProjectDO"];
+                        "application/json": components["schemas"]["UserProjectDO"];
+                        "text/json": components["schemas"]["UserProjectDO"];
                     };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all project instances
+         * @description Get all project instances
+         */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    Size?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserProjectDO"][];
+                        "application/json": components["schemas"]["UserProjectDO"][];
+                        "text/json": components["schemas"]["UserProjectDO"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
             };
         };
@@ -2600,242 +2818,390 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/users/projects/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    Size?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserProjectDO"][];
+                        "application/json": components["schemas"]["UserProjectDO"][];
+                        "text/json": components["schemas"]["UserProjectDO"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/projects/{id}/git": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set the Git info
+         * @description Set the git info
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserProjectDO"][];
+                        "application/json": components["schemas"]["UserProjectDO"][];
+                        "text/json": components["schemas"]["UserProjectDO"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/projects/{id}/invitation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a invitation to a user project
+         * @description Send a invitation to a user project
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserProjectDO"][];
+                        "application/json": components["schemas"]["UserProjectDO"][];
+                        "text/json": components["schemas"]["UserProjectDO"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        /**
+         * Decline a invitation to a user project
+         * @description Decline a invitation to a user project
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserProjectDO"][];
+                        "application/json": components["schemas"]["UserProjectDO"][];
+                        "text/json": components["schemas"]["UserProjectDO"][];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        BaseResponseDto: {
-            Message?: string | null;
-            Success?: boolean;
-        };
-        /** @enum {string} */
-        Category: "User" | "Project" | "Cursus" | "LearningGoal";
-        Comment: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            markdown?: string | null;
-            /** Format: uuid */
-            user_id?: string;
-            user?: components["schemas"]["User"];
-            /** Format: uuid */
-            feedback_id?: string;
-            feedback?: components["schemas"]["Feedback"];
-        };
-        CommentPostRequestDto: {
-            markdown: string;
-            /** Format: uuid */
-            user_id: string;
-            /** Format: uuid */
-            feedback_id?: string;
-        };
-        Cursus: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            name: string;
-            description?: string | null;
-            markdown: string;
-            slug: string;
-            public: boolean;
-            enabled: boolean;
-            kind?: components["schemas"]["CursusKind"];
-            /** Format: uuid */
-            creator_id?: string;
-            creator?: components["schemas"]["User"];
-        };
         CursusDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            name?: string | null;
-            description?: string | null;
-            markdown?: string | null;
-            slug?: string | null;
+            updatedAt?: string;
+            name?: string;
+            description?: string;
+            markdown?: string;
+            slug?: string;
+            /** @description Whether the cursus is public */
             public?: boolean;
+            /** @description If true, the cursus is subscribable */
             enabled?: boolean;
             kind?: components["schemas"]["CursusKind"];
-            creator?: components["schemas"]["SimpleUserDO"];
+            creator?: components["schemas"]["MinimalUserDTO"];
         };
-        /** @enum {string} */
+        CursusDO2: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            name?: string;
+            description?: string;
+            markdown?: string;
+            slug?: string;
+            /** @description Whether the cursus is public */
+            public?: boolean;
+            /** @description If true, the cursus is subscribable */
+            enabled?: boolean;
+            kind?: components["schemas"]["CursusKind"];
+            creator?: components["schemas"]["MinimalUserDTO"];
+        } | null;
+        /** @enum {unknown} */
         CursusKind: "Dynamic" | "Fixed";
-        CursusPatchRequestDto: {
+        CursusPatchRequestDTO: {
             name?: string | null;
             description?: string | null;
             markdown?: string | null;
             public?: boolean | null;
             enabled?: boolean | null;
         };
-        CursusPostRequestDto: {
-            name: string;
-            description: string;
-            markdown: string;
+        CursusPostRequestDTO: {
+            name: string | null;
+            description: string | null;
+            markdown: string | null;
             public: boolean;
             enabled: boolean;
             kind: components["schemas"]["CursusKind"];
-        };
-        Details: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** Format: uuid */
-            user_id?: string;
-            user?: components["schemas"]["User"];
-            email?: string | null;
-            bio?: string | null;
-            first_name?: string | null;
-            last_name?: string | null;
-            github_url?: string | null;
-            linkedin_url?: string | null;
-            twitter_url?: string | null;
-            website_url?: string | null;
-        };
-        ErrorResponseDto: {
-            Message?: string | null;
-            Success?: boolean;
-        };
-        FeatureDO: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            name?: string | null;
-            markdown?: string | null;
-        };
-        FeaturePatchRequestDTO: {
-            name?: string | null;
-            markdown?: string | null;
-            public?: boolean | null;
-        };
-        FeaturePostRequestDTO: {
-            name: string;
-            markdown: string;
-            public: boolean;
-        };
-        FeebdackPostRequestDto: {
-            /** Format: uuid */
-            review_id: string;
-        };
-        Feedback: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** Format: uuid */
-            review_id?: string;
-            review?: components["schemas"]["Review"];
-            comments?: components["schemas"]["Comment"][] | null;
-        };
-        Git: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** Format: uri */
-            git_url: string;
-            git_branch: string;
-            git_commit?: string | null;
         };
         GitDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            git_url?: string | null;
-            git_branch?: string | null;
-            git_commit?: string | null;
-        };
+            updatedAt?: string;
+            gitUrl?: string;
+            gitBranch?: string;
+            gitCommit?: string | null;
+        } | null;
         GitInfoRequestDto: {
             /** Format: uri */
-            git_url: string;
-            git_branch?: string | null;
-            git_commit?: string | null;
-        };
-        LearningGoal: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
+            gitUrl: string;
+            gitBranch?: string | null;
+            gitCommit?: string | null;
+        } | null;
+        GoalPatchRequestDto: {
             name?: string | null;
-            slug?: string | null;
-            markdown?: string | null;
             description?: string | null;
-            /** Format: uuid */
-            creator_id?: string;
-            creator?: components["schemas"]["User"];
-            projects?: components["schemas"]["Project"][] | null;
-            user_goals?: components["schemas"]["UserGoal"][] | null;
+            markdown?: string | null;
+            public?: boolean | null;
+            enabled?: boolean | null;
+        };
+        GoalPostRequestDto: {
+            name: string;
+            description: string;
+            markdown: string;
+            public: boolean;
+            enabled: boolean;
         };
         LearningGoalDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            name?: string | null;
-            slug?: string | null;
-            markdown?: string | null;
-            description?: string | null;
-            creator?: components["schemas"]["SimpleUserDO"];
+            updatedAt?: string;
+            name?: string;
+            slug?: string;
+            markdown?: string;
+            description?: string;
+            creator?: components["schemas"]["MinimalUserDTO"];
         };
-        Member: {
+        MinimalUserDTO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            state?: components["schemas"]["MemberInviteState"];
+            updatedAt?: string;
+            login?: string;
+            displayName?: string | null;
+            avatarUrl?: string | null;
             /** Format: uuid */
-            user_id?: string;
-            user?: components["schemas"]["User"];
-            /** Format: uuid */
-            user_goal_id?: string | null;
-            user_goal?: components["schemas"]["UserGoal"];
-            /** Format: uuid */
-            user_project_id?: string;
-            user_project?: components["schemas"]["UserProject"];
-        };
-        MemberDO: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            state?: components["schemas"]["MemberInviteState"];
-            user?: components["schemas"]["SimpleUserDO"];
-            /** Format: uuid */
-            user_goal_id?: string | null;
-            /** Format: uuid */
-            user_project_id?: string;
-        };
-        /** @enum {string} */
-        MemberInviteState: "Pending" | "Accepted";
-        /** @enum {string} */
+            detailsId?: string | null;
+        } | null;
+        /** @enum {unknown|null} */
+        NullableOfReviewState: "Pending" | "InProgress" | "Finished" | null;
+        /** @enum {unknown} */
         Order: "Ascending" | "Descending";
         ProblemDetails: {
             type?: string | null;
@@ -2844,363 +3210,215 @@ export interface components {
             status?: number | null;
             detail?: string | null;
             instance?: string | null;
-        } & {
-            [key: string]: unknown;
-        };
-        Project: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            name?: string | null;
-            description?: string | null;
-            markdown?: string | null;
-            slug?: string | null;
-            thumbnail_url?: string | null;
-            /** @default false */
-            public: boolean;
-            /** @default false */
-            enabled: boolean;
-            /**
-             * Format: int32
-             * @default 3
-             */
-            max_members: number;
-            /** Format: uuid */
-            git_info_id?: string;
-            git_info?: components["schemas"]["Git"];
-            /** Format: uuid */
-            creator_id?: string;
-            creator?: components["schemas"]["User"];
-            tags?: string[] | null;
-            rubrics?: components["schemas"]["Rubric"][] | null;
-            goals?: components["schemas"]["LearningGoal"][] | null;
-            user_projects?: components["schemas"]["UserProject"][] | null;
         };
         ProjectDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            name?: string | null;
+            updatedAt?: string;
+            name?: string;
             markdown?: string | null;
-            slug?: string | null;
-            thumbnail_url?: string | null;
+            slug?: string;
+            thumbnailUrl?: string | null;
             public?: boolean;
             enabled?: boolean;
             /** Format: int32 */
-            max_members?: number;
-            git_info?: components["schemas"]["GitDO"];
-            creator?: components["schemas"]["SimpleUserDO"];
-            tags?: string[] | null;
+            maxMembers?: number;
+            gitInfo?: components["schemas"]["GitDO"];
+            creator?: components["schemas"]["MinimalUserDTO"];
+            tags?: string[];
+        };
+        ProjectDO2: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+            name?: string;
+            markdown?: string | null;
+            slug?: string;
+            thumbnailUrl?: string | null;
+            public?: boolean;
+            enabled?: boolean;
+            /** Format: int32 */
+            maxMembers?: number;
+            gitInfo?: components["schemas"]["GitDO"];
+            creator?: components["schemas"]["MinimalUserDTO"];
+            tags?: string[];
+        } | null;
+        ProjectPatchRequestDto: {
+            name?: string | null;
+            description?: string | null;
+            markdown?: string | null;
+            /** Format: int32 */
+            maxMembers?: number | null;
+            /** Format: uri */
+            thumbnailUrl?: string | null;
+            public?: boolean | null;
+            enabled?: boolean | null;
+            gitInfo?: components["schemas"]["GitInfoRequestDto"];
         };
         ProjectPostRequestDto: {
             name: string;
             description: string;
             markdown: string;
             /** Format: int32 */
-            max_members: number;
+            maxMembers: number;
             /** Format: uri */
-            thumbnail_url: string;
+            thumbnailUrl: string;
             public: boolean;
             enabled: boolean;
-            git_info?: components["schemas"]["GitInfoRequestDto"];
+            gitInfo?: components["schemas"]["GitInfoRequestDto"];
         };
-        Review: {
+        ReviewDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            kind: components["schemas"]["ReviewKind"];
+            updatedAt?: string;
+            kind?: components["schemas"]["ReviewKind"];
             state?: components["schemas"]["ReviewState"];
             validated?: boolean;
+            reviewer?: components["schemas"]["MinimalUserDTO"];
             /** Format: uuid */
-            reviewer_id?: string | null;
-            reviewer?: components["schemas"]["User"];
-            /** Format: uuid */
-            rubric_id?: string | null;
-            rubric?: components["schemas"]["Rubric"];
-            /** Format: uuid */
-            feedback_id?: string | null;
-            feedback?: components["schemas"]["Feedback"];
-            /** Format: uuid */
-            user_project_id?: string | null;
-            user_project?: components["schemas"]["UserProject"];
+            userProjectId?: string;
         };
-        /** @enum {string} */
+        /** @enum {unknown} */
         ReviewKind: "Self" | "Peer" | "Async" | "Auto";
         ReviewPatchRequestDto: {
-            state?: components["schemas"]["ReviewState"];
+            state?: components["schemas"]["NullableOfReviewState"];
             /** Format: uuid */
-            feedback_id?: string | null;
+            feedbackId?: string | null;
             /** Format: uuid */
-            reviewer_id?: string | null;
+            reviewerId?: string | null;
             validated?: boolean | null;
         };
-        ReviewPostRequestDto: {
+        ReviewPostRequestDTO: {
             kind: components["schemas"]["ReviewKind"];
             /** Format: uuid */
-            rubric_id: string;
+            rubricId: string;
             /** Format: uuid */
-            user_project_id: string;
+            userProjectId: string;
             /** Format: uuid */
-            reviewer_id: string;
+            reviewerId: string | null;
         };
-        /** @enum {string} */
+        /** @enum {unknown} */
         ReviewState: "Pending" | "InProgress" | "Finished";
-        Rubric: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            name?: string | null;
-            markdown?: string | null;
-            public?: boolean;
-            enabled?: boolean;
-            /** Format: uuid */
-            project_id?: string;
-            project?: components["schemas"]["Project"];
-            /** Format: uuid */
-            creator_id?: string;
-            creator?: components["schemas"]["User"];
-            /** Format: uuid */
-            git_info_id?: string;
-            git_info?: components["schemas"]["Git"];
-        };
-        RubricDO: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            name?: string | null;
-            markdown?: string | null;
-            public?: boolean;
-            enabled?: boolean;
-            project?: components["schemas"]["ProjectDO"];
-            creator?: components["schemas"]["UserDO"];
-            git_info?: components["schemas"]["GitDO"];
-        };
-        SimpleUserDO: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            login?: string | null;
-            display_name?: string | null;
-            avatar_url?: string | null;
-            /** Format: uuid */
-            details_id?: string | null;
-        };
         SpotlightEvent: {
+            title?: string;
+            description?: string;
+            actionText?: string;
+            /** Format: uri */
+            href?: string;
+            /** Format: uri */
+            backgroundUrl?: string;
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            title?: string | null;
-            description?: string | null;
-            action_text?: string | null;
-            /** Format: uri */
-            href?: string | null;
-            /** Format: uri */
-            background_url?: string | null;
+            updatedAt?: string;
         };
         SpotlightEventActionDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
+            updatedAt?: string;
             /** Format: uuid */
-            user_id?: string;
+            userId?: string;
             /** Format: uuid */
-            notification_id?: string;
-            is_dismissed?: boolean;
+            notificationId?: string;
+            isDismissed?: boolean;
         };
-        SpotlightPatchRequestDTO: {
-            title?: string | null;
-            description?: string | null;
-            href_text?: string | null;
-            /** Format: uri */
-            href?: string | null;
-            /** Format: uri */
-            background_url?: string | null;
-        };
-        SpotlightPostRequestDTO: {
-            title: string;
-            description: string;
-            href_text: string;
-            /** Format: uri */
-            href: string;
-            /** Format: uri */
-            background_url: string;
-        };
-        /** @enum {string} */
+        /** @enum {unknown} */
         TaskState: "Inactive" | "Active" | "Awaiting" | "Completed";
-        User: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            login?: string | null;
-            display_name?: string | null;
-            /** Format: uri */
-            avatar_url?: string | null;
-            details?: components["schemas"]["Details"];
-        };
-        UserCursus: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            state?: components["schemas"]["TaskState"];
-            /** Format: uuid */
-            user_id?: string;
-            user?: components["schemas"]["User"];
-            /** Format: uuid */
-            cursus_id?: string;
-            cursus?: components["schemas"]["Cursus"];
-        };
         UserCursusDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
+            updatedAt?: string;
             state?: components["schemas"]["TaskState"];
             /** Format: uuid */
-            user_id?: string;
-            cursus?: components["schemas"]["CursusDO"];
+            userId?: string;
+            cursus?: components["schemas"]["CursusDO2"];
         };
         UserDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            login?: string | null;
-            display_name?: string | null;
-            avatar_url?: string | null;
+            updatedAt?: string;
+            login?: string;
+            displayName?: string | null;
+            avatarUrl?: string | null;
             details?: components["schemas"]["UserDetailsDO"];
         };
         UserDetailsDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
+            updatedAt?: string;
             email?: string | null;
-            bio?: string | null;
-            first_name?: string | null;
-            last_name?: string | null;
-            github_url?: string | null;
-            linkedin_url?: string | null;
-            twitter_url?: string | null;
-            website_url?: string | null;
-        };
+            firstName?: string | null;
+            lastName?: string | null;
+            githubUrl?: string | null;
+            linkedinUrl?: string | null;
+            twitterUrl?: string | null;
+            websiteUrl?: string | null;
+        } | null;
         UserDetailsPutRequestDTO: {
-            /** Format: email */
             email?: string | null;
             bio?: string | null;
-            first_name?: string | null;
-            last_name?: string | null;
+            firstName?: string | null;
+            lastName?: string | null;
             /** Format: uri */
-            github_url?: string | null;
+            githubUrl?: string | null;
             /** Format: uri */
-            linkedin_url?: string | null;
+            linkedinUrl?: string | null;
             /** Format: uri */
-            twitter_url?: string | null;
+            twitterUrl?: string | null;
             /** Format: uri */
-            website_url?: string | null;
-        };
-        UserGoal: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** Format: uuid */
-            user_id?: string;
-            user?: components["schemas"]["User"];
-            /** Format: uuid */
-            goal_id?: string;
-            goal?: components["schemas"]["LearningGoal"];
-            /** Format: uuid */
-            user_cursus_id?: string | null;
-            user_cursus?: components["schemas"]["UserCursus"];
-            members?: components["schemas"]["Member"][] | null;
+            websiteUrl?: string | null;
         };
         UserGoalDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
-            user?: components["schemas"]["UserDO"];
+            updatedAt?: string;
+            user?: components["schemas"]["MinimalUserDTO"];
             /** Format: uuid */
-            goal_id?: string;
+            goalId?: string;
             /** Format: uuid */
-            user_cursus_id?: string | null;
-            members?: components["schemas"]["MemberDO"][] | null;
+            userCursusId?: string | null;
         };
         UserPatchRequestDTO: {
-            display_name?: string | null;
+            displayName?: string | null;
             /** Format: uri */
-            avatar_url?: string | null;
-        };
-        UserProject: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            state?: components["schemas"]["TaskState"];
-            /** Format: uuid */
-            project_id?: string;
-            project?: components["schemas"]["Project"];
-            /** Format: uuid */
-            git_info_id?: string;
-            git_info?: components["schemas"]["Git"];
-            /** Format: uuid */
-            rubric_id?: string;
-            rubric?: components["schemas"]["Rubric"];
-            members?: components["schemas"]["Member"][] | null;
+            avatarUrl?: string | null;
         };
         UserProjectDO: {
             /** Format: uuid */
             id?: string;
             /** Format: date-time */
-            created_at?: string;
+            createdAt?: string;
             /** Format: date-time */
-            updated_at?: string;
+            updatedAt?: string;
             state?: components["schemas"]["TaskState"];
-            project?: components["schemas"]["ProjectDO"];
-            git_info?: components["schemas"]["GitDO"];
-            rubric?: components["schemas"]["RubricDO"];
+            project?: components["schemas"]["ProjectDO2"];
+            gitInfo?: components["schemas"]["GitDO"];
         };
     };
     responses: never;

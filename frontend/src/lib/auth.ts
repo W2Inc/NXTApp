@@ -101,7 +101,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 				token.userID = profile.sub!;
 				token.picture = profile.picture;
 				return token;
-			} else if (token.expiresAt < Date.now()) {
+			} else if (token.expiresAt > Math.floor(Date.now() / 1000)) {
 				// Subsequent requests, but the `access_token` is still valid
 				return token;
 			}

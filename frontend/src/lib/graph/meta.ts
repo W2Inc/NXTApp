@@ -3,8 +3,6 @@
 // See README in the root project for more information.
 // ============================================================================
 
-import type { GUID } from "../../types";
-
 export interface GoalEntry {
 	name: string;
 	goalId: GUID;
