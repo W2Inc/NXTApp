@@ -18,6 +18,8 @@
 
 <Label for={name}>{label}</Label>
 {@render children()}
-<span class="text-destructive">
-	{currentError}
-</span>
+{#if currentError}
+	<p class="text-destructive text-sm">
+		{currentError}
+	</p>
+{/if}

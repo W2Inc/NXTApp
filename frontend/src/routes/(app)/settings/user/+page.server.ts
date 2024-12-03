@@ -19,18 +19,21 @@ const schema = z.object({
 // ============================================================================
 
 export const load: PageServerLoad = async ({ locals }) => {
+	// TODO: Fill in the form data with already known user data...
 	const form = await superValidate(zod(schema));
 	return { form };
 };
 
 export const actions = {
-  default: async ({ request }) => {
-    const form = await superValidate(request, zod(schema));
-    if (!form.valid) {
-      return fail(400, { form });
-    }
+	default: async ({ request }) => {
+		const form = await superValidate(request, zod(schema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
 
-		await new Promise(resolve => setTimeout(resolve, 2000));
-    return message(form, 'Form posted successfully!');
-  }
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+		return {
+			form,
+		};
+	},
 };
