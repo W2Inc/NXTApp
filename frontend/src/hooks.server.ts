@@ -4,11 +4,11 @@
 // ============================================================================
 
 import { sequence } from "@sveltejs/kit/hooks";
-import { redirect, type Handle } from "@sveltejs/kit";
+import { error, redirect, type Handle } from "@sveltejs/kit";
 import { handle as authenticationHandle } from "./lib/auth";
 import { dev } from "$app/environment";
-import { KC_COOKIE_NAME } from "$env/static/private";
-import type { paths } from "$lib/api/types";
+import type { paths as BackendRoutes } from "$lib/api/types";
+import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
 import createClient from "openapi-fetch";
 
 // ============================================================================
@@ -20,11 +20,16 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 
 /** Create the universal api fetch function */
 const apiHandle: Handle = async ({ event, resolve }) => {
-	event.locals.api ??= createClient<paths>({
-		baseUrl: dev ? "http://localhost:3000" : "https://api.oolp.dev",
+	event.locals.api ??= createClient<BackendRoutes>({
+		baseUrl: dev ? "http://localhost:3000" : "http://localhost:3000",
 		mode: "cors",
 		fetch: event.fetch,
-		signal: AbortSignal.timeout(5000),
+	});
+
+	event.locals.keycloak ??= createClient<KeycloakRoutes>({
+		baseUrl: dev ? "http://localhost:8089/auth" : "http://localhost:8089/auth",
+		mode: "cors",
+		fetch: event.fetch,
 	});
 
 	return resolve(event);

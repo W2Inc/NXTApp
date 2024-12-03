@@ -1,7 +1,7 @@
-/// <reference types="./types.d.ts" />
 /// <reference types="@auth/sveltekit" />
 
-import type { paths } from "$lib/api/types";
+import type { paths as BackendRoutes } from "$lib/api/types";
+import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
 import type { Client } from "openapi-fetch";
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
@@ -12,7 +12,8 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			api: Client<paths>;
+			api: Client<BackendRoutes>;
+			keycloak: Client<KeycloakRoutes>;
 		}
 		// interface PageData {}
 		// interface PageState {}

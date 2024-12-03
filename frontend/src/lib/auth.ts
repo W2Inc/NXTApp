@@ -145,3 +145,5 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 	secret: env.APP_KEY,
 	useSecureCookies: !dev,
 });
+
+const keycloakApi = "https://www.keycloak.org/docs-api/26.0.0/rest-api/openapi.json";

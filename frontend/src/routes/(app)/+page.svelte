@@ -9,15 +9,7 @@
 
 <div>
 	<!-- TODO: Don't use their components... -->
-	{#if data.session}
-		<SignOut provider="keycloak" signOutPage="signout">
-			<Button inert slot="submitButton">Logout</Button>
-		</SignOut>
-	{:else}
-		<SignIn provider="keycloak" signInPage="signin">
-			<Button inert slot="submitButton">Signin</Button>
-		</SignIn>
-	{/if}
+
 	{#if $page.data.session}
 		{#await data.data}
 			<div class="flex items-center space-x-4">
