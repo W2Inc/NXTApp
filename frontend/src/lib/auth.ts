@@ -6,7 +6,7 @@
 import { dev } from "$app/environment";
 import type { JWT } from "@auth/core/jwt";
 import { env } from "$env/dynamic/private";
-import { SvelteKitAuth } from "@auth/sveltekit";
+import { SvelteKitAuth, type Account, type Profile, type User } from "@auth/sveltekit";
 import Keycloak from "@auth/sveltekit/providers/keycloak";
 
 // ============================================================================
@@ -14,6 +14,8 @@ import Keycloak from "@auth/sveltekit/providers/keycloak";
 declare module "@auth/core/jwt" {
 	interface JWT {
 		name: string;
+		givenName: string;
+		lastName: string;
 		username: string;
 		email: string;
 		verified: boolean;
@@ -39,6 +41,8 @@ declare module "@auth/core/types" {
 declare module "@auth/core/types" {
 	interface User {
 		username: string;
+		firstName: string;
+		lastName: string;
 		verified: boolean;
 	}
 }
@@ -49,7 +53,7 @@ interface TokenEndpointResponse {
 	readonly id_token: string;
 	readonly refresh_token: string;
 	readonly scope: string;
-	readonly token_type: 'bearer' | 'dpop' | Lowercase<string>;
+	readonly token_type: "bearer" | "dpop" | Lowercase<string>;
 	readonly [parameter: string]: unknown | undefined;
 }
 
@@ -92,6 +96,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 				) {
 					throw new TypeError("Missing required account properties");
 				}
+				console.log(profile);
 				token.idToken = account.id_token;
 				token.accessToken = account.access_token;
 				token.refreshToken = account.refresh_token;
@@ -100,26 +105,25 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 				token.verified = profile.email_verified!;
 				token.userID = profile.sub!;
 				token.picture = profile.picture;
+				token.givenName = profile.given_name!;
+				token.lastName = profile.family_name!;
 				return token;
 			} else if (token.expiresAt > Math.floor(Date.now() / 1000)) {
 				// Subsequent requests, but the `access_token` is still valid
 				return token;
 			}
 
-			if (!token.refreshToken)
-				throw new TypeError("Missing refresh_token");
+			if (!token.refreshToken) throw new TypeError("Missing refresh_token");
 
 			try {
 				const response = await requestRefreshToken(token);
-				if (!response.ok)
-					throw new Error("Unable to request re-fresh token");
+				if (!response.ok) throw new Error("Unable to request re-fresh token");
 
-				const newToken = await response.json() as TokenEndpointResponse;
+				const newToken = (await response.json()) as TokenEndpointResponse;
 				token.accessToken = newToken.access_token;
 				token.expiresAt = Math.floor(Date.now() / 1000 + newToken.expires_in);
 				// Some providers only issue refresh tokens once, so preserve if we did not get a new one
-				if (newToken.refresh_token)
-					token.refresh_token = newToken.refresh_token;
+				if (newToken.refresh_token) token.refresh_token = newToken.refresh_token;
 				return token;
 			} catch (error) {
 				console.error("Error refreshing access_token", error);
@@ -134,6 +138,8 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 			session.user.username = token.username;
 			session.access_token = token.accessToken;
 			session.user.image = token.picture ?? null;
+			session.user.firstName = token.givenName;
+			session.user.lastName = token.lastName;
 			return session;
 		},
 	},

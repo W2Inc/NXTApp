@@ -1,19 +1,18 @@
 <script lang="ts">
 	import * as Avatar from "$lib/components/ui/avatar/";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
-	import Upload from "lucide-svelte/icons/upload";
 	import { Input } from "$lib/components/ui/input";
-	import { Label } from "$lib/components/ui/label";
-	import { superForm } from "sveltekit-superforms";
 	import Button from "$lib/components/ui/button/button.svelte";
-	import { toast } from "svelte-sonner";
 	import Control from "$lib/components/forms/control.svelte";
-	import { applyAction } from "$app/forms";
 	import Trash from "lucide-svelte/icons/trash";
 	import { dialog } from "$lib/components/dialog/state.svelte.js";
-	import Loader from "lucide-svelte/icons/loader";
 	import { useForm } from "$lib/components/forms/form.svelte.js";
+	import { Textarea } from "$lib/components/ui/textarea/index.js";
+	import { mode } from "mode-watcher";
+	// import { Carta, MarkdownEditor } from "carta-md";
+	// import "carta-md/default.css"; /* Default theme */
 
+	// const carta = new Carta();
 	const { data } = $props();
 	const { enhance, form, errors, constraints } = useForm(data.form);
 
@@ -32,44 +31,159 @@
 <div>
 	<Avatar.Root class="h-32 w-32 rounded-sm">
 		<Avatar.Image src="https://github.com/w2wizard.png" alt="@w2wizard" />
-		<Avatar.Fallback class="relative rounded-sm">
-			US
-			<!-- <input
-				 type="file"
-				 title="Upload a profile picture (max 5MB, png, gif, jpeg)"
-				 accept="image/png, image/gif, image/jpeg"
-				 class="absolute inset-0 h-32 w-32 cursor-pointer opacity-0"
-				 onchange={handleImagePreview}
-			 />
-			 <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-				 <Upload size="48" />
-			 </div> -->
-		</Avatar.Fallback>
+		<Avatar.Fallback class="relative rounded-sm">US</Avatar.Fallback>
 	</Avatar.Root>
-	<!-- TODO: Banner image -->
 </div>
 
 <form method="POST" use:enhance>
-	<Control label="Name" name="name" errors={$errors.name}>
+	<Control label="User ID" name="id" errors={$errors.id}>
 		<Input
+			autocorrect="off"
+			autocomplete={null}
 			type="text"
-			name="name"
-			aria-invalid={$errors.name ? "true" : undefined}
-			bind:value={$form.name}
-			{...$constraints.name}
+			name="id"
+			readonly
+			value={$form.id}
 		/>
 	</Control>
 
 	<Control label="Email" name="email" errors={$errors.email}>
 		<Input
+			id="email"
 			type="email"
 			name="email"
+			autocorrect="off"
+			autocomplete={null}
+			placeholder="main@example.com"
 			required
 			aria-invalid={$errors.email ? "true" : undefined}
 			bind:value={$form.email}
 			{...$constraints.email}
 		/>
 	</Control>
+
+	<div class="flex gap-4">
+		<Control label="First name" name="first" errors={$errors.firstName}>
+			<Input
+				id="first"
+				type="text"
+				name="first"
+				autocorrect="off"
+				autocomplete={null}
+				placeholder="Sony"
+				aria-invalid={$errors.firstName ? "true" : undefined}
+				bind:value={$form.firstName}
+				{...$constraints.firstName}
+			/>
+		</Control>
+		<Control label="Last Name" name="last" errors={$errors.lastName}>
+			<Input
+				id="last"
+				type="text"
+				name="last"
+				autocorrect="off"
+				autocomplete={null}
+				placeholder="Ercison"
+				aria-invalid={$errors.lastName ? "true" : undefined}
+				bind:value={$form.lastName}
+				{...$constraints.lastName}
+			/>
+		</Control>
+	</div>
+
+	<div class="flex gap-4">
+		<Control label="Username" name="username" errors={$errors.userName}>
+			<Input
+				id="username"
+				type="text"
+				name="username"
+				readonly
+				autocorrect="off"
+				autocomplete={null}
+				placeholder="x_silverhand_x"
+				aria-invalid={$errors.userName ? "true" : undefined}
+				bind:value={$form.userName}
+				{...$constraints.userName}
+			/>
+		</Control>
+		<Control label="Display Name" name="display" errors={$errors.displayName}>
+			<Input
+				id="display"
+				type="text"
+				name="display"
+				autocorrect="off"
+				autocomplete={null}
+				placeholder="Johnny Silverhand"
+				aria-invalid={$errors.displayName ? "true" : undefined}
+				bind:value={$form.displayName}
+				{...$constraints.displayName}
+			/>
+		</Control>
+	</div>
+
+	<Separator class="my-2" />
+
+	<div class="flex gap-4">
+		<Control label="Github" name="github" errors={$errors.github}>
+			<Input
+				id="github"
+				type="url"
+				name="github"
+				placeholder="https://github.com/"
+				aria-invalid={$errors.github ? "true" : undefined}
+				bind:value={$form.github}
+				{...$constraints.github}
+			/>
+		</Control>
+		<Control label="LinkedIn" name="linkedin" errors={$errors.linkedin}>
+			<Input
+				id="linkedin"
+				type="url"
+				name="last"
+				placeholder="https://linkedin.com/"
+				aria-invalid={$errors.linkedin ? "true" : undefined}
+				bind:value={$form.linkedin}
+				{...$constraints.linkedin}
+			/>
+		</Control>
+	</div>
+
+	<div class="flex gap-4">
+		<Control label="Custom Website" name="website" errors={$errors.website}>
+			<Input
+				type="url"
+				id="website"
+				name="website"
+				placeholder="https://website.com/"
+				aria-invalid={$errors.website ? "true" : undefined}
+				bind:value={$form.website}
+				{...$constraints.website}
+			/>
+		</Control>
+		<Control label="𝕏 / Twitter" name="twitter" errors={$errors.twitter}>
+			<Input
+				type="url"
+				id="twitter"
+				name="twitter"
+				placeholder="https://x.com/"
+				aria-invalid={$errors.twitter ? "true" : undefined}
+				bind:value={$form.twitter}
+				{...$constraints.twitter}
+			/>
+		</Control>
+	</div>
+
+	<Separator class="my-2" />
+
+	<div class="grid w-full gap-1.5">
+		<Control label="Bio" name="bio" errors={$errors.twitter}>
+				<!-- <MarkdownEditor theme={$mode} {carta} /> -->
+			<Textarea class="max-h-80" id="bio" placeholder="Type your message here." />
+			<p class="text-muted-foreground text-sm">
+				Your message will be copied to the support team.
+			</p>
+		</Control>
+	</div>
 
 	<Separator class="my-2" />
 	<div class="flex gap-2">
@@ -80,9 +194,3 @@
 		</Button>
 	</div>
 </form>
-
-<style>
-	.invalid {
-		color: red;
-	}
-</style>

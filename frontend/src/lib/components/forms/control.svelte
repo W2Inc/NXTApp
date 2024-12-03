@@ -4,8 +4,8 @@
 
 	interface Props {
 		label: string;
-		name: string
-		errors?: string[]
+		name: string;
+		errors?: string[];
 		children: Snippet;
 	}
 
@@ -16,10 +16,12 @@
 	});
 </script>
 
-<Label for={name}>{label}</Label>
-{@render children()}
-{#if currentError}
-	<p class="text-destructive text-sm">
+<div class="flex-1">
+	<Label class="cursor-pointer" for={name}>
+		{label}
+	</Label>
+	{@render children()}
+	<p class="text-destructive mb-2 text-sm">
 		{currentError}
 	</p>
-{/if}
+</div>

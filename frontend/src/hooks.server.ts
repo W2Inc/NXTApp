@@ -13,6 +13,13 @@ import createClient from "openapi-fetch";
 
 // ============================================================================
 
+const routes: Record<string, boolean> = {
+	"/": false,
+	"/settings": false
+};
+
+// ============================================================================
+
 const authorizationHandle: Handle = async ({ event, resolve }) => {
 	// TODO: Check for roles or anything to authorize the user to access stuff
 	return resolve(event);

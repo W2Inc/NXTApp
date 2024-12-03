@@ -12,15 +12,40 @@ import { message, superValidate } from "sveltekit-superforms";
 // ============================================================================
 
 const schema = z.object({
-	name: z.string().default("Hello world!"),
+	id: z.string().uuid().readonly(),
+	userName: z.string().readonly(),
+
 	email: z.string().email(),
+
+	displayName: z.string(),
+	firstName: z.string(),
+	lastName: z.string(),
+	twitter: z.string().url(),
+	linkedin: z.string().url(),
+	github: z.string().url(),
+	website: z.string().url(),
 });
 
 // ============================================================================
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// TODO: Fill in the form data with already known user data...
+	const session = await locals.auth();
 	const form = await superValidate(zod(schema));
+
+	form.data = {
+		id: session?.user?.id ?? "",
+		userName: session?.user?.username ?? "",
+		displayName: session?.user?.username ?? "",
+		firstName: session?.user?.firstName ?? "",
+		lastName: session?.user?.lastName ?? "",
+		email: session?.user?.email ?? "",
+		website: "",
+		linkedin: "",
+		twitter: "",
+		github: "",
+	};
+
 	return { form };
 };
 
