@@ -1,4 +1,5 @@
 <script lang="ts">
+	import "carta-md/default.css";
 	import "../../app.css";
 	import Header from "$lib/components/header.svelte";
 	import Footer from "$lib/components/footer.svelte";

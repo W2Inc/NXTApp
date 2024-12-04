@@ -15,12 +15,21 @@ import createClient from "openapi-fetch";
 
 const routes: Record<string, boolean> = {
 	"/": false,
-	"/settings": false
+	"/signout": false,
+	"/signin": false,
+	"/settings": true
 };
 
 // ============================================================================
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
+	const session = await event.locals.auth();
+	if (session === undefined || session === null) {
+		const url = `/${event.url.pathname.split('/')[1]}`;
+		if (routes[url]) {
+			// redirect(301, "https://hamette.net");
+		}
+	}
 	// TODO: Check for roles or anything to authorize the user to access stuff
 	return resolve(event);
 };

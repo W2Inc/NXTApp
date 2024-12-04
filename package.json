@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@cartamd/plugin-emoji": "^4.2.1",
+    "@cartamd/plugin-slash": "^4.1.2"
+  }
+}

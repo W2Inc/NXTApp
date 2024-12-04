@@ -9,6 +9,7 @@
 	import { useForm } from "$lib/components/forms/form.svelte.js";
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import { mode } from "mode-watcher";
+	import Markdown from "$lib/components/markdown/markdown.svelte";
 	// import { Carta, MarkdownEditor } from "carta-md";
 	// import "carta-md/default.css"; /* Default theme */
 
@@ -176,13 +177,7 @@
 	<Separator class="my-2" />
 
 	<div class="grid w-full gap-1.5">
-		<Control label="Bio" name="bio" errors={$errors.twitter}>
-				<!-- <MarkdownEditor theme={$mode} {carta} /> -->
-			<Textarea class="max-h-80" id="bio" placeholder="Type your message here." />
-			<p class="text-muted-foreground text-sm">
-				Your message will be copied to the support team.
-			</p>
-		</Control>
+		<Markdown placeholder="Write about yourself"/>
 	</div>
 
 	<Separator class="my-2" />

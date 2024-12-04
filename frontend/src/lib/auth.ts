@@ -59,8 +59,8 @@ interface TokenEndpointResponse {
 
 // ============================================================================
 
-function requestRefreshToken(token: JWT) {
-	return fetch(`${env.KC_ISSUER}/protocol/openid-connect/token`, {
+async function requestRefreshToken(token: JWT) {
+	const response = await fetch(`${env.KC_ISSUER}/protocol/openid-connect/token`, {
 		headers: { "Content-Type": "application/x-www-form-urlencoded" },
 		body: new URLSearchParams({
 			client_id: env.KC_CLIENT_ID,
@@ -71,6 +71,9 @@ function requestRefreshToken(token: JWT) {
 		method: "POST",
 		cache: "no-store",
 	});
+
+	if (!response.ok) throw new Error("Unable to request refresh token");
+	return response.json() as Promise<TokenEndpointResponse>;
 }
 
 // ============================================================================
@@ -87,7 +90,6 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 	callbacks: {
 		async jwt({ token, account, profile }) {
 			if (account && profile) {
-				// First-time login, save the `access_token`, its expiry and the `refresh_token`
 				if (
 					!account.id_token ||
 					!account.access_token ||
@@ -96,7 +98,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 				) {
 					throw new TypeError("Missing required account properties");
 				}
-				console.log(profile);
+
 				token.idToken = account.id_token;
 				token.accessToken = account.access_token;
 				token.refreshToken = account.refresh_token;
@@ -109,25 +111,19 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 				token.lastName = profile.family_name!;
 				return token;
 			} else if (token.expiresAt > Math.floor(Date.now() / 1000)) {
-				// Subsequent requests, but the `access_token` is still valid
 				return token;
 			}
 
 			if (!token.refreshToken) throw new TypeError("Missing refresh_token");
 
 			try {
-				const response = await requestRefreshToken(token);
-				if (!response.ok) throw new Error("Unable to request re-fresh token");
-
-				const newToken = (await response.json()) as TokenEndpointResponse;
+				const newToken = await requestRefreshToken(token);
 				token.accessToken = newToken.access_token;
 				token.expiresAt = Math.floor(Date.now() / 1000 + newToken.expires_in);
-				// Some providers only issue refresh tokens once, so preserve if we did not get a new one
-				if (newToken.refresh_token) token.refresh_token = newToken.refresh_token;
+				if (newToken.refresh_token) token.refreshToken = newToken.refresh_token;
 				return token;
 			} catch (error) {
 				console.error("Error refreshing access_token", error);
-				// If we fail to refresh the token, return an error so we can handle it on the page
 				token.error = "RefreshTokenError";
 				return token;
 			}
@@ -151,5 +147,3 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 	secret: env.APP_KEY,
 	useSecureCookies: !dev,
 });
-
-const keycloakApi = "https://www.keycloak.org/docs-api/26.0.0/rest-api/openapi.json";
