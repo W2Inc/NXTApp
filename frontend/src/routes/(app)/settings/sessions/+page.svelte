@@ -82,7 +82,7 @@
 				<Table.Cell class="text-right">
 					<form method="POST" enctype="multipart/form-data" action="?/delete">
 						<input name="id" type="text" readonly required value={session.id} hidden />
-						<Button type="submit" size="sm" variant="destructive">
+						<Button class="text-xs py-1" type="submit" size="sm" variant="destructive">
 							<Logout />
 							Logout
 						</Button>
@@ -98,7 +98,7 @@
 			</Table.Cell>
 			<Table.Cell class="text-right">
 				<form method="POST" enctype="multipart/form-data" action="?/deleteAll">
-					<Button size="sm" variant="destructive" type="submit">
+					<Button class="text-xs" size="sm" variant="destructive" type="submit">
 						<Logout />
 						Logout all sessions
 					</Button>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Navgroup from "$lib/components/navgroup.svelte";
 	import User from "lucide-svelte/icons/user";
+	import Socials from "lucide-svelte/icons/book-user";
 	import FlaskConical from "lucide-svelte/icons/flask-conical";
 	import Computer from "lucide-svelte/icons/computer";
 
@@ -20,6 +21,11 @@
 			icon: FlaskConical,
 			href: "./features",
 			title: "Features",
+		},
+		{
+			icon: Socials,
+			href: "./socials",
+			title: "Socials",
 		},
 	];
 </script>
