@@ -1,7 +1,19 @@
 <script lang="ts">
+	import Button from "$lib/components/ui/button/button.svelte";
+	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import * as Table from "$lib/components/ui/table/";
+	import Logout from "lucide-svelte/icons/log-out";
 
 	const { data } = $props();
+
+	const dateFormat = new Intl.DateTimeFormat("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
+	});
 
 	const invoices = [
 		{
@@ -49,32 +61,49 @@
 	];
 </script>
 
-<pre><code>{JSON.stringify(data.sessions)}</code></pre>
-
+<h1 class="text-2xl">Current Sessions</h1>
+<p class="text-muted-foreground text-sm">These are all your currently active sessions.</p>
+<Separator class="my-2" />
 <Table.Root>
-	<Table.Caption>A list of your recent invoices.</Table.Caption>
 	<Table.Header>
 		<Table.Row>
-			<Table.Head class="w-[100px]">Invoice</Table.Head>
-			<Table.Head>Status</Table.Head>
-			<Table.Head>Method</Table.Head>
-			<Table.Head class="text-right">Amount</Table.Head>
+			<Table.Head class="w-[100px]">IP</Table.Head>
+			<Table.Head>Login At</Table.Head>
+			<Table.Head>Last Access</Table.Head>
+			<Table.Head class="text-right">Action</Table.Head>
 		</Table.Row>
 	</Table.Header>
 	<Table.Body>
-		{#each invoices as invoice, i (i)}
+		{#each data.sessions as session, i}
 			<Table.Row>
-				<Table.Cell class="font-medium">{invoice.invoice}</Table.Cell>
-				<Table.Cell>{invoice.paymentStatus}</Table.Cell>
-				<Table.Cell>{invoice.paymentMethod}</Table.Cell>
-				<Table.Cell class="text-right">{invoice.totalAmount}</Table.Cell>
+				<Table.Cell class="font-medium">{session.ipAddress}</Table.Cell>
+				<Table.Cell>{dateFormat.format(session.start)}</Table.Cell>
+				<Table.Cell>{dateFormat.format(session.lastAccess)}</Table.Cell>
+				<Table.Cell class="text-right">
+					<form method="POST" enctype="multipart/form-data" action="?/delete">
+						<input name="id" type="text" readonly required value={session.id} hidden />
+						<Button type="submit" size="sm" variant="destructive">
+							<Logout />
+							Logout
+						</Button>
+					</form>
+				</Table.Cell>
 			</Table.Row>
 		{/each}
 	</Table.Body>
 	<Table.Footer>
 		<Table.Row>
-			<Table.Cell colspan={3}>Total</Table.Cell>
-			<Table.Cell class="text-right">$2,500.00</Table.Cell>
+			<Table.Cell colspan={3}>
+				Session count: {data.sessions.length}
+			</Table.Cell>
+			<Table.Cell class="text-right">
+				<form method="POST" enctype="multipart/form-data" action="?/deleteAll">
+					<Button size="sm" variant="destructive" type="submit">
+						<Logout />
+						Logout all sessions
+					</Button>
+				</form>
+			</Table.Cell>
 		</Table.Row>
 	</Table.Footer>
 </Table.Root>

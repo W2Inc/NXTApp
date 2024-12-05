@@ -8,6 +8,7 @@ import type { JWT } from "@auth/core/jwt";
 import { env } from "$env/dynamic/private";
 import { SvelteKitAuth, type Account, type Profile, type User } from "@auth/sveltekit";
 import Keycloak from "@auth/sveltekit/providers/keycloak";
+import { redirect } from "@sveltejs/kit";
 
 // ============================================================================
 
@@ -59,14 +60,14 @@ interface TokenEndpointResponse {
 
 // ============================================================================
 
-async function requestRefreshToken(token: JWT) {
+export async function requestRefreshToken(token: string) {
 	const response = await fetch(`${env.KC_ISSUER}/protocol/openid-connect/token`, {
 		headers: { "Content-Type": "application/x-www-form-urlencoded" },
 		body: new URLSearchParams({
 			client_id: env.KC_CLIENT_ID,
 			client_secret: env.KC_CLIENT_SECRET,
 			grant_type: "refresh_token",
-			refresh_token: token.refreshToken!,
+			refresh_token: token,
 		}),
 		method: "POST",
 		cache: "no-store",
@@ -79,6 +80,7 @@ async function requestRefreshToken(token: JWT) {
 // ============================================================================
 
 export const { handle, signIn, signOut } = SvelteKitAuth({
+	debug: false,
 	providers: [
 		Keycloak({
 			clientId: env.KC_CLIENT_ID,
@@ -117,15 +119,13 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 			if (!token.refreshToken) throw new TypeError("Missing refresh_token");
 
 			try {
-				const newToken = await requestRefreshToken(token);
+				const newToken = await requestRefreshToken(token.refreshToken);
 				token.accessToken = newToken.access_token;
 				token.expiresAt = Math.floor(Date.now() / 1000 + newToken.expires_in);
 				if (newToken.refresh_token) token.refreshToken = newToken.refresh_token;
 				return token;
 			} catch (error) {
-				console.error("Error refreshing access_token", error);
-				token.error = "RefreshTokenError";
-				return token;
+				redirect(301, "/");
 			}
 		},
 		async session({ session, token }) {

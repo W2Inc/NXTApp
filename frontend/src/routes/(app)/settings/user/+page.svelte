@@ -10,6 +10,7 @@
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import { mode } from "mode-watcher";
 	import Markdown from "$lib/components/markdown/markdown.svelte";
+
 	// import { Carta, MarkdownEditor } from "carta-md";
 	// import "carta-md/default.css"; /* Default theme */
 
@@ -27,14 +28,15 @@
 </script>
 
 <h1 class="text-2xl">User</h1>
+<p class="text-muted-foreground text-sm">
+	Configure your profile here in anyway you want.
+</p>
 <Separator class="my-2" />
-<!-- Avatar -->
-<div>
-	<Avatar.Root class="h-32 w-32 rounded-sm">
-		<Avatar.Image src="https://github.com/w2wizard.png" alt="@w2wizard" />
-		<Avatar.Fallback class="relative rounded-sm">US</Avatar.Fallback>
-	</Avatar.Root>
-</div>
+<Avatar.Root class="h-32 w-32 rounded-sm">
+	<Avatar.Image src={data.session?.user?.image} alt="@w2wizard" />
+	<Avatar.Fallback class="relative rounded-sm">US</Avatar.Fallback>
+</Avatar.Root>
+<Separator class="my-2" />
 
 <form method="POST" use:enhance>
 	<Control label="User ID" name="id" errors={$errors.id}>
@@ -177,7 +179,7 @@
 	<Separator class="my-2" />
 
 	<div class="grid w-full gap-1.5">
-		<Markdown placeholder="Write about yourself"/>
+		<Markdown placeholder="Write about yourself" />
 	</div>
 
 	<Separator class="my-2" />

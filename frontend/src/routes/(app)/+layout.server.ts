@@ -6,8 +6,6 @@ export const load: LayoutServerLoad = async ({ locals, fetch }) => {
 	// });
 
 	const kc = await locals.keycloak.GET("/admin/realms");
-
-	console.log(kc.response.status, kc.data);
 	return {
 		session,
 		data: null,

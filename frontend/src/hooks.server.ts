@@ -10,6 +10,8 @@ import { dev } from "$app/environment";
 import type { paths as BackendRoutes } from "$lib/api/types";
 import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
 import createClient from "openapi-fetch";
+import { KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER } from "$env/static/private";
+import KeycloakClient from "$lib/keycloak";
 
 // ============================================================================
 
@@ -20,6 +22,8 @@ const routes: Record<string, boolean> = {
 	"/settings": true
 };
 
+const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
+
 // ============================================================================
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
@@ -27,7 +31,7 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 	if (session === undefined || session === null) {
 		const url = `/${event.url.pathname.split('/')[1]}`;
 		if (routes[url]) {
-			// redirect(301, "https://hamette.net");
+			redirect(301, "/");
 		}
 	}
 	// TODO: Check for roles or anything to authorize the user to access stuff
@@ -66,9 +70,17 @@ export const handle: Handle = sequence(
 // it would be stuck on the first client request's cookie.
 export async function handleFetch({ fetch, request, event }) {
 	const url = new URL(request.url);
-	if (url.hostname.startsWith("api") || (dev && url.port === "3000")) {
-		const session = await event.locals.auth();
-		request.headers.set("Authorization", `Bearer ${session?.access_token}`);
+	if (dev) {
+		if (url.port === "3000") {
+			const session = await event.locals.auth();
+			request.headers.set("Authorization", `Bearer ${session?.access_token}`);
+		} // BACKEND
+
+		if (url.port) {
+			const token = await keycloak.getToken();
+			request.headers.set("Authorization", `Bearer ${token}`);
+		} // OIDC
 	}
+
 	return fetch(request);
 }

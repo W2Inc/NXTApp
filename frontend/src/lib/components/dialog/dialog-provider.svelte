@@ -17,8 +17,6 @@
 				break;
 		}
 
-		console.log("yay", dialog.current)
-
 		dialog.current = null;
 	}
 </script>
