@@ -14,7 +14,6 @@
 	import Feedback from "lucide-svelte/icons/message-circle-heart";
 	import Navgroup from "./navgroup.svelte";
 	import * as Dialog from "$lib/components/ui/dialog";
-	import * as Command from "$lib/components/ui/command";
 	import Separator from "./ui/separator/separator.svelte";
 
 	const id = $page.data.session?.user?.id;
