@@ -1,19 +1,19 @@
 ---
 services:
-  mailhog:
-    image: mailhog/mailhog:latest
-    restart: on-failure:5
-    ports:
-      - 1025:1025
-    networks:
-      - app
-    depends_on:
-      keycloak:
-        condition: service_healthy
-      keycloakdb:
-        condition: service_healthy
-      clickhouse:
-        db: service_healthy
+  # mailhog:
+  #   image: mailhog/mailhog:latest
+  #   restart: on-failure:5
+  #   ports:
+  #     - 1025:1025
+  #   networks:
+  #     - app
+  #   depends_on:
+  #     keycloak:
+  #       condition: service_healthy
+  #     keycloakdb:
+  #       condition: service_healthy
+  #     clickhouse:
+  #       db: service_healthy
 
   # redis:
   #   image: redis:7-alpine
@@ -38,6 +38,7 @@ services:
       KC_DB: postgres
       KC_DB_URL_DATABASE: keycloak
       KC_DB_SCHEMA: public
+      KC_LOG_LEVEL: DEBUG # I Added this <====
       KC_DB_URL: jdbc:postgresql://keycloakdb/keycloak
 
       KC_DB_USERNAME: keycloak # Make sure it matches the POSTGRES_USER below

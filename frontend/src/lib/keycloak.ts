@@ -1,3 +1,5 @@
+import { error } from "@sveltejs/kit";
+
 export default class KeycloakClient {
 	private clientId: string;
 	private clientSecret: string;
@@ -13,19 +15,44 @@ export default class KeycloakClient {
 		this.refreshToken = null;
 	}
 
-	private async requestToken(): Promise<void> {
-		const response = await fetch(
-			`${this.url}/protocol/openid-connect/token`,
+	/**
+	 * Get the client from keycloak and it's configuration
+	 *
+	 * Why this ? So we can avoid pasting client .env values all over the
+	 *
+	 * @param locals THe locals.
+	 * @param clientId E.g: "github", "twitter", "etc..."
+	 * @returns The client configuration
+	 */
+	public async getClientConfig(locals: App.Locals, clientId: string) {
+		const { data } = await locals.keycloak.GET(
+			"/admin/realms/{realm}/identity-provider/instances",
 			{
-				method: "POST",
-				headers: { "Content-Type": "application/x-www-form-urlencoded" },
-				body: new URLSearchParams({
-					client_id: this.clientId,
-					client_secret: this.clientSecret,
-					grant_type: "client_credentials",
-				}),
+				params: {
+					query: {
+						briefRepresentation: false,
+					},
+					path: {
+						realm: "student",
+					},
+				},
 			},
 		);
+
+		if (!data) throw new Error("Unable to client, is github active ?");
+		return data.filter((i) => i.providerId === clientId).pop() ?? error(501);
+	}
+
+	private async requestToken(): Promise<void> {
+		const response = await fetch(`${this.url}/protocol/openid-connect/token`, {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: new URLSearchParams({
+				client_id: this.clientId,
+				client_secret: this.clientSecret,
+				grant_type: "client_credentials",
+			}),
+		});
 
 		if (!response.ok) throw new Error(response.statusText);
 		const data = await response.json();
@@ -34,23 +61,24 @@ export default class KeycloakClient {
 	}
 
 	private async requestRefreshToken(): Promise<void> {
-		if (!this.refreshToken) throw new Error("No refresh token available");
+		if (!this.refreshToken)
+			throw new Error(
+				"No refresh token available. Configure your keycloak to allow sending refresh_tokens",
+			);
 
-		const response = await fetch(
-			`${this.url}/protocol/openid-connect/token`,
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/x-www-form-urlencoded" },
-				body: new URLSearchParams({
-					client_id: this.clientId,
-					client_secret: this.clientSecret,
-					grant_type: "refresh_token",
-					refresh_token: this.refreshToken,
-				}),
-			},
-		);
+		const response = await fetch(`${this.url}/protocol/openid-connect/token`, {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: new URLSearchParams({
+				client_id: this.clientId,
+				client_secret: this.clientSecret,
+				grant_type: "refresh_token",
+				refresh_token: this.refreshToken,
+			}),
+		});
 
-		if (!response.ok) throw new Error(`Unable to request refresh token: ${response.statusText}`);
+		if (!response.ok)
+			throw new Error(`Unable to request refresh token: ${response.statusText}`);
 		const data = await response.json();
 		this.token = data.access_token;
 		this.refreshToken = data.refresh_token;

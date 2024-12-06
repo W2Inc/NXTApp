@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { sequence } from "@sveltejs/kit/hooks";
-import { error, redirect, type Handle } from "@sveltejs/kit";
+import { error, redirect, type Handle, type RequestEvent } from "@sveltejs/kit";
 import { handle as authenticationHandle } from "./lib/auth";
 import { dev } from "$app/environment";
 import type { paths as BackendRoutes } from "$lib/api/types";
@@ -12,24 +12,34 @@ import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
 import createClient from "openapi-fetch";
 import { KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER } from "$env/static/private";
 import KeycloakClient from "$lib/keycloak";
+import { GitHub } from "arctic";
 
 // ============================================================================
 
+const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
+
+/**
+ * Here you can configure the overal routes that need which permission in order
+ * to be accessed.
+ *
+ * AT THIS TIME, any route can be visited by anyone. But later on the idea
+ * is to configure as such that it is permission based.
+ *
+ * e.g: "/": [] or "/admin": [view:admin] or "/settings": [view:settings]
+ */
 const routes: Record<string, boolean> = {
 	"/": false,
 	"/signout": false,
 	"/signin": false,
-	"/settings": true
+	"/settings": true,
 };
-
-const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
 
 // ============================================================================
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const session = await event.locals.auth();
 	if (session === undefined || session === null) {
-		const url = `/${event.url.pathname.split('/')[1]}`;
+		const url = `/${event.url.pathname.split("/")[1]}`;
 		if (routes[url]) {
 			redirect(301, "/");
 		}
