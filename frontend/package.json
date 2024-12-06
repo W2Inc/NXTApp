@@ -23,6 +23,7 @@
 		"autoprefixer": "^10.4.20",
 		"bits-ui": "^1.0.0-next.66",
 		"clsx": "^2.1.1",
+		"cmdk-sv": "^0.0.18",
 		"eslint": "^9.16.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.46.1",
@@ -54,7 +55,7 @@
 		"carta-md": "^4.6.7",
 		"isomorphic-dompurify": "^2.18.0",
 		"jsonwebtoken": "^9.0.2",
-		"lucide-svelte": "^0.462.0",
+		"lucide-svelte": "^0.468.0",
 		"openapi-fetch": "^0.13.3",
 		"openapi-typescript": "^7.4.4"
 	}
