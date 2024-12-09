@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import Navgroup from "$lib/components/navgroup.svelte";
 	import type { IconLink } from "$lib/types";
-	import { decodeUUID64, encodeUUID64 } from "$lib/utils";
+	import { decodeUUID64, encodeUUID64 } from "$lib/utils.svelte.js";
 	import Trophy from "lucide-svelte/icons/trophy";
 	import Archive from "lucide-svelte/icons/archive";
 	import GraduationCap from "lucide-svelte/icons/graduation-cap";
