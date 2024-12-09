@@ -19,7 +19,7 @@
 	import { redirect } from "@sveltejs/kit";
 	import { goto } from "$app/navigation";
 	import type { Component } from "svelte";
-	import type { Icon } from "lucide-svelte";
+	import Heart from "lucide-svelte/icons/heart";
 	import type { IconLink } from "$lib/types";
 
 	const id = $page.data.session?.user?.id;
@@ -31,22 +31,22 @@
 		},
 		{
 			icon: ArchiveBox,
-			href: id ? `/users/${id}/projects` : `/users/projects`,
+			href: id ? `/users/${id}/projects` : `/projects`,
 			title: "Projects",
 		},
 		{
 			icon: Trophy,
-			href: id ? `/users/${id}/goals` : `/users/goals`,
+			href: id ? `/users/${id}/goals` : `/goals`,
 			title: "Goals",
 		},
 		{
 			icon: AcademiaCap,
-			href: id ? `/users/${id}/cursus` : `/users/cursus`,
+			href: id ? `/users/${id}/cursus` : `/cursus`,
 			title: "Cursus",
 		},
 		{
 			icon: Sparkles,
-			href: id ? `/users/${id}/galaxy` : `/users/galaxy`,
+			href: id ? `/users/${id}/galaxy` : `/galaxy`,
 			title: "Galaxy",
 		},
 	]);
@@ -127,12 +127,13 @@
 						</form>
 					</Dialog.Description>
 				</Dialog.Header>
-				<Navgroup title={id ? "Profile" : "Explore"} navs={links} tabindex="0"></Navgroup>
+				<Navgroup title={id ? "Profile" : "Explore"} navs={links}></Navgroup>
 				<Navgroup title="General" navs={general}></Navgroup>
 			</div>
 
 			<div class="text-muted-foreground">
-				<p>Made with ❤️ by © 2023 Nextdemy, B.V.</p>
+				<p>Made with <Heart size={16} fill="currentColor" class="inline"/> by © 2023-2024 W2Inc, B.V.</p>
+				<!-- <p>Made with ❤️ by © 2023-2024 W2Inc, B.V.</p> -->
 				<ul class="text-primary flex gap-2 text-sm underline">
 					<li><a href="/terms">Terms</a></li>
 					<li><a href="/privacy">Privacy</a></li>
