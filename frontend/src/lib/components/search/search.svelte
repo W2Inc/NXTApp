@@ -1,7 +1,7 @@
 <script lang="ts">
 	// import Logo from "$assets/logo.png";
 	import { page } from "$app/stores";
-	import { Button } from "./ui/button";
+	import { Button } from "../ui/button";
 	import X from "lucide-svelte/icons/x";
 	import User from "lucide-svelte/icons/user";
 	import Users from "lucide-svelte/icons/users";
@@ -12,41 +12,46 @@
 	import Home from "lucide-svelte/icons/home";
 	import Cog from "lucide-svelte/icons/cog";
 	import Feedback from "lucide-svelte/icons/message-circle-heart";
-	import Navgroup from "./navgroup.svelte";
+	import Navgroup from "../navgroup.svelte";
 	import * as Dialog from "$lib/components/ui/dialog";
-	import Separator from "./ui/separator/separator.svelte";
+	import Separator from "../ui/separator/separator.svelte";
+	import Input from "../ui/input/input.svelte";
+	import { redirect } from "@sveltejs/kit";
+	import { goto } from "$app/navigation";
+	import type { Component } from "svelte";
+	import type { Icon } from "lucide-svelte";
+	import type { IconLink } from "$lib/types";
 
 	const id = $page.data.session?.user?.id;
-
-	let profileLinks = [
+	const links = $state.raw<IconLink[]>([
 		{
 			icon: User,
-			href: `/user/${id}/`,
+			href: id ? `/users/${id}/` : `/users/`,
 			title: "Profile",
 		},
 		{
 			icon: ArchiveBox,
-			href: `/user/${id}/projects`,
+			href: id ? `/users/${id}/projects` : `/users/projects`,
 			title: "Projects",
 		},
 		{
 			icon: Trophy,
-			href: `/user/${id}/projects`,
+			href: id ? `/users/${id}/goals` : `/users/goals`,
 			title: "Goals",
 		},
 		{
 			icon: AcademiaCap,
-			href: `/user/${id}/cursus`,
+			href: id ? `/users/${id}/cursus` : `/users/cursus`,
 			title: "Cursus",
 		},
 		{
 			icon: Sparkles,
-			href: `/user/${id}/galaxy`,
+			href: id ? `/users/${id}/galaxy` : `/users/galaxy`,
 			title: "Galaxy",
 		},
-	];
+	]);
 
-	let generalLinks = [
+	const general = $state.raw<IconLink[]>([
 		{
 			icon: Home,
 			href: `/`,
@@ -64,11 +69,12 @@
 		},
 		{
 			icon: Feedback,
-			href: `/user/${id}/feedback`,
+			href: id ? `/users/${id}/feedback` : `/users/feedback`,
 			title: "Feedback",
 		},
-	];
+	]);
 
+	let query = $state("");
 	let open = $state(false);
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -96,20 +102,38 @@
 
 <Dialog.Root bind:open>
 	<Dialog.Content
-		class="data-[state=closed]:slide-out-to-top-[unset] data-[state=open]:slide-in-from-left-[unset] left-0 top-0 h-full translate-x-[unset] translate-y-[unset] sm:max-w-[425px]"
+		class="data-[state=closed]:slide-out-to-top-[unset] data-[state=open]:slide-in-from-left-[unset] left-0 top-0 h-full translate-x-[unset] translate-y-[unset] overflow-auto sm:max-w-[425px]"
 	>
 		<div class="flex flex-col gap-2">
 			<div class="flex-1">
 				<Dialog.Header class="flex-shrink-1 text-left">
 					<Dialog.Title class="pb-2">NXTApp</Dialog.Title>
+					<Dialog.Description>
+						<form
+							role="search"
+							onsubmit={(e) => {
+								open = false;
+								e.preventDefault();
+								goto(`search?q=${query}`);
+							}}
+						>
+							<Input
+								type="search"
+								class="mb-2"
+								placeholder="Search..."
+								name="q"
+								bind:value={query}
+							/>
+						</form>
+					</Dialog.Description>
 				</Dialog.Header>
-				<Navgroup tabindex="0" title="Profile" navs={profileLinks}></Navgroup>
-				<Navgroup title="General" navs={generalLinks}></Navgroup>
+				<Navgroup title={id ? "Profile" : "Explore"} navs={links} tabindex="0"></Navgroup>
+				<Navgroup title="General" navs={general}></Navgroup>
 			</div>
 
 			<div class="text-muted-foreground">
 				<p>Made with ❤️ by © 2023 Nextdemy, B.V.</p>
-				<ul class="flex gap-2 text-primary underline text-sm">
+				<ul class="text-primary flex gap-2 text-sm underline">
 					<li><a href="/terms">Terms</a></li>
 					<li><a href="/privacy">Privacy</a></li>
 					<li><a href="/pricing">Pricing</a></li>

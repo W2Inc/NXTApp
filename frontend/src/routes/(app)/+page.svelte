@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import Button from "$lib/components/ui/button/button.svelte";
+	import Taskcard from "$lib/components/taskcard.svelte";
 	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
 	import { SignIn, SignOut } from "@auth/sveltekit/components";
 
@@ -20,9 +21,15 @@
 				</div>
 			</div>
 		{:then user}
-			<pre><code>{JSON.stringify(user)}</code></pre>
+			<!-- <pre><code>{JSON.stringify(data.session?.user)}</code></pre> -->
 		{/await}
 	{:else}
-		<p>Fuck off</p>
+	<p>Login lol</p>
 	{/if}
+	<div class="flex gap-6 p-5">
+		<Taskcard title="Project A" type="goal" state="Active" href="/"></Taskcard>
+		<Taskcard title="Project B" state="Awaiting" href="/"></Taskcard>
+		<Taskcard title="Project C" type="goal" state="Completed" href="/"></Taskcard>
+		<Taskcard title="Project D" state="Inactive" href="/"></Taskcard>
+	</div>
 </div>

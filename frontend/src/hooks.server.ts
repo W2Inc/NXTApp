@@ -12,7 +12,6 @@ import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
 import createClient from "openapi-fetch";
 import { KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER } from "$env/static/private";
 import KeycloakClient from "$lib/keycloak";
-import { GitHub } from "arctic";
 
 // ============================================================================
 

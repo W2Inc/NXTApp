@@ -17,12 +17,16 @@
 	import { toggleMode } from "mode-watcher";
 	import * as DropdownMenu from "./ui/dropdown-menu";
 	import * as Avatar from "./ui/avatar";
-	import Search from "./search.svelte";
+	import Search from "./search/search.svelte";
+	import House from "lucide-svelte/icons/house";
 </script>
 
-<header class="bg-muted flex h-[var(--header-height)] w-full justify-between p-3 gap-2 items-center">
+<header class="bg-muted flex h-[var(--header-height)] w-full justify-between p-3 gap-2 items-center z-50">
 	<div class="flex-1">
-		<img src="https://github.com/w2wizard.png" width="32" height="32" alt="Logo"/>
+		<Button href="/" variant="outline" size="icon">
+			<House/>
+		</Button>
+			<!-- <img src="https://github.com/w2wizard.png" width="32" height="32" alt="Logo"/> -->
 	</div>
 	<Search />
 	<div class="flex items-center gap-2">

@@ -6,7 +6,7 @@
 	import { mode, ModeWatcher } from "mode-watcher";
 	import { Toaster } from "svelte-sonner";
 	import DialogProvider from "$lib/components/dialog/dialog-provider.svelte";
-	import Search from "$lib/components/search.svelte";
+	import Search from "$lib/components/search/search.svelte";
 	let { children } = $props();
 </script>
 
