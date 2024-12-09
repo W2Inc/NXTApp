@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import CircleHelp from "lucide-svelte/icons/circle-help";
 	import Cog from "lucide-svelte/icons/cog";
 	import DollarSign from "lucide-svelte/icons/dollar-sign";
@@ -19,14 +19,25 @@
 	import * as Avatar from "./ui/avatar";
 	import Search from "./search/search.svelte";
 	import House from "lucide-svelte/icons/house";
+	import type { IconLink } from "$lib/types";
+	import { encodeUUID64 } from "$lib/utils";
 </script>
 
-<header class="bg-muted flex h-[var(--header-height)] w-full justify-between p-3 gap-2 items-center z-50">
+{#snippet link({ icon, href, title }: IconLink)}
+	<a class="flex w-full items-center gap-2" {href}>
+		<svelte:component this={icon} size="16"></svelte:component>
+		{title}
+	</a>
+{/snippet}
+
+<header
+	class="bg-muted z-50 flex h-[var(--header-height)] w-full items-center justify-between gap-2 p-3"
+>
 	<div class="flex-1">
 		<Button href="/" variant="outline" size="icon">
-			<House/>
+			<House />
 		</Button>
-			<!-- <img src="https://github.com/w2wizard.png" width="32" height="32" alt="Logo"/> -->
+		<!-- <img src="https://github.com/w2wizard.png" width="32" height="32" alt="Logo"/> -->
 	</div>
 	<Search />
 	<div class="flex items-center gap-2">
@@ -54,47 +65,48 @@
 						<DropdownMenu.Separator />
 						<DropdownMenu.Group>
 							<DropdownMenu.Item>
-								<User />
-								Profile
+								{@render link({
+									icon: User,
+									title: "Profile",
+									href: `/users/${encodeUUID64($page.data.session.user?.id!)}`,
+								})}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>
-								<DollarSign />
-								Billing
+								{@render link({
+									icon: DollarSign,
+									title: "Billing",
+									href: `/billing`,
+								})}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>
-								<a class="flex w-full items-center gap-2" href="/settings">
-									<Cog size="16" />
-									Settings
-								</a>
+								{@render link({
+									icon: Cog,
+									title: "Settings",
+									href: `/settings`,
+								})}
 							</DropdownMenu.Item>
 						</DropdownMenu.Group>
 						<DropdownMenu.Separator />
 						<DropdownMenu.Item>
-							<a
-								class="flex w-full items-center gap-2"
-								href="https://github.com/W2Inc/NXTApp"
-							>
-								<Github size="16" />
-								GitHub
-							</a>
+							{@render link({
+								icon: Github,
+								title: "Github",
+								href: `https://github.com/W2Inc/NXTApp`,
+							})}
 						</DropdownMenu.Item>
 						<DropdownMenu.Item>
-							<a
-								class="flex w-full items-center gap-2"
-								href="https://github.com/W2Inc/NXTApp"
-							>
-								<CircleHelp size="16" />
-								Support
-							</a>
+							{@render link({
+								icon: CircleHelp,
+								title: "Support",
+								href: `/help`,
+							})}
 						</DropdownMenu.Item>
 						<DropdownMenu.Item>
-							<a
-								class="flex w-full items-center gap-2"
-								href="https://github.com/W2Inc/NXTApp"
-							>
-								<Server size="16" />
-								API
-							</a>
+							{@render link({
+								icon: Server,
+								title: "API",
+								href: `/api`,
+							})}
 						</DropdownMenu.Item>
 						<DropdownMenu.Separator />
 						<SignOut className="w-full grid" provider="keycloak" signOutPage="signout">

@@ -12,6 +12,7 @@
 	import { cartaContext } from "$lib/components/markdown/context.svelte";
 	import * as Avatar from "$lib/components/ui/avatar";
 
+	const { data } = $props();
 	const id = $page.params.id;
 	const links = $state.raw<IconLink[]>([
 		{
@@ -39,7 +40,7 @@
 
 <div class="m-auto max-w-5xl px-4 py-8">
 	<div
-		class="flex p-8 rounded items-center space-x-4 bg-[url('https://www.keycloak.org/resources/images/banner.png')]"
+		class="flex p-8 rounded gap-4 bg-[url('/img.png')]"
 	>
 		<Avatar.Root class="size-32 rounded-sm border border-gray-700">
 			<Avatar.Image
@@ -49,9 +50,9 @@
 			/>
 			<Avatar.Fallback class="rounded-sm">CN</Avatar.Fallback>
 		</Avatar.Root>
-		<div>
+		<div class="backdrop-blur-sm flex-1 rounded-lg px-4 py-2 bg-gray-700 bg-opacity-[0.2]">
 			<h1 class="md:text-2xl sm:text-lg font-bold">Display Name</h1>
-			<div class="flex space-x-2">
+			<div class="flex gap-1">
 				<a
 					href="https://github.com/w2wizard"
 					target="_blank"

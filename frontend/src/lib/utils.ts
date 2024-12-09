@@ -1,10 +1,22 @@
+// ============================================================================
+// W2Inc, Amsterdam 2023-2024, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
+
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+
+// ============================================================================
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+/**
+ * Encode a UUID V4/7 into a URL Friendly short format.
+ * @param uuid The UUID
+ * @returns The shortened UUID Version.
+ */
 export function encodeUUID64(uuid: string) {
 	const hex = uuid.replace(/-/g, "");
 	const binary =
