@@ -88,11 +88,10 @@
 
 <Button
 	variant="outline"
-	class="text-muted-foreground relative w-full justify-start text-sm sm:pr-12 md:w-40 lg:w-64"
+	class="text-muted-foreground relative w-full justify-start text-sm sm:pr-12 md:w-64 lg:w-64"
 	onclick={() => (open = true)}
 >
-	<span class="hidden items-center lg:inline-flex"> Search website... </span>
-	<span class="inline-flex lg:hidden">Search...</span>
+	<span class="items-center lg:inline-flex"> Search website... </span>
 	<kbd
 		class="bg-muted pointer-events-none absolute right-1.5 top-1.5 hidden select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"
 	>

@@ -4,7 +4,7 @@
 		type Props as ButtonProps,
 		buttonVariants,
 	} from "$lib/components/ui/button/index.js";
-	import { cn } from "$lib/utils.svelte.js";
+	import { cn } from "$lib/utils.js";
 
 	type Props = WithoutChild<PaginationPrimitive.PageProps> &
 		ButtonProps & {

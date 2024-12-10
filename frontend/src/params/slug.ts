@@ -3,10 +3,11 @@
 // See README in the root project for more information.
 // ============================================================================
 
-import type { PageServerLoad } from "./$types";
+import { decodeUUID64 } from "$lib/utils";
+import type { ParamMatcher } from "@sveltejs/kit";
 
 // ============================================================================
 
-export const load: PageServerLoad = async ({ locals, url }) => {
-	console.log("123", url.searchParams);
+export const match: ParamMatcher = (param) => {
+	return true;
 };

@@ -6,7 +6,7 @@
 	import Label from "$lib/components/ui/label/label.svelte";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import * as Tabs from "$lib/components/ui/tabs/index";
-	import { QueryEffect } from "$lib/utils.svelte";
+	import { QueryEffect } from "$lib/query.svelte";
 	import { z } from "zod";
 
 	const queryEffect = new QueryEffect(
@@ -14,7 +14,7 @@
 		z.object({
 			page: z.number().default(0),
 			search: z.string().optional(),
-			filter: z.enum(["active", "archived"]).optional(),
+			filter: z.enum(["available", "subscribed"]).optional(),
 		}),
 	);
 

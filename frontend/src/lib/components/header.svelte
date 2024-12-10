@@ -20,7 +20,7 @@
 	import Search from "./search/search.svelte";
 	import House from "lucide-svelte/icons/house";
 	import type { IconLink } from "$lib/types";
-	import { encodeUUID64 } from "$lib/utils.svelte";
+	import { encodeUUID64 } from "$lib/utils";
 </script>
 
 {#snippet link({ icon, href, title }: IconLink)}
@@ -33,13 +33,12 @@
 <header
 	class="bg-muted dark:bg-card z-50 flex h-[var(--header-height)] w-full items-center justify-between gap-2 p-3 border-b"
 >
-	<div class="flex-1">
+	<div class="flex-1 flex gap-2 items-center">
 		<Button href="/" variant="outline" size="icon">
 			<House />
 		</Button>
-		<!-- <img src="https://github.com/w2wizard.png" width="32" height="32" alt="Logo"/> -->
+		<Search />
 	</div>
-	<Search />
 	<div class="flex items-center gap-2">
 		<Button onclick={toggleMode} variant="outline" size="icon">
 			<Sun class="transition-all dark:-rotate-90 dark:scale-0" />

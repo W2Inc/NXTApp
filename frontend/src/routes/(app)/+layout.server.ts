@@ -1,4 +1,4 @@
-import { encodeUUID64 } from "$lib/utils.svelte";
+import { encodeUUID64 } from "$lib/utils";
 import type { LayoutServerLoad } from "./$types";
 
 export const load: LayoutServerLoad = async ({ locals, fetch }) => {
