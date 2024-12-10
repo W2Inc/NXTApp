@@ -35,7 +35,7 @@
 	</aside>
 	<div class="p-6">
 		<menu class="flex justify-between">
-			<h1>Goals</h1>
+			<h1 class="text-2xl font-bold">Goals</h1>
 			<Pagination onPage={(p) => queryEffect.set("page", p)} />
 		</menu>
 		<Separator class="my-2" />

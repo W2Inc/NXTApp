@@ -17,6 +17,7 @@
 	import { toggleMode } from "mode-watcher";
 	import * as DropdownMenu from "./ui/dropdown-menu";
 	import * as Avatar from "./ui/avatar";
+	import * as Breadcrumb from "./ui//breadcrumb";
 	import Search from "./search/search.svelte";
 	import House from "lucide-svelte/icons/house";
 	import type { IconLink } from "$lib/types";
@@ -33,12 +34,30 @@
 <header
 	class="bg-muted dark:bg-card z-50 flex h-[var(--header-height)] w-full items-center justify-between gap-2 p-3 border-b"
 >
+	<!-- Right side -->
 	<div class="flex-1 flex gap-2 items-center">
 		<Button href="/" variant="outline" size="icon">
 			<House />
 		</Button>
 		<Search />
+		<!-- <Breadcrumb.Root>
+			<Breadcrumb.List class="hidden md:flex">
+				<Breadcrumb.Item>
+					<Breadcrumb.Link href="/">Home</Breadcrumb.Link>
+				</Breadcrumb.Item>
+				<Breadcrumb.Separator />
+				<Breadcrumb.Item>
+					<Breadcrumb.Link href="/components">Components</Breadcrumb.Link>
+				</Breadcrumb.Item>
+				<Breadcrumb.Separator />
+				<Breadcrumb.Item>
+					<Breadcrumb.Page>Breadcrumb</Breadcrumb.Page>
+				</Breadcrumb.Item>
+			</Breadcrumb.List>
+		</Breadcrumb.Root> -->
 	</div>
+
+	<!-- Left Side -->
 	<div class="flex items-center gap-2">
 		<Button onclick={toggleMode} variant="outline" size="icon">
 			<Sun class="transition-all dark:-rotate-90 dark:scale-0" />

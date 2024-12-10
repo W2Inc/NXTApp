@@ -51,7 +51,7 @@
 	</aside>
 	<div class="p-6">
 		<menu class="flex justify-between">
-			<h1>Cursus</h1>
+			<h1 class="text-2xl font-bold">Cursus</h1>
 			<Pagination onPage={(p) => queryEffect.set("page", p)} />
 		</menu>
 		<Separator class="my-2" />

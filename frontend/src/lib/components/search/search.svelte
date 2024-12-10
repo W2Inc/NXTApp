@@ -17,12 +17,13 @@
 	import Separator from "../ui/separator/separator.svelte";
 	import Input from "../ui/input/input.svelte";
 	import { redirect } from "@sveltejs/kit";
-	import { goto } from "$app/navigation";
+	import { goto, onNavigate } from "$app/navigation";
 	import type { Component } from "svelte";
 	import Heart from "lucide-svelte/icons/heart";
 	import type { IconLink } from "$lib/types";
+	import { encodeUUID64 } from "$lib/utils";
 
-	const id = $page.data.session?.user?.id;
+	const id = $page.data.session ? encodeUUID64($page.data.session.user!.id!) : null;
 	const links = $state.raw<IconLink[]>([
 		{
 			icon: User,
@@ -82,6 +83,10 @@
 			open = !open;
 		}
 	}
+
+	onNavigate(() => {
+		open = false;
+	});
 </script>
 
 <svelte:document onkeydown={handleKeydown} />
@@ -131,7 +136,10 @@
 			</div>
 
 			<div class="text-muted-foreground">
-				<p>Made with <Heart size={16} fill="currentColor" class="inline"/> by © 2023-2024 W2Inc, B.V.</p>
+				<p>
+					Made with <Heart size={16} fill="currentColor" class="inline" /> by © 2023-2024
+					W2Inc, B.V.
+				</p>
 				<!-- <p>Made with ❤️ by © 2023-2024 W2Inc, B.V.</p> -->
 				<ul class="text-primary flex gap-2 text-sm underline">
 					<li><a href="/terms">Terms</a></li>
