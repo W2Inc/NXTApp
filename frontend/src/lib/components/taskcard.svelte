@@ -14,7 +14,7 @@
 
 <a
 	{href}
-	class="flex-1 bg-muted h-48 min-w-72 w-80 transform rounded p-3 no-underline shadow transition-transform hover:scale-105"
+	class="flex-1 bg-muted h-48 min-w-72 w-80 transform rounded p-3 no-underline shadow transition-transform hover:scale-[1.025]"
 >
 	<div class="grid h-full place-content-center justify-items-center gap-2">
 		{#if type === "project"}

@@ -77,9 +77,9 @@ export default class KeycloakClient {
 			}),
 		});
 
-		if (!response.ok)
-			throw new Error(`Unable to request refresh token: ${response.statusText}`);
 		const data = await response.json();
+		if (!response.ok)
+			throw new Error(`Unable to request refresh token: ${response.statusText}, ${data}`);
 		this.token = data.access_token;
 		this.refreshToken = data.refresh_token;
 	}

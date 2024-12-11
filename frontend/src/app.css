@@ -63,6 +63,10 @@
 		@apply bg-background text-foreground;
 	}
 
+	.center-content {
+		@apply flex gap-1 items-center;
+	}
+
 	input[type="search"]::-webkit-search-cancel-button {
 		-webkit-appearance: none;
 		height: 1em;
