@@ -1,0 +1,33 @@
+{
+	"galaxy": {
+		"NUM_STARS": 4000,
+		"NUM_ARMS": 4,
+		"THICKNESS": 5,
+		"CORE_X_DIST": 33,
+		"CORE_Y_DIST": 33,
+		"OUTER_CORE_X_DIST": 100,
+		"OUTER_CORE_Y_DIST": 100,
+		"ARM_X_DIST": 100,
+		"ARM_Y_DIST": 50,
+		"ARM_X_MEAN": 200,
+		"ARM_Y_MEAN": 100,
+		"SPIRAL": 3.0,
+		"ARMS": 2.0
+	},
+	"gfx": {
+		"STAR_MIN": 0.25,
+		"STAR_MAX": 5.0,
+		"BLOOM": {
+			"scale": 0.5,
+			"exposure": 1,
+			"intensity": 4.5,
+			"threshold": 0.4,
+			"radius": 0
+		}
+	},
+	"star": {
+		"percentage": [76.45, 12.1, 7.6, 3.0, 0.6, 0.13],
+		"color": ["0xffcc6f", "0xffd2a1", "0xfff4ea", "0xf8f7ff", "0xcad7ff", "0xaabfff"],
+		"size": [2.4, 2.4, 3.3, 3.96, 4.0, 4.0, 6.0]
+	}
+}

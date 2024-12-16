@@ -22,7 +22,7 @@
 			className,
 		)}
 	>
-		<div class="[&>*:not(:last-child)]:after:content-['.'] [&>*]:block [&>*]:pb-1">
+		<div class="[&>*:not(:last-child)]:after:content-['.'] [&>*]:block [[&>*:not(:last-child)]:pb-1">
 			{#each text.split(". ") as sentence}
 				<span>{sentence}</span>
 			{/each}

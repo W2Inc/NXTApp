@@ -93,12 +93,12 @@
 
 <Button
 	variant="outline"
-	class="text-muted-foreground relative w-full justify-start text-sm sm:pr-12 md:w-64 lg:w-64"
+	class="relative w-full justify-start text-sm text-muted-foreground sm:pr-12 md:w-64 lg:w-64"
 	onclick={() => (open = true)}
 >
 	<span class="items-center lg:inline-flex"> Search website... </span>
 	<kbd
-		class="bg-muted pointer-events-none absolute right-1.5 top-1.5 hidden select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"
+		class="pointer-events-none absolute right-1.5 top-1.5 hidden select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex"
 	>
 		<span class="text-xs">⌘</span>K
 	</kbd>
@@ -106,7 +106,7 @@
 
 <Dialog.Root bind:open>
 	<Dialog.Content
-		class="data-[state=closed]:slide-out-to-top-[unset] data-[state=open]:slide-in-from-left-[unset] left-0 top-0 h-full translate-x-[unset] translate-y-[unset] overflow-auto sm:max-w-[425px]"
+		class="left-0 top-0 h-full translate-x-[unset] translate-y-[unset] overflow-auto data-[state=closed]:slide-out-to-top-[unset] data-[state=open]:slide-in-from-left-[unset] sm:max-w-[425px]"
 	>
 		<div class="flex flex-col gap-2">
 			<div class="flex-1">
@@ -141,7 +141,7 @@
 					W2Inc, B.V.
 				</p>
 				<!-- <p>Made with ❤️ by © 2023-2024 W2Inc, B.V.</p> -->
-				<ul class="text-primary flex gap-2 text-sm underline">
+				<ul class="flex gap-2 text-sm text-primary underline">
 					<li><a href="/terms">Terms</a></li>
 					<li><a href="/privacy">Privacy</a></li>
 					<li><a href="/pricing">Pricing</a></li>

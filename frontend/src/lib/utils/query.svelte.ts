@@ -1,8 +1,7 @@
-import { browser } from "$app/environment";
-import { goto } from "$app/navigation";
-import { noop } from "@tanstack/table-core";
-import { SvelteURL, SvelteURLSearchParams } from "svelte/reactivity";
 import type { z } from "zod";
+import { goto } from "$app/navigation";
+import { browser } from "$app/environment";
+import { SvelteURL, SvelteURLSearchParams } from "svelte/reactivity";
 
 export function useQuery<T extends z.ZodObject<any>>(initialUrl: string, schema: T) {
 	let state = $state<Partial<z.infer<T>>>({});
@@ -11,7 +10,7 @@ export function useQuery<T extends z.ZodObject<any>>(initialUrl: string, schema:
 
 	function parseCurrentParams() {
 		const parameters: Record<string, unknown> = {};
-		params.forEach((value, key) => parameters[key] = value);
+		params.forEach((value, key) => parameters[key] = /^\d+$/.test(value) ? Number(value) : value);
 
 		try {
 			return schema.parse(parameters);
@@ -42,20 +41,16 @@ export function useQuery<T extends z.ZodObject<any>>(initialUrl: string, schema:
 			if (!browser) return;
 
 			try {
-				const fieldSchema = schema.shape[key as string];
-				fieldSchema.parse(value);
-
-				if (value === undefined || value === null) {
-					params.delete(key as string);
-				} else {
-					params.set(key as string, encodeURIComponent(String(value)));
-				}
+				schema.shape[key as string].parse(value);
+				value == null
+					? params.delete(key as string)
+					: params.set(key as string, encodeURIComponent(String(value)));
 
 				goto(`${url.pathname}?${params.toString()}`, {
 					keepFocus: true,
 					replaceState: true,
 					noScroll: true,
-				}).then(() => updateState());
+				});
 			} catch (error) {
 				throw new Error(`Invalid value for key "${String(key)}": ${error}`);
 			}

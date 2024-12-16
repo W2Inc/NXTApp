@@ -6,16 +6,28 @@
 	interface Props {
 		count?: number;
 		perPage?: number;
+		page?: number;
+		variant: "small" | "default";
 		onNext?: (p: number) => void | Promise<void>;
 		onPrevious?: (p: number) => void | Promise<void>;
 		onPage?: (p: number) => void | Promise<void>;
 	}
 
-	const { count = 100, perPage = 10, onNext, onPrevious, onPage }: Props = $props();
+	let {
+		count = 100,
+		perPage = 10,
+		page = $bindable(0),
+		variant = "default",
+		onNext,
+		onPrevious,
+		onPage,
+	}: Props = $props();
+
+	$inspect(page);
 </script>
 
 <div>
-	<Pagination.Root {count} {perPage} onPageChange={onPage}>
+	<Pagination.Root bind:page {count} {perPage} onPageChange={onPage}>
 		{#snippet children({ pages, currentPage })}
 			<Pagination.Content>
 				<Pagination.Item>
@@ -26,19 +38,25 @@
 						<ArrowLeft />
 					</Pagination.PrevButton>
 				</Pagination.Item>
-				{#each pages as page (page.key)}
-					{#if page.type === "ellipsis"}
-						<Pagination.Item>
-							<Pagination.Ellipsis />
-						</Pagination.Item>
-					{:else}
-						<Pagination.Item>
-							<Pagination.Link {page} isActive={currentPage === page.value}>
-								{page.value}
-							</Pagination.Link>
-						</Pagination.Item>
-					{/if}
-				{/each}
+				{#if variant === "default"}
+					{#each pages as page (page.key)}
+						{#if page.type === "ellipsis"}
+							<Pagination.Item>
+								<Pagination.Ellipsis />
+							</Pagination.Item>
+						{:else}
+							<Pagination.Item>
+								<Pagination.Link {page} isActive={currentPage === page.value}>
+									{page.value}
+								</Pagination.Link>
+							</Pagination.Item>
+						{/if}
+					{/each}
+				{:else}
+					<Pagination.Item>
+						{page}
+					</Pagination.Item>
+				{/if}
 				<Pagination.Item>
 					<Pagination.NextButton
 						class="inline-flex h-9 w-9 items-center justify-center p-0"

@@ -1,5 +1,5 @@
 <script>
-	import Taskcard from "$lib/components/taskcard.svelte";
+	import Taskcard from "$lib/components/cards/task-card.svelte";
 	import * as Accordion from "$lib/components/ui/accordion";
 	import * as Avatar from "$lib/components/ui/avatar";
 	import Separator from "$lib/components/ui/separator/separator.svelte";

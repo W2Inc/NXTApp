@@ -27,9 +27,9 @@
 				<a
 					{...rest}
 					href={nav.href}
-					class="focus-visible:ring-ring flex flex-1 items-center gap-2 rounded-md p-2 focus-visible:outline-none focus-visible:ring-2"
+					class="focus-visible:ring-ring flex flex-1 items-center gap-2 rounded-md p-[0.35rem] focus-visible:outline-none focus-visible:ring-2"
 				>
-					<Icon size={20} />
+					<Icon size={20} class="ml-1" />
 					{nav.title}
 				</a>
 				<span class=""></span>

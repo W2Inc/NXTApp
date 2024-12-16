@@ -1,35 +1,58 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	import Button from "$lib/components/ui/button/button.svelte";
-	import Taskcard from "$lib/components/taskcard.svelte";
-	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
-	import { SignIn, SignOut } from "@auth/sveltekit/components";
+	import SpotlightCard from "$lib/components/cards/spotlight-card.svelte";
+	import Navgroup from "$lib/components/navgroup.svelte";
+	import Link from "lucide-svelte/icons/link";
+	import Github from "lucide-svelte/icons/github";
+	import { useStorage } from "$lib/utils/local.svelte.js";
+	import type { IconLink, NamedLink } from "$lib/types.js";
+	import Base from "$lib/components/base.svelte";
 
 	const { data } = $props();
+	const storage = useStorage();
+
+	//= Links =//
+
+	const links = storage.get<NamedLink[]>("app:history") ?? [];
+	let recent = links.reverse().map((i) => {
+		return { ...i, icon: Link };
+	});
+
+	let navigations = [
+		{
+			icon: Github,
+			href: "#",
+			title: "Our Github",
+		},
+	];
+
+	//= ... =//
 </script>
 
-<div>
-	<!-- TODO: Don't use their components... -->
+<svelte:head>
+	<title>Home</title>
+</svelte:head>
 
-	{#if $page.data.session}
-		{#await data.data}
-			<div class="flex items-center space-x-4">
-				<Skeleton class="size-12 rounded-full" />
-				<div class="space-y-2">
-					<Skeleton class="h-4 w-[250px]" />
-					<Skeleton class="h-4 w-[200px]" />
-				</div>
+<!-- Side bar -->
+
+<Base>
+	{#snippet left()}
+		<Navgroup title="Links" navs={navigations} />
+		{#if recent.length > 0}
+			<Navgroup title="Recently Visited" navs={recent} />
+		{/if}
+	{/snippet}
+
+	{#snippet right()}
+		<div class="m-auto flex max-w-xl gap-2">
+			<div class="flex-1">
+				Middle
+				{#each Array(200).fill(0) as _, i}
+					<div>{i + 1}</div>
+				{/each}
 			</div>
-		{:then user}
-			<!-- <pre><code>{JSON.stringify(data.session?.user)}</code></pre> -->
-		{/await}
-	{:else}
-	<p>Login lol</p>
-	{/if}
-	<div class="flex gap-6 p-5">
-		<Taskcard title="Project A" type="goal" state="Active" href="/"></Taskcard>
-		<Taskcard title="Project B" state="Awaiting" href="/"></Taskcard>
-		<Taskcard title="Project C" type="goal" state="Completed" href="/"></Taskcard>
-		<Taskcard title="Project D" state="Inactive" href="/"></Taskcard>
-	</div>
-</div>
+			<aside class="hidden lg:block">
+				<SpotlightCard />
+			</aside>
+		</div>
+	{/snippet}
+</Base>
