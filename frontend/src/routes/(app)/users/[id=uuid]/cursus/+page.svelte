@@ -62,12 +62,12 @@
 			</menu>
 			<Separator class="my-2" />
 			<div class="flex flex-wrap gap-4">
-				<Taskcard href="cursus/1" type="goal" title="Cursus!" />
-				<Taskcard href="cursus/1" type="goal" title="Cursus!" />
-				<Taskcard href="cursus/1" type="goal" title="Cursus!" />
-				<Taskcard href="cursus/1" type="goal" title="Cursus!" />
-				<Taskcard href="cursus/1" type="goal" title="Cursus!" />
-				<Taskcard href="cursus/1" type="goal" title="Cursus!" />
+				<Taskcard href="./cursus/1" type="goal" title="Cursus!" />
+				<Taskcard href="./cursus/1" type="goal" title="Cursus!" />
+				<Taskcard href="./cursus/1" type="goal" title="Cursus!" />
+				<Taskcard href="./cursus/1" type="goal" title="Cursus!" />
+				<Taskcard href="./cursus/1" type="goal" title="Cursus!" />
+				<Taskcard href="./cursus/1" type="goal" title="Cursus!" />
 			</div>
 		</div>
 	{/snippet}

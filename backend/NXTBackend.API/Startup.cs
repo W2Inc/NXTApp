@@ -3,6 +3,7 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -17,7 +18,10 @@ using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
+using NXTBackend.API.Jobs;
+using NXTBackend.API.Jobs.Interface;
 using NXTBackend.API.Utils;
+using Quartz;
 using Serilog;
 using Serilog.Templates;
 using Serilog.Templates.Themes;
@@ -181,5 +185,39 @@ public static class Startup
                 "[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
                 theme: TemplateTheme.Code
             )));
+
+        builder.Services.AddQuartz(q =>
+        {
+            q.SchedulerName = "NXT";
+            q.SchedulerId = "Queue";
+            q.UseDefaultThreadPool(x => x.MaxConcurrency = 5);
+
+            RegisterJob<ReviewCompositionJob>(q);
+        });
+
+        services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+    }
+
+
+    public static void RegisterJob<Job>(IServiceCollectionQuartzConfigurator quartz) where Job : IScheduledJob
+    {
+        try
+        {
+            JobKey jobKey = new(Job.Identity);
+            quartz.AddJob<Job>(opts => opts.WithIdentity(jobKey));
+            quartz.AddTrigger(opts =>
+            {
+                opts.ForJob(jobKey);
+                opts.WithIdentity($"{Job.Identity}-trigger");
+                if (Job.Schedule is not null)
+                    opts.WithCronSchedule(Job.Schedule);
+            });
+
+        }
+        catch (FormatException)
+        {
+            Log.Error($"Failed to register job: {Job.Identity} due to badly formated cron: '{Job.Schedule}'");
+            throw;
+        }
     }
 }
