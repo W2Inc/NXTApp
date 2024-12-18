@@ -9,7 +9,9 @@
 	import { useQuery } from "$lib/utils/query.svelte";
 	import { z } from "zod";
 	import Base from "$lib/components/base.svelte";
+	import { IsMobile } from "$lib/hooks/is-mobile.svelte";
 
+	const mobile = new IsMobile();
 	const query = useQuery(
 		$page.url.href,
 		z.object({
@@ -52,10 +54,10 @@
 
 	{#snippet right()}
 		<div class="p-6">
-			<menu class="flex justify-between">
+			<menu class="flex flex-wrap justify-between">
 				<h1 class="text-2xl font-bold">Cursus</h1>
 				<Pagination
-					variant="default"
+					variant={mobile.current ? "small" : "default"}
 					page={currentPage}
 					onPage={(p) => query.write("page", p)}
 				/>

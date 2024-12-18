@@ -1,24 +1,26 @@
 <script lang="ts">
 	// import { Canvas } from "@threlte/core";
+	import { T, Canvas  } from '@threlte/core'
 </script>
 
 <svelte:head>
 	<title>Users Galaxy</title>
 </svelte:head>
 
-<div style="position: relative; overflow: hidden;">
-	<!-- <Canvas>
-		<T.PerspectiveCamera
-			makeDefault
-			position={[10, 10, 10]}
-			on:create={({ ref }) => {
-				ref.lookAt(0, 1, 0);
-			}}
-		/>
+{#snippet scene()}
+	<T.PerspectiveCamera
+		position={[10, 10, 10]}
+		on:create={({ ref }) => {
+			ref.lookAt(0, 0, 0);
+		}}
+	/>
 
-		<T.Mesh>
-			<T.BoxGeometry />
-			<T.MeshBasicMaterial />
-		</T.Mesh>
-	</Canvas> -->
-</div>
+	<T.Mesh>
+		<T.BoxGeometry args={[1, 1, 1]} />
+		<T.MeshBasicMaterial color="red" />
+	</T.Mesh>
+{/snippet}
+
+<Canvas>
+  {@render scene()}
+</Canvas>

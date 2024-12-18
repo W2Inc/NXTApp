@@ -12,10 +12,10 @@
 
 <!-- A sticky / fixed navbar to the side with the content taking the main chunk of page -->
 {#if variant === "navbar"}
-	<div class="grid grid-rows-[auto_1fr] lg:grid-cols-[auto_1fr] lg:grid-rows-1">
-		<aside
-			class="dark:bg-card sticky top-0 z-10 flex min-w-96 flex-col gap-2 p-4 lg:h-dvh lg:border-r"
-		>
+	<div
+		class="grid grid-rows-[auto_1fr] lg:grid-cols-[minmax(200px,300px)_1fr] lg:grid-rows-1"
+	>
+		<aside class="dark:bg-card sticky top-0 flex flex-col gap-2 p-4 lg:h-dvh lg:border-r">
 			{@render left()}
 		</aside>
 

@@ -25,7 +25,7 @@ public class ReviewCompositionJob(ILogger<ReviewCompositionJob> logger, Database
     public static string Identity => nameof(ReviewCompositionJob);
 
     /// <inheritdoc />
-    public static string? Schedule => null; //"0 * * ? * *";
+    public static string? Schedule => "0 * * ? * *"; //"0 * * ? * *";
 
     /// <inheritdoc />
     public async Task Execute(IJobExecutionContext context)
