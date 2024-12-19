@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 	import Navgroup from "$lib/components/navgroup.svelte";
 	import type { IconLink } from "$lib/types";
 	import { decodeUUID64, encodeUUID64 } from "$lib/utils.js";
@@ -13,7 +13,7 @@
 	import * as Avatar from "$lib/components/ui/avatar";
 
 	const { data } = $props();
-	const id = $page.params.id;
+	const id = page.params.id;
 	const links = $state.raw<IconLink[]>([
 		{
 			icon: Archive,

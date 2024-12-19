@@ -12,7 +12,7 @@
 	import User from "lucide-svelte/icons/user";
 
 	import Button from "./ui/button/button.svelte";
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 	import { SignIn, SignOut } from "@auth/sveltekit/components";
 	import { toggleMode } from "mode-watcher";
 	import * as DropdownMenu from "./ui/dropdown-menu";
@@ -65,7 +65,7 @@
 			<span class="sr-only">Toggle theme</span>
 		</Button>
 
-		{#if $page.data.session}
+		{#if page.data.session}
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					<Avatar.Root class="rounded-sm border border-gray-700">
@@ -86,7 +86,7 @@
 								{@render link({
 									icon: User,
 									title: "Profile",
-									href: `/users/${encodeUUID64($page.data.session.user?.id!)}`,
+									href: `/users/${encodeUUID64(page.data.session.user?.id!)}`,
 								})}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>

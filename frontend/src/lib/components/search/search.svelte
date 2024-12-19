@@ -1,6 +1,6 @@
 <script lang="ts">
 	// import Logo from "$assets/logo.png";
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 	import { Button } from "../ui/button";
 	import X from "lucide-svelte/icons/x";
 	import User from "lucide-svelte/icons/user";
@@ -23,7 +23,7 @@
 	import type { IconLink } from "$lib/types";
 	import { encodeUUID64 } from "$lib/utils";
 
-	const id = $page.data.session ? encodeUUID64($page.data.session.user!.id!) : null;
+	const id = page.data.session ? encodeUUID64(page.data.session.user!.id!) : null;
 	const links = $state.raw<IconLink[]>([
 		{
 			icon: User,

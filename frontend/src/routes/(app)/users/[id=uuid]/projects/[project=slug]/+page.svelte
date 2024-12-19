@@ -13,7 +13,7 @@
 	import Button from "$lib/components/ui/button/button.svelte";
 	import ReviewCard from "$lib/components/cards/review-card.svelte";
 	import Pagination from "$lib/components/pagination.svelte";
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 
 	const { data } = $props();
 </script>
@@ -88,7 +88,7 @@
 					<Separator class="my-1" />
 					<div class="center-content">
 						<Button class="shadow-l">
-							{#if $page.data.session?.user?.id !== ""}
+							{#if page.data.session?.user?.id !== ""}
 								Create a review
 							{:else}
 								Request a review

@@ -1,11 +1,11 @@
 <script>
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 	import { Home, LogIn } from "lucide-svelte";
 	import { Button } from "$lib/components/ui/button";
 </script>
 
 <div>
-	{#if $page.status == 401}
+	{#if page.status == 401}
 		<Button href="/auth/login">
 			Login
 			<LogIn />
@@ -13,7 +13,7 @@
 	{:else}
 		<img
 			class="rounded"
-			src="https://http.cat/{$page.status}"
+			src="https://http.cat/{page.status}"
 			alt="Something went wrong..."
 		/>
 
