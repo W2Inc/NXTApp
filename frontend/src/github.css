@@ -21,7 +21,7 @@
 		.carta-input,
 		.carta-renderer {
 			min-height: 120px;
-			max-height: 160px;
+			max-height: 600px;
 			overflow: auto;
 		}
 
@@ -197,7 +197,189 @@
 	}
 }
 
-html.dark .shiki,
-html.dark .shiki span {
+html.dark .markdown-body .shiki span {
 	color: var(--shiki-dark) !important;
+}
+
+.markdown-body {
+	--element-block: 0.5em;
+
+	--blue: #3aa2db;
+	--indigo: #6610f2;
+	--purple: #b73188;
+	--pink: #e83e8c;
+	--red: #e52a2d;
+	--orange: #ea5c28;
+	--yellow: #f2911a;
+	--green: #32b796;
+	--teal: #20c997;
+	--cyan: #17a2b8;
+
+	--box-shadow: 0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
+		0 16px 32px rgba(var(--gray), 33%);
+
+	--wui-shade-01: hsl(0, 0%, 91%);
+	--wui-shade-02: hsl(0, 0%, 85%);
+	--wui-shade-03: hsl(0, 0%, 75%);
+	--wui-shade-04: hsl(0, 0%, 65%);
+	--wui-shade-05: hsl(0, 0%, 54%);
+
+	--wui-text-01: hsl(0, 0%, 13%);
+	--wui-text-02: hsl(0, 0%, 27%);
+	--wui-text-03: hsl(240, 8%, 44%);
+	--wui-text-04: hsl(240, 8%, 64%);
+	--wui-text-05: hsl(240, 8%, 90%);
+
+	--wui-radius: 0.5rem;
+	--wui-header-height: 4rem;
+	--wui-border: hsl(0, 0%, 77%);
+
+	-webkit-text-size-adjust: 100%;
+	margin: 0;
+	font-family: "Geist", -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, Helvetica, Arial,
+		sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+	font-size: 16px;
+	line-height: 1.5;
+	word-wrap: break-word;
+	text-rendering: optimizeLegibility;
+	text-shadow: unset;
+
+
+	& h1 {
+		font-size: 3.052em;
+	}
+	& h2 {
+		font-size: 2.441em;
+	}
+	& h3 {
+		font-size: 1.953em;
+	}
+	& h4 {
+		font-size: 1.563em;
+	}
+	& h5 {
+		font-size: 1.25em;
+	}
+
+	& p {
+		margin-bottom: 1em;
+	}
+
+	/*&.prose p {
+		margin-bottom: 2em;
+	}*/
+
+	& blockquote {
+		margin-block: var(--element-block);
+		padding: 0 0.5em;
+		color: var(--wui-text-03);
+		border-left: 0.25em solid var(--wui-border);
+
+		& p {
+			font-style: italic;
+			margin: 0;
+		}
+	}
+
+	& strong {
+		font-weight: 600;
+	}
+
+	& a {
+		color: var(--wui-primary);
+		background-color: transparent;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		/* Special cases made just for astro */
+		&:not([data-footnote-backref]):not([data-footnote-ref]) {
+			text-decoration: underline wavy;
+		}
+	}
+
+	& img {
+		border-radius: var(--wui-radius);
+	}
+
+	& ul {
+		margin-block: var(--element-block);
+		list-style: disc;
+		padding-left: 2rem;
+
+		/* If they have a li with an input set to checkbox */
+		&:has(li input[type="checkbox"]) {
+			list-style: none;
+			padding-inline-start: 0;
+		}
+	}
+
+	& pre:has(code) {
+		display: grid;
+		margin-block: var(--element-block);
+		border-radius: var(--wui-radius);
+		font-size: 16px !important;
+		overflow-x: auto;
+
+		& > code {
+			background: inherit;
+			color: inherit;
+			border-radius: inherit;
+			padding: 16px;
+			max-width: min-content;
+			border: none;
+			margin: 0;
+		}
+	}
+
+	& code {
+		margin-block: var(--element-block);
+		padding: 2px 4px;
+		background: var(--wui-shade-02);
+		border-radius: var(--wui-radius);
+		border: 1px solid var(--wui-border);
+		color: var(--wui-text-1);
+		font-size: 14px;
+	}
+
+	kbd {
+		color: inherit;
+		background-color: var(--wui-shade-01);
+		border: 1px solid var(--wui-shade-03);
+		border-radius: 4px;
+		box-shadow: 0 1px 1px var(--wui-shade-03), 0 2px 0 0 var(--wui-shade-01) inset;
+		display: inline-block;
+		font-size: 0.85em;
+		font-weight: 700;
+		line-height: 1;
+		padding: 2px 4px;
+		white-space: nowrap;
+	}
+
+	& table {
+		margin-block: var(--element-block);
+		border-collapse: collapse;
+
+		& th,
+		td {
+			padding: 6px 13px;
+			text-align: left;
+		}
+
+		& tr:nth-child(even) {
+			background-color: var(--wui-shade-02);
+		}
+
+		& th {
+			color: var(--wui-foreground);
+			background-color: var(--wui-shade-01);
+			border: 1px solid var(--wui-border);
+		}
+
+		& td {
+			border: 1px solid var(--wui-border);
+		}
+	}
 }

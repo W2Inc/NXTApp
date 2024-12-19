@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
+	import * as Resizable from "$lib/components/ui/resizable";
 
 	interface Props {
 		left: Snippet;
 		right: Snippet;
-		variant?: "navbar" | "center-navbar";
+		variant?: "navbar" | "center-navbar" | "splitpane";
 	}
 
 	const { left, right, variant = "navbar" }: Props = $props();
@@ -29,6 +30,18 @@
 			{@render left()}
 			{@render right()}
 		</div>
+	</div>
+{:else if variant === "splitpane"}
+	<div class="h-full w-full">
+		<Resizable.PaneGroup direction="horizontal">
+			<Resizable.Pane minSize={30} maxSize={50} defaultSize={30}>
+				{@render left()}
+			</Resizable.Pane>
+			<Resizable.Handle withHandle />
+			<Resizable.Pane minSize={50} maxSize={70}>
+				{@render right()}
+			</Resizable.Pane>
+		</Resizable.PaneGroup>
 	</div>
 {:else}
 	<svelte:boundary>

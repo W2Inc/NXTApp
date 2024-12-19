@@ -35,6 +35,12 @@ const routes: Record<string, boolean> = {
 
 // ============================================================================
 
+const noOrcs: Handle = async ({ event, resolve }) => {
+	if (event.url.pathname.toLowerCase().includes(".php"))
+		return redirect(301, "https://www.youtube.com/watch?v=CqqkHeV8WBg");
+	return resolve(event);
+};
+
 const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const session = await event.locals.auth();
 	if (session === undefined || session === null) {
@@ -68,6 +74,7 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 // Each function acts as a middleware, receiving the request handle
 // And returning a handle which gets passed to the next function
 export const handle: Handle = sequence(
+	noOrcs,
 	authenticationHandle,
 	apiHandle,
 	authorizationHandle,
