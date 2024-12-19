@@ -5,6 +5,14 @@ Evaluate the overall quality of the code. Check for:
 - Proper use of comments: Comments should be used to explain complex logic and provide context.
 - Adherence to coding standards: The code should follow the established coding standards for C.
 
+$$
+% \f is defined as #1f(#2) using the macro
+\relax{x} = \int_{-\infty}^\infty
+    \hat\xi\,e^{2 \pi i \xi x}
+    \,d\xi
+$$
+
+
 Example:
 ```c
 // Good example of code quality
