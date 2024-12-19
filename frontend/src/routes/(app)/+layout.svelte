@@ -1,5 +1,4 @@
 <script lang="ts">
-	import "carta-md/default.css";
 	import "../../app.css";
 	import Header from "$lib/components/header.svelte";
 	import Footer from "$lib/components/footer.svelte";
@@ -15,12 +14,12 @@
 	let { children } = $props();
 
 	const MAX_HISTORY = 5;
-	const storage = useStorage<NamedLink[]>();
+	const storage = useStorage();
 
 	onNavigate(({ to, from }) => {
 		if (!from) return;
 		const link = { href: from.url.href, title: document.title };
-		const history = storage.get("app:history") ?? [];
+		const history = storage.get<NamedLink[]>("app:history") ?? [];
 		storage.set("app:history", [
 			...history.filter((nav) => nav.href !== from.url.href).slice(-MAX_HISTORY + 1),
 			link,
