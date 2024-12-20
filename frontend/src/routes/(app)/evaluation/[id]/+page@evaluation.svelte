@@ -119,13 +119,14 @@
 		{#await data.code}
 			<p>Loading...</p>
 		{:then code}
-			{@html code}
+		<!-- <iframe src='https://view.officeapps.live.com/op/embed.aspx?src=http%3A%2F%2Fieee802%2Eorg%3A80%2Fsecmail%2FdocIZSEwEqHFr%2Edoc' width='100%' height='100%' frameborder='0'>This is an embedded <a target='_blank' href='http://office.com'>Microsoft Office</a> document, powered by <a target='_blank' href='http://office.com/webapps'>Office Online</a>.</iframe> -->
+		<embed class="h-dvh" src="/dummy.pdf" width="100%" />
+			<!-- {@html code} -->
 		{/await}
 		<!-- TODO: Explorer with file tree -->
 		<!-- <iframe src="http://docs.google.com/gview?url=https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
 			style="width:600px; height:500px;" frameborder="0"></iframe> -->
 
-		<!-- <embed class="h-dvh" src="/dummy.pdf" width="100%" /> -->
 		<!-- <Explorer item={tree} /> -->
 	{/snippet}
 </Base>
