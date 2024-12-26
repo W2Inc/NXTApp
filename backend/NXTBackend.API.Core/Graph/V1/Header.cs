@@ -28,20 +28,19 @@ public class Header
     /// </summary>
     public ushort GoalCount;
 
-    public bool Read(BaseEndianReader reader)
+    public void Read(BaseEndianReader reader)
     {
         int version = reader.ReadInt32();
         if (version is not (int)Version.XGraphV1)
-            return false;
+            throw new InvalidDataException("Bad XGraph Version");
 
         reader.ReadAlignment(16);
         if (reader.ReadULong() != C_MAGIC)
-            return false;
+            throw new InvalidDataException("Bad Magic");
 
         NodeCount = reader.ReadUInt16();
         GoalCount = reader.ReadUInt16();
         reader.ReadAlignment(16);
-        return true;
     }
 
     public void Write(EndianStreamWriter writer)

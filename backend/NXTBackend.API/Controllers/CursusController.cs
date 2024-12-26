@@ -16,6 +16,7 @@ using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
+using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Cursus;
 using NXTBackend.API.Models.Requests.User;
@@ -78,6 +79,7 @@ public class CursusController(
             CreatorId = User.GetSID(),
             Markdown = data.Markdown,
             Enabled = data.Enabled,
+            Public = data.Public,
             Name = data.Name,
             Slug = data.Name.ToUrlSlug(),
             Description = data.Description,
@@ -144,10 +146,10 @@ public class CursusController(
     }
 
     [HttpPut("/cursus/{id:guid}/path")]
-    [Consumes("application/octet-stream")]
+    // [Consumes("application/octet-stream")]
     [EndpointSummary("Define the track / path of a cursus")]
     [EndpointDescription("Cursi can have a set track of goals ")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult<CursusDO>> SetTrack(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
@@ -158,10 +160,13 @@ public class CursusController(
         await Request.Body.CopyToAsync(memoryStream);
         memoryStream.Position = 0;
 
+        logger.LogInformation("{length}", memoryStream.Length);
+
         try
         {
+            logger.LogInformation("Reading graph...");
             using var reader = new Reader(memoryStream);
-            // reader.ReadData();
+            reader.Deserialize();
             //reader.RootNode;
             // TODO(W2): Verify the data inside the graph
             // - Do goals exist...
@@ -183,7 +188,7 @@ public class CursusController(
         cursus.Track = memoryStream.ToArray();
         await cursusService.UpdateAsync(cursus);
         logger.LogInformation("Cursus added");
-        return Ok();
+        return NoContent();
     }
 
     [HttpGet("/cursus/{id:guid}/path"), AllowAnonymous]

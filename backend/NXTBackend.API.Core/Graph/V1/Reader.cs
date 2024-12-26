@@ -12,57 +12,61 @@ public sealed class Reader(Stream? stream) : EndianStreamReader(stream, null, 0)
     {
         ValidateChecksum();
         Header.Read(this);
-
-
+        ReadNode(0);
     }
 
     private void ValidateChecksum()
     {
-        if (this.ActualLength < 24)
+        const int C_CHECKSUM_LEN = 24;
+        if (Length < C_CHECKSUM_LEN)
             throw new InvalidDataException("Invalid Data, unable to compute cheksum");
 
-        // MD5 + NULL = 25 Bytes
-        var offset = Position = ActualLength - (24 + 1);
-        var bufferSlice = new ReadOnlySpan<byte>(this.Buffer, 0, (int)offset);
+        long length = Length - (C_CHECKSUM_LEN + 1); // MD5 + NULL = 25 Bytes
+        byte[] buffer = new byte[length];
+        Read(buffer, 0, (int)length);
 
-        // Get the Hash
-        var receivedChecksum = ReadCString() ?? string.Empty;
-        var expectedChecksum = Convert.ToBase64String(MD5.HashData(bufferSlice));
+        string expectedChecksum = Convert.ToBase64String(MD5.HashData(buffer));
+        Position = Length - (C_CHECKSUM_LEN + 1); // Position to read checksum
+
+        string receivedChecksum = ReadCString() ?? string.Empty;
         if (expectedChecksum != receivedChecksum)
             throw new InvalidDataException("Bad Checksum");
         Position = 0; // Reset to the top to read the data
     }
 
-    private void ReadNode(byte depth, Node? node = null)
+    private void ReadNode(byte depth, Node? parent = null)
     {
         if (depth > Node.C_MAX_DEPTH)
             throw new InvalidOperationException($"Graph with a depth of: {depth} is too large!");
 
-        var id = ReadInt16();
-        var parentId = ReadInt16();
-        var goalCount = ReadInt16();
-        var childrenCount = ReadInt16();
+        short id = ReadInt16();
+        short parentId = ReadInt16();
+        short goalCount = ReadInt16();
+        short childrenCount = ReadInt16();
 
-        // if (node.Goals.Count > Node.C_MAX_GOALS)
-        //     throw new InvalidOperationException("Node can't have more than 4 goals.");
-        // if (node.Children.Count > Node.C_MAX_NODES)
-        //     throw new InvalidOperationException("Node can't have more than 4 children.");
+        var node = new Node
+        {
+            Id = id,
+            ParentId = parentId,
+            Goals = [],
+            Children = []
+        };
 
-        // Write(node.Id);
-        // Write(node.ParentId);
-        // Write((ushort)node.Goals.Count); // GoalCount
-        // Write((ushort)node.Children.Count); // ChildrenCount
+        for (int i = 0; i < goalCount; i++)
+        {
+            node.Goals.Add(new Goal
+            {
+                Id = new(ReadCString() ?? throw new InvalidDataException("Bad Goal UUID"))
+            });
+        }
 
-        // foreach (var goal in node.Goals)
-        // {
-        //     // WriteCString(goal.Name);
-        //     Write(goal.Id);
-        //     // Write((int)goal.State);
-        //     // WriteCString(goal.Description);
-        // }
+        if (depth == 0)
+            Root = node;
+        else
+            parent?.Children.Add(node);
 
-        // WritePadding(8);
-        // foreach (var child in node.Children)
-        //     WriteNode(node.Id, child, depth++);
+        ReadAlignment(8);
+        for (int i = 0; i < childrenCount; i++)
+            ReadNode((byte)(depth + 1), node);
     }
 }
