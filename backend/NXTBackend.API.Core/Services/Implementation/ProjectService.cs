@@ -13,6 +13,15 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// </summary>
 public sealed class ProjectService(DatabaseContext ctx) : BaseService<Project>(ctx), IProjectService
 {
+    public async Task<Project> CreateProjectWithGit(Project project, Git git)
+    {
+        var gitInfo = await ctx.GitInfo.AddAsync(git);
+        var newProject = await ctx.Projects.AddAsync(project);
+        newProject.Entity.GitInfoId = gitInfo.Entity.Id;
+        await ctx.SaveChangesAsync();
+        return newProject.Entity;
+    }
+
     public Task<Git> GetGitInfo(Project project)
     {
         throw new NotImplementedException();

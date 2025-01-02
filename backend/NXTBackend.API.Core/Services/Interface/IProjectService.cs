@@ -8,6 +8,14 @@ namespace NXTBackend.API.Core.Services.Interface;
 public interface IProjectService : IDomainService<Project>
 {
     /// <summary>
+    ///
+    /// </summary>
+    /// <param name="project"></param>
+    /// <param name="git"></param>
+    /// <returns></returns>
+    public Task<Project> CreateProjectWithGit(Project project, Git git);
+
+    /// <summary>
     /// Get all the rubric that are assigned to a project.
     /// </summary>
     /// <param name="project"> The project to get the rubric from. </param>

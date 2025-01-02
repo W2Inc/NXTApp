@@ -126,6 +126,7 @@ public static class Startup
         services.AddScoped<IRubricService, RubricService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
+        services.AddScoped<IGitService, GitService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
         services.AddSingleton(TimeProvider.System);
 

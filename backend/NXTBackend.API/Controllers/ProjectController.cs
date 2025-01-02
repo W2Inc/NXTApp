@@ -7,9 +7,11 @@ using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Cursus;
 using NXTBackend.API.Models.Requests.LearningGoal;
@@ -38,7 +40,8 @@ public class ProjectQueryParams
 [Route("projects")]
 public class ProjectController(
     ILogger<ProjectController> logger,
-    IProjectService projectService
+    IProjectService projectService,
+    IGitService gitService
 ) : Controller
 {
     [HttpGet("/projects"), AllowAnonymous]
@@ -67,7 +70,14 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDto data)
     {
-        var project = await projectService.CreateAsync(new()
+        Git git = new()
+        {
+            GitUrl = data.GitInfo.GitUrl,
+            GitBranch = data.GitInfo.GitBranch ?? "master", // Assuming most branches are called master
+            GitCommit = data.GitInfo.GitCommit
+        };
+
+        var project = await projectService.CreateProjectWithGit(new()
         {
             CreatorId = User.GetSID(),
             Markdown = data.Markdown,
@@ -76,9 +86,8 @@ public class ProjectController(
             Description = data.Description,
             MaxMembers = data.MaxMembers,
             ThumbnailUrl = data.ThumbnailUrl,
-            GitInfoId = new Guid("402c6744-1c60-46d1-a524-fd2a82abb112"),
-            Tags = []
-        });
+            Tags = data.Tags
+        }, git);
 
         return Ok(new ProjectDO(project));
     }

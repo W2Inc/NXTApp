@@ -193,12 +193,15 @@ public class CursusController(
 
     [HttpGet("/cursus/{id:guid}/path"), AllowAnonymous]
     [Produces(contentType: "application/octet-stream")]
+    [EndpointSummary("Get the track / path of a cursus")]
+    [EndpointDescription("Lets you retrieve the binary data of the track ")]
     public async Task<IActionResult> GetTrack(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
         if (cursus is null)
             return NotFound("Cursus not found");
-
+        if (cursus.Track is null)
+            return NoContent();
         try
         {
             var memoryStream = new MemoryStream(cursus.Track)
@@ -208,7 +211,7 @@ public class CursusController(
 
             return new FileStreamResult(memoryStream, "application/octet-stream")
             {
-                FileDownloadName = $"{id:guid}.graph"
+                FileDownloadName = $"{id}.xgraph"
             };
         }
         catch (InvalidDataException e)

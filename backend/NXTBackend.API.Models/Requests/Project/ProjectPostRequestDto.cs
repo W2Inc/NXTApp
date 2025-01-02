@@ -59,5 +59,11 @@ public class ProjectPostRequestDto : BaseRequestDTO
     /// The git information (Url, branch, commit) of the project
     /// TODO: Use the GitInfoPostRequestDto
     /// </summary>
-    public GitInfoRequestDto? GitInfo { get; set; }
+    [Required]
+    public GitInfoRequestDto GitInfo { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public string[] Tags { get; set; }
 }
