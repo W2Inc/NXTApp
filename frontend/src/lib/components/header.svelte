@@ -6,10 +6,15 @@
 	import LogOut from "lucide-svelte/icons/log-out";
 	import Menu from "lucide-svelte/icons/menu";
 	import Moon from "lucide-svelte/icons/moon";
-	import PanelLeft from "lucide-svelte/icons/panel-left";
+	import Plus from "lucide-svelte/icons/plus";
 	import Server from "lucide-svelte/icons/server";
 	import Sun from "lucide-svelte/icons/sun";
 	import User from "lucide-svelte/icons/user";
+	import House from "lucide-svelte/icons/house";
+	import Sparkles from "lucide-svelte/icons/sparkles";
+	import Trophy from "lucide-svelte/icons/trophy";
+	import Archive from "lucide-svelte/icons/archive";
+	import Ellipsis from "lucide-svelte/icons/ellipsis";
 
 	import Button from "./ui/button/button.svelte";
 	import { page } from "$app/state";
@@ -19,7 +24,6 @@
 	import * as Avatar from "./ui/avatar";
 	import * as Breadcrumb from "./ui//breadcrumb";
 	import Search from "./search/search.svelte";
-	import House from "lucide-svelte/icons/house";
 	import type { IconLink } from "$lib/types";
 	import { encodeUUID64 } from "$lib/utils";
 </script>
@@ -32,10 +36,10 @@
 {/snippet}
 
 <header
-	class="bg-muted dark:bg-card z-50 flex h-[var(--header-height)] w-full items-center justify-between gap-2 p-3 border-b"
+	class="bg-muted dark:bg-card z-50 flex h-[var(--header-height)] w-full items-center justify-between gap-2 border-b p-3"
 >
 	<!-- Right side -->
-	<div class="flex-1 flex gap-2 items-center">
+	<div class="flex flex-1 items-center gap-2">
 		<Button href="/" variant="outline" size="icon">
 			<House />
 		</Button>
@@ -64,8 +68,50 @@
 			<Moon class="absolute scale-0 transition-all dark:rotate-0 dark:scale-100" />
 			<span class="sr-only">Toggle theme</span>
 		</Button>
-
 		{#if page.data.session}
+
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger>
+					<Button variant="outline" size="icon">
+						<Plus />
+						<span class="sr-only">New</span>
+					</Button>
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content class="">
+					<DropdownMenu.Group>
+						<DropdownMenu.Item>
+							{@render link({
+								icon: Archive,
+								title: "New Project",
+								href: `/new/project`,
+							})}
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							{@render link({
+								icon: Trophy,
+								title: "New Goal",
+								href: `/new/goal`,
+							})}
+						</DropdownMenu.Item>
+						<DropdownMenu.Item>
+							{@render link({
+								icon: Sparkles,
+								title: "New Cursus",
+								href: `/new/cursus`,
+							})}
+						</DropdownMenu.Item>
+					</DropdownMenu.Group>
+					<DropdownMenu.Separator />
+					<DropdownMenu.Item>
+						{@render link({
+							icon: Ellipsis,
+							title: "More",
+							href: `/new`,
+						})}
+					</DropdownMenu.Item>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					<Avatar.Root class="rounded-sm border border-gray-700">

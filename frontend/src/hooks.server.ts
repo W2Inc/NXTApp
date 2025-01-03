@@ -35,12 +35,6 @@ const routes: Record<string, boolean> = {
 
 // ============================================================================
 
-const noOrcs: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.toLowerCase().includes(".php"))
-		return redirect(301, "https://www.youtube.com/watch?v=CqqkHeV8WBg");
-	return resolve(event);
-};
-
 const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const session = await event.locals.auth();
 	if (session === undefined || session === null) {
@@ -55,13 +49,14 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 
 /** Create the universal api fetch function */
 const apiHandle: Handle = async ({ event, resolve }) => {
-	event.locals.api ??= createClient<BackendRoutes>({
+	console.log("123")
+	event.locals.api = createClient<BackendRoutes>({
 		baseUrl: dev ? "http://localhost:3000" : "http://localhost:3000",
 		mode: "cors",
 		fetch: event.fetch,
 	});
 
-	event.locals.keycloak ??= createClient<KeycloakRoutes>({
+	event.locals.keycloak = createClient<KeycloakRoutes>({
 		baseUrl: dev ? "http://localhost:8089/auth" : "http://localhost:8089/auth",
 		mode: "cors",
 		fetch: event.fetch,
@@ -74,9 +69,8 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 // Each function acts as a middleware, receiving the request handle
 // And returning a handle which gets passed to the next function
 export const handle: Handle = sequence(
-	noOrcs,
-	authenticationHandle,
 	apiHandle,
+	authenticationHandle,
 	authorizationHandle,
 );
 
@@ -86,7 +80,7 @@ export const handle: Handle = sequence(
 // it would be stuck on the first client request's cookie.
 export async function handleFetch({ fetch, request, event }) {
 	const url = new URL(request.url);
-	if (dev) {
+	// if (dev) {
 		if (url.port === "3000") {
 			const session = await event.locals.auth();
 			request.headers.set("Authorization", `Bearer ${session?.access_token}`);
@@ -96,7 +90,7 @@ export async function handleFetch({ fetch, request, event }) {
 			const token = await keycloak.getToken();
 			request.headers.set("Authorization", `Bearer ${token}`);
 		} // OIDC
-	}
+	// }
 
 	return fetch(request);
 }

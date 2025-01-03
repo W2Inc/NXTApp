@@ -8,7 +8,7 @@
 		variant: "editor" | "viewer";
 	}
 
-	let { value = $bindable(""), placeholder, variant = "editor" }: Props = $props();
+	let { value = $bindable(""), placeholder, variant = "editor", ...rest }: Props = $props();
 </script>
 
 {#if variant === "editor"}
@@ -18,6 +18,7 @@
 		bind:value
 		mode="tabs"
 		theme="github"
+		textarea={{ name: "markdown", require: true, ...rest }}
 	/>
 {:else}
 	<Markdown carta={cartaContext} bind:value theme="github" />

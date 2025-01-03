@@ -5,7 +5,7 @@
 	interface Props {
 		left: Snippet;
 		right: Snippet;
-		variant?: "navbar" | "center-navbar" | "splitpane";
+		variant?: "navbar" | "center-navbar" | "splitpane" | "center";
 	}
 
 	const { left, right, variant = "navbar" }: Props = $props();
@@ -42,6 +42,11 @@
 				{@render right()}
 			</Resizable.Pane>
 		</Resizable.PaneGroup>
+	</div>
+{:else if variant === "center"}
+	<div class="m-auto max-w-6xl px-4 py-2">
+		{@render left()}
+		{@render right()}
 	</div>
 {:else}
 	<svelte:boundary>
