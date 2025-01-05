@@ -334,6 +334,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * Get the track / path of a cursus
+         * @description Lets you retrieve the binary data of the track
+         */
         get: {
             parameters: {
                 query?: never;
@@ -399,16 +403,12 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description No Content */
+                204: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["CursusDO"];
-                        "application/json": components["schemas"]["CursusDO"];
-                        "text/json": components["schemas"]["CursusDO"];
-                    };
+                    content?: never;
                 };
                 /** @description Unauthorized */
                 401: {
@@ -3091,11 +3091,11 @@ export interface components {
     schemas: {
         CursusDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             name?: string;
             description?: string;
             markdown?: string;
@@ -3109,11 +3109,11 @@ export interface components {
         };
         CursusDO2: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             name?: string;
             description?: string;
             markdown?: string;
@@ -3144,16 +3144,22 @@ export interface components {
         };
         GitDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             gitUrl?: string;
             gitBranch?: string;
             gitCommit?: string | null;
         } | null;
         GitInfoRequestDto: {
+            /** Format: uri */
+            gitUrl: string;
+            gitBranch?: string | null;
+            gitCommit?: string | null;
+        };
+        GitInfoRequestDto2: {
             /** Format: uri */
             gitUrl: string;
             gitBranch?: string | null;
@@ -3175,11 +3181,11 @@ export interface components {
         };
         LearningGoalDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             name?: string;
             slug?: string;
             markdown?: string;
@@ -3188,11 +3194,11 @@ export interface components {
         };
         MinimalUserDTO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             login?: string;
             displayName?: string | null;
             avatarUrl?: string | null;
@@ -3213,41 +3219,41 @@ export interface components {
         };
         ProjectDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
-            name?: string;
-            markdown?: string | null;
-            slug?: string;
-            thumbnailUrl?: string | null;
-            public?: boolean;
-            enabled?: boolean;
+            updatedAt: string;
+            name: string;
+            markdown: string | null;
+            slug: string;
+            thumbnailUrl: string | null;
+            public: boolean;
+            enabled: boolean;
             /** Format: int32 */
-            maxMembers?: number;
-            gitInfo?: components["schemas"]["GitDO"];
-            creator?: components["schemas"]["MinimalUserDTO"];
-            tags?: string[];
+            maxMembers: number;
+            gitInfo: components["schemas"]["GitDO"];
+            creator: components["schemas"]["MinimalUserDTO"];
+            tags: string[];
         };
         ProjectDO2: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
-            name?: string;
-            markdown?: string | null;
-            slug?: string;
-            thumbnailUrl?: string | null;
-            public?: boolean;
-            enabled?: boolean;
+            updatedAt: string;
+            name: string;
+            markdown: string | null;
+            slug: string;
+            thumbnailUrl: string | null;
+            public: boolean;
+            enabled: boolean;
             /** Format: int32 */
-            maxMembers?: number;
-            gitInfo?: components["schemas"]["GitDO"];
-            creator?: components["schemas"]["MinimalUserDTO"];
-            tags?: string[];
+            maxMembers: number;
+            gitInfo: components["schemas"]["GitDO"];
+            creator: components["schemas"]["MinimalUserDTO"];
+            tags: string[];
         } | null;
         ProjectPatchRequestDto: {
             name?: string | null;
@@ -3259,7 +3265,7 @@ export interface components {
             thumbnailUrl?: string | null;
             public?: boolean | null;
             enabled?: boolean | null;
-            gitInfo?: components["schemas"]["GitInfoRequestDto"];
+            gitInfo?: components["schemas"]["GitInfoRequestDto2"];
         };
         ProjectPostRequestDto: {
             name: string;
@@ -3271,15 +3277,16 @@ export interface components {
             thumbnailUrl: string;
             public: boolean;
             enabled: boolean;
-            gitInfo?: components["schemas"]["GitInfoRequestDto"];
+            gitInfo: components["schemas"]["GitInfoRequestDto"];
+            tags?: string[];
         };
         ReviewDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             kind?: components["schemas"]["ReviewKind"];
             state?: components["schemas"]["ReviewState"];
             validated?: boolean;
@@ -3325,11 +3332,11 @@ export interface components {
         };
         SpotlightEventActionDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             /** Format: uuid */
             userId?: string;
             /** Format: uuid */
@@ -3340,11 +3347,11 @@ export interface components {
         TaskState: "Inactive" | "Active" | "Awaiting" | "Completed";
         UserCursusDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             state?: components["schemas"]["TaskState"];
             /** Format: uuid */
             userId?: string;
@@ -3352,11 +3359,11 @@ export interface components {
         };
         UserDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             login?: string;
             displayName?: string | null;
             avatarUrl?: string | null;
@@ -3364,11 +3371,11 @@ export interface components {
         };
         UserDetailsDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             email?: string | null;
             firstName?: string | null;
             lastName?: string | null;
@@ -3393,11 +3400,11 @@ export interface components {
         };
         UserGoalDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             user?: components["schemas"]["MinimalUserDTO"];
             /** Format: uuid */
             goalId?: string;
@@ -3411,11 +3418,11 @@ export interface components {
         };
         UserProjectDO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
             /** Format: date-time */
-            updatedAt?: string;
+            updatedAt: string;
             state?: components["schemas"]["TaskState"];
             project?: components["schemas"]["ProjectDO2"];
             gitInfo?: components["schemas"]["GitDO"];

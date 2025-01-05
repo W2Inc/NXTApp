@@ -13,8 +13,8 @@
 	import GitBranch from "lucide-svelte/icons/git-branch";
 	import ShieldAlert from "lucide-svelte/icons/shield-alert";
 
-	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Dialog from "$lib/components/ui/dialog";
+	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Tabs from "$lib/components/ui/tabs";
 	import * as Alert from "$lib/components/ui/alert/index.js";
 

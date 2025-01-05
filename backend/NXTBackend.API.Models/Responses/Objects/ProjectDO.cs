@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities;
 
 // ============================================================================
@@ -27,23 +28,33 @@ public class ProjectDO : BaseObjectDO<Project>
 
     public static implicit operator ProjectDO?(Project? entity) => entity is null ? null : new ProjectDO(entity);
 
+    [Required]
     public string Name { get; set; }
 
+    [Required]
     public string? Markdown { get; set; }
 
+    [Required]
     public string Slug { get; set; }
 
+    [Required]
     public string? ThumbnailUrl { get; set; }
 
+    [Required]
     public bool Public { get; set; }
 
+    [Required]
     public bool Enabled { get; set; }
 
+    [Required]
     public int MaxMembers { get; set; }
 
+    [Required]
     public virtual GitDO? GitInfo { get; set; }
 
+    [Required]
     public virtual MinimalUserDTO? Creator { get; set; }
 
+    [Required]
     public string[] Tags { get; set; }
 }
