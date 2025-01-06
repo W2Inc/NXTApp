@@ -2,18 +2,20 @@
 	import * as Tooltip from "$lib/components/ui/tooltip";
 	import { cn } from "$lib/utils.js";
 	import type { Snippet } from "svelte";
+	import type { HTMLButtonAttributes, MouseEventHandler } from "svelte/elements";
 
 	interface Props {
 		text: string;
 		class?: string;
+		onclick?: MouseEventHandler<HTMLButtonElement>;
 		children: Snippet;
 	}
 
-	let { text, class: className, children }: Props = $props();
+	let { text, class: className, children, onclick }: Props = $props();
 </script>
 
 <Tooltip.Root>
-	<Tooltip.Trigger>
+	<Tooltip.Trigger {onclick}>
 		{@render children?.()}
 	</Tooltip.Trigger>
 	<Tooltip.Content
@@ -22,7 +24,9 @@
 			className,
 		)}
 	>
-		<div class="[&>*:not(:last-child)]:after:content-['.'] [&>*]:block [[&>*:not(:last-child)]:pb-1">
+		<div
+			class="[[&>*:not(:last-child)]:pb-1 [&>*:not(:last-child)]:after:content-['.'] [&>*]:block"
+		>
 			{#each text.split(". ") as sentence}
 				<span>{sentence}</span>
 			{/each}

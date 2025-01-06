@@ -1,3 +1,9 @@
+/* .dark .shiki,
+.dark .shiki span {
+  background-color: var(--shiki-dark-bg) !important;
+  color: var(--shiki-dark) !important;
+} */
+
 .markdown {
 	& {
 		@apply text-[1.05rem] leading-7 text-neutral-400;

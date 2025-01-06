@@ -35,7 +35,8 @@
 		"prettier-plugin-svelte": "^3.3.2",
 		"prettier-plugin-tailwindcss": "^0.6.9",
 		"shiki": "^1.26.1",
-		"svelte": "^5.16.1",
+		"@shikijs/rehype": "^1.26.1",
+		"svelte": "^5.16.2",
 		"svelte-adapter-bun": "^0.5.2",
 		"svelte-check": "^4.1.1",
 		"svelte-sonner": "^0.3.28",
@@ -67,6 +68,9 @@
 		"openapi-fetch": "^0.13.4",
 		"openapi-typescript": "^7.5.1",
 		"postprocessing": "^6.36.6",
+		"rehype-katex": "^7.0.1",
+		"remark-math": "^6.0.0",
+		"svelte-exmarkdown": "^4.0.2",
 		"three": "^0.171.0"
 	}
 }
