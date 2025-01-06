@@ -151,7 +151,7 @@
 			const listPatterns = {
 				checkbox: /^-\s*\[\s*[xX\s]?\s*\]/,
 				unordered: /^[-*]\s/,
-				ordered: /^\d+\.\s/
+				ordered: /^\d+\.\s/,
 			};
 
 			if (listPatterns.checkbox.test(currentLine)) {
@@ -191,7 +191,7 @@
 			title={tooltip}
 			type="button"
 			onclick={() => action()}
-			class="hover:bg-muted grid size-8 place-content-center rounded"
+			class="hover:bg-muted outline-primary grid size-8 place-content-center rounded outline-1 transition focus-visible:outline"
 		>
 			<RenderIcon size={16} class="m-auto" />
 		</button>
@@ -200,10 +200,10 @@
 {/snippet}
 
 {#snippet toggle(toggleMode: "write" | "preview")}
-	<li class="group/{toggleMode} h-8">
+	<li class="group h-8">
 		<button
 			data-selected={mode === toggleMode}
-			class="bg-background hover:bg-muted text-muted-foreground data-[selected=true]:bg-accent h-full border-r px-2 text-sm group-first/{toggleMode}:rounded-tl-sm"
+			class="bg-background hover:bg-muted text-muted-foreground data-[selected=true]:bg-accent outline-primary h-full border-r px-2 text-sm outline-1 transition-all hover:border-[rgba(0,0,0,0.25)] hover:shadow-[inset_0_0_5px_rgba(0,0,0,0.4),rgba(255,255,255,0.1)_0_1px_0] hover:[text-shadow:rgba(0,0,0,0.796875)_0_-1px_0,rgba(255,255,255,0.296875)_0_0_10px] focus-visible:outline group-first:rounded-tl-sm"
 			onclick={() => (mode = toggleMode)}
 		>
 			<span class="capitalize">{toggleMode}</span>
@@ -227,7 +227,7 @@
 					{#if shortcuts.length > 5}
 						<Popover.Root>
 							<Popover.Trigger
-								class="bg-background hover:bg-muted grid size-8 place-content-center rounded"
+								class="bg-background hover:bg-muted outline-primary grid size-8 place-content-center rounded outline-1 focus-visible:outline"
 							>
 								<Ellipsis size={16} class="m-auto" />
 							</Popover.Trigger>
