@@ -3,13 +3,8 @@
 // See README in the root project for more information.
 // ============================================================================
 
-import { browser } from "$app/environment";
-import { goto } from "$app/navigation";
 import { type ClassValue, clsx } from "clsx";
-import { SvelteURL, SvelteURLSearchParams } from "svelte/reactivity";
 import { twMerge } from "tailwind-merge";
-import type { FunctionLikeDeclaration } from "typescript";
-import type { z, ZodSchema } from "zod";
 
 // ============================================================================
 

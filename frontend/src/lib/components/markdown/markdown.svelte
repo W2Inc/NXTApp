@@ -23,6 +23,8 @@
 	import * as Popover from "$lib/components/ui/popover";
 	import IconMarkdown from "./icon-markdown.svelte";
 	import Textarea from "../ui/textarea/textarea.svelte";
+	import { buttonVariants } from "../ui/button";
+	import { cn } from "$lib/utils";
 
 	// Types
 
@@ -203,7 +205,10 @@
 	<li class="group h-8">
 		<button
 			data-selected={mode === toggleMode}
-			class="bg-background hover:bg-muted text-muted-foreground data-[selected=true]:bg-accent outline-primary h-full border-r px-2 text-sm outline-1 transition-all hover:border-[rgba(0,0,0,0.25)] hover:shadow-[inset_0_0_5px_rgba(0,0,0,0.4),rgba(255,255,255,0.1)_0_1px_0] hover:[text-shadow:rgba(0,0,0,0.796875)_0_-1px_0,rgba(255,255,255,0.296875)_0_0_10px] focus-visible:outline group-first:rounded-tl-sm"
+			class={cn(
+				buttonVariants({ variant: "outline" }),
+				"bg-background hover:bg-muted text-muted-foreground data-[selected=true]:bg-accent outline-primary h-full rounded-none border-r border-none px-2 text-sm focus-visible:outline group-first:rounded-tl-sm",
+			)}
 			onclick={() => (mode = toggleMode)}
 		>
 			<span class="capitalize">{toggleMode}</span>
