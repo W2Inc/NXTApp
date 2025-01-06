@@ -211,19 +211,19 @@
 		</menu>
 	</div>
 	<!-- Content -->
-	<div class="rounded-b border border-t-0">
+	<div class="rounded-b border border-t-0 p-2">
 		<textarea
-			data-mode={mode}
-			bind:this={textarea}
-			class="bg-background w-full p-2 data-[mode=preview]:hidden"
-			rows="5"
-			bind:value={md}
-			onkeydown={handleKeydown}
+				data-mode={mode}
+				bind:this={textarea}
+				draggable="false"
+				class="bg-background rounded p-4 border w-full data-[mode=preview]:hidden outline-none min-h-[100px] overflow-y-auto"
+				bind:value={md}
+				onkeydown={handleKeydown}
 		>
 		</textarea>
 		<div
 			data-mode={mode}
-			class="markdown rounded-b data-[mode=write]:hidden w-full"
+			class="markdown rounded-b data-[mode=write]:hidden"
 		>
 			<Markdown {md} {plugins} />
 		</div>

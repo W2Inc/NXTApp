@@ -15,6 +15,8 @@ import c from "shiki/langs/c.mjs";
 import cpp from "shiki/langs/cpp.mjs";
 import ts from "shiki/langs/typescript.mjs";
 import js from "shiki/langs/javascript.mjs";
+import php from "shiki/langs/php.mjs";
+import css from "shiki/langs/css.mjs";
 import dark from "shiki/themes/github-dark.mjs";
 // import light from "shiki/themes/github-light.mjs";
 // Markdown
@@ -29,7 +31,7 @@ const shikiPlugin = {
 		rehypeShikiFromHighlighter,
 		createHighlighterCoreSync({
 			themes: [dark],
-			langs: [ts, c, cpp, js],
+			langs: [ts, c, cpp, js, php, css],
 			engine: createJavaScriptRegexEngine(),
 		}),
 		{ theme: "github-dark" },
