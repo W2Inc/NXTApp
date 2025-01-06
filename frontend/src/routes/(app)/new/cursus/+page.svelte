@@ -134,7 +134,7 @@
 						<Pen />
 						Set Markdown
 					</Dialog.Trigger>
-					<Dialog.Content class="max-w-2xl">
+					<Dialog.Content class="max-w-2xl block">
 						<Dialog.Header>
 							<Dialog.Title>Description</Dialog.Title>
 							<Dialog.Description>

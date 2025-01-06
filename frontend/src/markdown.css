@@ -9,8 +9,17 @@
 	-webkit-text-size-adjust: 100%;
 
 	margin: 0;
-	font-family: "Geist", -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, Helvetica, Arial,
-		sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+	font-family:
+		"Geist",
+		-apple-system,
+		BlinkMacSystemFont,
+		Segoe UI,
+		Noto Sans,
+		Helvetica,
+		Arial,
+		sans-serif,
+		"Apple Color Emoji",
+		"Segoe UI Emoji";
 	font-size: 16px;
 	line-height: 1.5;
 	word-wrap: break-word;
@@ -83,13 +92,43 @@
 	& ul {
 		margin-block: var(--element-block);
 		list-style: disc;
-		padding-inline-start: 1rem;
+		padding-inline-start: 2rem;
 
 		/* If they have a li with an input set to checkbox */
 		&:has(li input[type="checkbox"]) {
 			list-style: none;
-			padding-inline-start: 0;
+			padding-inline-start: 1px;
 		}
+	}
+
+	/* Nested unordered lists */
+	& ul ul {
+		list-style-type: circle;
+	}
+
+	& ul ul ul {
+		list-style-type: square;
+	}
+
+	/* Nested ordered lists */
+	& ol ol {
+		list-style-type: lower-roman;
+	}
+
+	/* Mixed nested lists */
+	& ol ul,
+	& ul ol {
+		list-style-type: circle;
+	}
+
+	& ol ul ul {
+		list-style-type: square;
+	}
+
+	& ol {
+		margin-block: var(--element-block);
+		list-style: decimal;
+		padding-inline-start: 1rem;
 	}
 
 	& pre:has(code) {
@@ -128,7 +167,9 @@
 		background-color: hsl(var(--foreground));
 		border: 1px solid hsl(var(--foreground-muted));
 		border-radius: 4px;
-		box-shadow: 0 1px 1px var(--wui-shade-03), 0 2px 0 0 var(--wui-shade-01) inset;
+		box-shadow:
+			0 1px 1px var(--wui-shade-03),
+			0 2px 0 0 var(--wui-shade-01) inset;
 		display: inline-block;
 		font-size: 0.85em;
 		font-weight: 700;
@@ -147,14 +188,22 @@
 			text-align: left;
 		}
 
+		html:has(.dark) & tr:nth-child(even) {
+			background-color: hsl(var(--popover));
+		}
+
 		& tr:nth-child(even) {
-			background-color: hsl(var(--muted));;
+			background-color: hsl(var(--muted));
 		}
 
 		& th {
 			color: hsl(var(--foreground));
 			background-color: hsl(var(--muted));
 			border: 1px solid hsl(var(--border));
+		}
+
+		html:has(.dark) & th {
+			background-color: hsl(var(--popover));
 		}
 
 		& td {

@@ -8,9 +8,8 @@
 	import GraduationCap from "lucide-svelte/icons/graduation-cap";
 	import User from "lucide-svelte/icons/user";
 	import Sparkles from "lucide-svelte/icons/sparkles";
-	import { Markdown } from "carta-md";
-	import { cartaContext } from "$lib/components/markdown/context.svelte";
 	import * as Avatar from "$lib/components/ui/avatar";
+	import Markdown from "$lib/components/markdown/markdown.svelte";
 
 	const { data } = $props();
 	const id = page.params.id;
@@ -68,8 +67,6 @@
 	</div>
 	<div class="grid grid-cols-1 md:grid-cols-[256px,1fr] gap-2 pt-4">
 		<Navgroup title="General" navs={links}></Navgroup>
-		<div class="max-h-60 overflow-auto rounded border p-4">
-			<Markdown value="~~Markdown~~" carta={cartaContext} theme="github" />
-		</div>
+			<Markdown variant="viewer" value="~~Markdown~~" />
 	</div>
 </div>
