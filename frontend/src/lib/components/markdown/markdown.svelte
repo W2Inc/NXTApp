@@ -204,6 +204,7 @@
 {#snippet toggle(toggleMode: "write" | "preview")}
 	<li class="group h-8">
 		<button
+			type="button"
 			data-selected={mode === toggleMode}
 			class={cn(
 				buttonVariants({ variant: "outline" }),

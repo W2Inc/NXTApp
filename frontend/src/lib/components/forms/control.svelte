@@ -21,7 +21,7 @@
 	<Label class="cursor-pointer" for={name}>
 		{label}
 	</Label>
-	<p class="mb-2 text-muted-foreground text-sm">
+	<p class="mb-2 text-muted-foreground text-xs">
 		{description}
 	</p>
 	{@render children()}
