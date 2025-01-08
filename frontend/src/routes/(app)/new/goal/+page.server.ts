@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		name: "",
 		description: "",
 		markdown: "",
-		projects: ["1", "2"]
+		projects: []
 	};
 
 	return { form };

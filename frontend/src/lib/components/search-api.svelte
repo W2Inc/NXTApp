@@ -49,7 +49,7 @@
 			</Button>
 		{/snippet}
 	</Popover.Trigger>
-	<Popover.Content class="w-[200px] p-0">
+	<Popover.Content class="w-[350px] p-0">
 		<div class="flex items-center border-b px-3">
 			<Search class="opacity-50" />
 			<Input

@@ -25,17 +25,20 @@
 	import SearchApi from "$lib/components/search-api.svelte";
 	import createClient, { createPathBasedClient } from "openapi-fetch";
 	import type { paths } from "$lib/api/types.js";
+	import { SvelteSet } from "svelte/reactivity";
+	import { encodeUUID64 } from "$lib/utils";
 
 	const { data } = $props();
 	const { enhance, form, errors, constraints } = useForm(data.form);
 
+	let projects = new SvelteSet<BackendTypes["ProjectDO"]>();
 	async function searchGoals(query: string) {
 		const params = new URLSearchParams({
-			name: query
+			name: query,
 		});
 
-		const response = await fetch(`/goals?${params}`);
-		const json = await response.json() as BackendTypes["LearningGoalDO"][];
+		const response = await fetch(`/projects?${params}`);
+		const json = (await response.json()) as BackendTypes["ProjectDO"][];
 		return json;
 	}
 </script>
@@ -115,9 +118,29 @@
 					errors={$errors.description}
 				>
 					<!-- <SearchGoal /> -->
-					<SearchApi endpointFn={searchGoals} placeholder="Search for projects..." onSelect={(v) => console.log(v.slug)}>
+					<SearchApi
+						endpointFn={searchGoals}
+						placeholder="Search for projects..."
+						onSelect={(v) => {
+							projects.add(v);
+						}}
+					>
 						{#snippet item({ value })}
-							{value.name}
+							<div class="center-content w-full justify-between">
+								<span
+									title={value.name}
+									class="max-w-[75%] overflow-hidden text-ellipsis font-bold"
+								>
+									{value.name}
+								</span>
+								<Avatar.Root class="size-6">
+									<Avatar.Image
+										src={value.creator?.avatarUrl}
+										alt="@{value.creator?.login}"
+									/>
+									<Avatar.Fallback>US</Avatar.Fallback>
+								</Avatar.Root>
+							</div>
 						{/snippet}
 					</SearchApi>
 
@@ -131,21 +154,39 @@
 							</Table.Row>
 						</Table.Header>
 						<Table.Body>
-							{#each $form.projects as _, i}
+							{#each projects as p, i}
+								{@const creatorId = encodeUUID64(p.creator?.id)}
 								<input hidden name="projects" bind:value={$form.projects[i]} />
 								<Table.Row>
-									<Table.Cell class="font-medium">Geography 1</Table.Cell>
-									<Table.Cell>W2Wizard</Table.Cell>
+									<Table.Cell class="font-medium">
+										<a
+											class="capitalize underline decoration-wavy"
+											href="/users/{creatorId}/projects/{p.slug}"
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											{p.name}
+										</a>
+									</Table.Cell>
 									<Table.Cell>
-										Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-										eiusmod tempor incididunt ut labore et dolore magna aliqua.
+										<a
+											class="text-primary underline decoration-wavy"
+											href="/users/{creatorId}"
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											{p.creator?.displayName ?? p.creator?.login}
+										</a>
+									</Table.Cell>
+									<Table.Cell>
+										{p.markdown}
 									</Table.Cell>
 									<Table.Cell class="text-right">
 										<Button
 											type="button"
 											size="icon"
 											variant="destructive"
-											onclick={() => {}}
+											onclick={() => projects.delete(p)}
 										>
 											<Trash size={16} />
 										</Button>
