@@ -10,7 +10,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"backend:types": "curl https://localhost:3000/openapi/v1.json -o /var/tmp/api.json && openapi-typescript /var/tmp/api.json -o ./src/lib/api/types.d.ts",
+		// "backend:types": " openapi-typescript https://localhost:3000/openapi/v1.json -o ./src/lib/api/types.d.ts",
+		"backend:types": "openapi-typescript /Users/wizard/Developer/NXTApp/frontend/src/lib/api/api.json -o ./src/lib/api/types.d.ts",
 		"keycloak:types": "openapi-typescript https://www.keycloak.org/docs-api/26.0.0/rest-api/openapi.json -o ./src/lib/api/keycloak.d.ts"
 	},
 	"devDependencies": {

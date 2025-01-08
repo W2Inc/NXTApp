@@ -1460,7 +1460,7 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    category: components["schemas"]["Category"];
+                    category: "User" | "Project" | "Cursus" | "LearningGoal";
                 };
                 cookie?: never;
             };
@@ -3091,8 +3091,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @enum {unknown} */
-        Category: "User" | "Project" | "Cursus" | "LearningGoal";
         CursusDO: {
             /** Format: uuid */
             id: string;
@@ -3100,16 +3098,16 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            name?: string;
-            description?: string;
-            markdown?: string;
-            slug?: string;
+            name: string;
+            description: string;
+            markdown: string;
+            slug: string;
             /** @description Whether the cursus is public */
-            public?: boolean;
+            public: boolean;
             /** @description If true, the cursus is subscribable */
-            enabled?: boolean;
-            kind?: components["schemas"]["CursusKind"];
-            creator?: components["schemas"]["MinimalUserDTO"];
+            enabled: boolean;
+            kind: components["schemas"]["CursusKind"];
+            creator: components["schemas"]["MinimalUserDTO"];
         };
         CursusDO2: {
             /** Format: uuid */
@@ -3118,16 +3116,16 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            name?: string;
-            description?: string;
-            markdown?: string;
-            slug?: string;
+            name: string;
+            description: string;
+            markdown: string;
+            slug: string;
             /** @description Whether the cursus is public */
-            public?: boolean;
+            public: boolean;
             /** @description If true, the cursus is subscribable */
-            enabled?: boolean;
-            kind?: components["schemas"]["CursusKind"];
-            creator?: components["schemas"]["MinimalUserDTO"];
+            enabled: boolean;
+            kind: components["schemas"]["CursusKind"];
+            creator: components["schemas"]["MinimalUserDTO"];
         } | null;
         /** @enum {unknown} */
         CursusKind: "Dynamic" | "Fixed";
@@ -3190,11 +3188,11 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            name?: string;
-            slug?: string;
-            markdown?: string;
-            description?: string;
-            creator?: components["schemas"]["MinimalUserDTO"];
+            name: string;
+            slug: string;
+            markdown: string;
+            description: string;
+            creator: components["schemas"]["MinimalUserDTO"];
         };
         MinimalUserDTO: {
             /** Format: uuid */
@@ -3203,11 +3201,11 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            login?: string;
-            displayName?: string | null;
-            avatarUrl?: string | null;
+            login: string;
+            displayName: string | null;
+            avatarUrl: string | null;
             /** Format: uuid */
-            detailsId?: string | null;
+            detailsId: string | null;
         } | null;
         /** @enum {unknown|null} */
         NullableOfReviewState: "Pending" | "InProgress" | "Finished" | null;
@@ -3291,12 +3289,12 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            kind?: components["schemas"]["ReviewKind"];
-            state?: components["schemas"]["ReviewState"];
-            validated?: boolean;
-            reviewer?: components["schemas"]["MinimalUserDTO"];
+            kind: components["schemas"]["ReviewKind"];
+            state: components["schemas"]["ReviewState"];
+            validated: boolean;
+            reviewer: components["schemas"]["MinimalUserDTO"];
             /** Format: uuid */
-            userProjectId?: string;
+            userProjectId: string;
         };
         /** @enum {unknown} */
         ReviewKind: "Self" | "Peer" | "Async" | "Auto";
@@ -3342,10 +3340,10 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             /** Format: uuid */
-            userId?: string;
+            userId: string;
             /** Format: uuid */
-            notificationId?: string;
-            isDismissed?: boolean;
+            notificationId: string;
+            isDismissed: boolean;
         };
         /** @enum {unknown} */
         TaskState: "Inactive" | "Active" | "Awaiting" | "Completed";
@@ -3356,10 +3354,10 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            state?: components["schemas"]["TaskState"];
+            state: components["schemas"]["TaskState"];
             /** Format: uuid */
-            userId?: string;
-            cursus?: components["schemas"]["CursusDO2"];
+            userId: string;
+            cursus: components["schemas"]["CursusDO2"];
         };
         UserDO: {
             /** Format: uuid */
@@ -3368,10 +3366,10 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            login?: string;
-            displayName?: string | null;
-            avatarUrl?: string | null;
-            details?: components["schemas"]["UserDetailsDO"];
+            login: string;
+            displayName: string | null;
+            avatarUrl: string | null;
+            details: components["schemas"]["UserDetailsDO"];
         };
         UserDetailsDO: {
             /** Format: uuid */
@@ -3380,13 +3378,13 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            email?: string | null;
-            firstName?: string | null;
-            lastName?: string | null;
-            githubUrl?: string | null;
-            linkedinUrl?: string | null;
-            twitterUrl?: string | null;
-            websiteUrl?: string | null;
+            email: string | null;
+            firstName: string | null;
+            lastName: string | null;
+            githubUrl: string | null;
+            linkedinUrl: string | null;
+            twitterUrl: string | null;
+            websiteUrl: string | null;
         } | null;
         UserDetailsPutRequestDTO: {
             email?: string | null;
@@ -3409,11 +3407,11 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            user?: components["schemas"]["MinimalUserDTO"];
+            user: components["schemas"]["MinimalUserDTO"];
             /** Format: uuid */
-            goalId?: string;
+            goalId: string;
             /** Format: uuid */
-            userCursusId?: string | null;
+            userCursusId: string | null;
         };
         UserPatchRequestDTO: {
             displayName?: string | null;
@@ -3427,9 +3425,9 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            state?: components["schemas"]["TaskState"];
-            project?: components["schemas"]["ProjectDO2"];
-            gitInfo?: components["schemas"]["GitDO"];
+            state: components["schemas"]["TaskState"];
+            project: components["schemas"]["ProjectDO2"];
+            gitInfo: components["schemas"]["GitDO"];
         };
     };
     responses: never;
