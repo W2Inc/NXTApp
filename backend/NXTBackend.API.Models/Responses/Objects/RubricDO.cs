@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Evaluation;
 
 // ============================================================================
@@ -22,18 +23,25 @@ public class RubricDO : BaseObjectDO<Rubric>
         GitInfo = rubric.GitInfo;
     }
 
+    [Required]
     public string Name { get; set; }
 
+    [Required]
     public string Markdown { get; set; }
 
+    [Required]
     public bool Public { get; set; }
 
+    [Required]
     public bool Enabled { get; set; }
 
+    [Required]
     public ProjectDO? Project { get; set; }
 
+    [Required]
     public UserDO? Creator { get; set; }
 
+    [Required]
     public GitDO? GitInfo { get; set; }
 
     public static implicit operator RubricDO?(Rubric? entity) => entity is null ? null : new(entity);

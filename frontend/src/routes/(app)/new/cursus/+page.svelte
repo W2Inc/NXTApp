@@ -21,7 +21,6 @@
 	import { Textarea } from "$lib/components/ui/textarea";
 	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
-	import SearchProject from "$lib/components/search-project.svelte";
 	import ProjectNode from "$lib/components/nodes/project-node.svelte";
 
   const nodeTypes = {

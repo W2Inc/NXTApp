@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 
@@ -22,14 +23,17 @@ public class MemberDO : BaseObjectDO<Member>
     /// <summary>
     /// The state of the invite.
     /// </summary>
-    public MemberInviteState State { get; set; }
+    [Required]
+    MemberInviteState State { get; set; }
 
-    public virtual MinimalUserDTO? User { get; set; } // Assuming UserDO exists for the User class
+    [Required]
+    MinimalUserDTO? User { get; set; } // Assuming UserDO exists for the User class
 
     /// <summary>
     /// The user project this member is part of.
     /// </summary>
-    public Guid UserProjectId { get; set; }
+    [Required]
+    Guid UserProjectId { get; set; }
 
 
     public static implicit operator MemberDO?(Member? entity) => entity is null ? null : new MemberDO(entity);

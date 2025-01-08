@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Handle, Position, type NodeProps } from '@xyflow/svelte';
-	import SearchProject from '../search-project.svelte';
 
   type $$Props = NodeProps;
 
@@ -12,7 +11,7 @@
 
 <Handle type="target" position={Position.Left} style="background: #555;" {isConnectable} />
 
-<SearchProject />
+<!-- <SearchProject /> -->
 
 <Handle
   type="source"

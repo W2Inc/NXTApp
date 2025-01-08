@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Users;
 
 // ============================================================================
@@ -18,11 +19,13 @@ public class UserGoalDO : BaseObjectDO<UserGoal>
         UserCursusId = userGoal.UserCursusId;
     }
 
-
+    [Required]
     public virtual MinimalUserDTO? User { get; set; }
 
+    [Required]
     public Guid GoalId { get; set; }
 
+    [Required]
     public Guid? UserCursusId { get; set; }
 
     public static implicit operator UserGoalDO?(UserGoal? entity) => entity is null ? null : new UserGoalDO(entity);

@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Enums;
 
@@ -34,43 +35,51 @@ public class CursusDO : BaseObjectDO<Cursus>
     /// <summary>
     /// The name of the cursus.
     /// </summary>
+    [Required]
     public string Name { get; set; }
 
     /// <summary>
     /// The description of the cursus.
     /// </summary>
+    [Required]
     public string Description { get; set; }
 
     /// <summary>
     /// The markdown content of the cursus.
     /// </summary>
+    [Required]
     public string Markdown { get; set; }
 
     /// <summary>
     /// The slug (URL-friendly identifier) of the cursus.
     /// </summary>
+    [Required]
     public string Slug { get; set; }
 
     /// <summary>
     /// Whether the cursus is public.
     /// </summary>
     [Description("Whether the cursus is public")]
+    [Required]
     public bool Public { get; set; }
 
     /// <summary>
     /// Whether the cursus is enabled.
     /// </summary>
     [Description("If true, the cursus is subscribable")]
+    [Required]
     public bool Enabled { get; set; }
 
     /// <summary>
     /// The kind of the cursus.
     /// </summary>
+    [Required]
     public CursusKind Kind { get; set; }
 
     /// <summary>
     /// The creator of the cursus.
     /// </summary>
+    [Required]
     public MinimalUserDTO? Creator { get; set; }
 
 }

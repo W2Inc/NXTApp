@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Users;
 
 // ============================================================================
@@ -28,6 +29,7 @@ public class UserDetailsDO : BaseObjectDO<Details>
     /// <summary>
     ///
     /// </summary>
+    [Required]
     public string? Email { get; set; }
 
     /// <summary>
@@ -40,30 +42,36 @@ public class UserDetailsDO : BaseObjectDO<Details>
     /// <summary>
     ///
     /// </summary>
+    [Required]
     public string? FirstName { get; set; }
 
     /// <summary>
     ///
     /// </summary>
+    [Required]
     public string? LastName { get; set; }
 
     /// <summary>
     ///
     /// </summary>
+    [Required]
     public string? GithubUrl { get; set; }
 
     /// <summary>
     ///
     /// </summary>
+    [Required]
     public string? LinkedinUrl { get; set; }
 
     /// <summary>
     ///
     /// </summary>
+    [Required]
     public string? TwitterUrl { get; set; }
 
     /// <summary>
     ///
     /// </summary>
+    [Required]
     public string? WebsiteUrl { get; set; }
 }

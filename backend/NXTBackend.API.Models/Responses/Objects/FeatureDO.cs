@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities;
 
 // ============================================================================
@@ -17,8 +18,10 @@ public class FeatureDO : BaseObjectDO<Feature>
         Markdown = feature.Markdown;
     }
 
+    [Required]
     public string Name { get; set; }
 
+    [Required]
     public string Markdown { get; set; }
 
     public static implicit operator FeatureDO?(Feature? entity) => entity is null ? null : new(entity);

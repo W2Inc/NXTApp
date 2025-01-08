@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Notification;
 
 namespace NXTBackend.API.Models.Responses.Objects;
@@ -16,9 +17,12 @@ public class SpotlightEventActionDO : BaseObjectDO<SpotlightEventAction>
         IsDismissed = notificationAction.IsDismissed;
     }
 
+    [Required]
     public Guid UserId { get; set; }
 
+    [Required]
     public Guid NotificationId { get; set; }
 
+    [Required]
     public bool IsDismissed { get; set; }
 }

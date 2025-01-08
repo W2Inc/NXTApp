@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities;
 
 // ============================================================================
@@ -20,14 +21,19 @@ public class LearningGoalDO : BaseObjectDO<LearningGoal>
         Creator = learningGoal.Creator;
     }
 
+    [Required]
     public string Name { get; set; }
 
+    [Required]
     public string Slug { get; set; }
 
+    [Required]
     public string Markdown { get; set; }
 
+    [Required]
     public string Description { get; set; }
 
+    [Required]
     public MinimalUserDTO? Creator { get; set; }
 
     public static implicit operator LearningGoalDO?(LearningGoal? entity) => entity is null ? null : new(entity);

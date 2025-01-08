@@ -462,8 +462,9 @@ export interface paths {
                     Size?: number;
                     OrderBy?: string;
                     Order?: components["schemas"]["Order"];
-                    "filter[slug]"?: string;
                     "filter[id]"?: string;
+                    "filter[slug]"?: string;
+                    "filter[name]"?: string;
                 };
                 header?: never;
                 path?: never;
@@ -931,6 +932,7 @@ export interface paths {
                     Size?: number;
                     OrderBy?: string;
                     Order?: components["schemas"]["Order"];
+                    "filter[name]"?: string;
                     "filter[slug]"?: string;
                     "filter[id]"?: string;
                 };
@@ -1458,7 +1460,7 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    category: "User" | "Project" | "Cursus" | "LearningGoal";
+                    category: components["schemas"]["Category"];
                 };
                 cookie?: never;
             };
@@ -3089,6 +3091,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {unknown} */
+        Category: "User" | "Project" | "Cursus" | "LearningGoal";
         CursusDO: {
             /** Format: uuid */
             id: string;

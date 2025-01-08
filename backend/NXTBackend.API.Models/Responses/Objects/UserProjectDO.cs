@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 
@@ -20,10 +21,13 @@ public class UserProjectDO : BaseObjectDO<UserProject>
         // Rubric = userProject.Rubric;
     }
 
+    [Required]
     public TaskState State { get; set; }
 
+    [Required]
     public virtual ProjectDO? Project { get; set; }
 
+    [Required]
     public virtual GitDO? GitInfo { get; set; }
 
     // public virtual RubricDO? Rubric { get; set; }

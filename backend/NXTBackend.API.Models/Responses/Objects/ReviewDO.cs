@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Enums;
 
@@ -21,19 +22,19 @@ public class ReviewDO : BaseObjectDO<Review>
         UserProjectId = review.UserProject.Id;
     }
 
+    [Required]
     public ReviewKind Kind { get; set; }
 
+    [Required]
     public ReviewState State { get; set; }
 
+    [Required]
     public bool Validated { get; set; }
 
-
+    [Required]
     public MinimalUserDTO? Reviewer { get; set; }
 
-    // public RubricDO? Rubric { get; set; }
-
-    // public FeedbackDO? Feedback { get; set; }
-
+    [Required]
     public Guid UserProjectId { get; set; }
     // public UserProjectDO? UserProject { get; set; }
 

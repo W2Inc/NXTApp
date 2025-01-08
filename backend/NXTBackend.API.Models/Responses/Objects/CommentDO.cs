@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
 
@@ -17,10 +18,13 @@ public class CommentDO : BaseObjectDO<Comment>
         Feedback = comment.Feedback;
     }
 
+    [Required]
     public string Markdown { get; set; }
 
+    [Required]
     public virtual MinimalUserDTO User { get; set; }
 
+    [Required]
     public virtual FeedbackDO Feedback { get; set; }
 
     public static implicit operator CommentDO?(Comment? entity) => entity is null ? null : new(entity);

@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Users;
 
 // ============================================================================
@@ -21,11 +22,15 @@ public class UserDO : BaseObjectDO<User>
 
     public static implicit operator UserDO?(User? user) => user is null ? null : new(user);
 
+    [Required]
     public string Login { get; set; }
 
+    [Required]
     public string? DisplayName { get; set; }
 
+    [Required]
     public string? AvatarUrl { get; set; }
 
+    [Required]
     public virtual UserDetailsDO? Details { get; set; }
 }
