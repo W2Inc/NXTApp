@@ -18,8 +18,8 @@ Log.Logger = new LoggerConfiguration()
 
 Log.Information("Starting up!");
 var builder = WebApplication.CreateSlimBuilder(args);
+builder.WebHost.UseKestrelHttpsConfiguration();
 Startup.RegisterServices(builder);
-
 var app = builder.Build();
 if (!await app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseSeeder>().InitializeAsync(builder.Configuration, args))
     throw new HostAbortedException("Unable to seed, are the containers up?");
@@ -48,15 +48,14 @@ if (app.Environment.IsDevelopment())
 
 // Middleware
 // ============================================================================
+app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigin");
 app.UseRouting();
 app.UseResponseCompression();
 app.UseSerilogRequestLogging();
 // if (!app.Environment.IsDevelopment())
     app.UseOutputCache();
 app.UseRateLimiter();
-app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin");
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseMiddleware<KeycloakUserMiddlerware>();
 app.UseAuthorization();

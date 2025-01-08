@@ -47,4 +47,14 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
 
         return await PaginatedList<Project>.CreateAsync(query, pagination.Page, pagination.Size);
     }
+
+    public override IQueryable<LearningGoal> ApplyFilters(IQueryable<LearningGoal> query, QueryFilters? filter)
+    {
+        query = base.ApplyFilters(query, filter);
+        if (filter?.Slug is not null)
+            query = query.Where(x => EF.Functions.Like(x.Slug, $"%{filter.Slug}%"));
+        if (filter?.Name is not null)
+            query = query.Where(x => EF.Functions.Like(x.Name, $"%{filter.Name}%"));
+        return query;
+    }
 }

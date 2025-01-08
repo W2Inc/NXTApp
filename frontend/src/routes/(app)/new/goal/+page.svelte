@@ -22,12 +22,22 @@
 	import Trash from "lucide-svelte/icons/trash";
 	import Ellipsis from "lucide-svelte/icons/ellipsis";
 	import * as Popover from "$lib/components/ui/popover";
-
-	let projects = $state<Promise<Response> | null>(null);
-	const debounce = useDebounce();
+	import SearchApi from "$lib/components/search-api.svelte";
+	import createClient, { createPathBasedClient } from "openapi-fetch";
+	import type { paths } from "$lib/api/types.js";
 
 	const { data } = $props();
 	const { enhance, form, errors, constraints } = useForm(data.form);
+
+	async function searchGoals(query: string) {
+		const params = new URLSearchParams({
+			name: query
+		});
+
+		const response = await fetch(`/goals?${params}`);
+		const json = await response.json() as BackendTypes["LearningGoalDO"][];
+		return json;
+	}
 </script>
 
 <form method="POST" use:enhance>
@@ -104,7 +114,14 @@
 					description="You can manage which projects belong to this learning goal"
 					errors={$errors.description}
 				>
-					<Table.Root class="border">
+					<!-- <SearchGoal /> -->
+					<SearchApi endpointFn={searchGoals} placeholder="Search for projects..." onSelect={(v) => console.log(v.slug)}>
+						{#snippet item({ value })}
+							{value.name}
+						{/snippet}
+					</SearchApi>
+
+					<Table.Root class="mt-2 border">
 						<Table.Header class="rounded">
 							<Table.Row>
 								<Table.Head class="w-[100px]">Name</Table.Head>
@@ -138,7 +155,7 @@
 						</Table.Body>
 					</Table.Root>
 				</Control>
-				<Button variant="secondary">Add Project</Button>
+				<!-- <Button variant="secondary">Add Project</Button> -->
 			</div>
 		{/snippet}
 	</Base>

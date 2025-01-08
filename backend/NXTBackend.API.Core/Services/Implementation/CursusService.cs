@@ -24,6 +24,8 @@ public sealed class CursusService(DatabaseContext ctx) : BaseService<Cursus>(ctx
         query = base.ApplyFilters(query, filter);
         if (filter?.Slug is not null)
             query = query.Where(x => EF.Functions.Like(x.Slug, $"%{filter.Slug}%"));
+        if (filter?.Name is not null)
+            query = query.Where(x => EF.Functions.Like(x.Name, $"%{filter.Name}%"));
         return query;
     }
 

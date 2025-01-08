@@ -71,7 +71,7 @@ public static class Startup
             {
                 // TODO: Get from config
                 if (builder.Environment.IsDevelopment())
-                    document.Servers = [new() { Url = "http://localhost:3000" }];
+                    document.Servers = [new() { Url = "https://localhost:3000" }];
                 document.Components ??= new OpenApiComponents();
 
                 var options = builder.Configuration.GetKeycloakOptions<KeycloakAuthenticationOptions>()!;

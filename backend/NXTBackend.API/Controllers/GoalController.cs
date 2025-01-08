@@ -22,6 +22,10 @@ namespace NXTBackend.API.Controllers;
 
 public class GoalQueryParams
 {
+    [Description("Filter on names")]
+    [FromQuery(Name = "filter[name]")]
+    public string? Name { get; set; }
+
     [Description("URL slug to filter on")]
     [FromQuery(Name = "filter[slug]")]
     public string? Slug { get; set; }
@@ -41,20 +45,23 @@ public class GoalController(
     IProjectService projectService
 ) : Controller
 {
-    [HttpGet("/goals"), AllowAnonymous]
+    [HttpGet("/goals")]
     [EndpointSummary("Get all exisiting goals")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<LearningGoalDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
-        [FromQuery] GoalQueryParams filter
+        [FromQuery(Name = "filter[id]")] Guid? id,
+        [FromQuery(Name = "filter[slug]")] string? slug,
+        [FromQuery(Name = "filter[name]")] string? name
     )
     {
         var page = await goalService.GetAllAsync(paging, sorting, new()
         {
-            Id = filter.Id,
-            Slug = filter.Slug
+            Id = id,
+            Slug = slug,
+            Name = name
         });
 
         page.AppendHeaders(Response.Headers);
