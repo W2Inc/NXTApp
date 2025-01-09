@@ -7,9 +7,17 @@ import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
+
+
 declare global {
 	type GUID = string;
-	type BackendTypes = components["schemas"]
+	type BackendTypes = components["schemas"];
+	type Problem = {
+		type: string
+		title: string
+		status: number
+		traceId: string
+	};
 
 	namespace App {
 		// interface Error {}

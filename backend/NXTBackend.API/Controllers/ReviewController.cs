@@ -122,7 +122,7 @@ If the kind of review and reviewerId are null. It will signal that the project i
         })));
     }
 
-    [HttpGet("/goals/{id:guid}"), AllowAnonymous]
+    [HttpGet("/reviews/{id:guid}"), AllowAnonymous]
     [EndpointSummary("Get a goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -134,7 +134,7 @@ If the kind of review and reviewerId are null. It will signal that the project i
         return Ok(new ReviewDO(review));
     }
 
-    [HttpPatch("/goals/{id:guid}")]
+    [HttpPatch("/reviews/{id:guid}")]
     [EndpointSummary("Update a goal")]
     [EndpointDescription("Updates a goal partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -164,7 +164,7 @@ If the kind of review and reviewerId are null. It will signal that the project i
     }
 
 
-    [HttpDelete("/goals/{id:guid}")]
+    [HttpDelete("/reviews/{id:guid}")]
     [EndpointSummary("Delete a goal")]
     [EndpointDescription("Goal deletion is rarely done, and only result in deprecations if they have dependencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]

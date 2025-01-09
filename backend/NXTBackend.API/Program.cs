@@ -18,7 +18,7 @@ Log.Logger = new LoggerConfiguration()
 
 Log.Information("Starting up!");
 var builder = WebApplication.CreateSlimBuilder(args);
-builder.WebHost.UseKestrelHttpsConfiguration();
+// builder.WebHost.UseKestrelHttpsConfiguration();
 Startup.RegisterServices(builder);
 var app = builder.Build();
 if (!await app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseSeeder>().InitializeAsync(builder.Configuration, args))

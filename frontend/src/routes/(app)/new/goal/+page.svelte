@@ -30,31 +30,21 @@
 	import { page } from "$app/state";
 	import type { paths as BackendRoutes } from "$lib/api/types";
 	import { dev } from "$app/environment";
-	import useAPI from "$lib/utils/api.svelte.js";
+	import Switch from "$lib/components/ui/switch/switch.svelte";
 
 	const { data } = $props();
-	const { client } = useAPI();
 	const { enhance, form, errors, constraints } = useForm(data.form);
 
+	// TODO: Use project DO from form as initial
 	let projects = new SvelteSet<BackendTypes["ProjectDO"]>();
 	async function searchGoals(query: string) {
-		const { data } = await client.GET("/projects", {
-			params: {
-				query: {
-					"filter[name]": query,
-				},
-			},
-		});
+		const response = await fetch(
+			`/projects?${new URLSearchParams({
+				name: query,
+			})}`,
+		);
 
-		return data;
-
-		// const params = new URLSearchParams({
-		// 	name: query,
-		// });
-
-		// const response = await fetch(`/projects?${params}`);
-		// const json = (await response.json()) as BackendTypes["ProjectDO"][];
-		// return json;
+		return (await response.json()) as BackendTypes["ProjectDO"][];
 	}
 </script>
 
@@ -81,6 +71,36 @@
 					/>
 				</Control>
 				<Separator />
+				<Control
+					label="Public"
+					name="public"
+					description="Set this to false if you don't wish for anyone to see this cursus other than the creator."
+					errors={$errors.public}
+				>
+					<Switch
+						id="public"
+						name="public"
+						required
+						aria-invalid={$errors.public ? "true" : undefined}
+						bind:checked={$form.public}
+						{...$constraints.public}
+					/>
+				</Control>
+				<Control
+					label="Enabled"
+					name="enabled"
+					description="When true, other users can subscribe to this cursus."
+					errors={$errors.enabled}
+				>
+					<Switch
+						id="enabled"
+						name="enabled"
+						required
+						aria-invalid={$errors.enabled ? "true" : undefined}
+						bind:checked={$form.enabled}
+						{...$constraints.enabled}
+					/>
+				</Control>
 				<Button class="w-full" type="submit">Create</Button>
 			</div>
 			<Separator class="my-2 md:hidden" />
@@ -97,7 +117,7 @@
 					label="Goal Markdown"
 					name="markdown"
 					description="A more in depth styled markdown sheet to explain what this goal aims to teach someone."
-					errors={$errors.description}
+					errors={$errors.markdown}
 				>
 					<Markdown
 						variant="editor"
@@ -130,7 +150,7 @@
 					label="Project Composition"
 					name="description"
 					description="You can manage which projects belong to this learning goal"
-					errors={$errors.description}
+					errors={$errors.projects?._errors}
 				>
 					<!-- <SearchGoal /> -->
 					<SearchApi
@@ -170,7 +190,7 @@
 						</Table.Header>
 						<Table.Body>
 							{#each projects as p, i}
-								<input hidden name="projects" bind:value={$form.projects[i]} />
+								<input hidden name="projects" value={p.id} />
 								<Table.Row>
 									<Table.Cell class="font-medium">
 										<a

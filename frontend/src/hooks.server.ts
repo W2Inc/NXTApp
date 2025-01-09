@@ -55,7 +55,7 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 const apiHandle: Handle = async ({ event, resolve }) => {
 	const session = await event.locals.auth();
 	event.locals.api = createClient<BackendRoutes>({
-		baseUrl: dev ? "https://localhost:3000" : "https://localhost:3000",
+		baseUrl: dev ? "http://localhost:3001" : "https://localhost:3000",
 		mode: "cors",
 		headers: {
 			Authorization: `Bearer ${session?.access_token}`
@@ -86,7 +86,8 @@ export const handle: Handle = sequence(
 // NOTE(W2): Attach authorization here as putting it in the client means
 // it would be stuck on the first client request's cookie.
 export async function handleFetch({ fetch, request, event }) {
-	if (request.url.startsWith('https://localhost:3000/')) {
+	if (request.url.startsWith('http://localhost:3001/')) {
+		console.log("API CALL")
 		const session = await event.locals.auth();
 		request.headers.set('cookie', event.request.headers.get('cookie') ?? "");
 		request.headers.set('authorization', `Bearer ${session?.access_token}`);

@@ -603,9 +603,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ReviewDO"];
-                        "application/json": components["schemas"]["ReviewDO"];
-                        "text/json": components["schemas"]["ReviewDO"];
+                        "text/plain": components["schemas"]["LearningGoalDO"];
+                        "application/json": components["schemas"]["LearningGoalDO"];
+                        "text/json": components["schemas"]["LearningGoalDO"];
                     };
                 };
                 /** @description Unauthorized */
@@ -713,24 +713,13 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ReviewPatchRequestDto"];
-                    "text/json": components["schemas"]["ReviewPatchRequestDto"];
-                    "application/*+json": components["schemas"]["ReviewPatchRequestDto"];
-                    "text/plain": components["schemas"]["ReviewPatchRequestDto"];
+                    "application/json": components["schemas"]["GoalPatchRequestDto"];
+                    "text/json": components["schemas"]["GoalPatchRequestDto"];
+                    "application/*+json": components["schemas"]["GoalPatchRequestDto"];
+                    "text/plain": components["schemas"]["GoalPatchRequestDto"];
                 };
             };
             responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ReviewDO"];
-                        "application/json": components["schemas"]["ReviewDO"];
-                        "text/json": components["schemas"]["ReviewDO"];
-                    };
-                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -932,9 +921,9 @@ export interface paths {
                     Size?: number;
                     OrderBy?: string;
                     Order?: components["schemas"]["Order"];
-                    "filter[name]"?: string;
-                    "filter[slug]"?: string;
                     "filter[id]"?: string;
+                    "filter[slug]"?: string;
+                    "filter[name]"?: string;
                 };
                 header?: never;
                 path?: never;
@@ -1442,6 +1431,199 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/reviews/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a goal */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReviewDO"];
+                        "application/json": components["schemas"]["ReviewDO"];
+                        "text/json": components["schemas"]["ReviewDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a goal
+         * @description Goal deletion is rarely done, and only result in deprecations if they have dependencies
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["LearningGoalDO"];
+                        "application/json": components["schemas"]["LearningGoalDO"];
+                        "text/json": components["schemas"]["LearningGoalDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Update a goal
+         * @description Updates a goal partially based on the provided fields.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReviewPatchRequestDto"];
+                    "text/json": components["schemas"]["ReviewPatchRequestDto"];
+                    "application/*+json": components["schemas"]["ReviewPatchRequestDto"];
+                    "text/plain": components["schemas"]["ReviewPatchRequestDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ReviewDO"];
+                        "application/json": components["schemas"]["ReviewDO"];
+                        "text/json": components["schemas"]["ReviewDO"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         trace?: never;
     };
     "/search/{category}": {
@@ -3151,9 +3333,9 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            gitUrl?: string;
-            gitBranch?: string;
-            gitCommit?: string | null;
+            gitUrl: string;
+            gitBranch: string;
+            gitCommit: string | null;
         } | null;
         GitInfoRequestDto: {
             /** Format: uri */
