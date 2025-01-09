@@ -16,6 +16,7 @@ public class ProjectDO : BaseObjectDO<Project>
     {
         Name = project.Name;
         Markdown = project.Markdown;
+        Description = project.Description;
         Slug = project.Slug;
         ThumbnailUrl = project.ThumbnailUrl;
         Public = project.Public;
@@ -33,6 +34,9 @@ public class ProjectDO : BaseObjectDO<Project>
 
     [Required]
     public string? Markdown { get; set; }
+
+    [Required]
+    public string? Description { get; set; }
 
     [Required]
     public string Slug { get; set; }

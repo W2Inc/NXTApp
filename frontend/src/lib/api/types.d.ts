@@ -3228,6 +3228,7 @@ export interface components {
             updatedAt: string;
             name: string;
             markdown: string | null;
+            description: string | null;
             slug: string;
             thumbnailUrl: string | null;
             public: boolean;
@@ -3247,6 +3248,7 @@ export interface components {
             updatedAt: string;
             name: string;
             markdown: string | null;
+            description: string | null;
             slug: string;
             thumbnailUrl: string | null;
             public: boolean;

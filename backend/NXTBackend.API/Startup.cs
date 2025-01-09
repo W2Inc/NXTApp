@@ -163,19 +163,19 @@ public static class Startup
 
 
         // CORS Policy
-        if (!builder.Environment.IsDevelopment())
-        {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowSpecificOrigin", builder =>
-                {
-                    builder.WithOrigins("http://localhost:5173")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
-                });
-            });
-        }
+        // if (!builder.Environment.IsDevelopment())
+        // {
+        //     services.AddCors(options =>
+        //     {
+        //         options.AddPolicy("AllowSpecificOrigin", builder =>
+        //         {
+        //             builder.WithOrigins("https://localhost:5173")
+        //                 .AllowAnyMethod()
+        //                 .AllowAnyHeader()
+        //                 .AllowCredentials();
+        //         });
+        //     });
+        // }
 
         // Serilog Logging
         services.AddSerilog((services, lc) => lc

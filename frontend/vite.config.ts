@@ -4,14 +4,14 @@ import mkcert from 'vite-plugin-mkcert';
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [sveltekit(), enhancedImages(), mkcert() ],
+	plugins: [sveltekit(), enhancedImages(), /*mkcert()*/ ],
 	ssr: {
 		noExternal: ["three"],
 	},
 	server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000/',
+        target: 'http://localhost:3001/',
         changeOrigin: false,
         rewrite: (path) => path.replace(/^\/api/, '')
       }

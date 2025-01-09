@@ -23,17 +23,6 @@ using NXTBackend.API.Utils;
 
 namespace NXTBackend.API.Controllers;
 
-public class ProjectQueryParams
-{
-    [Description("URL slug to filter on")]
-    [FromQuery(Name = "filter[slug]")]
-    public string? Slug { get; set; }
-
-    [Description("The entity id to filter on")]
-    [FromQuery(Name = "filter[id]")]
-    public Guid? Id { get; set; }
-}
-
 // ============================================================================
 
 [ApiController]
@@ -51,13 +40,16 @@ public class ProjectController(
     public async Task<ActionResult<IEnumerable<ProjectDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
-        [FromQuery] GoalQueryParams filter
+        [FromQuery(Name = "filter[id]")] Guid? id,
+        [FromQuery(Name = "filter[slug]")] string? slug,
+        [FromQuery(Name = "filter[name]")] string? name
     )
     {
         var page = await projectService.GetAllAsync(paging, sorting, new()
         {
-            Id = filter.Id,
-            Slug = filter.Slug
+            Id = id,
+            Slug = slug,
+            Name = name
         });
 
         page.AppendHeaders(Response.Headers);

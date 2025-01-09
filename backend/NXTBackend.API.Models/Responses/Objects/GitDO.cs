@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities;
 
 // ============================================================================
@@ -18,10 +19,13 @@ public class GitDO : BaseObjectDO<Git>
         GitCommit = git.GitCommit;
     }
 
+    [Required]
     public string GitUrl { get; set; }
 
+    [Required]
     public string GitBranch { get; set; }
 
+    [Required]
     public string? GitCommit { get; set; }
 
     public static implicit operator GitDO?(Git? entity) => entity is null ? null : new(entity);

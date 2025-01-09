@@ -2,7 +2,7 @@
 	import Loader from "lucide-svelte/icons/loader";
 	import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
 	import Search from "lucide-svelte/icons/text-search";
-	import { type Snippet } from "svelte";
+	import { tick, type Snippet } from "svelte";
 	import * as Popover from "$lib/components/ui/popover/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { useDebounce } from "$lib/utils/debounce.svelte";
@@ -31,6 +31,13 @@
 	function searchFor(value: string) {
 		if (value === "") return;
 		promise = endpointFn(value);
+	}
+
+	function closeAndFocusTrigger() {
+		open = false;
+		tick().then(() => {
+			triggerRef.focus();
+		});
 	}
 </script>
 
@@ -78,7 +85,10 @@
 								<Button
 									variant="ghost"
 									class="w-full justify-start p-0 px-2"
-									onclick={() => onSelect(entry)}
+									onclick={() => {
+										closeAndFocusTrigger();
+										onSelect(entry);
+									}}
 								>
 									{@render item({ value: entry })}
 								</Button>

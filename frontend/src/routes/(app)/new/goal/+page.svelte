@@ -27,19 +27,34 @@
 	import type { paths } from "$lib/api/types.js";
 	import { SvelteSet } from "svelte/reactivity";
 	import { encodeUUID64 } from "$lib/utils";
+	import { page } from "$app/state";
+	import type { paths as BackendRoutes } from "$lib/api/types";
+	import { dev } from "$app/environment";
+	import useAPI from "$lib/utils/api.svelte.js";
 
 	const { data } = $props();
+	const { client } = useAPI();
 	const { enhance, form, errors, constraints } = useForm(data.form);
 
 	let projects = new SvelteSet<BackendTypes["ProjectDO"]>();
 	async function searchGoals(query: string) {
-		const params = new URLSearchParams({
-			name: query,
+		const { data } = await client.GET("/projects", {
+			params: {
+				query: {
+					"filter[name]": query,
+				},
+			},
 		});
 
-		const response = await fetch(`/projects?${params}`);
-		const json = (await response.json()) as BackendTypes["ProjectDO"][];
-		return json;
+		return data;
+
+		// const params = new URLSearchParams({
+		// 	name: query,
+		// });
+
+		// const response = await fetch(`/projects?${params}`);
+		// const json = (await response.json()) as BackendTypes["ProjectDO"][];
+		// return json;
 	}
 </script>
 
@@ -155,13 +170,14 @@
 						</Table.Header>
 						<Table.Body>
 							{#each projects as p, i}
-								{@const creatorId = encodeUUID64(p.creator?.id)}
 								<input hidden name="projects" bind:value={$form.projects[i]} />
 								<Table.Row>
 									<Table.Cell class="font-medium">
 										<a
 											class="capitalize underline decoration-wavy"
-											href="/users/{creatorId}/projects/{p.slug}"
+											href="/users/{encodeUUID64(
+												page.data.session?.user?.id ?? '',
+											)}/projects/{p.slug}"
 											target="_blank"
 											rel="noopener noreferrer"
 										>
@@ -171,15 +187,15 @@
 									<Table.Cell>
 										<a
 											class="text-primary underline decoration-wavy"
-											href="/users/{creatorId}"
+											href="/users/{encodeUUID64(p.creator?.id)}"
 											target="_blank"
 											rel="noopener noreferrer"
 										>
 											{p.creator?.displayName ?? p.creator?.login}
 										</a>
 									</Table.Cell>
-									<Table.Cell>
-										{p.markdown}
+									<Table.Cell class="max">
+										{p.description}
 									</Table.Cell>
 									<Table.Cell class="text-right">
 										<Button

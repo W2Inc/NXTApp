@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
@@ -13,6 +14,16 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// </summary>
 public sealed class ProjectService(DatabaseContext ctx) : BaseService<Project>(ctx), IProjectService
 {
+    public override IQueryable<Project> ApplyFilters(IQueryable<Project> query, QueryFilters? filter)
+    {
+        query = base.ApplyFilters(query, filter);
+        if (filter?.Slug is not null)
+            query = query.Where(x => EF.Functions.Like(x.Slug, $"%{filter.Slug}%"));
+        if (filter?.Name is not null)
+            query = query.Where(x => EF.Functions.Like(x.Name, $"%{filter.Name}%"));
+        return query;
+    }
+
     public async Task<Project> CreateProjectWithGit(Project project, Git git)
     {
         var gitInfo = await ctx.GitInfo.AddAsync(git);

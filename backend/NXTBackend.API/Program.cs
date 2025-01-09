@@ -49,7 +49,7 @@ if (app.Environment.IsDevelopment())
 // Middleware
 // ============================================================================
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin");
+// app.UseCors("AllowSpecificOrigin");
 app.UseRouting();
 app.UseResponseCompression();
 app.UseSerilogRequestLogging();
