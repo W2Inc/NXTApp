@@ -32,6 +32,7 @@
 		value: string;
 		placeholder?: string;
 		variant?: "editor" | "viewer";
+		maxlength?: number;
 	}
 
 	type Action = {
@@ -44,7 +45,12 @@
 	// State
 
 	let textarea = $state<HTMLTextAreaElement>(null!);
-	let { value = $bindable(), placeholder, variant = "editor" }: Props = $props();
+	let {
+		value = $bindable(),
+		placeholder,
+		variant = "editor",
+		maxlength,
+	}: Props = $props();
 	let mode = $state<"write" | "preview">(variant === "editor" ? "write" : "preview");
 
 	function insertTemplate(template: string, cursorOffset: number) {
@@ -276,11 +282,22 @@
 		>
 			<Markdown md={value} {plugins} />
 		</div>
-		{#if mode === "write"}
-			<span class="text-muted-foreground flex items-center gap-1 text-xs">
-				<IconMarkdown />
-				Markdown is supported
-			</span>
-		{/if}
+		<div class="flex justify-between pt-1">
+			{#if mode === "write"}
+				<span class="text-muted-foreground inline-flex items-center gap-1 text-xs">
+					<IconMarkdown />
+					Markdown is supported
+				</span>
+				{#if maxlength}
+					<span
+						class="inline-flex items-center gap-1 text-xs"
+						class:text-muted-foreground={value.length <= maxlength}
+						class:text-destructive={value.length > maxlength}
+					>
+						{value.length} / {maxlength}
+					</span>
+				{/if}
+			{/if}
+		</div>
 	</div>
 </div>

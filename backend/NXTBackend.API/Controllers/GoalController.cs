@@ -146,7 +146,7 @@ public class GoalController(
     [EndpointSummary("Get the projects that are part of this goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<LearningGoalDO>>> GetProjects(
+    public async Task<ActionResult<IEnumerable<ProjectDO>>> GetProjects(
         Guid id,
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting

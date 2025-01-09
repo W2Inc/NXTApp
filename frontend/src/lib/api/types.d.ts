@@ -720,6 +720,17 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["LearningGoalDO"];
+                        "application/json": components["schemas"]["LearningGoalDO"];
+                        "text/json": components["schemas"]["LearningGoalDO"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -790,9 +801,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["LearningGoalDO"][];
-                        "application/json": components["schemas"]["LearningGoalDO"][];
-                        "text/json": components["schemas"]["LearningGoalDO"][];
+                        "text/plain": components["schemas"]["ProjectDO"][];
+                        "application/json": components["schemas"]["ProjectDO"][];
+                        "text/json": components["schemas"]["ProjectDO"][];
                     };
                 };
                 /** @description Unauthorized */

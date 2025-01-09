@@ -1,42 +1,38 @@
 <script lang="ts">
 	import Base from "$lib/components/base.svelte";
-	import Taskcard from "$lib/components/cards/task-card.svelte";
-	import * as Accordion from "$lib/components/ui/accordion";
 	import * as Avatar from "$lib/components/ui/avatar";
-	import Button, { buttonVariants } from "$lib/components/ui/button/button.svelte";
+	import Button from "$lib/components/ui/button/button.svelte";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import Trophy from "lucide-svelte/icons/trophy";
-	import ShieldCheck from "lucide-svelte/icons/shield-check";
 	import Markdown from "$lib/components/markdown/markdown.svelte";
-	import { useDebounce } from "$lib/utils/debounce.svelte";
 	import Control from "$lib/components/forms/control.svelte";
 	import { Input } from "$lib/components/ui/input";
 	import { useForm } from "$lib/components/forms/form.svelte";
 	import * as Table from "$lib/components/ui/table";
-	import Pen from "lucide-svelte/icons/pen";
-	import CircleHelp from "lucide-svelte/icons/circle-help";
 
-	import * as Dialog from "$lib/components/ui/dialog";
-	import Tippy from "$lib/components/tippy.svelte";
 	import { Textarea } from "$lib/components/ui/textarea";
 	import Trash from "lucide-svelte/icons/trash";
-	import Ellipsis from "lucide-svelte/icons/ellipsis";
-	import * as Popover from "$lib/components/ui/popover";
 	import SearchApi from "$lib/components/search-api.svelte";
-	import createClient, { createPathBasedClient } from "openapi-fetch";
-	import type { paths } from "$lib/api/types.js";
 	import { SvelteSet } from "svelte/reactivity";
 	import { encodeUUID64 } from "$lib/utils";
 	import { page } from "$app/state";
-	import type { paths as BackendRoutes } from "$lib/api/types";
-	import { dev } from "$app/environment";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
 
 	const { data } = $props();
-	const { enhance, form, errors, constraints } = useForm(data.form);
+	const { enhance, form, errors, constraints } = useForm(data.form, {
+		dataType: "json",
+		successMessage: data.edit ? "Goal has been updated" : "Goal has been created",
+		failMessage: data.edit ? "Failed to update goal" : "Failed to create goal",
+		confirm: {
+			title: data.edit ? "Update goal?" : "Create new goal?",
+			message: data.edit
+				? "Are you sure you want to update this goal?"
+				: "Are you sure you want to create this goal?",
+		},
+	});
 
 	// TODO: Use project DO from form as initial
-	let projects = new SvelteSet<BackendTypes["ProjectDO"]>();
+	let projects = new SvelteSet<BackendTypes["ProjectDO"]>($form.projects);
 	async function searchGoals(query: string) {
 		const response = await fetch(
 			`/projects?${new URLSearchParams({
@@ -46,6 +42,8 @@
 
 		return (await response.json()) as BackendTypes["ProjectDO"][];
 	}
+
+	$inspect(projects);
 </script>
 
 <form method="POST" use:enhance>
@@ -74,7 +72,7 @@
 				<Control
 					label="Public"
 					name="public"
-					description="Set this to false if you don't wish for anyone to see this cursus other than the creator."
+					description="Set this to false if you don't wish for anyone to see this goal other than the creator."
 					errors={$errors.public}
 				>
 					<Switch
@@ -89,7 +87,7 @@
 				<Control
 					label="Enabled"
 					name="enabled"
-					description="When true, other users can subscribe to this cursus."
+					description="When true, other users can subscribe to this goal. If public is false people can still subscribe if they find the link."
 					errors={$errors.enabled}
 				>
 					<Switch
@@ -101,7 +99,17 @@
 						{...$constraints.enabled}
 					/>
 				</Control>
-				<Button class="w-full" type="submit">Create</Button>
+				<Button
+					class="w-full"
+					type="submit"
+					formaction="?/{data.edit ? 'update' : 'create'}"
+				>
+					{#if data.edit}
+						Update
+					{:else}
+						Create
+					{/if}
+				</Button>
 			</div>
 			<Separator class="my-2 md:hidden" />
 		{/snippet}
@@ -190,9 +198,9 @@
 						</Table.Header>
 						<Table.Body>
 							{#each projects as p, i}
-								<input hidden name="projects" value={p.id} />
 								<Table.Row>
 									<Table.Cell class="font-medium">
+										<input hidden name="projects" value={$form.projects[i]} />
 										<a
 											class="capitalize underline decoration-wavy"
 											href="/users/{encodeUUID64(

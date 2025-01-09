@@ -17,33 +17,37 @@ const schema = z.object({
 	markdown: z.string().min(128).max(2048),
 	public: z.boolean(),
 	enabled: z.boolean(),
-	projects: z.string().array().max(5),
+	projects: z.array(z.custom<BackendTypes["ProjectDO"]>()),
 });
+
+// ============================================================================
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const form = await superValidate(zod(schema));
-	if (url.searchParams.has("edit")) {
-		const { data, response } = await locals.api.GET("/goals/{id}", {
-			params: {
-				path: {
-					id: url.searchParams.get("edit") ?? "unknown"
-				}
-			},
-		});
+	const edit = url.searchParams.has("edit");
+	if (edit) {
+		const id = url.searchParams.get("edit")!;
+		const [goal, projects] = await Promise.all([
+			locals.api.GET("/goals/{id}", {
+				params: { path: { id } },
+			}),
+			locals.api.GET("/goals/{id}/projects", {
+				params: { path: { id } },
+			}),
+		]);
 
-		if (!data)
-			error(response.status);
+		if (!goal.data || !projects.data) {
+			error(404, "Goal or projects not found");
+		}
 
 		form.data = {
-			name: data.name,
-			description: data.description,
-			markdown: data.markdown,
+			...goal.data,
+			projects: projects.data,
 			public: true,
 			enabled: true,
-			projects: [],
 		};
 
-		return { form };
+		return { form, edit };
 	}
 
 	form.data = {
@@ -61,7 +65,32 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 // ============================================================================
 
 export const actions: Actions = {
-	default: async ({ request, locals }) => {
+	update: async ({ request, locals }) => {
+		const form = await superValidate(request, zod(schema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		// const { response, data } = await locals.api.POST("/goals", {
+		// 	body: {
+		// 		name: form.data.name,
+		// 		description: form.data.description,
+		// 		markdown: form.data.markdown,
+		// 		public: form.data.public,
+		// 		enabled: form.data.enabled,
+		// 	},
+		// });
+
+		// if (!response.ok) {
+		// 	console.log(data);
+		// 	return fail(response.status, data);
+		// }
+
+		return {
+			form,
+		};
+	},
+	create: async ({ request, locals }) => {
 		const form = await superValidate(request, zod(schema));
 		if (!form.valid) {
 			return fail(400, { form });
