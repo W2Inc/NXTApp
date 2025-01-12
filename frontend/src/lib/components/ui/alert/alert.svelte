@@ -7,7 +7,7 @@
 			variant: {
 				default: "bg-background text-foreground",
 				warning:
-					"border-yellow-400/50 text-yellow-400 dark:text-yellow-400 [&>svg]:text-yellow-400",
+					"border-yellow-400/50 dark:text-yellow-400 dark:text-yellow-400 dark:[&>svg]:text-yellow-400 bg-yellow-400 dark:bg-transparent",
 				destructive:
 					"border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
 			},

@@ -45,12 +45,7 @@ public class ProjectController(
         [FromQuery(Name = "filter[name]")] string? name
     )
     {
-        var page = await projectService.GetAllAsync(paging, sorting, new()
-        {
-            Id = id,
-            Slug = slug,
-            Name = name
-        });
+        var page = await projectService.GetAllAsync(paging, sorting);
 
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(c => new ProjectDO(c)));

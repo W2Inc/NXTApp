@@ -1,7 +1,7 @@
+using System.Collections.Immutable;
 using System.ComponentModel;
 
 namespace NXTBackend.API.Models;
-
 
 /// <summary>
 /// To avoid usage of reflection we define this record of shared/common properties to filter.
@@ -23,3 +23,13 @@ public record QueryFilters
     public string? Slug { get; init; }
     public string? Name { get; init; }
 };
+
+public class FilterDictionary : Dictionary<string, object?>
+{
+    public FilterDictionary AddFilter(string key, object? value)
+    {
+        if (value != null)
+            this[key.ToLowerInvariant()] = value;
+        return this;
+    }
+}

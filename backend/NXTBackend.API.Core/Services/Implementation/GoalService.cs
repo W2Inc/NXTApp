@@ -33,7 +33,7 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
     /// <inheritdoc />
     public async Task<PaginatedList<User>> GetUsers(LearningGoal goal, PaginationParams pagination, SortingParams sorting)
     {
-        var query = _context.Users.Where(u => u.UserGoals.Any(g => g.GoalId == goal.Id));
+        var query = _context.Users.AsNoTracking().Where(u => u.UserGoals.Any(g => g.GoalId == goal.Id));
         return await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 
@@ -41,20 +41,11 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
     public async Task<PaginatedList<Project>> GetProjects(LearningGoal goal, PaginationParams pagination, SortingParams sorting)
     {
         var query = _context.Projects
+            .AsNoTracking()
             .Include(p => p.Creator)
             .Include(p => p.GitInfo)
             .Where(p => p.Goals.Any(g => g.Id == goal.Id));
 
         return await PaginatedList<Project>.CreateAsync(query, pagination.Page, pagination.Size);
-    }
-
-    public override IQueryable<LearningGoal> ApplyFilters(IQueryable<LearningGoal> query, QueryFilters? filter)
-    {
-        query = base.ApplyFilters(query, filter);
-        if (filter?.Slug is not null)
-            query = query.Where(x => EF.Functions.Like(x.Slug, $"%{filter.Slug}%"));
-        if (filter?.Name is not null)
-            query = query.Where(x => EF.Functions.Like(x.Name, $"%{filter.Name}%"));
-        return query;
     }
 }

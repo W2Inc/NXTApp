@@ -1,4 +1,4 @@
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -12,15 +12,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 	});
 
-	console.log(data?.map((s) => s.id));
-
 	return {
 		sessions: data ?? []
 	}
 };
 
 export const actions: Actions = {
-	delete: async ({ locals, request}) => {
+	delete: async ({ locals, request, url}) => {
 		const session = await locals.auth();
 		const form = await request.formData();
 		const id = form.get("id")?.toString();
@@ -38,7 +36,7 @@ export const actions: Actions = {
 
 		if (!response.ok)
 			return fail(response.status);
-		return {};
+		return redirect(301, url);
 	},
 	deleteAll: async({ locals, request}) => {
 		const session = await locals.auth();
@@ -51,10 +49,6 @@ export const actions: Actions = {
 			}
 		});
 
-		console.log(response.statusText)
-
-		return {
-
-		}
+		return redirect(301, url);
 	}
 };

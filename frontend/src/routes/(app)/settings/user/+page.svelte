@@ -179,7 +179,7 @@
 	<Separator class="my-2" />
 
 	<div class="grid w-full gap-1.5">
-		<Markdown placeholder="Write about yourself" />
+		<Markdown value="" placeholder="Write about yourself" />
 	</div>
 
 	<Separator class="my-2" />

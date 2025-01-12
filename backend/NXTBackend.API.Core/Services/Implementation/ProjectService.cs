@@ -12,18 +12,16 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// Temporary service to search for users, projects, cursi and learning goals.
 /// Later on this service SHOULD be converted to use a search engine like ElasticSearch.
 /// </summary>
-public sealed class ProjectService(DatabaseContext ctx) : BaseService<Project>(ctx), IProjectService
+public sealed class ProjectService : BaseService<Project>, IProjectService
 {
-    public override IQueryable<Project> ApplyFilters(IQueryable<Project> query, QueryFilters? filter)
-    {
-        query = base.ApplyFilters(query, filter);
-        if (filter?.Slug is not null)
-            query = query.Where(x => EF.Functions.Like(x.Slug, $"%{filter.Slug}%"));
-        if (filter?.Name is not null)
-            query = query.Where(x => EF.Functions.Like(x.Name, $"%{filter.Name}%"));
-        return query;
-    }
+    private readonly DatabaseContext ctx;
 
+    public ProjectService(DatabaseContext ctx) : base(ctx)
+    {
+        this.ctx = ctx;
+        DefineFilter<string>("slug", (q, slug) => q.Where((p) => p.Slug == slug));
+        DefineFilter<string>("name", (q, name) => q.Where((p) => EF.Functions.Like(p.Name, $"%{name}%")));
+    }
     public async Task<Project> CreateProjectWithGit(Project project, Git git)
     {
         var gitInfo = await ctx.GitInfo.AddAsync(git);

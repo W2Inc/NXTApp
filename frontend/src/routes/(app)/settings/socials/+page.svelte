@@ -36,10 +36,24 @@
 </p>
 <Separator class="my-2" />
 <div class="mb-2 flex gap-2">
-	{#each data.realmIdentities as identity}
-		{@const hasThisIdentity = data.identities.some(
-			(i) => i.identityProvider === identity.providerId
-		)}
-		{@render SPI(identity.alias ?? identity.providerId!, identity.providerId!, !hasThisIdentity)}
-	{/each}
+	{#if data.realmIdentities.length === 0}
+		<Alert.Root>
+			<Flask class="size-4" />
+			<Alert.Title>No socials availble</Alert.Title>
+			<Alert.Description>
+				This app has no socials setup.
+			</Alert.Description>
+		</Alert.Root>
+	{:else}
+		{#each data.realmIdentities as identity}
+			{@const hasThisIdentity = data.identities.some(
+				(i) => i.identityProvider === identity.providerId,
+			)}
+			{@render SPI(
+				identity.alias ?? identity.providerId!,
+				identity.providerId!,
+				!hasThisIdentity,
+			)}
+		{/each}
+	{/if}
 </div>

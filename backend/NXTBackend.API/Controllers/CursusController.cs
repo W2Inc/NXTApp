@@ -58,12 +58,7 @@ public class CursusController(
         [FromQuery] CursusQueryParams filter
     )
     {
-        var page = await cursusService.GetAllAsync(paging, sorting, new()
-        {
-            Id = filter.Id,
-            Slug = filter.Slug
-        });
-
+        var page = await cursusService.GetAllAsync(paging, sorting);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(c => new CursusDO(c)));
     }

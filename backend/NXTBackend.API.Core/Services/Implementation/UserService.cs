@@ -33,12 +33,13 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
     }
 
     /// <inheritdoc/>
-    public override async Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, SortingParams sorting, QueryFilters? filter)
+    public override async Task<PaginatedList<User>> GetAllAsync(PaginationParams pagination, SortingParams sorting, FilterDictionary? filters = null)
     {
         var query = _dbSet
             .Include(user => user.Details)
             .AsQueryable();
 
+        query = ApplyFilters(query, filters);
         query = await SortedList<User>.ApplyAsync(query, sorting);
         return await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
     }

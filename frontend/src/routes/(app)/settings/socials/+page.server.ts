@@ -62,15 +62,11 @@ export const load: PageServerLoad = async ({ locals }) => {
     userId: "63303990",
     userName: "w2wizard",
   }
-		*/
-
-	if (!userIdentities.data || !realmIdentities.data) error(503);
-
-	console.log(userIdentities.data);
+	*/
 
 	return {
-		realmIdentities: realmIdentities.data,
-		identities: userIdentities.data,
+		realmIdentities: realmIdentities.data ?? [],
+		identities: userIdentities.data ?? [],
 	};
 };
 

@@ -1653,7 +1653,7 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    category: "User" | "Project" | "Cursus" | "LearningGoal";
+                    category: components["schemas"]["Category"];
                 };
                 cookie?: never;
             };
@@ -2949,14 +2949,18 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get all project instances
-         * @description Get all project instances
+         * Get all project instances that exist
+         * @description When user's subscribe to a project they create their own unique instances. Instance can also be *shared* amongst users as can do projects together.
          */
         get: {
             parameters: {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    /** @description Filter on user */
+                    "filter[user_id]"?: string;
+                    /** @description Filter on project */
+                    "filter[project_id]"?: string;
                 };
                 header?: never;
                 path?: never;
@@ -3284,6 +3288,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {unknown} */
+        Category: "User" | "Project" | "Cursus" | "LearningGoal";
         CursusDO: {
             /** Format: uuid */
             id: string;

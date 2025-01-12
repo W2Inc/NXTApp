@@ -3,6 +3,7 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
+using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,7 @@ namespace NXTBackend.API.Controllers;
 public class UserController(
     ILogger<UserController> logger,
     IUserService userService,
+    IUserProjectService userProjectService,
     ISpotlightEventService spotlightService,
     ISpotlightEventActionService spotlightActionService
 ) : Controller
@@ -309,12 +311,30 @@ public class UserController(
 
     [Tags(["Project Instances"])]
     [HttpGet("/users/projects/")]
-    [EndpointSummary("Get all project instances")]
-    [EndpointDescription("Get all project instances")]
+    [EndpointSummary("Get all project instances that exist")]
+    [EndpointDescription(@"When user's subscribe to a project they create their own unique instances.
+    Instance can also be *shared* amongst users as can do projects together.")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetUserProjects([FromQuery] PaginationParams pagination)
+    public async Task<IActionResult> GetUserProjects(
+        [FromQuery] PaginationParams pagination,
+        [FromQuery] SortingParams sorting,
+        [FromQuery(Name = "filter[id]"), Description("Filter on user")] Guid? id,
+        [FromQuery(Name = "filter[created_at]"), Description("Filter on project")] DateTimeOffset? createdAt,
+        [FromQuery(Name = "filter[updated_at]"), Description("Filter on project")] DateTimeOffset? updatedAt,
+        [FromQuery(Name = "filter[user_id]"), Description("Filter on user")] Guid? userId,
+        [FromQuery(Name = "filter[project_id]"), Description("Filter on project")] Guid? projectId
+    )
     {
-        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
+        var filters = new FilterDictionary()
+            .AddFilter("user_id", id)
+            .AddFilter("created_at", createdAt)
+            .AddFilter("updated_at", updatedAt)
+            .AddFilter("user_id", userId)
+            .AddFilter("project_id", projectId);
+
+        var page = await userProjectService.GetAllAsync(pagination, sorting, filters);
+        page.AppendHeaders(Response.Headers);
+        return Ok(page.Items.Select(up => new UserProjectDO(up)));
     }
 
     [Tags(["Project Instances"])]

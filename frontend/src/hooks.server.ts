@@ -93,5 +93,14 @@ export async function handleFetch({ fetch, request, event }) {
 		request.headers.set('authorization', `Bearer ${session?.access_token}`);
 	}
 
+	if (request.url.startsWith('http://localhost:8089/')) {
+		const token = await keycloak.getToken();
+		request.headers.set("Authorization", `Bearer ${token}`);
+		// console.log("KEYCLOAK CALL")
+		// const session = await event.locals.auth();
+		// request.headers.set('cookie', event.request.headers.get('cookie') ?? "");
+		// request.headers.set('authorization', `Bearer ${session?.access_token}`);
+	}
+
 	return fetch(request);
 }

@@ -18,10 +18,11 @@
 	const { data } = $props();
 </script>
 
-{#await data.project}
+{#await data.test}
 	<p>Loading...</p>
 {:then project}
-	<div class="m-auto max-w-6xl px-4 py-2">
+	{project?.length}
+	<!-- <div class="m-auto max-w-6xl px-4 py-2">
 		<div class="grid grid-cols-1 gap-x-2 pt-4 md:grid-cols-[256px,1fr]">
 			<div class="flex max-h-fit flex-col gap-1 rounded border p-4">
 				<img
@@ -105,5 +106,5 @@
 				<div class="overflow-auto rounded border p-4">Markdown content goes here.</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 {/await}

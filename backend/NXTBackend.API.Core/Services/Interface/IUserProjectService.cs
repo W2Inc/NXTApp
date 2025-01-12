@@ -11,5 +11,4 @@ using NXTBackend.API.Models;
 namespace NXTBackend.API.Core.Services.Interface;
 public interface IUserProjectService : IDomainService<UserProject>
 {
-
 }

@@ -57,12 +57,7 @@ public class GoalController(
         [FromQuery(Name = "filter[name]")] string? name
     )
     {
-        var page = await goalService.GetAllAsync(paging, sorting, new()
-        {
-            Id = id,
-            Slug = slug,
-            Name = name
-        });
+        var page = await goalService.GetAllAsync(paging, sorting);
 
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(c => new LearningGoalDO(c)));
