@@ -50,6 +50,7 @@ public class ReviewController(
     [EndpointSummary("Get all exisiting goals")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<ReviewDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting
@@ -66,6 +67,7 @@ public class ReviewController(
 If the kind of review and reviewerId are null. It will signal that the project instance is *requesting* a review"
     )]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ReviewDO>> Create(ReviewPostRequestDTO requestedReview)
     {
         // 1. Check user project
@@ -126,6 +128,7 @@ If the kind of review and reviewerId are null. It will signal that the project i
     [EndpointSummary("Get a goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ReviewDO>> Get(Guid id)
     {
         var review = await reviewService.FindByIdAsync(id);
@@ -138,8 +141,7 @@ If the kind of review and reviewerId are null. It will signal that the project i
     [EndpointSummary("Update a goal")]
     [EndpointDescription("Updates a goal partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ReviewDO>> Update(Guid id, [FromBody] ReviewPatchRequestDto data)
     {
         throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
@@ -168,6 +170,7 @@ If the kind of review and reviewerId are null. It will signal that the project i
     [EndpointSummary("Delete a goal")]
     [EndpointDescription("Goal deletion is rarely done, and only result in deprecations if they have dependencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LearningGoalDO>> Deprecate(Guid id)
     {
         var review = await reviewService.FindByIdAsync(id);

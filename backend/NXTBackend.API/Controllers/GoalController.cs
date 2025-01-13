@@ -49,6 +49,7 @@ public class GoalController(
     [EndpointSummary("Get all exisiting goals")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<LearningGoalDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
@@ -66,7 +67,8 @@ public class GoalController(
     [HttpPost("/goals")]
     [EndpointSummary("Create a goal")]
     [EndpointDescription("")]
-    [ProducesResponseType(StatusCodes.Status200OK),]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LearningGoalDO>> Create([FromBody] GoalPostRequestDto data)
     {
 
@@ -86,6 +88,7 @@ public class GoalController(
     [EndpointSummary("Get a goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LearningGoalDO>> Get(Guid id)
     {
         var goal = await goalService.FindByIdAsync(id);
@@ -98,8 +101,7 @@ public class GoalController(
     [EndpointSummary("Update a goal")]
     [EndpointDescription("Updates a goal partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LearningGoalDO>> Update(Guid id, [FromBody] GoalPatchRequestDto data)
     {
         var goal = await goalService.FindByIdAsync(id);
@@ -127,6 +129,7 @@ public class GoalController(
     [EndpointSummary("Delete a goal")]
     [EndpointDescription("Goal deletion is rarely done, and only result in deprecations if they have dependencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LearningGoalDO>> Deprecate(Guid id)
     {
         var goal = await goalService.FindByIdAsync(id);
@@ -141,6 +144,7 @@ public class GoalController(
     [EndpointSummary("Get the projects that are part of this goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<ProjectDO>>> GetProjects(
         Guid id,
         [FromQuery] PaginationParams paging,
@@ -160,6 +164,7 @@ public class GoalController(
     [EndpointSummary("Get the projects that are part of this goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<LearningGoalDO>>> GetUsers(
         Guid id,
         [FromQuery] PaginationParams paging,

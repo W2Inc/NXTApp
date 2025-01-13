@@ -2,6 +2,7 @@ import type { z } from "zod";
 import { goto } from "$app/navigation";
 import { browser } from "$app/environment";
 import { SvelteURL, SvelteURLSearchParams } from "svelte/reactivity";
+import { tick } from "svelte";
 
 export function useQuery<T extends z.ZodObject<any>>(initialUrl: string, schema: T) {
 	let state = $state<Partial<z.infer<T>>>({});
@@ -50,6 +51,7 @@ export function useQuery<T extends z.ZodObject<any>>(initialUrl: string, schema:
 					keepFocus: true,
 					replaceState: true,
 					noScroll: true,
+					invalidateAll: true
 				});
 			} catch (error) {
 				throw new Error(`Invalid value for key "${String(key)}": ${error}`);

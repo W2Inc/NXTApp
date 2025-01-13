@@ -39,6 +39,17 @@ export interface paths {
                         "text/json": components["schemas"]["CursusDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -96,6 +107,17 @@ export interface paths {
                         "text/plain": components["schemas"]["CursusDO"];
                         "application/json": components["schemas"]["CursusDO"];
                         "text/json": components["schemas"]["CursusDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -164,6 +186,17 @@ export interface paths {
                         "text/json": components["schemas"]["CursusDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -220,6 +253,17 @@ export interface paths {
                         "text/plain": components["schemas"]["CursusDO"];
                         "application/json": components["schemas"]["CursusDO"];
                         "text/json": components["schemas"]["CursusDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -287,6 +331,17 @@ export interface paths {
                         "text/json": components["schemas"]["CursusDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -299,22 +354,14 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
                 /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
                 /** @description Too Many Requests */
                 429: {
@@ -349,13 +396,13 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description OK */
-                200: {
+                /** @description Bad Request */
+                400: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/octet-stream": unknown;
+                        "application/octet-stream": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -409,6 +456,17 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
                 };
                 /** @description Unauthorized */
                 401: {
@@ -483,6 +541,17 @@ export interface paths {
                         "text/json": components["schemas"]["LearningGoalDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -540,6 +609,17 @@ export interface paths {
                         "text/plain": components["schemas"]["LearningGoalDO"];
                         "application/json": components["schemas"]["LearningGoalDO"];
                         "text/json": components["schemas"]["LearningGoalDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -608,6 +688,17 @@ export interface paths {
                         "text/json": components["schemas"]["LearningGoalDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -664,6 +755,17 @@ export interface paths {
                         "text/plain": components["schemas"]["LearningGoalDO"];
                         "application/json": components["schemas"]["LearningGoalDO"];
                         "text/json": components["schemas"]["LearningGoalDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -731,6 +833,17 @@ export interface paths {
                         "text/json": components["schemas"]["LearningGoalDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -743,22 +856,14 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
                 /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
                 /** @description Too Many Requests */
                 429: {
@@ -804,6 +909,17 @@ export interface paths {
                         "text/plain": components["schemas"]["ProjectDO"][];
                         "application/json": components["schemas"]["ProjectDO"][];
                         "text/json": components["schemas"]["ProjectDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -877,6 +993,17 @@ export interface paths {
                         "text/plain": components["schemas"]["LearningGoalDO"][];
                         "application/json": components["schemas"]["LearningGoalDO"][];
                         "text/json": components["schemas"]["LearningGoalDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -953,6 +1080,17 @@ export interface paths {
                         "text/json": components["schemas"]["ProjectDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -1010,6 +1148,17 @@ export interface paths {
                         "text/plain": components["schemas"]["ProjectDO"];
                         "application/json": components["schemas"]["ProjectDO"];
                         "text/json": components["schemas"]["ProjectDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1078,6 +1227,17 @@ export interface paths {
                         "text/json": components["schemas"]["ProjectDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -1134,6 +1294,17 @@ export interface paths {
                         "text/plain": components["schemas"]["ProjectDO"];
                         "application/json": components["schemas"]["ProjectDO"];
                         "text/json": components["schemas"]["ProjectDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1201,6 +1372,17 @@ export interface paths {
                         "text/json": components["schemas"]["ProjectDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -1213,11 +1395,7 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
                 /** @description Not Found */
                 404: {
@@ -1274,6 +1452,17 @@ export interface paths {
                         "text/plain": components["schemas"]["LearningGoalDO"][];
                         "application/json": components["schemas"]["LearningGoalDO"][];
                         "text/json": components["schemas"]["LearningGoalDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1347,6 +1536,17 @@ export interface paths {
                         "text/json": components["schemas"]["ReviewDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -1406,6 +1606,17 @@ export interface paths {
                         "text/plain": components["schemas"]["ReviewDO"];
                         "application/json": components["schemas"]["ReviewDO"];
                         "text/json": components["schemas"]["ReviewDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1474,6 +1685,17 @@ export interface paths {
                         "text/json": components["schemas"]["ReviewDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -1530,6 +1752,17 @@ export interface paths {
                         "text/plain": components["schemas"]["LearningGoalDO"];
                         "application/json": components["schemas"]["LearningGoalDO"];
                         "text/json": components["schemas"]["LearningGoalDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1597,6 +1830,17 @@ export interface paths {
                         "text/json": components["schemas"]["ReviewDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -1609,22 +1853,14 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
                 /** @description Not Found */
                 404: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
+                    content?: never;
                 };
                 /** @description Too Many Requests */
                 429: {
@@ -1653,7 +1889,7 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    category: components["schemas"]["Category"];
+                    category: "User" | "Project" | "Cursus" | "LearningGoal";
                 };
                 cookie?: never;
             };
@@ -1900,6 +2136,17 @@ export interface paths {
                         "text/json": components["schemas"]["SpotlightEventActionDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2096,6 +2343,17 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2231,6 +2489,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2298,6 +2567,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2360,6 +2640,17 @@ export interface paths {
                         "text/plain": components["schemas"]["UserDO"];
                         "application/json": components["schemas"]["UserDO"];
                         "text/json": components["schemas"]["UserDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -2431,6 +2722,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2499,6 +2801,17 @@ export interface paths {
                         "text/plain": string;
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2554,6 +2867,17 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
                 };
                 /** @description Unauthorized */
                 401: {
@@ -2635,6 +2959,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserCursusDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2705,6 +3040,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserGoalDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2773,6 +3119,17 @@ export interface paths {
                         "text/plain": components["schemas"]["UserProjectDO"][];
                         "application/json": components["schemas"]["UserProjectDO"][];
                         "text/json": components["schemas"]["UserProjectDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -2849,6 +3206,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserProjectDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2906,6 +3274,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserProjectDO"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -2950,13 +3329,22 @@ export interface paths {
         };
         /**
          * Get all project instances that exist
-         * @description When user's subscribe to a project they create their own unique instances. Instance can also be *shared* amongst users as can do projects together.
+         * @description When user's subscribe to a project they create their own unique instances.
+         *         Instance can also be *shared* amongst users as can do projects together.
          */
         get: {
             parameters: {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                    /** @description Filter on user */
+                    "filter[id]"?: string;
+                    /** @description Filter on project */
+                    "filter[created_at]"?: string;
+                    /** @description Filter on project */
+                    "filter[updated_at]"?: string;
                     /** @description Filter on user */
                     "filter[user_id]"?: string;
                     /** @description Filter on project */
@@ -2977,6 +3365,17 @@ export interface paths {
                         "text/plain": components["schemas"]["UserProjectDO"][];
                         "application/json": components["schemas"]["UserProjectDO"][];
                         "text/json": components["schemas"]["UserProjectDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -3047,6 +3446,17 @@ export interface paths {
                         "text/plain": components["schemas"]["UserProjectDO"][];
                         "application/json": components["schemas"]["UserProjectDO"][];
                         "text/json": components["schemas"]["UserProjectDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -3121,6 +3531,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserProjectDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -3193,6 +3614,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserProjectDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -3249,6 +3681,17 @@ export interface paths {
                         "text/json": components["schemas"]["UserProjectDO"][];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
@@ -3288,8 +3731,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @enum {unknown} */
-        Category: "User" | "Project" | "Cursus" | "LearningGoal";
         CursusDO: {
             /** Format: uuid */
             id: string;

@@ -22,6 +22,7 @@ public sealed class ProjectService : BaseService<Project>, IProjectService
         DefineFilter<string>("slug", (q, slug) => q.Where((p) => p.Slug == slug));
         DefineFilter<string>("name", (q, name) => q.Where((p) => EF.Functions.Like(p.Name, $"%{name}%")));
     }
+
     public async Task<Project> CreateProjectWithGit(Project project, Git git)
     {
         var gitInfo = await ctx.GitInfo.AddAsync(git);

@@ -10,14 +10,19 @@ import { dev } from "$app/environment";
 import type { paths as BackendRoutes } from "$lib/api/types";
 import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
 import createClient from "openapi-fetch";
-import { KC_CLIENT_ID, KC_CLIENT_SECRET, KC_COOKIE_NAME, KC_ISSUER } from "$env/static/private";
+import {
+	KC_CLIENT_ID,
+	KC_CLIENT_SECRET,
+	KC_COOKIE_NAME,
+	KC_ISSUER,
+} from "$env/static/private";
 import KeycloakClient from "$lib/keycloak";
 
 // ============================================================================
 
 // TODO: Ok idk why but I assume this is due to self signed certificates
 // and I don't want to fuck around with this shit until the end.
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = String(!dev);
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = String(!dev);
 
 const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
 
@@ -36,6 +41,9 @@ const routes: Record<string, boolean> = {
 	"/signin": false,
 	"/settings": true,
 };
+
+/** Default per page fetch size */
+export const PER_PAGE = 10;
 
 // ============================================================================
 
@@ -58,7 +66,7 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 		baseUrl: dev ? "http://localhost:3001" : "https://localhost:3000",
 		mode: "cors",
 		headers: {
-			Authorization: `Bearer ${session?.access_token}`
+			Authorization: `Bearer ${session?.access_token}`,
 		},
 		fetch: event.fetch,
 	});
@@ -86,14 +94,13 @@ export const handle: Handle = sequence(
 // NOTE(W2): Attach authorization here as putting it in the client means
 // it would be stuck on the first client request's cookie.
 export async function handleFetch({ fetch, request, event }) {
-	if (request.url.startsWith('http://localhost:3001/')) {
-		console.log("API CALL")
+	if (request.url.startsWith("http://localhost:3001/")) {
 		const session = await event.locals.auth();
-		request.headers.set('cookie', event.request.headers.get('cookie') ?? "");
-		request.headers.set('authorization', `Bearer ${session?.access_token}`);
+		request.headers.set("cookie", event.request.headers.get("cookie") ?? "");
+		request.headers.set("authorization", `Bearer ${session?.access_token}`);
 	}
 
-	if (request.url.startsWith('http://localhost:8089/')) {
+	if (request.url.startsWith("http://localhost:8089/")) {
 		const token = await keycloak.getToken();
 		request.headers.set("Authorization", `Bearer ${token}`);
 		// console.log("KEYCLOAK CALL")

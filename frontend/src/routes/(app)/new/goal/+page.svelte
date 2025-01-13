@@ -42,8 +42,6 @@
 
 		return (await response.json()) as BackendTypes["ProjectDO"][];
 	}
-
-	$inspect(projects);
 </script>
 
 <form method="POST" use:enhance>

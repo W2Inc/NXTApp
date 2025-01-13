@@ -52,6 +52,7 @@ public class CursusController(
     [EndpointSummary("Get all exisiting cursi")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<CursusDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
@@ -66,7 +67,8 @@ public class CursusController(
     [HttpPost("/cursus")]
     [EndpointSummary("Create a cursus")]
     [EndpointDescription("")]
-    [ProducesResponseType(StatusCodes.Status200OK),]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CursusDO>> Create([FromBody] CursusPostRequestDTO data)
     {
         var cursus = await cursusService.CreateAsync(new()
@@ -87,6 +89,7 @@ public class CursusController(
     [EndpointSummary("Get a cursus")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CursusDO>> Get(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
@@ -99,8 +102,7 @@ public class CursusController(
     [EndpointSummary("Update a cursus")]
     [EndpointDescription("Updates a cursus partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CursusDO>> Update(Guid id, [FromBody] CursusPatchRequestDTO data)
     {
         var cursus = await cursusService.FindByIdAsync(id);
@@ -130,6 +132,7 @@ public class CursusController(
     [EndpointSummary("Delete a cursus")]
     [EndpointDescription("Cursus deletion is rarely done, and only result in deprecations if they have dependencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CursusDO>> Deprecate(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
@@ -145,6 +148,7 @@ public class CursusController(
     [EndpointSummary("Define the track / path of a cursus")]
     [EndpointDescription("Cursi can have a set track of goals ")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CursusDO>> SetTrack(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
@@ -190,6 +194,7 @@ public class CursusController(
     [Produces(contentType: "application/octet-stream")]
     [EndpointSummary("Get the track / path of a cursus")]
     [EndpointDescription("Lets you retrieve the binary data of the track ")]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetTrack(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);

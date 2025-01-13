@@ -14,6 +14,12 @@ export function cn(...inputs: ClassValue[]) {
 
 // ============================================================================
 
+export namespace Constants {
+	export const PER_PAGE = 10;
+}
+
+// ============================================================================
+
 /**
  * Encode a UUID V4/7 into a URL Friendly short format.
  * @param uuid The UUID

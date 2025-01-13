@@ -61,6 +61,7 @@ public class UserController(
     [EndpointDescription("If users dismiss a spotlight event, they won't getit shown in the future.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<SpotlightEventActionDO>> DismissSpotlight(Guid id)
     {
         var action = await userService.SetSpotlight(User.GetSID(), id, true);
@@ -97,6 +98,7 @@ public class UserController(
     [EndpointSummary("Mark a given notifications as read")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> MarkNotificationAsRead()
     {
         var user = await userService.FindByIdAsync(User.GetSID());
@@ -126,6 +128,7 @@ public class UserController(
     [EndpointSummary("Get all users.")]
     [EndpointDescription("All users that exists in the database.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [HttpGet("/users"), OutputCache(PolicyName = "1m")]
     public async Task<ActionResult<IEnumerable<UserDO>>> GetAll(
         [FromQuery] PaginationParams paging,
@@ -140,6 +143,7 @@ public class UserController(
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [HttpGet("/users/{id:guid}"), OutputCache(PolicyName = "1m")]
     public async Task<ActionResult<UserDO>> GetUser(Guid id)
     {
@@ -152,6 +156,7 @@ public class UserController(
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserDO>> UpdateUser(Guid id, [FromBody] UserPatchRequestDTO data)
     {
         if (User.GetSID() != id && !User.IsAdmin())
@@ -170,6 +175,7 @@ public class UserController(
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserDO>> UpdateUserDetails(Guid id, [FromBody] UserDetailsPutRequestDTO data)
     {
         var userID = User.GetSID();
@@ -198,6 +204,7 @@ public class UserController(
     [EndpointSummary("Gets the user defined biography")]
     [EndpointDescription("A user can have a markdown biography to present themselves to others.")]
     [ProducesResponseType<string>(StatusCodes.Status200OK, contentType: "text/plain")]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UserDO>> GetUserBio(Guid id)
     {
         var user = await userService.FindByIdAsync(id);
@@ -214,6 +221,7 @@ public class UserController(
     [EndpointDescription("A user can have a markdown biography to present themselves to others.")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetUserBio(Guid id, [FromBody] string markdown)
     {
         var user = await userService.UpsertDetails(id, new()
@@ -231,6 +239,7 @@ public class UserController(
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserCursusDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUserCursus(Guid id, [FromQuery] PaginationParams pagination)
     {
         var user = await userService.FindByIdAsync(id);
@@ -246,6 +255,7 @@ public class UserController(
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserGoalDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUserGoals(Guid id, [FromQuery] PaginationParams pagination)
     {
         var user = await userService.FindByIdAsync(id);
@@ -262,6 +272,7 @@ public class UserController(
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUserProjects(Guid id, [FromQuery] PaginationParams pagination)
     {
         var user = await userService.FindByIdAsync(id);
@@ -277,6 +288,7 @@ public class UserController(
     [EndpointSummary("Subscribe a user to a project")]
     [EndpointDescription("Subscribe a user to a project")]
     [ProducesResponseType<UserProjectDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SubscribeToProject(Guid id, Guid projectId)
     {
         var userID = User.GetSID();
@@ -291,6 +303,7 @@ public class UserController(
     [EndpointSummary("Unsubscribe a user from a project")]
     [EndpointDescription("Unsubscribe a user from a project")]
     [ProducesResponseType<UserProjectDO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UnsubscribeToProject(Guid id, Guid projectId)
     {
         var userID = User.GetSID();
@@ -315,6 +328,7 @@ public class UserController(
     [EndpointDescription(@"When user's subscribe to a project they create their own unique instances.
     Instance can also be *shared* amongst users as can do projects together.")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUserProjects(
         [FromQuery] PaginationParams pagination,
         [FromQuery] SortingParams sorting,
@@ -342,6 +356,7 @@ public class UserController(
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUserProject(Guid id, [FromQuery] PaginationParams pagination)
     {
         throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
@@ -352,6 +367,7 @@ public class UserController(
     [EndpointSummary("Set the Git info")]
     [EndpointDescription("Set the git info")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SetUserProjectGit(Guid id)
     {
         throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
@@ -362,6 +378,7 @@ public class UserController(
     [EndpointSummary("Send a invitation to a user project")]
     [EndpointDescription("Send a invitation to a user project")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> InviteUserToUserPorject(Guid id)
     {
         throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
@@ -372,6 +389,7 @@ public class UserController(
     [EndpointSummary("Decline a invitation to a user project")]
     [EndpointDescription("Decline a invitation to a user project")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeclineInvitationToUserPorject(Guid id)
     {
         throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");

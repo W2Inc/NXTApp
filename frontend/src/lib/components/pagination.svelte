@@ -4,7 +4,9 @@
 	import ArrowLeft from "lucide-svelte/icons/arrow-left";
 	import Button from "./ui/button/button.svelte";
 	interface Props {
-		count?: number;
+		/** How many pages in total */
+		pages?: number;
+		/** How many per page */
 		perPage?: number;
 		page?: number;
 		variant: "small" | "default";
@@ -14,20 +16,23 @@
 	}
 
 	let {
-		count = 100,
+		pages = 0,
 		perPage = 10,
-		page = $bindable(0),
+		page = $bindable(1),
 		variant = "default",
 		onNext,
 		onPrevious,
 		onPage,
 	}: Props = $props();
-
-	$inspect(page);
 </script>
 
 <div>
-	<Pagination.Root bind:page {count} {perPage} onPageChange={onPage}>
+	<Pagination.Root
+		bind:page
+		count={Math.floor(pages / perPage)}
+		{perPage}
+		onPageChange={onPage}
+	>
 		{#snippet children({ pages, currentPage })}
 			<Pagination.Content>
 				<Pagination.Item>

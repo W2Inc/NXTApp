@@ -37,6 +37,7 @@ public class ProjectController(
     [EndpointSummary("Get all exisiting projects")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<ProjectDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
@@ -45,8 +46,12 @@ public class ProjectController(
         [FromQuery(Name = "filter[name]")] string? name
     )
     {
-        var page = await projectService.GetAllAsync(paging, sorting);
+        var filters = new FilterDictionary()
+            .AddFilter("id", id)
+            .AddFilter("slug", slug)
+            .AddFilter("name", name);
 
+        var page = await projectService.GetAllAsync(paging, sorting, filters);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(c => new ProjectDO(c)));
     }
@@ -55,6 +60,8 @@ public class ProjectController(
     [EndpointSummary("Create a project")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesErrorResponseType(typeof(ProblemDetails))]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDto data)
     {
         Git git = new()
@@ -83,6 +90,7 @@ public class ProjectController(
     [EndpointSummary("Get a project")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectDO>> Get(Guid id)
     {
         var project = await projectService.FindByIdAsync(id);
@@ -96,7 +104,7 @@ public class ProjectController(
     [EndpointDescription("Updates a goal partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectDO>> Update(Guid id, [FromBody] ProjectPatchRequestDto data)
     {
         var project = await projectService.FindByIdAsync(id);
@@ -124,6 +132,7 @@ public class ProjectController(
     [EndpointSummary("Delete a project")]
     [EndpointDescription("Goal deletion is rarely done, and only result in deprecations if they have dependencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectDO>> Deprecate(Guid id)
     {
         var project = await projectService.FindByIdAsync(id);
@@ -157,6 +166,7 @@ public class ProjectController(
     [EndpointSummary("Get the projects that are part of this goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<LearningGoalDO>>> GetUsers(
         Guid id,
         [FromQuery] PaginationParams paging,
