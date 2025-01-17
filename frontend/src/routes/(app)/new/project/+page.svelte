@@ -19,12 +19,9 @@
 	import * as Alert from "$lib/components/ui/alert/index.js";
 
 	const { data } = $props();
-	const { enhance, form, errors, constraints } = useForm(data.form, true);
-	// const showDialog = $derived(
-	// 	($errors.gitUrl?.length ?? 0) > 0 || ($errors.gitBranch?.length ?? 0) > 0,
-	// );
-
-	// https://github.com/w2wizard.git
+	const { enhance, form, errors, constraints } = useForm(data.form, {
+		confirm: true
+	});
 </script>
 
 <!-- {#snippet ExternalResourc()}
