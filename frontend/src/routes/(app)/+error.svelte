@@ -15,6 +15,7 @@
 			class="rounded"
 			src="https://http.cat/{page.status}"
 			alt="Something went wrong..."
+			width="400px"
 		/>
 
 		<p class="text-muted-foreground text-sm">

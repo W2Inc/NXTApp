@@ -7,7 +7,6 @@
 	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import Control from "$lib/components/forms/control.svelte";
 	import { Input } from "$lib/components/ui/input";
-	import { useForm } from "$lib/components/forms/form.svelte";
 	import * as Table from "$lib/components/ui/table";
 
 	import { Textarea } from "$lib/components/ui/textarea";
@@ -17,22 +16,16 @@
 	import { encodeUUID64 } from "$lib/utils";
 	import { page } from "$app/state";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
+	import { useForm } from "$lib/utils/form.svelte.js";
 
 	const { data } = $props();
-	const { enhance, form, errors, constraints } = useForm(data.form, {
-		dataType: "json",
-		successMessage: data.edit ? "Goal has been updated" : "Goal has been created",
-		failMessage: data.edit ? "Failed to update goal" : "Failed to create goal",
-		confirm: {
-			title: data.edit ? "Update goal?" : "Create new goal?",
-			message: data.edit
-				? "Are you sure you want to update this goal?"
-				: "Are you sure you want to create this goal?",
-		},
-	});
+  const { enhance, form } = useForm(data.form, {
+    confirm: true
+  });
+
 
 	// TODO: Use project DO from form as initial
-	let projects = new SvelteSet<BackendTypes["ProjectDO"]>($form.projects);
+	// let projects = new SvelteSet<BackendTypes["ProjectDO"]>(form.d.projects);
 	async function searchGoals(query: string) {
 		const response = await fetch(
 			`/projects?${new URLSearchParams({
@@ -45,6 +38,7 @@
 </script>
 
 <form method="POST" use:enhance>
+	{JSON.stringify(form.constraints.public)}
 	<Base variant="center-navbar">
 		{#snippet left()}
 			<div class="flex h-min flex-col gap-2 rounded border p-4">
@@ -53,7 +47,7 @@
 					alt="logo"
 					class="max-h-64 rounded border object-cover"
 				/>
-				<Control label="Name" name="name" errors={$errors.name}>
+				<Control label="Name" name="name" errors={form.errors.name}>
 					<Input
 						id="name"
 						type="text"
@@ -61,9 +55,9 @@
 						autocorrect="off"
 						autocomplete={null}
 						placeholder="Cursus..."
-						aria-invalid={$errors.name ? "true" : undefined}
-						bind:value={$form.name}
-						{...$constraints.name}
+						aria-invalid={form.data.name ? "true" : undefined}
+						bind:value={form.data.name}
+						{...form.constraints.name}
 					/>
 				</Control>
 				<Separator />
@@ -71,30 +65,30 @@
 					label="Public"
 					name="public"
 					description="Set this to false if you don't wish for anyone to see this goal other than the creator."
-					errors={$errors.public}
+					errors={form.errors.public}
 				>
 					<Switch
 						id="public"
 						name="public"
-						required
-						aria-invalid={$errors.public ? "true" : undefined}
-						bind:checked={$form.public}
-						{...$constraints.public}
+						aria-invalid={form.errors.public ? "true" : undefined}
+						bind:checked={form.data.public}
+						value={form.data.public}
+						{...form.constraints.public}
 					/>
 				</Control>
 				<Control
 					label="Enabled"
 					name="enabled"
 					description="When true, other users can subscribe to this goal. If public is false people can still subscribe if they find the link."
-					errors={$errors.enabled}
+					errors={form.errors.enabled}
 				>
 					<Switch
 						id="enabled"
 						name="enabled"
-						required
-						aria-invalid={$errors.enabled ? "true" : undefined}
-						bind:checked={$form.enabled}
-						{...$constraints.enabled}
+						aria-invalid={form.errors.enabled ? "true" : undefined}
+						bind:checked={form.data.enabled}
+						value={form.data.enabled}
+						{...form.constraints.enabled}
 					/>
 				</Control>
 				<Button
@@ -116,38 +110,37 @@
 			<div class="flex flex-col gap-2 rounded border p-4">
 				<h1 class="center-content text-3xl">
 					<Trophy />
-					Goal: {$form.name}
+					Goal: {form.data.name}
 				</h1>
 
 				<Control
 					label="Goal Markdown"
 					name="markdown"
 					description="A more in depth styled markdown sheet to explain what this goal aims to teach someone."
-					errors={$errors.markdown}
+					errors={form.errors.markdown}
 				>
 					<Markdown
 						variant="editor"
 						placeholder="# This goal encompasses..."
-						bind:value={$form.markdown}
-						{...$constraints.markdown}
+						bind:value={form.data.markdown}
+						{...form.constraints.markdown}
 					/>
 				</Control>
 				<Control
 					label="Summary Description"
 					name="description"
 					description="A short description that tells other quickly what this project is about"
-					errors={$errors.description}
+					errors={form.errors.description}
 				>
 					<Textarea
 						id="description"
 						name="description"
 						autocomplete={null}
 						placeholder="A goal where you learn..."
-						required
 						class="max-h-32"
-						aria-invalid={$errors.description ? "true" : undefined}
-						bind:value={$form.description}
-						{...$constraints.description}
+						aria-invalid={form.errors.description ? "true" : undefined}
+						bind:value={form.data.description}
+						{...form.constraints.description}
 					/>
 				</Control>
 				<Separator />
@@ -156,14 +149,14 @@
 					label="Project Composition"
 					name="description"
 					description="You can manage which projects belong to this learning goal"
-					errors={$errors.projects?._errors}
+					errors={form.errors.projects}
 				>
 					<!-- <SearchGoal /> -->
 					<SearchApi
 						endpointFn={searchGoals}
 						placeholder="Search for projects..."
 						onSelect={(v) => {
-							projects.add(v);
+							form.data.projects.push(v.id)
 						}}
 					>
 						{#snippet item({ value })}
@@ -194,7 +187,7 @@
 								<Table.Head class="text-right">Actions</Table.Head>
 							</Table.Row>
 						</Table.Header>
-						<Table.Body>
+						<!-- <Table.Body>
 							{#each projects as p, i}
 								<Table.Row>
 									<Table.Cell class="font-medium">
@@ -235,7 +228,7 @@
 									</Table.Cell>
 								</Table.Row>
 							{/each}
-						</Table.Body>
+						</Table.Body> -->
 					</Table.Root>
 				</Control>
 				<!-- <Button variant="secondary">Add Project</Button> -->

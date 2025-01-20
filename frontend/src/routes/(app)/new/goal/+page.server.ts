@@ -3,12 +3,11 @@
 // See README in the root project for more information.
 // ============================================================================
 
-import { fail, superValidate } from "sveltekit-superforms";
 import type { Actions, PageServerLoad } from "./$types";
 import { zod } from "sveltekit-superforms/adapters";
 import { z } from "zod";
 import { error } from "@sveltejs/kit";
-import { Formkit } from "$lib/utils/form.svelte";
+import { problem, success, validate } from "$lib/utils/form.svelte";
 
 // ============================================================================
 
@@ -16,15 +15,15 @@ const schema = z.object({
 	name: z.string().nonempty(),
 	description: z.string().min(4).max(128),
 	markdown: z.string().min(128).max(2048),
-	public: z.boolean(),
-	enabled: z.boolean(),
-	projects: z.array(z.custom<BackendTypes["ProjectDO"]>()),
+	public: z.boolean().optional().default(false),
+	enabled: z.boolean().optional().default(false),
+	projects: z.string().array().default([]),
 });
 
 // ============================================================================
 
-export const load: PageServerLoad = async ({ locals, url }) => {
-	const form = await superValidate(zod(schema));
+export const load: PageServerLoad = async ({ locals, url, request }) => {
+	const form = await validate(request, schema);
 	const edit = url.searchParams.has("edit");
 	if (edit) {
 		const id = url.searchParams.get("edit")!;
@@ -43,7 +42,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 		form.data = {
 			...goal.data,
-			projects: projects.data,
+			projects: projects.data.map((p) => p.id),
 			public: true,
 			enabled: true,
 		};
@@ -57,7 +56,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		markdown: "",
 		public: true,
 		enabled: true,
-		projects: [],
+		projects: ["1"],
 	};
 
 	return { form };
@@ -67,35 +66,20 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 export const actions: Actions = {
 	update: async ({ request, locals }) => {
-		const form2 = await Formkit.validate(request, schema);
-		if (!form2.valid) {
-			return Formkit.problem({
-				status: 400,
-				title: "Nope"
-			}, form2);
+		const form = await validate(request, schema);
+		if (!form.valid) {
+			return problem(400, "Nope", { form });
 		}
 
-		const isBadValue = form2.errors.enabled; // String array of errors regarding this entry of the form.
-		if (isBadValue) {
-			return Formkit.problem({
-				status: 400,
-				title: "Something is wrong with this!",
-				detail: isBadValue
-			}, form2);
-		}
-
-		return Formkit.success("Project created!")
-
+		return success("Project created!", { form });
 	},
 	create: async ({ request, locals }) => {
-		const form = await superValidate(request, zod(schema));
+		const form = await validate(request, schema);
 		if (!form.valid) {
-			return fail(400, { form });
+			return problem(400, "Invalid form, check errors", { form });
 		}
 
-		console.log(form.data.projects);
-
-		const { response, data } = await locals.api.POST("/goals", {
+		const { response, data, error } = await locals.api.POST("/goals", {
 			body: {
 				name: form.data.name,
 				description: form.data.description,
@@ -105,13 +89,10 @@ export const actions: Actions = {
 			},
 		});
 
-		if (!response.ok) {
-			console.log(data);
-			return fail(response.status, data);
+		if (error) {
+			return problem(400, error.title ?? "Something went wrong!", { form });
 		}
 
-		return {
-			form,
-		};
+		return success("Project created!", { form });
 	},
 };

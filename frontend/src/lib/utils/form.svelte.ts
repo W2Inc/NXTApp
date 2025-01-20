@@ -98,7 +98,17 @@ function processFormDataWithArrays(formData: FormData): Record<string, unknown> 
 			}
 			(result[actualKey] as unknown[]).push(value);
 		} else if (!arrayFields.has(key)) {
-			result[key] = value;
+			if (value === "true" || value === "false") {
+				result[key] = value === "true";
+			} else if (value === "on") {
+				// Handle checkbox inputs
+				result[key] = true;
+			} else if (value === "") {
+				// Handle unchecked checkbox
+				result[key] = false;
+			} else {
+				result[key] = value;
+			}
 		}
 	}
 
@@ -139,7 +149,10 @@ function extractConstraints<T extends ZodRawShape>(
 			});
 		}
 
-		if (!def.isOptional && !def.isNullable) {
+		// TODO: Figure out some better ways to check this
+		if (def.defaultValue) {
+			fieldConstraints.required = false;
+		} else {
 			fieldConstraints.required = true;
 		}
 
@@ -173,7 +186,7 @@ export function useForm<T extends Record<string, unknown>>(
 			toast.dismiss();
 			toast.loading("Please wait...");
 
-			return async ({ result }) => {
+			return async ({ result, update }) => {
 				if (result.type === "success") {
 					toast.dismiss();
 					const formResultData = result.data as unknown as FormResult<T>;

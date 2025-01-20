@@ -1,8 +1,14 @@
+// ============================================================================
+// W2Inc, Amsterdam 2023-2024, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
+
 import type { z } from "zod";
 import { goto } from "$app/navigation";
 import { browser } from "$app/environment";
 import { SvelteURL, SvelteURLSearchParams } from "svelte/reactivity";
-import { tick } from "svelte";
+
+// ============================================================================
 
 export function useQuery<T extends z.ZodObject<any>>(initialUrl: string, schema: T) {
 	let state = $state<Partial<z.infer<T>>>({});
