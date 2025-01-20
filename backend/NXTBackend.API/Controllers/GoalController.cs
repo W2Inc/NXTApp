@@ -140,12 +140,32 @@ public class GoalController(
         return Ok(new LearningGoalDO(goal));
     }
 
-    [HttpGet("/goals/{id:guid}/projects"), AllowAnonymous]
+    [HttpGet("/goals/{id:guid}/projects")]
     [EndpointSummary("Get the projects that are part of this goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<ProjectDO>>> GetProjects(
+        Guid id,
+        [FromQuery] PaginationParams paging,
+        [FromQuery] SortingParams sorting
+    )
+    {
+        var goal = await goalService.FindByIdAsync(id);
+        if (goal is null)
+            return NotFound("Cursus not found");
+
+        var page = await goalService.GetProjects(goal, paging, sorting);
+        page.AppendHeaders(Response.Headers);
+        return Ok(page.Items.Select(p => new ProjectDO(p)));
+    }
+
+    [HttpPut("/goals/{id:guid}/projects")]
+    [EndpointSummary("Set the projects that are part of this goal")]
+    [EndpointDescription("")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<ProjectDO>>> SetProjects(
         Guid id,
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting

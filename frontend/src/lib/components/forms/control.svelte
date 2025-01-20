@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import { Label } from "$lib/components/ui/label";
+	import FileWarning from "lucide-svelte/icons/triangle-alert";
 
 	interface Props {
 		label: string;
@@ -21,11 +22,16 @@
 	<Label class="cursor-pointer" for={name}>
 		{label}
 	</Label>
-	<p class="mb-2 text-muted-foreground text-xs">
-		{description}
-	</p>
+	{#if description}
+		<p class="text-muted-foreground mb-2 text-xs">
+			{description}
+		</p>
+	{/if}
 	{@render children()}
-	<p class="text-destructive mb-2 text-sm">
-		{currentError}
-	</p>
+	{#if currentError}
+		<p class="text-destructive center-content mb-2 animate-pulse text-sm">
+			<FileWarning size={16} />
+			{currentError}
+		</p>
+	{/if}
 </div>

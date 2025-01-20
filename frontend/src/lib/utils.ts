@@ -4,6 +4,7 @@
 // ============================================================================
 
 import { type ClassValue, clsx } from "clsx";
+import { getContext, setContext } from "svelte";
 import { twMerge } from "tailwind-merge";
 
 // ============================================================================
@@ -51,3 +52,33 @@ export function decodeUUID64(encoded: string) {
 }
 
 // ============================================================================
+
+/**
+ * Provide and Inject mechanism, a thin wrapper.
+ * @param key A Key
+ * @returns Functions to get or set the context.
+ */
+export function useContext<T>(key: unknown) {
+	return {
+		get: () => getContext<T>(key),
+		set: (value: T) => setContext(key, value),
+	};
+}
+
+/**
+ * ENSURE that the promise is resolved safely and return the appropriate result.
+ *
+ * Allows for GO style error handling.
+ *
+ * @param promise The promise to ensure / await.
+ * @returns Either the result or an error.
+ */
+export async function ensure<T, E = Error>(
+	promise: Promise<T>,
+): Promise<[T, null] | [null, E]> {
+	try {
+		return [await promise, null];
+	} catch (error) {
+		return [null, error as E];
+	}
+}

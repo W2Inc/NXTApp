@@ -14,6 +14,7 @@ declare global {
 	type Problem = {
 		type: string;
 		title: string;
+		detail: string;
 		status: number;
 		traceId: string;
 	};
