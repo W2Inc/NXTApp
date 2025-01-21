@@ -2,7 +2,6 @@
 	import Control from "$lib/components/forms/control.svelte";
 	import Input from "$lib/components/ui/input/input.svelte";
 	import { useForm } from "$lib/utils/form.svelte";
-	import * as Table from "$lib/components/ui/table";
 	import Button from "$lib/components/ui/button/button.svelte";
 
 	const { data } = $props();
@@ -12,15 +11,16 @@
 </script>
 
 <form method="post" use:enhance>
+	<!-- Control is basically a label but also lets me do descriptions on fields and show errors -->
 	<Control label="Demo" name="demo" errors={form.errors.demo}>
 		<Input name="demo" type="text" bind:value={form.data.demo} />
 	</Control>
 
-	{#each form.data.projects as project, i}
-		<Control label={`Project ${i + 1}`} name="projects[]" errors={form.errors.projects}>
+	<Control label="Projects" name="projects[]" errors={form.errors.projects}>
+		{#each form.data.projects as project, i}
 			<Input name="projects[]" type="text" bind:value={form.data.projects[i]} />
-		</Control>
-	{/each}
+		{/each}
+	</Control>
 
-	<button type="submit">Submit</button>
+	<Button type="submit">Submit</Button>
 </form>

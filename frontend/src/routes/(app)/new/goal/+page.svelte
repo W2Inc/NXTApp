@@ -19,13 +19,12 @@
 	import { useForm } from "$lib/utils/form.svelte.js";
 
 	const { data } = $props();
-  const { enhance, form } = useForm(data.form, {
-    confirm: true
-  });
-
+	const { enhance, form } = useForm(data.form, {
+		confirm: true,
+	});
 
 	// TODO: Use project DO from form as initial
-	// let projects = new SvelteSet<BackendTypes["ProjectDO"]>(form.d.projects);
+	let projects = new SvelteSet<BackendTypes["ProjectDO"]>(data.projects);
 	async function searchGoals(query: string) {
 		const response = await fetch(
 			`/projects?${new URLSearchParams({
@@ -38,7 +37,6 @@
 </script>
 
 <form method="POST" use:enhance>
-	{JSON.stringify(form.constraints.public)}
 	<Base variant="center-navbar">
 		{#snippet left()}
 			<div class="flex h-min flex-col gap-2 rounded border p-4">
@@ -72,7 +70,6 @@
 						name="public"
 						aria-invalid={form.errors.public ? "true" : undefined}
 						bind:checked={form.data.public}
-						value={form.data.public}
 						{...form.constraints.public}
 					/>
 				</Control>
@@ -87,14 +84,13 @@
 						name="enabled"
 						aria-invalid={form.errors.enabled ? "true" : undefined}
 						bind:checked={form.data.enabled}
-						value={form.data.enabled}
 						{...form.constraints.enabled}
 					/>
 				</Control>
 				<Button
 					class="w-full"
 					type="submit"
-					formaction="?/{data.edit ? 'update' : 'create'}"
+					formaction="?/{data.edit ? `update?id=${data.id}` : 'create'}"
 				>
 					{#if data.edit}
 						Update
@@ -156,7 +152,7 @@
 						endpointFn={searchGoals}
 						placeholder="Search for projects..."
 						onSelect={(v) => {
-							form.data.projects.push(v.id)
+							projects.add(v);
 						}}
 					>
 						{#snippet item({ value })}
@@ -187,11 +183,11 @@
 								<Table.Head class="text-right">Actions</Table.Head>
 							</Table.Row>
 						</Table.Header>
-						<!-- <Table.Body>
+						<Table.Body>
 							{#each projects as p, i}
 								<Table.Row>
 									<Table.Cell class="font-medium">
-										<input hidden name="projects" value={$form.projects[i]} />
+										<input hidden name="projects[]" value={p.id} />
 										<a
 											class="capitalize underline decoration-wavy"
 											href="/users/{encodeUUID64(
@@ -228,7 +224,7 @@
 									</Table.Cell>
 								</Table.Row>
 							{/each}
-						</Table.Body> -->
+						</Table.Body>
 					</Table.Root>
 				</Control>
 				<!-- <Button variant="secondary">Add Project</Button> -->

@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ locals, url, request }) => {
 			}),
 		]);
 
-		if (!goal.data || !projects.data) {
+		if (goal.error || projects.error) {
 			error(404, "Goal or projects not found");
 		}
 
@@ -47,7 +47,7 @@ export const load: PageServerLoad = async ({ locals, url, request }) => {
 			enabled: true,
 		};
 
-		return { form, edit };
+		return { form, edit, projects: projects.data, id: goal.data?.id };
 	}
 
 	form.data = {
@@ -56,7 +56,7 @@ export const load: PageServerLoad = async ({ locals, url, request }) => {
 		markdown: "",
 		public: true,
 		enabled: true,
-		projects: ["1"],
+		projects: [],
 	};
 
 	return { form };
@@ -65,13 +65,32 @@ export const load: PageServerLoad = async ({ locals, url, request }) => {
 // ============================================================================
 
 export const actions: Actions = {
-	update: async ({ request, locals }) => {
+	update: async ({ request, locals, url }) => {
 		const form = await validate(request, schema);
 		if (!form.valid) {
 			return problem(400, "Nope", { form });
 		}
 
-		return success("Project created!", { form });
+		// if (!url.searchParams.has("edit")) {
+		// 	return problem(422, "No edit", { form });
+		// }
+		const id = url.searchParams.get("id")!;
+		const { response, data, error } = await locals.api.PATCH("/goals/{id}", {
+			params: {
+				path: {
+					id,
+				},
+			},
+			body: {
+				name: form.data.name,
+				description: form.data.description,
+				markdown: form.data.markdown,
+				public: form.data.public,
+				enabled: form.data.enabled,
+			},
+		});
+
+		return success("Goal updated!", { form });
 	},
 	create: async ({ request, locals }) => {
 		const form = await validate(request, schema);
