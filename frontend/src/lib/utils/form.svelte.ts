@@ -13,6 +13,7 @@ interface FormResult<T> {
 }
 
 export interface FormOptions {
+	/** Confirm before submitting the form request. */
 	confirm: ConfirmProps | boolean;
 }
 
@@ -36,6 +37,7 @@ export type FieldConstraints<T> = {
 
 export interface FormValidation<T> {
 	valid: boolean;
+	submitting: boolean;
 	data: T;
 	errors: FormErrors<T>;
 	constraints: FieldConstraints<T>;
@@ -185,8 +187,10 @@ export function useForm<T extends Record<string, unknown>>(
 
 			toast.dismiss();
 			toast.loading("Please wait...");
+			formState.submitting = true;
 
 			return async ({ result, update }) => {
+				formState.submitting = false;
 				if (result.type === "success") {
 					toast.dismiss();
 					const formResultData = result.data as unknown as FormResult<T>;

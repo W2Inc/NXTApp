@@ -17,6 +17,7 @@
 	import { page } from "$app/state";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
 	import { useForm } from "$lib/utils/form.svelte.js";
+	import { compile } from "svelte/compiler";
 
 	const { data } = $props();
 	const { enhance, form } = useForm(data.form, {
@@ -24,7 +25,7 @@
 	});
 
 	// TODO: Use project DO from form as initial
-	let projects = new SvelteSet<BackendTypes["ProjectDO"]>(data.projects);
+	let projects = new SvelteSet<BackendTypes["ProjectDO"]>(data.entity?.projects);
 	async function searchGoals(query: string) {
 		const response = await fetch(
 			`/projects?${new URLSearchParams({
@@ -34,6 +35,10 @@
 
 		return (await response.json()) as BackendTypes["ProjectDO"][];
 	}
+
+	const formaction = $derived(
+		data.entity ? `?/update` : "?/create",
+	);
 </script>
 
 <form method="POST" use:enhance>
@@ -53,7 +58,7 @@
 						autocorrect="off"
 						autocomplete={null}
 						placeholder="Cursus..."
-						aria-invalid={form.data.name ? "true" : undefined}
+						aria-invalid={form.errors.name ? "true" : undefined}
 						bind:value={form.data.name}
 						{...form.constraints.name}
 					/>
@@ -68,6 +73,7 @@
 					<Switch
 						id="public"
 						name="public"
+						required
 						aria-invalid={form.errors.public ? "true" : undefined}
 						bind:checked={form.data.public}
 						{...form.constraints.public}
@@ -82,17 +88,14 @@
 					<Switch
 						id="enabled"
 						name="enabled"
+						required
 						aria-invalid={form.errors.enabled ? "true" : undefined}
 						bind:checked={form.data.enabled}
 						{...form.constraints.enabled}
 					/>
 				</Control>
-				<Button
-					class="w-full"
-					type="submit"
-					formaction="?/{data.edit ? `update?id=${data.id}` : 'create'}"
-				>
-					{#if data.edit}
+				<Button class="w-full" type="submit" disabled={form.submitting} {formaction}>
+					{#if data.entity}
 						Update
 					{:else}
 						Create
@@ -133,6 +136,7 @@
 						name="description"
 						autocomplete={null}
 						placeholder="A goal where you learn..."
+						required
 						class="max-h-32"
 						aria-invalid={form.errors.description ? "true" : undefined}
 						bind:value={form.data.description}
@@ -145,7 +149,7 @@
 					label="Project Composition"
 					name="description"
 					description="You can manage which projects belong to this learning goal"
-					errors={form.errors.projects}
+					errors={form.errors.projects?._errors}
 				>
 					<!-- <SearchGoal /> -->
 					<SearchApi
@@ -187,7 +191,7 @@
 							{#each projects as p, i}
 								<Table.Row>
 									<Table.Cell class="font-medium">
-										<input hidden name="projects[]" value={p.id} />
+										<input hidden name="projects[]" value={form.data.projects[i]} />
 										<a
 											class="capitalize underline decoration-wavy"
 											href="/users/{encodeUUID64(

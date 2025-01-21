@@ -12,6 +12,7 @@ import { problem, success, validate } from "$lib/utils/form.svelte";
 // ============================================================================
 
 const schema = z.object({
+	goalId: z.string().uuid().optional(),
 	name: z.string().nonempty(),
 	description: z.string().min(4).max(128),
 	markdown: z.string().min(128).max(2048),
@@ -24,8 +25,7 @@ const schema = z.object({
 
 export const load: PageServerLoad = async ({ locals, url, request }) => {
 	const form = await validate(request, schema);
-	const edit = url.searchParams.has("edit");
-	if (edit) {
+	if (url.searchParams.has("edit")) {
 		const id = url.searchParams.get("edit")!;
 		const [goal, projects] = await Promise.all([
 			locals.api.GET("/goals/{id}", {
@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ locals, url, request }) => {
 			}),
 		]);
 
-		if (goal.error || projects.error) {
+		if (!goal.data || !projects.data || goal.error || projects.error) {
 			error(404, "Goal or projects not found");
 		}
 
@@ -47,7 +47,13 @@ export const load: PageServerLoad = async ({ locals, url, request }) => {
 			enabled: true,
 		};
 
-		return { form, edit, projects: projects.data, id: goal.data?.id };
+		return {
+			form,
+			entity: {
+				goal: goal.data,
+				projects: projects.data,
+			},
+		};
 	}
 
 	form.data = {
@@ -71,14 +77,10 @@ export const actions: Actions = {
 			return problem(400, "Nope", { form });
 		}
 
-		// if (!url.searchParams.has("edit")) {
-		// 	return problem(422, "No edit", { form });
-		// }
-		const id = url.searchParams.get("id")!;
 		const { response, data, error } = await locals.api.PATCH("/goals/{id}", {
 			params: {
 				path: {
-					id,
+					id: form.data.goalId!,
 				},
 			},
 			body: {
