@@ -5,7 +5,12 @@ import Sonda from "sonda/sveltekit";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [sveltekit(), enhancedImages() /*mkcert()*/, , Sonda({ server: true })],
+	plugins: [
+		sveltekit(),
+		enhancedImages(),
+		/*mkcert(),*/
+		Sonda({ server: true, open: false }),
+	],
 	ssr: {
 		noExternal: ["three"],
 	},

@@ -952,7 +952,75 @@ export interface paths {
                 };
             };
         };
-        put?: never;
+        /** Set the projects that are part of this goal */
+        put: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProjectDO"][];
+                        "application/json": components["schemas"]["ProjectDO"][];
+                        "text/json": components["schemas"]["ProjectDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -1873,6 +1941,376 @@ export interface paths {
         };
         trace?: never;
     };
+    "/rubrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all exisiting rubrics */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                    "filter[project_id]"?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RubricDO"][];
+                        "application/json": components["schemas"]["RubricDO"][];
+                        "text/json": components["schemas"]["RubricDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create a rubric
+         * @description Creates a new rubric
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReviewPostRequestDTO"];
+                    "application/*+json": components["schemas"]["ReviewPostRequestDTO"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RubricDO"];
+                        "application/json": components["schemas"]["RubricDO"];
+                        "text/json": components["schemas"]["RubricDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/rubrics/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a specific rubric */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RubricDO"];
+                        "application/json": components["schemas"]["RubricDO"];
+                        "text/json": components["schemas"]["RubricDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /**
+         * Delete a goal
+         * @description Goal deletion is rarely done, and only result in deprecations if they have dependencies
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RubricDO"];
+                        "application/json": components["schemas"]["RubricDO"];
+                        "text/json": components["schemas"]["RubricDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /**
+         * Update a goal
+         * @description Updates a goal partially based on the provided fields.
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReviewPatchRequestDto"];
+                    "text/json": components["schemas"]["ReviewPatchRequestDto"];
+                    "application/*+json": components["schemas"]["ReviewPatchRequestDto"];
+                    "text/plain": components["schemas"]["ReviewPatchRequestDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["RubricDO"];
+                        "application/json": components["schemas"]["RubricDO"];
+                        "text/json": components["schemas"]["RubricDO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        trace?: never;
+    };
     "/search/{category}": {
         parameters: {
             query?: never;
@@ -1988,9 +2426,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["UserDO"];
-                        "application/json": components["schemas"]["UserDO"];
-                        "text/json": components["schemas"]["UserDO"];
+                        "text/plain": components["schemas"]["UserDO2"];
+                        "application/json": components["schemas"]["UserDO2"];
+                        "text/json": components["schemas"]["UserDO2"];
                     };
                 };
                 /** @description Unauthorized */
@@ -2484,9 +2922,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["UserDO"][];
-                        "application/json": components["schemas"]["UserDO"][];
-                        "text/json": components["schemas"]["UserDO"][];
+                        "text/plain": components["schemas"]["UserDO2"][];
+                        "application/json": components["schemas"]["UserDO2"][];
+                        "text/json": components["schemas"]["UserDO2"][];
                     };
                 };
                 /** @description Bad Request */
@@ -2562,9 +3000,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["UserDO"];
-                        "application/json": components["schemas"]["UserDO"];
-                        "text/json": components["schemas"]["UserDO"];
+                        "text/plain": components["schemas"]["UserDO2"];
+                        "application/json": components["schemas"]["UserDO2"];
+                        "text/json": components["schemas"]["UserDO2"];
                     };
                 };
                 /** @description Bad Request */
@@ -2637,9 +3075,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["UserDO"];
-                        "application/json": components["schemas"]["UserDO"];
-                        "text/json": components["schemas"]["UserDO"];
+                        "text/plain": components["schemas"]["UserDO2"];
+                        "application/json": components["schemas"]["UserDO2"];
+                        "text/json": components["schemas"]["UserDO2"];
                     };
                 };
                 /** @description Bad Request */
@@ -2717,9 +3155,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["UserDO"];
-                        "application/json": components["schemas"]["UserDO"];
-                        "text/json": components["schemas"]["UserDO"];
+                        "text/plain": components["schemas"]["UserDO2"];
+                        "application/json": components["schemas"]["UserDO2"];
+                        "text/json": components["schemas"]["UserDO2"];
                     };
                 };
                 /** @description Bad Request */
@@ -3959,6 +4397,21 @@ export interface components {
         };
         /** @enum {unknown} */
         ReviewState: "Pending" | "InProgress" | "Finished";
+        RubricDO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            name: string;
+            markdown: string;
+            public: boolean;
+            enabled: boolean;
+            project: components["schemas"]["ProjectDO2"];
+            creator: components["schemas"]["UserDO"];
+            gitInfo: components["schemas"]["GitDO"];
+        };
         SpotlightEvent: {
             title?: string;
             description?: string;
@@ -4002,6 +4455,18 @@ export interface components {
             cursus: components["schemas"]["CursusDO2"];
         };
         UserDO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            login: string;
+            displayName: string | null;
+            avatarUrl: string | null;
+            details: components["schemas"]["UserDetailsDO"];
+        } | null;
+        UserDO2: {
             /** Format: uuid */
             id: string;
             /** Format: date-time */

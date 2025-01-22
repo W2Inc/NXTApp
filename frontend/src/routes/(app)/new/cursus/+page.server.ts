@@ -4,10 +4,10 @@
 // ============================================================================
 
 import { z } from "zod";
-import type { Actions, PageServerLoad } from "./$types";
-import { superValidate } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 import { XGraphV1 } from "@w2inc/xgraph";
+import type { Actions, PageServerLoad } from "./$types";
+import { validate } from "$lib/utils/form.svelte";
 
 // ============================================================================
 
@@ -50,8 +50,8 @@ const schema = z.object({
 	kind: z.enum(["Dynamic", "Fixed"])
 });
 
-export const load: PageServerLoad = async ({ locals }) => {
-	const form = await superValidate(zod(schema));
+export const load: PageServerLoad = async ({ locals, request }) => {
+	const form = await validate(request, schema);
 
 	form.data = {
 		name: "",

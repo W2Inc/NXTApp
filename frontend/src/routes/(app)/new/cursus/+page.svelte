@@ -7,7 +7,6 @@
 	import Base from "$lib/components/base.svelte";
 	import Input from "$lib/components/ui/input/input.svelte";
 	import Control from "$lib/components/forms/control.svelte";
-	import { useForm } from "$lib/components/forms/form.svelte";
 	import Pen from "lucide-svelte/icons/pen";
 	import CircleHelp from "lucide-svelte/icons/circle-help";
 
@@ -22,6 +21,7 @@
 	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
 	import ProjectNode from "$lib/components/nodes/project-node.svelte";
+	import { useForm } from "$lib/utils/form.svelte.js";
 
   const nodeTypes = {
     selectorNode: ProjectNode
@@ -92,17 +92,19 @@
 
 
 	const { data } = $props();
-	const { enhance, form, errors, constraints } = useForm(data.form);
+	const { enhance, form } = useForm(data.form, {
+		confirm: true
+	});
 
 </script>
 
 <form method="POST" use:enhance>
-	<input type="hidden" name="description" value={$form.description} />
-	<input type="hidden" name="markdown" value={$form.markdown} />
+	<input type="hidden" name="description" value={form.data.description} />
+	<input type="hidden" name="markdown" value={form.data.markdown} />
 	<Base>
 		{#snippet left()}
 			<div>
-				<Control label="Name" name="name" errors={$errors.name}>
+				<Control label="Name" name="name" errors={form.errors.name}>
 					<Input
 						id="name"
 						type="text"
@@ -110,9 +112,9 @@
 						autocorrect="off"
 						autocomplete={null}
 						placeholder="Cursus..."
-						aria-invalid={$errors.name ? "true" : undefined}
-						bind:value={$form.name}
-						{...$constraints.name}
+						aria-invalid={form.errors.name ? "true" : undefined}
+						bind:value={form.data.name}
+						{...form.constraints.name}
 					/>
 				</Control>
 				<Dialog.Root>
@@ -142,15 +144,15 @@
 							</Dialog.Description>
 						</Dialog.Header>
 						<!-- Branch -->
-						<Control label="Markdown" name="markdown" errors={$errors.description}>
+						<Control label="Markdown" name="markdown" errors={form.errors.description}>
 							<Markdown
 								variant="editor"
 								placeholder="# This cursus is about..."
-								bind:value={$form.markdown}
-								{...$constraints.markdown}
+								bind:value={form.data.markdown}
+								{...form.constraints.markdown}
 							/>
 						</Control>
-						<Control label="Description" name="description" errors={$errors.description}>
+						<Control label="Description" name="description" errors={form.errors.description}>
 							<Textarea
 								id="description"
 								name="description"
@@ -158,9 +160,9 @@
 								placeholder="A cursus where you learn..."
 								required
 								class="max-h-32"
-								aria-invalid={$errors.description ? "true" : undefined}
-								bind:value={$form.description}
-								{...$constraints.description}
+								aria-invalid={form.errors.description ? "true" : undefined}
+								bind:value={form.data.description}
+								{...form.constraints.description}
 							/>
 						</Control>
 					</Dialog.Content>
@@ -170,30 +172,30 @@
 					label="Public"
 					name="public"
 					description="Set this to false if you don't wish for anyone to see this cursus other than the creator."
-					errors={$errors.public}
+					errors={form.errors.public}
 				>
 					<Switch
 						id="public"
 						name="public"
 						required
-						aria-invalid={$errors.public ? "true" : undefined}
-						bind:checked={$form.public}
-						{...$constraints.public}
+						aria-invalid={form.errors.public ? "true" : undefined}
+						bind:checked={form.data.public}
+						{...form.constraints.public}
 					/>
 				</Control>
 				<Control
 					label="Enabled"
 					name="enabled"
 					description="When true, other users can subscribe to this cursus."
-					errors={$errors.enabled}
+					errors={form.errors.enabled}
 				>
 					<Switch
 						id="enabled"
 						name="enabled"
 						required
-						aria-invalid={$errors.enabled ? "true" : undefined}
-						bind:checked={$form.enabled}
-						{...$constraints.enabled}
+						aria-invalid={form.errors.enabled ? "true" : undefined}
+						bind:checked={form.data.enabled}
+						{...form.constraints.enabled}
 					/>
 				</Control>
 				<Separator class="my-3" />
@@ -201,11 +203,11 @@
 					label="Cursus Variant"
 					name="enabled"
 					description="A cursus can be of different variants such as Fixed where it uses a defined track or dynamic where the track is defined over time by usage."
-					errors={$errors.kind}
+					errors={form.errors.kind}
 				>
-					<Select.Root type="single" bind:value={$form.kind}>
+					<Select.Root type="single" bind:value={form.data.kind}>
 						<Select.Trigger>
-							{$form.kind}
+							{form.data.kind}
 						</Select.Trigger>
 						<Select.Content>
 							{#each ["Dynamic", "Fixed"] as type}

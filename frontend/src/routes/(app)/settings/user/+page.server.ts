@@ -8,6 +8,7 @@ import { fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { zod } from "sveltekit-superforms/adapters";
 import { message, superValidate } from "sveltekit-superforms";
+import { validate } from "$lib/utils/form.svelte";
 
 // ============================================================================
 
@@ -28,10 +29,10 @@ const schema = z.object({
 
 // ============================================================================
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, request }) => {
 	// TODO: Fill in the form data with already known user data...
 	const session = await locals.auth();
-	const form = await superValidate(zod(schema));
+	const form = await validate(request, schema);
 
 	form.data = {
 		id: session?.user?.id ?? "",
@@ -51,7 +52,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions = {
 	default: async ({ request }) => {
-		const form = await superValidate(request, zod(schema));
+		const form = await validate(request, schema);
 		if (!form.valid) {
 			return fail(400, { form });
 		}

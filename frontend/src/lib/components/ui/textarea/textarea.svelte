@@ -22,7 +22,7 @@
 		)}
 		{...restProps}
 	></textarea>
-	<div class="flex justify-between flex-row-reverse">
+	<div class="flex flex-row-reverse justify-between">
 		{#if maxlength && value && typeof value === "string"}
 			<span
 				class="inline-flex items-center gap-1 text-xs"
