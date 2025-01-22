@@ -83,3 +83,20 @@ export async function ensure<T, E = Error>(
 		return [null, error as E];
 	}
 }
+
+/**
+ * Tiny wrapper to create a deferred function.
+ * @param fn The function to run.
+ * @returns None
+ * @example
+ *
+ * ```ts
+ * for (let i = 0; i < 3; i++) {
+ *		using _ = defer(() => console.log("deferred"));
+ *		console.log(i);
+ * }
+ *```
+ */
+export function defer(fn: Function) {
+	return { [Symbol.dispose]: fn };
+}
