@@ -17,43 +17,58 @@
 	const { data } = $props();
 </script>
 
-{#await data.project}
+<!-- {#await data.project}
 	<p>Loading...</p>
-{:then projects}
-	{@const project = projects.data.at(0) }
-	<div class="m-auto max-w-6xl px-4 py-2">
-		<div class="grid grid-cols-1 gap-x-2 pt-4 md:grid-cols-[256px,1fr]">
-			<div class="flex max-h-fit flex-col gap-1 rounded border p-4">
-				<img
-					src="https://github.com/w2wizard.png"
-					alt="logo"
-					class="max-h-64 rounded border object-cover"
-				/>
+{:then project} -->
+<div class="m-auto max-w-6xl px-4 py-2">
+	<div class="grid grid-cols-1 gap-x-2 pt-4 md:grid-cols-[256px,1fr]">
+		<div class="flex max-h-fit flex-col gap-1 rounded border p-4">
+			<img
+				src="https://github.com/w2wizard.png"
+				alt="logo"
+				class="max-h-64 rounded border object-cover"
+			/>
+			{#if data.userProject}
 				<Separator class="my-1" />
 				<EvalRatio />
-				<Separator class="my-1" />
-				<a class="center-content text-primary underline" href="#">
-					<Box size={16} />
-					Project Source
-				</a>
-				<a class="center-content text-primary underline" href="#">
-					<Archive size={16} />
-					Resources
-				</a>
-				<Separator class="my-1" />
-				<a class="center-content text-primary underline" href="#">
-					<Archive size={16} />
-					Resources
-				</a>
-			</div>
-			<Separator class="my-2 md:hidden" />
-			<div class="flex flex-col gap-2">
+			{/if}
+			<Separator class="my-1" />
+			<a class="center-content text-primary underline" href="#">
+				<Box size={16} />
+				Project Source
+			</a>
+			<a class="center-content text-primary underline" href="#">
+				<Archive size={16} />
+				Resources
+			</a>
+			<Separator class="my-1" />
+			<a class="center-content text-primary underline" href="#">
+				<Archive size={16} />
+				Resources
+			</a>
+			<Separator class="my-1" />
+			<form method="post">
+				<Button type="submit" class="w-full">
+					{#if !data.userProject}
+						Subscribe
+					{:else}
+						Unsubscribe
+					{/if}
+				</Button>
+			</form>
+		</div>
+		<Separator class="my-2 md:hidden" />
+		<div class="flex flex-col gap-2">
+			{#if data.project}
 				<div class="flex flex-col gap-3 overflow-auto rounded border p-4">
 					<h1 class="center-content gap-2 text-2xl font-bold">
 						<Users size={36} />
-						{project?.name}
+						{data.project.name}
 					</h1>
 					<ul class="center-content">
+						{#each data.userProject. as }
+
+						{/each}
 						<li>
 							<Avatar.Root class="rounded">
 								<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
@@ -102,8 +117,9 @@
 					</div>
 				</div>
 				<Separator />
-				<div class="overflow-auto rounded border p-4">Markdown content goes here.</div>
-			</div>
+			{/if}
+			<div class="overflow-auto rounded border p-4">Markdown content goes here.</div>
 		</div>
 	</div>
-{/await}
+</div>
+<!-- {/await} -->

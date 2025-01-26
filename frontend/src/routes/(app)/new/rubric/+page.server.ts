@@ -17,7 +17,7 @@ const schema = z.object({
 	markdown: z.string().min(128).max(2048),
 	public: z.boolean().optional().default(false),
 	enabled: z.boolean().optional().default(false),
-	projects: z.string().array().default([]),
+	projects: z.string().array().max(1).default([]),
 });
 
 // ============================================================================

@@ -14,6 +14,7 @@
 	import Sparkles from "lucide-svelte/icons/sparkles";
 	import Trophy from "lucide-svelte/icons/trophy";
 	import Archive from "lucide-svelte/icons/archive";
+	import FileBox from "lucide-svelte/icons/file-box";
 	import Ellipsis from "lucide-svelte/icons/ellipsis";
 
 	import Button from "./ui/button/button.svelte";
@@ -26,6 +27,29 @@
 	import Search from "./search/search.svelte";
 	import type { IconLink } from "$lib/types";
 	import { encodeUUID64 } from "$lib/utils";
+
+	const links: IconLink[] = [
+		{
+			icon: Archive,
+			title: "New Project",
+			href: `/new/project`,
+		},
+		{
+			icon: Trophy,
+			title: "New Goal",
+			href: `/new/goal`,
+		},
+		{
+			icon: Sparkles,
+			title: "New Cursus",
+			href: `/new/cursus`,
+		},
+		{
+			icon: FileBox,
+			title: "New Rubric",
+			href: `/new/rubric`,
+		},
+	];
 </script>
 
 {#snippet link({ icon, href, title }: IconLink)}
@@ -69,7 +93,6 @@
 			<span class="sr-only">Toggle theme</span>
 		</Button>
 		{#if page.data.session}
-
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					<Button variant="outline" size="icon">
@@ -79,27 +102,11 @@
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content class="">
 					<DropdownMenu.Group>
-						<DropdownMenu.Item>
-							{@render link({
-								icon: Archive,
-								title: "New Project",
-								href: `/new/project`,
-							})}
-						</DropdownMenu.Item>
-						<DropdownMenu.Item>
-							{@render link({
-								icon: Trophy,
-								title: "New Goal",
-								href: `/new/goal`,
-							})}
-						</DropdownMenu.Item>
-						<DropdownMenu.Item>
-							{@render link({
-								icon: Sparkles,
-								title: "New Cursus",
-								href: `/new/cursus`,
-							})}
-						</DropdownMenu.Item>
+						{#each links as obj}
+							<DropdownMenu.Item>
+								{@render link(obj)}
+							</DropdownMenu.Item>
+						{/each}
 					</DropdownMenu.Group>
 					<DropdownMenu.Separator />
 					<DropdownMenu.Item>

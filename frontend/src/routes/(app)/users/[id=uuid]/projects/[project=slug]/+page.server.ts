@@ -1,22 +1,52 @@
+// ============================================================================
+// W2Inc, Amsterdam 2023-2024, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
+
 import { error } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
+import type { PageServerLoad, RouteParams } from "./$types";
 import { decodeUUID64 } from "$lib/utils";
 
+// ============================================================================
+
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const fetchProjects = async () => {
-		const { data, error: err } = await locals.api.GET("/projects", {
+	// First try to get the user's project subscription
+	const { data: userProjectData, error: userProjectError } = await locals.api.GET("/users/{id}/projects", {
+		params: {
+			path: { id: decodeUUID64(params.id) },
+			query: { "filter[slug]": params.project },
+		},
+	});
+
+	let userProject = userProjectData?.at(0);
+	let project = userProject?.project;
+
+	const {  } = await locals.api.GET("/users/projects/{id}/reviews", {
+		params: {
+			query: { "filter[slug]": params.project },
+		},
+	});
+
+
+	// If we get a 404, it means the user isn't subscribed, so let's try to fetch the project directly
+	if (userProjectError?.status === 404) {
+		const { data: projectData, error: projectError } = await locals.api.GET("/projects", {
 			params: {
-				query: {
-					"filter[slug]": params.project,
-				},
+				query: { "filter[slug]": params.project },
 			},
 		});
 
-		if (err) error(err.status!, err.title ?? "Something went wrong...");
-		return {
-			data: data!,
-		};
-	};
+		if (projectError) {
+			error(projectError.status || 500, projectError.title || "Something went wrong...");
+		}
 
-	return { project: fetchProjects() };
+		project = projectData?.at(0);
+	} else if (userProjectError) {
+		error(userProjectError.status || 500, userProjectError.title || "Something went wrong...");
+	}
+
+	return {
+		userProject,
+		project: project!
+	};
 };

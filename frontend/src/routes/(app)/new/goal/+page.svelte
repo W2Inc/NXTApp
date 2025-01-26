@@ -17,7 +17,6 @@
 	import { page } from "$app/state";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
 	import { useForm } from "$lib/utils/form.svelte.js";
-	import { compile } from "svelte/compiler";
 
 	const { data } = $props();
 	const { enhance, form } = useForm(data.form, {

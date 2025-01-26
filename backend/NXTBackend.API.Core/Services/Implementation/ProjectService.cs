@@ -14,21 +14,19 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// </summary>
 public sealed class ProjectService : BaseService<Project>, IProjectService
 {
-    private readonly DatabaseContext ctx;
 
     public ProjectService(DatabaseContext ctx) : base(ctx)
     {
-        this.ctx = ctx;
-        DefineFilter<string>("slug", (q, slug) => q.Where((p) => p.Slug == slug));
-        DefineFilter<string>("name", (q, name) => q.Where((p) => EF.Functions.Like(p.Name, $"%{name}%")));
+        DefineFilter<string>("slug", (q, slug) => q.Where(p => p.Slug == slug));
+        DefineFilter<string>("name", (q, name) => q.Where(p => EF.Functions.Like(p.Name, $"%{name}%")));
     }
 
     public async Task<Project> CreateProjectWithGit(Project project, Git git)
     {
-        var gitInfo = await ctx.GitInfo.AddAsync(git);
-        var newProject = await ctx.Projects.AddAsync(project);
+        var gitInfo = await _context.GitInfo.AddAsync(git);
+        var newProject = await _context.Projects.AddAsync(project);
         newProject.Entity.GitInfoId = gitInfo.Entity.Id;
-        await ctx.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return newProject.Entity;
     }
 

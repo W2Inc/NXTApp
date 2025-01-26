@@ -51,10 +51,15 @@ public class RubricsController(
     public async Task<ActionResult<IEnumerable<RubricDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
+        [FromQuery(Name = "filter[name]")] string? name,
         [FromQuery(Name = "filter[project_id]")] string? projectId
     )
     {
-        var page = await rubricService.GetAllAsync(paging, sorting);
+        var filters = new FilterDictionary()
+            .AddFilter("name", name)
+            .AddFilter("project_id", projectId);
+
+        var page = await rubricService.GetAllAsync(paging, sorting, filters);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(c => new RubricDO(c)));
     }

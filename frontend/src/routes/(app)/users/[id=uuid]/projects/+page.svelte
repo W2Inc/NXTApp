@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 	import Pagination from "$lib/components/pagination.svelte";
 	import Taskcard from "$lib/components/cards/task-card.svelte";
 	import Input from "$lib/components/ui/input/input.svelte";
@@ -12,28 +12,23 @@
 	import { invalidate, invalidateAll } from "$app/navigation";
 	import { tick } from "svelte";
 	import { useDebounce } from "$lib/utils/debounce.svelte.js";
+	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
 
 	const { data } = $props();
 	const debounce = useDebounce();
 	const query = useQuery(
-		$page.url.href,
 		z.object({
 			page: z.number().default(0),
-			q: z.string().optional(),
-			filter: z.enum(["available", "subscribed"]).optional(),
+			search: z.string().optional(),
+			subscribed: z.boolean().default(true).optional(),
 		}),
 	);
 
-	let pagination = $state<PaginationMeta>();
-	$effect(() => {
-		if (data.projects) {
-			// data.projects.then((result) => (pagination = result.pagination));
-		}
-	});
-
 	function searchProject(search: string) {
 		if (search.length > 0) {
-			query.write("q", search);
+			query.write("search", search);
+		} else {
+			query.write("search", undefined);
 		}
 	}
 </script>
@@ -45,51 +40,64 @@
 <Base>
 	{#snippet left()}
 		<Tabs.Root
-			value="subscribed"
-			onValueChange={(v) => query.write("filter", v as "available" | "subscribed")}
+			value={query.read("subscribed") ? "subscribed" : "all"}
+			onValueChange={(v) => query.write("subscribed", v === "subscribed")}
 		>
 			<Tabs.List class="w-full">
 				<Tabs.Trigger class="w-full" value="subscribed">Subscribed</Tabs.Trigger>
-				<Tabs.Trigger class="w-full" value="available">Available</Tabs.Trigger>
+				<Tabs.Trigger class="w-full" value="all">All</Tabs.Trigger>
 			</Tabs.List>
 		</Tabs.Root>
-		<form>
-			<Label for="search-cursus">Search</Label>
-			<Input
-				id="search-cursus"
-				type="search"
-				placeholder="Search for cursus"
-				oninput={(v) => debounce(searchProject, v.currentTarget.value.trim())}
-			/>
-		</form>
+		<Label for="search-cursus">Search</Label>
+		<Input
+			id="search-cursus"
+			type="search"
+			value={query.read("search")}
+			placeholder="Search for cursus"
+			oninput={(v) => debounce(searchProject, v.currentTarget.value.trim())}
+		/>
 	{/snippet}
 
 	{#snippet right()}
 		<div class="p-6">
 			<menu class="flex justify-between">
 				<h1 class="text-2xl font-bold">Projects</h1>
-				<Pagination
+				<!-- <Pagination
 					pages={pagination?.pages ?? 1}
 					perPage={pagination?.perPage ?? 10}
 					variant="default"
 					onPage={(p) => query.write("page", p)}
-				/>
+				/> -->
 			</menu>
 			<Separator class="my-2" />
 			<div class="flex flex-wrap gap-4">
 				{#await data.projects}
-					Loading...
-				{:then projects}
-					{#if projects.data.length > 0}
-						{#each projects.data as project}
+					<Skeleton class="h-28 w-28" />
+				{:then dataProjects}
+					{#if query.read("subscribed") === false}
+						{@const projects = dataProjects as BackendTypes["ProjectDO"][]}
+						{#if projects.length > 0}
+							{#each projects as project}
+								<Taskcard
+									href="projects/{project.slug}"
+									type="project"
+									title={project.name}
+								/>
+							{/each}
+						{:else}
+							Nothing...
+						{/if}
+					{:else}
+						{@const userProjects = dataProjects as BackendTypes["UserProjectDO"][]}
+						{#each userProjects as userProject}
+							{@const project = userProject.project!}
 							<Taskcard
 								href="projects/{project.slug}"
 								type="project"
 								title={project.name}
+								state={userProject.state}
 							/>
 						{/each}
-					{:else}
-						Nothing...
 					{/if}
 				{/await}
 			</div>

@@ -40,6 +40,7 @@ const routes: Record<string, boolean> = {
 	"/signout": false,
 	"/signin": false,
 	"/settings": true,
+	"/new": true
 };
 
 /** Default per page fetch size */

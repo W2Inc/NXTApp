@@ -1956,6 +1956,7 @@ export interface paths {
                     Size?: number;
                     OrderBy?: string;
                     Order?: components["schemas"]["Order"];
+                    "filter[name]"?: string;
                     "filter[project_id]"?: string;
                 };
                 header?: never;
@@ -3534,11 +3535,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Get the projects this user is subscribed to. */
         get: {
             parameters: {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                    "filter[name]"?: string;
+                    /** @description Give projects that are in the following state */
+                    "filter[state]"?: string;
+                    /** @description Give projects that are not in the following state */
+                    "filter[not[state]]"?: string;
+                    /** @description Filter the user projects based on the project slug */
+                    "filter[slug]"?: string;
                 };
                 header?: never;
                 path: {

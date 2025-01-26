@@ -17,8 +17,17 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// Temporary service to search for users, projects, cursi and learning goals.
 /// Later on this service SHOULD be converted to use a search engine like ElasticSearch.
 /// </summary>
-public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), IUserService
+public sealed class UserService : BaseService<User>, IUserService
 {
+    public UserService(DatabaseContext ctx) : base(ctx)
+    {
+        // DefineFilter<bool>("subscribed", (q, subscribed) => {
+        //     q.Where((p) => )
+        // });
+
+        // DefineFilter<string>("slug", (q, slug) => q.Where((p) => p. == slug));
+
+    }
 
     /// <inheritdoc/>
     public async Task<User?> FindByLoginAsync(string login)
@@ -143,10 +152,7 @@ public sealed class UserService(DatabaseContext ctx) : BaseService<User>(ctx), I
             .Include(up => up.Project)
             .Include(up => up.GitInfo)
             .Where(up => up.Members.Any(m => m.UserId == userId) && up.ProjectId == projectId)
-            .FirstOrDefaultAsync();
-
-        if (userProject is null)
-            throw new ServiceException("User project does not exist");
+            .FirstOrDefaultAsync() ?? throw new ServiceException("User project does not exist");
         if (userProject.State != TaskState.Active)
         {
             string detail = $"The project can't be unsubscribed from when in the following state: {userProject.State}";

@@ -269,19 +269,34 @@ public class UserController(
 
 
     [HttpGet("/users/{id:guid}/projects")]
-    [EndpointSummary("")]
+    [EndpointSummary("Get the projects this user is subscribed to.")]
     [EndpointDescription("")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetUserProjects(Guid id, [FromQuery] PaginationParams pagination)
+    public async Task<IActionResult> GetUserProjects(
+        Guid id,
+        [FromQuery] PaginationParams paging,
+        [FromQuery] SortingParams sorting,
+        [FromQuery(Name = "filter[name]"), Description("Filter user projects based on the project name")] string? name,
+        [FromQuery(Name = "filter[state]"), Description("Give projects that are in the following state")] TaskState? state,
+        [FromQuery(Name = "filter[not[state]]"), Description("Give projects that are not in the following state")] TaskState? notState,
+        [FromQuery(Name = "filter[slug]"), Description("Filter the user projects based on the project slug")] string? slug
+    )
     {
         var user = await userService.FindByIdAsync(id);
         if (user is null)
             return NotFound("User not found");
 
-        return Ok();
-        // var cursi = await userService.GetUserProjects(user, pagination);
-        // return Ok(cursi.Items.Select(c => new UserProjectDO(c)));
+        var filters = new FilterDictionary()
+            .AddFilter("name", name)
+            .AddFilter("state", state)
+            .AddFilter("user_id", id)
+            .AddFilter("not_state", notState)
+            .AddFilter("slug", slug);
+
+        var page = await userProjectService.GetAllAsync(paging, sorting, filters);
+        page.AppendHeaders(Response.Headers);
+        return Ok(page.Items.Select(e => new UserProjectDO(e)));
     }
 
     [HttpPost("/users/{id:guid}/projects/{projectId:guid}")]

@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ }) => {
 	});
 
 	return {
-		rubric: await file.text(),
+		rubric: file.text(),
 		code,
 	}
 };
