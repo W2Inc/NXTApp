@@ -19,7 +19,6 @@
 
 	import Button from "./ui/button/button.svelte";
 	import { page } from "$app/state";
-	import { SignIn, SignOut } from "@auth/sveltekit/components";
 	import { toggleMode } from "mode-watcher";
 	import * as DropdownMenu from "./ui/dropdown-menu";
 	import * as Avatar from "./ui/avatar";
@@ -139,7 +138,7 @@
 								{@render link({
 									icon: User,
 									title: "Profile",
-									href: `/users/${encodeUUID64(page.data.session.user?.id!)}`,
+									href: `/users/${encodeUUID64(page.data.session?.user_id)}`,
 								})}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>
@@ -180,19 +179,19 @@
 							})}
 						</DropdownMenu.Item>
 						<DropdownMenu.Separator />
-						<SignOut className="w-full grid" provider="keycloak" signOutPage="signout">
-							<Button variant="destructive" class="w-full" inert slot="submitButton">
+						<form class="grid w-full" method="post" action="/auth/keycloak?/signout">
+							<Button type="submit" variant="destructive" class="w-full">
 								<LogOut />
 								Logout
 							</Button>
-						</SignOut>
+						</form>
 					</DropdownMenu.Group>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		{:else}
-			<SignIn provider="keycloak" signInPage="signin">
-				<Button inert slot="submitButton">Signin</Button>
-			</SignIn>
+			<form method="post" action="/auth/keycloak?/signin">
+				<Button type="submit">Signin</Button>
+			</form>
 		{/if}
 	</div>
 </header>

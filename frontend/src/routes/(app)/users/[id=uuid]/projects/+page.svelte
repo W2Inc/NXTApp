@@ -31,6 +31,10 @@
 			query.write("search", undefined);
 		}
 	}
+
+	if (!page.data.session) {
+		query.write("subscribed", true);
+	}
 </script>
 
 <svelte:head>
@@ -39,15 +43,18 @@
 
 <Base>
 	{#snippet left()}
-		<Tabs.Root
-			value={query.read("subscribed") ? "subscribed" : "all"}
-			onValueChange={(v) => query.write("subscribed", v === "subscribed")}
-		>
-			<Tabs.List class="w-full">
-				<Tabs.Trigger class="w-full" value="subscribed">Subscribed</Tabs.Trigger>
-				<Tabs.Trigger class="w-full" value="all">All</Tabs.Trigger>
-			</Tabs.List>
-		</Tabs.Root>
+		{#if page.data.session}
+			<Tabs.Root
+				value={query.read("subscribed") ? "subscribed" : "all"}
+				onValueChange={(v) => query.write("subscribed", v === "subscribed")}
+			>
+				<Tabs.List class="w-full">
+					<Tabs.Trigger class="w-full" value="subscribed">Subscribed</Tabs.Trigger>
+					<Tabs.Trigger class="w-full" value="all">All</Tabs.Trigger>
+				</Tabs.List>
+			</Tabs.Root>
+		{/if}
+
 		<Label for="search-cursus">Search</Label>
 		<Input
 			id="search-cursus"
@@ -73,32 +80,31 @@
 			<div class="flex flex-wrap gap-4">
 				{#await data.projects}
 					<Skeleton class="h-28 w-28" />
-				{:then dataProjects}
-					{#if query.read("subscribed") === false}
-						{@const projects = dataProjects as BackendTypes["ProjectDO"][]}
-						{#if projects.length > 0}
-							{#each projects as project}
+				{:then projects}
+					{#if projects && projects.length > 0}
+						{#each projects as p}
+							{#if query.read("subscribed") ?? false}
+								{@const userProject = p as BackendTypes["UserProjectDO"]}
+								<Taskcard
+									href="projects/{userProject.project?.slug}"
+									type="project"
+									title={userProject.project?.name}
+									state={userProject.state}
+								/>
+							{:else}
+								{@const project = p as BackendTypes["ProjectDO"]}
 								<Taskcard
 									href="projects/{project.slug}"
 									type="project"
 									title={project.name}
 								/>
-							{/each}
-						{:else}
-							Nothing...
-						{/if}
-					{:else}
-						{@const userProjects = dataProjects as BackendTypes["UserProjectDO"][]}
-						{#each userProjects as userProject}
-							{@const project = userProject.project!}
-							<Taskcard
-								href="projects/{project.slug}"
-								type="project"
-								title={project.name}
-								state={userProject.state}
-							/>
+							{/if}
 						{/each}
+					{:else}
+						Nothing here...
 					{/if}
+				{:catch}
+					Something went wrong...
 				{/await}
 			</div>
 		</div>

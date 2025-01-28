@@ -66,9 +66,9 @@
 						{data.project.name}
 					</h1>
 					<ul class="center-content">
-						{#each data.userProject. as }
+						<!-- {#each data.userProject. as }
 
-						{/each}
+						{/each} -->
 						<li>
 							<Avatar.Root class="rounded">
 								<Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />

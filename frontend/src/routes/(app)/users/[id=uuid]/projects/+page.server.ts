@@ -28,6 +28,7 @@ async function fetchProjects(locals: App.Locals, url: URL, id: string) {
 		});
 
 		if (err) throw new Error(err.title || "Something went wrong...");
+		console.log(data)
 		return data!;
 	} else {
 		const { data, error: err, response } = await locals.api.GET("/users/{id}/projects", {
@@ -45,6 +46,7 @@ async function fetchProjects(locals: App.Locals, url: URL, id: string) {
 
 
 		if (err) throw new Error(err.title || "Something went wrong...");
+		console.log(data)
 		return data;
 	}
 }

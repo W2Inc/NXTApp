@@ -5,7 +5,7 @@
 
 import { sequence } from "@sveltejs/kit/hooks";
 import { error, redirect, type Handle, type RequestEvent } from "@sveltejs/kit";
-import { handle as authenticationHandle } from "./lib/auth";
+import { handle as authenticationHandle } from "./lib/oauth";
 import { dev } from "$app/environment";
 import type { paths as BackendRoutes } from "$lib/api/types";
 import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
@@ -17,14 +17,21 @@ import {
 	KC_ISSUER,
 } from "$env/static/private";
 import KeycloakClient from "$lib/keycloak";
+import { useRetryAfter } from "$lib/utils/limiter.svelte";
 
 // ============================================================================
 
-// TODO: Ok idk why but I assume this is due to self signed certificates
-// and I don't want to fuck around with this shit until the end.
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = String(!dev);
 
 const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
+
+/**
+ * Global rate limiting, you can use this rate limiter across pages or use
+ * a new rate limiter to determine rate limits per page if so desired.
+ */
+const limiter = useRetryAfter({
+	IP: [10, "h"],
+	IPUA: [60, "m"],
+});
 
 /**
  * Here you can configure the overal routes that need which permission in order
@@ -49,20 +56,19 @@ export const PER_PAGE = 10;
 // ============================================================================
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
-	const session = await event.locals.auth();
-	if (session === undefined || session === null) {
-		const url = `/${event.url.pathname.split("/")[1]}`;
-		if (routes[url]) {
-			redirect(301, "/");
-		}
-	}
-	// TODO: Check for roles or anything to authorize the user to access stuff
+	const session = await event.locals.session();
+	// if (session === null) {
+	// 	const url = `/${event.url.pathname.split("/")[1]}`;
+	// 	if (routes[url]) {
+	// 		redirect(301, "/");
+	// 	}
+	// }
 	return resolve(event);
 };
 
 /** Create the universal api fetch function */
 const apiHandle: Handle = async ({ event, resolve }) => {
-	const session = await event.locals.auth();
+	const session = await event.locals.session();
 	event.locals.api = createClient<BackendRoutes>({
 		baseUrl: dev ? "http://localhost:3001" : "https://localhost:3000",
 		mode: "cors",
@@ -81,6 +87,21 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+const otherHandle: Handle = async ({ event, resolve }) => {
+	event.locals.limiter = limiter;
+	event.setHeaders({
+		"x-powered-by": `Bun ${Bun.version}`,
+		"x-application": "APP_NAME",
+	});
+
+	const limit = await limiter.check(event);
+	if (limit.isLimited) {
+		error(429, `Too many requests, try again in ${limit.retryAfter} seconds.`);
+	}
+
+	return resolve(event);
+}
+
 // First handle authentication, then authorization
 // Each function acts as a middleware, receiving the request handle
 // And returning a handle which gets passed to the next function
@@ -88,6 +109,7 @@ export const handle: Handle = sequence(
 	authenticationHandle,
 	authorizationHandle,
 	apiHandle,
+	otherHandle
 );
 
 // ============================================================================
@@ -96,8 +118,8 @@ export const handle: Handle = sequence(
 // it would be stuck on the first client request's cookie.
 export async function handleFetch({ fetch, request, event }) {
 	if (request.url.startsWith("http://localhost:3001/")) {
-		const session = await event.locals.auth();
-		request.headers.set("cookie", event.request.headers.get("cookie") ?? "");
+		const session = await event.locals.session();
+		// request.headers.set("cookie", event.request.headers.get("cookie") ?? "");
 		request.headers.set("authorization", `Bearer ${session?.access_token}`);
 	}
 
