@@ -1,72 +1,96 @@
-# Monolithic App
-This will be the code for the first prototype.
-Original by Oscar, Nicolas and Me
+# NXT Application
 
-## Setup backend
+A modern, self-hostable, and fully open-source education platform designed to change how we approach learning. NXT aims to break free from traditional educational constraints by offering a flexible, peer-driven learning environment that emphasizes practical experience and collaboration.
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/your-repo/NXTBackend.git
-    ```
+> **Note**: The application is still a work in progress and not complete nor production ready.
 
-2. Navigate to the project directory:
-    ```bash
-    cd NXTBackend
-    ```
+## 🚀 Project Structure
 
-3. Restore the dependencies:
-    ```bash
-    dotnet restore
-    ```
+```ts
+NXTApp/
+├── backend/              # .NET Core backend
+│   ├── NXTBackend.API   # Main API project
+│   ├── Core             # Core business logic
+│   └── Infrastructure   # Data access, external services
+└── frontend/            # SvelteKit frontend
+    ├── src/             # Source code
+    └── static/          # Static assets
 
-4. Build the project:
-    ```bash
-    dotnet build
-    ```
 
-5. Run the application:
-    ```bash
-    dotnet run --project "NXTBackend.API"
-    ```
+# 🛠️ Technology Stack
+## Backend
+- .NET 8.0
+- Entity Framework Core
+- OpenAPI/Swagger
+- JWT Authentication
 
-6. Open your browser and navigate to `http://localhost:3000` to access the API.
+## Frontend
+- SvelteKit
+- TypeScript
+- OpenAPI Client
+- TailwindCSS
 
-## Setup frontend
+# 🚦 Getting Started
+## Prerequisites
+- .NET 8.0 SDK
+- Bun Runtime
+- PostgreSQL
+- Minio (for self-hosted S3 storage)
+- Keycloak
 
-> **Note**: PLEASE, make sure that your backend app is running, the frontend will generate the
-> necessary type definitons and therefor requires the backend.
+## Environment Variables
+
+```env
+# Keycloak Configuration
+KC_CLIENT_ID="intra"
+KC_CLIENT_SECRET="..."
+KC_ISSUER="..."
+KC_COOKIE_NAME="kc.session"
+
+# Application
+APP_NAME="App"
+
+# S3 Storage (Minio)
+S3_BUCKET="..."
+S3_ACCESS_KEY_ID="..."
+S3_SECRET_ACCESS_KEY="..."
+S3_ENDPOINT="..."
+```
+
+## Backend
+```sh
+cd /Users/wizard/Developer/NXTApp/backend
+dotnet restore
+dotnet build
+dotnet run --project "NXTBackend.API" --launch-profile "http"
+```
+
+### Migrations
 
 ```sh
-# Yes, you can also use npm if you so desire.
-cd frontend
-pnpm install
-pnpm dev -- --host
+cd /Users/wizard/Developer/NXTApp/backend
+dotnet ef migrations add <MigrationName> --project "NXTBackend.API.Infrastructure" -s "NXTBackend.API"
+dotnet ef database update --project "NXTBackend.API.Infrastructure" -s "NXTBackend.API"
 ```
 
-## Setup BLOB S3 Storage
+## Frontend
 
-In order to avoid polluting the git history with binary files, we use a BLOB storage to store the files.
-For this we use Cloudflare R2, which is a S3 compatible storage service.
-
-First you wanna download a CLI tool to interact with the storage. We recommend using the AWS CLI.
-
-### Mac/Linux/Windows
-```bash
-brew install awscli
+```sh
+cd /Users/wizard/Developer/NXTApp/frontend
+bun install
+bun --bun run dev
 ```
 
-```bash
-sudo apt install awscli
-```
 
-```bash
-choco install awscli
-```
+# 🚀 Deployment
+The recommended deployment method is via Coolify. This provides:
 
-- Run `aws configure` and enter the secrets provided to you by someone else.
-- Open `.aws/config` in editor and set:
-    ```
-    endpoint_url = https://3d9912875c41651a332a963ea5e04c9f.eu.r2.cloudflarestorage.com
-    ```
-- Run `aws s3 ls s3://oolp-dev/` to list all files in the bucket.
-- Run `aws s3 cp --recursive static/ s3://oolp-dev/` to upload all files in the `static` folder to the bucket.
+- Automatic deployments from Git
+- Environment variable management
+- Container orchestration
+- SSL certificate management
+
+## Minio Setup
+- Deploy Minio instance
+- Create bucket and access credentials
+- Configure S3 environment variables
