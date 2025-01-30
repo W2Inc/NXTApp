@@ -8,35 +8,38 @@ A modern, self-hostable, and fully open-source education platform designed to ch
 
 ```ts
 NXTApp/
-├── backend/              # .NET Core backend
-│   ├── NXTBackend.API   # Main API project
-│   ├── Core             # Core business logic
-│   └── Infrastructure   # Data access, external services
+├── backend/                           # .NET Core backend
+│   ├── NXTBackend.API                 # Controllers, Ratelimiter, Middleware, ...
+│   ├── NXTBackend.API.Core            # Core business logic
+│   ├── NXTBackend.API.Domain          # Models for the database
+│   ├── NXTBackend.API.Infrastructure  # Database setup, migrations, contexts, ...
+│   └── NXTBackend.API.Model           # Request and response models (DO's, DTO's, ...)
 └── frontend/            # SvelteKit frontend
     ├── src/             # Source code
     └── static/          # Static assets
-
+```
 
 # 🛠️ Technology Stack
 ## Backend
-- .NET 8.0
+- .NET 9.0
 - Entity Framework Core
 - OpenAPI/Swagger
-- JWT Authentication
+- Keycloak Authentication
 
 ## Frontend
 - SvelteKit
+- Bun
 - TypeScript
 - OpenAPI Client
 - TailwindCSS
 
 # 🚦 Getting Started
 ## Prerequisites
-- .NET 8.0 SDK
+- .NET 9.0 SDK
 - Bun Runtime
-- PostgreSQL
+- PostgreSQL @ 16.0
 - Minio (for self-hosted S3 storage)
-- Keycloak
+- Keycloak @ 26.0.0
 
 ## Environment Variables
 
@@ -83,12 +86,16 @@ bun --bun run dev
 
 
 # 🚀 Deployment
-The recommended deployment method is via Coolify. This provides:
+The recommended deployment method is via Coolify. Coolify is an open source self hostable 'vercel' essentially that gives you a several templates to spin up services.
 
+This provides:
 - Automatic deployments from Git
 - Environment variable management
 - Container orchestration
 - SSL certificate management
+- Backups
+- ...
+  
 
 ## Minio Setup
 - Deploy Minio instance
