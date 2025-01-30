@@ -5,28 +5,32 @@
 </script>
 
 <div>
-	{#if page.status == 401}
+	<!-- {#if page.status == 401}
 		<Button href="/auth/login">
 			Login
 			<LogIn />
 		</Button>
-	{:else}
-		<img
-			class="rounded"
-			src="https://http.cat/{page.status}"
-			alt="Something went wrong..."
-			width="400px"
-		/>
+	{:else} -->
+	<img
+		class="rounded"
+		src="https://http.cat/{page.status}"
+		alt="Something went wrong..."
+		width="400px"
+	/>
 
-		<p class="text-muted-foreground text-sm">
+	<p class="text-muted-foreground text-sm">
+		{#if page.status >= 500}
 			Silly cats! Rest assured this issue has been logged & reported.
-		</p>
+		{:else if page.status >= 400}
+			Oops! Something wasn't quite right with that request.
+		{/if}
+	</p>
 
-		<Button href="..">
-			Go back
-			<Home />
-		</Button>
-	{/if}
+	<Button href="..">
+		Go back
+		<Home />
+	</Button>
+	<!-- {/if} -->
 </div>
 
 <style>

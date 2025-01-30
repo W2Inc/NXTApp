@@ -168,6 +168,7 @@ public class UserController(
 
         user.DisplayName = data.DisplayName ?? user.DisplayName;
         user.AvatarUrl = data.AvatarUrl ?? user.AvatarUrl;
+        await userService.UpdateAsync(user);
         return Ok(new UserDO(user));
     }
 

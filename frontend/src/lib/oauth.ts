@@ -14,6 +14,7 @@ import { redirect, type Action, type Handle } from "@sveltejs/kit";
 import { KeyCloak } from "arctic";
 import jsonwebtoken from "jsonwebtoken";
 import { dev } from "$app/environment";
+import { hasRole, type Role } from "./utils/roles.svelte";
 
 // ============================================================================
 
@@ -75,6 +76,7 @@ export interface Session {
 	email: string;
 	user_id: string;
 	access_token: string;
+	roles: Role[];
 }
 
 declare global {
@@ -91,6 +93,7 @@ declare global {
 // ============================================================================
 
 export const handle: Handle = ({ event, resolve }) => {
+	// TODO: this isn't ideal but it will work for now...
 	const jwt = event.cookies.get(KC_COOKIE_NAME);
 	event.locals.session = async () => {
 		try {
@@ -99,12 +102,14 @@ export const handle: Handle = ({ event, resolve }) => {
 			}
 
 			const token = jsonwebtoken.decode(jwt, { complete: true });
-
 			if (!token || typeof token === "string" || !token.payload) {
 				return null;
 			}
+			const payload = token.payload as jsonwebtoken.JwtPayload;
+			if (payload.exp && payload.exp * 1000 < Date.now()) {
+				return null;
+			}
 
-			const payload = token.payload as any;
 			const session: Session = {
 				email_verified: payload.email_verified || false,
 				name: payload.name || "",
@@ -113,6 +118,8 @@ export const handle: Handle = ({ event, resolve }) => {
 				family_name: payload.family_name || "",
 				email: payload.email || "",
 				user_id: payload.sub || "",
+				// TODO: Get via ENV as this is technically a variable name depending on what the client is named...
+				roles: payload.resource_access?.intra?.roles ?? [],
 				access_token: jwt,
 			};
 

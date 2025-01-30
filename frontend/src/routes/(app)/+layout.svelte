@@ -33,7 +33,7 @@
 	<Toaster closeButton richColors theme={$mode} duration={8000} />
 	<Header />
 	<main>
-		{@render children()}
+		{@render children?.()}
 	</main>
 </Tooltip.Provider>
 

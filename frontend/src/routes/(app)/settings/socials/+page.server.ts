@@ -6,8 +6,6 @@
 import { z } from "zod";
 import { error, fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { zod } from "sveltekit-superforms/adapters";
-import { message, superValidate } from "sveltekit-superforms";
 import { getGithubClientInfo, initiateGithubAuth } from "./github";
 import { generateState, GitHub } from "arctic";
 
@@ -31,14 +29,14 @@ const schema = z.object({
 // ============================================================================
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.auth();
+	const session = await locals.session();
 	const [userIdentities, realmIdentities] = await Promise.all([
 		await locals.keycloak.GET(
 			"/admin/realms/{realm}/users/{user-id}/federated-identity",
 			{
 				params: {
 					path: {
-						"user-id": session?.user?.id!,
+						"user-id": session!.user_id,
 						realm: "student",
 					},
 				},
@@ -72,7 +70,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions = {
 	link: async ({ request, locals, url }) => {
-		const session = await locals.auth();
 		const form = await request.formData();
 		const provider = form.get("providerId")?.toString();
 		if (!provider) return fail(500);
@@ -111,7 +108,7 @@ export const actions = {
 	},
 	// Unlink a social account
 	unlink: async ({ request, locals }) => {
-		const session = await locals.auth();
+		const session = await locals.session();
 		const form = await request.formData();
 		const provider = form.get("providerId")?.toString();
 		if (!provider) return fail(500);
@@ -123,7 +120,7 @@ export const actions = {
 					path: {
 						realm: "student",
 						provider: provider,
-						"user-id": session?.user?.id!,
+						"user-id": session!.user_id,
 					},
 				},
 			},

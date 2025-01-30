@@ -4,7 +4,6 @@
 // ============================================================================
 
 import { z } from "zod";
-import { zod } from "sveltekit-superforms/adapters";
 import { XGraphV1 } from "@w2inc/xgraph";
 import type { Actions, PageServerLoad } from "./$types";
 import { validate } from "$lib/utils/form.svelte";

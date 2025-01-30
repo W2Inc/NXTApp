@@ -18,6 +18,12 @@ export function cn(...inputs: ClassValue[]) {
 export namespace Constants {
 	export const PER_PAGE = 10;
 	export const FALLBACK_IMG = "https://avatars.githubusercontent.com/u/0?v=4";
+	export const ROLES = [
+		"staff:view",
+		"staff:manage",
+		"creator",
+		"student",
+	]; // TODO: A nicer way to streamline this ?
 }
 
 // ============================================================================

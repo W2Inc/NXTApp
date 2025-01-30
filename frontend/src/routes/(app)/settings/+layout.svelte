@@ -9,22 +9,22 @@
 	let recentNavigations = [
 		{
 			icon: User,
-			href: "./user",
+			href: "user",
 			title: "Profile",
 		},
 		{
 			icon: Computer,
-			href: "./sessions",
+			href: "sessions",
 			title: "Sessions",
 		},
 		{
 			icon: FlaskConical,
-			href: "./features",
+			href: "features",
 			title: "Features",
 		},
 		{
 			icon: Socials,
-			href: "./socials",
+			href: "socials",
 			title: "Socials",
 		},
 	];

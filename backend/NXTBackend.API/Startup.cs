@@ -45,7 +45,7 @@ public static class Startup
         services.AddEndpointsApiExplorer();
         services.AddControllers().AddJsonOptions(o =>
         {
-            o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+            o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
 
         services.AddControllers(options =>

@@ -12,7 +12,8 @@
 					"bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
 				outline:
 					"border-input bg-background hover:bg-accent hover:text-accent-foreground border shadow-sm",
-				secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm",
+				secondary:
+					"bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
 			},
@@ -36,11 +37,13 @@
 		WithElementRef<HTMLAnchorAttributes> & {
 			variant?: ButtonVariant;
 			size?: ButtonSize;
+			loading?: boolean;
 		};
 </script>
 
 <script lang="ts">
 	import { cn } from "$lib/utils.js";
+	import LoaderCircle from "lucide-svelte/icons/loader-circle";
 
 	let {
 		class: className,
@@ -49,6 +52,7 @@
 		ref = $bindable(null),
 		href = undefined,
 		type = "button",
+		loading,
 		children,
 		...restProps
 	}: ButtonProps = $props();
@@ -61,15 +65,22 @@
 		{href}
 		{...restProps}
 	>
+		{#if loading}
+			<LoaderCircle />
+		{/if}
 		{@render children?.()}
 	</a>
 {:else}
 	<button
 		bind:this={ref}
+		disabled={loading}
 		class={cn(buttonVariants({ variant, size, className }))}
 		{type}
 		{...restProps}
 	>
+		{#if loading}
+			<LoaderCircle class="animate-spin"/>
+		{/if}
 		{@render children?.()}
 	</button>
 {/if}

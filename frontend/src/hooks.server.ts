@@ -4,7 +4,7 @@
 // ============================================================================
 
 import { sequence } from "@sveltejs/kit/hooks";
-import { error, redirect, type Handle, type RequestEvent } from "@sveltejs/kit";
+import { error, redirect, type Handle, type RequestEvent, type ServerInit } from "@sveltejs/kit";
 import { handle as authenticationHandle } from "./lib/oauth";
 import { dev } from "$app/environment";
 import type { paths as BackendRoutes } from "$lib/api/types";
@@ -13,15 +13,15 @@ import createClient from "openapi-fetch";
 import {
 	KC_CLIENT_ID,
 	KC_CLIENT_SECRET,
-	KC_COOKIE_NAME,
 	KC_ISSUER,
 } from "$env/static/private";
 import KeycloakClient from "$lib/keycloak";
 import { useRetryAfter } from "$lib/utils/limiter.svelte";
+import type { Role } from "$lib/utils/roles.svelte";
 
 // ============================================================================
 
-
+// TODO: Replace with arctic client...
 const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
 
 /**
@@ -34,35 +34,45 @@ const limiter = useRetryAfter({
 });
 
 /**
- * Here you can configure the overal routes that need which permission in order
+ * Here you can configure the overal routes that need which role in order
  * to be accessed.
- *
- * AT THIS TIME, any route can be visited by anyone. But later on the idea
- * is to configure as such that it is permission based.
- *
- * e.g: "/": [] or "/admin": [view:admin] or "/settings": [view:settings]
  */
-const routes: Record<string, boolean> = {
-	"/": false,
-	"/signout": false,
-	"/signin": false,
-	"/settings": true,
-	"/new": true
+const routes: Record<string, Role[]> = {
+	"/": [],
+	"/settings": [],
+	"/auth": [],
+	"/users": ["student"],
+	"/new": ["staff"],
 };
 
-/** Default per page fetch size */
-export const PER_PAGE = 10;
+// export const init: ServerInit = async () => {
+// 	console.log(Bun.s3);
+// };
 
 // ============================================================================
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const session = await event.locals.session();
-	// if (session === null) {
-	// 	const url = `/${event.url.pathname.split("/")[1]}`;
-	// 	if (routes[url]) {
-	// 		redirect(301, "/");
-	// 	}
-	// }
+	const url = `/${event.url.pathname.split("/")[1]}`;
+	const requiredRoles = routes[url];
+
+	if (!requiredRoles) {
+		// If route is not defined in routes, default to restricted access
+		error(403, "Access denied: Route not configured");
+	}
+	if (requiredRoles.length === 0) {
+		// If route requires no roles, allow access
+		return resolve(event);
+	}
+	if (!session) {
+		// Check if user is authenticated when roles are required
+		error(401, "Authentication required");
+	}
+	if (!requiredRoles.some(role => session.roles.includes(role))) {
+		// Check if user has required roles
+		error(403, "Insufficient permissions");
+	}
+
 	return resolve(event);
 };
 
@@ -87,7 +97,7 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-const otherHandle: Handle = async ({ event, resolve }) => {
+const ratelimit: Handle = async ({ event, resolve }) => {
 	event.locals.limiter = limiter;
 	event.setHeaders({
 		"x-powered-by": `Bun ${Bun.version}`,
@@ -100,16 +110,16 @@ const otherHandle: Handle = async ({ event, resolve }) => {
 	}
 
 	return resolve(event);
-}
+};
 
 // First handle authentication, then authorization
 // Each function acts as a middleware, receiving the request handle
 // And returning a handle which gets passed to the next function
 export const handle: Handle = sequence(
+	ratelimit,
 	authenticationHandle,
 	authorizationHandle,
 	apiHandle,
-	otherHandle
 );
 
 // ============================================================================

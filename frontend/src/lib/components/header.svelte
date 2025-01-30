@@ -4,6 +4,7 @@
 	import DollarSign from "lucide-svelte/icons/dollar-sign";
 	import Github from "lucide-svelte/icons/github";
 	import LogOut from "lucide-svelte/icons/log-out";
+	import LogIn from "lucide-svelte/icons/log-in";
 	import Menu from "lucide-svelte/icons/menu";
 	import Moon from "lucide-svelte/icons/moon";
 	import Plus from "lucide-svelte/icons/plus";
@@ -26,6 +27,7 @@
 	import Search from "./search/search.svelte";
 	import type { IconLink } from "$lib/types";
 	import { encodeUUID64 } from "$lib/utils";
+	import { hasRole } from "$lib/utils/roles.svelte";
 
 	const links: IconLink[] = [
 		{
@@ -92,31 +94,33 @@
 			<span class="sr-only">Toggle theme</span>
 		</Button>
 		{#if page.data.session}
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					<Button variant="outline" size="icon">
-						<Plus />
-						<span class="sr-only">New</span>
-					</Button>
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content class="">
-					<DropdownMenu.Group>
-						{#each links as obj}
-							<DropdownMenu.Item>
-								{@render link(obj)}
-							</DropdownMenu.Item>
-						{/each}
-					</DropdownMenu.Group>
-					<DropdownMenu.Separator />
-					<DropdownMenu.Item>
-						{@render link({
-							icon: Ellipsis,
-							title: "More",
-							href: `/new`,
-						})}
-					</DropdownMenu.Item>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+			{#if hasRole("creator")}
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						<Button variant="outline" size="icon">
+							<Plus />
+							<span class="sr-only">New</span>
+						</Button>
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content class="">
+						<DropdownMenu.Group>
+							{#each links as obj}
+								<DropdownMenu.Item>
+									{@render link(obj)}
+								</DropdownMenu.Item>
+							{/each}
+						</DropdownMenu.Group>
+						<DropdownMenu.Separator />
+						<DropdownMenu.Item>
+							{@render link({
+								icon: Ellipsis,
+								title: "More",
+								href: `/new`,
+							})}
+						</DropdownMenu.Item>
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			{/if}
 
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
@@ -189,8 +193,11 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		{:else}
-			<form method="post" action="/auth/keycloak?/signin">
-				<Button type="submit">Signin</Button>
+			<form method="post" action="/auth/keycloak?/signin" enctype="multipart/form-data">
+				<Button type="submit">
+					<LogIn />
+					Signin
+				</Button>
 			</form>
 		{/if}
 	</div>

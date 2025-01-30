@@ -44,6 +44,10 @@
 	{/snippet}
 
 	{#snippet right()}
+		<form method="post">
+			<button type="submit">Wtf</button>
+		</form>
+
 		<div class="m-auto flex max-w-xl gap-2">
 			<div class="flex-1">
 				<Markdown value="Hello World!" variant="viewer" />

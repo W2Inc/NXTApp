@@ -40,7 +40,7 @@
 	);
 </script>
 
-<form method="POST" use:enhance>
+<form method="POST" use:enhance enctype="multipart/form-data">
 	<Base variant="center-navbar">
 		{#snippet left()}
 			<div class="flex h-min flex-col gap-2 rounded border p-4">

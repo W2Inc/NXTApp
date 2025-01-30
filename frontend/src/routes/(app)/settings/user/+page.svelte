@@ -5,117 +5,113 @@
 	import Button from "$lib/components/ui/button/button.svelte";
 	import Control from "$lib/components/forms/control.svelte";
 	import Trash from "lucide-svelte/icons/trash";
+	import Save from "lucide-svelte/icons/save";
+	import Database from "lucide-svelte/icons/database";
+	import Upload from "lucide-svelte/icons/upload";
 	import { dialog } from "$lib/components/dialog/state.svelte.js";
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import { mode } from "mode-watcher";
 	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import { useForm } from "$lib/utils/form.svelte.js";
+	import { page } from "$app/state";
+	import { Constants } from "$lib/utils.js";
+	import { preview } from "$lib/utils/image.svelte.js";
+	import { toast } from "svelte-sonner";
+	import Tippy from "$lib/components/tippy.svelte";
 
-
-
-	// const carta = new Carta();
 	const { data } = $props();
-	const { enhance, form } = useForm(data.form);
+	const { enhance, form } = useForm(data.form, { confirm: true });
 
+	let fileUpload: HTMLInputElement;
 	async function deleteCache() {
-		await dialog.confirm({
-			message: "Balls?",
-
-			title: "Balls",
+		const choice = await dialog.confirm({
+			title: "Delete local cache ?",
+			message: "Will clear things such as the local history.",
 		});
+
+		if (choice) {
+			localStorage.clear();
+			toast.success("Cache cleared");
+		}
 	}
 </script>
 
-<h1 class="text-2xl">User</h1>
-<p class="text-muted-foreground text-sm">
-	Configure your profile here in anyway you want.
-</p>
-<Separator class="my-2" />
-<Avatar.Root class="h-32 w-32 rounded-sm">
-	<Avatar.Image src={data.session?.user?.image} alt="@w2wizard" />
-	<Avatar.Fallback class="relative rounded-sm">US</Avatar.Fallback>
-</Avatar.Root>
-<Separator class="my-2" />
+<form method="POST" use:enhance enctype="multipart/form-data">
+	<h1 class="text-2xl">Profile Settings</h1>
+	<p class="text-muted-foreground text-sm">
+		Configure your profile here in anyway you want.
+	</p>
+	<Separator class="my-2" />
+	<Control
+		label="Image"
+		name="image"
+		description="Upload your own custom profile picture"
+	>
+		<div class="group relative max-w-52">
+			<input
+				bind:this={fileUpload}
+				type="file"
+				name="image"
+				value=""
+				class="absolute inset-0 z-10 cursor-pointer opacity-0"
+			/>
+			<div class="relative">
+				<img
+					use:preview={{ input: fileUpload }}
+					src={form.data.image as string ?? Constants.FALLBACK_IMG}
+					alt="logo"
+					class="max-h-52 w-full rounded border object-cover"
+				/>
+				<div
+					class="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+				>
+					<Upload class="absolute inset-0 z-[1] m-auto size-8 text-white" />
+				</div>
+			</div>
+		</div>
+	</Control>
 
-<form method="POST" use:enhance>
+	<Separator class="my-2" />
+
 	<Control label="User ID" name="id" errors={form.errors.id}>
 		<Input
-			autocorrect="off"
-			autocomplete={null}
+			id="id"
 			type="text"
 			name="id"
-			readonly
-			value={form.data.id}
-		/>
-	</Control>
-
-	<Control label="Email" name="email" errors={form.errors.email}>
-		<Input
-			id="email"
-			type="email"
-			name="email"
 			autocorrect="off"
 			autocomplete={null}
-			placeholder="main@example.com"
-			required
-			aria-invalid={form.errors.email ? "true" : undefined}
-			bind:value={form.data.email}
-			{...form.constraints.email}
+			placeholder="Cursus..."
+			aria-invalid={form.errors.id ? "true" : undefined}
+			bind:value={form.data.id}
+			{...form.constraints.id}
 		/>
 	</Control>
 
-	<div class="flex gap-4">
-		<Control label="First name" name="first" errors={form.errors.firstName}>
+	<!-- <fieldset class="border-input rounded border p-4">
+		<legend class="text-muted-foreground rounded border px-2 text-sm font-medium">
+			Configure user details
+		</legend> -->
+	<div class="flex gap-3">
+		<Control label="Login" name="login" errors={form.errors.login}>
 			<Input
-				id="first"
+				id="login"
 				type="text"
-				name="first"
+				name="login"
 				autocorrect="off"
 				autocomplete={null}
-				placeholder="Sony"
-				aria-invalid={form.errors.firstName ? "true" : undefined}
-				bind:value={form.data.firstName}
-				{...form.constraints.firstName}
+				aria-invalid={form.errors.login ? "true" : undefined}
+				bind:value={form.data.login}
+				{...form.constraints.login}
 			/>
 		</Control>
-		<Control label="Last Name" name="last" errors={form.errors.lastName}>
+		<Control label="Display name" name="displayName" errors={form.errors.displayName}>
 			<Input
-				id="last"
+				id="displayName"
 				type="text"
-				name="last"
+				name="displayName"
 				autocorrect="off"
 				autocomplete={null}
-				placeholder="Ercison"
-				aria-invalid={form.errors.lastName ? "true" : undefined}
-				bind:value={form.data.lastName}
-				{...form.constraints.lastName}
-			/>
-		</Control>
-	</div>
-
-	<div class="flex gap-4">
-		<Control label="Username" name="username" errors={form.errors.userName}>
-			<Input
-				id="username"
-				type="text"
-				name="username"
-				readonly
-				autocorrect="off"
-				autocomplete={null}
-				placeholder="x_silverhand_x"
-				aria-invalid={form.errors.userName ? "true" : undefined}
-				bind:value={form.data.userName}
-				{...form.constraints.userName}
-			/>
-		</Control>
-		<Control label="Display Name" name="display" errors={form.errors.displayName}>
-			<Input
-				id="display"
-				type="text"
-				name="display"
-				autocorrect="off"
-				autocomplete={null}
-				placeholder="Johnny Silverhand"
+				placeholder="x_johnny_silverhand_x"
 				aria-invalid={form.errors.displayName ? "true" : undefined}
 				bind:value={form.data.displayName}
 				{...form.constraints.displayName}
@@ -125,68 +121,175 @@
 
 	<Separator class="my-2" />
 
-	<div class="flex gap-4">
-		<Control label="Github" name="github" errors={form.errors.github}>
-			<Input
-				id="github"
-				type="url"
-				name="github"
-				placeholder="https://github.com/"
-				aria-invalid={form.errors.github ? "true" : undefined}
-				bind:value={form.data.github}
-				{...form.constraints.github}
-			/>
-		</Control>
-		<Control label="LinkedIn" name="linkedin" errors={form.errors.linkedin}>
-			<Input
-				id="linkedin"
-				type="url"
-				name="last"
-				placeholder="https://linkedin.com/"
-				aria-invalid={form.errors.linkedin ? "true" : undefined}
-				bind:value={form.data.linkedin}
-				{...form.constraints.linkedin}
-			/>
-		</Control>
-	</div>
+	<Control label="First Name" name="firstName" errors={form.errors.firstName}>
+		<Input
+			id="firstName"
+			type="text"
+			name="firstName"
+			autocorrect="off"
+			autocomplete="given-name"
+			placeholder="John"
+			aria-invalid={form.errors.firstName ? "true" : undefined}
+			bind:value={form.data.firstName}
+			{...form.constraints.firstName}
+		/>
+	</Control>
 
-	<div class="flex gap-4">
-		<Control label="Custom Website" name="website" errors={form.errors.website}>
+	<Control label="Last Name" name="lastName" errors={form.errors.lastName}>
+		<Input
+			id="lastName"
+			type="text"
+			name="lastName"
+			autocorrect="off"
+			autocomplete="family-name"
+			placeholder="Doe"
+			aria-invalid={form.errors.lastName ? "true" : undefined}
+			bind:value={form.data.lastName}
+			{...form.constraints.lastName}
+		/>
+	</Control>
+
+	<Separator class="my-2" />
+
+	<div class="grid grid-cols-2 grid-rows-2 gap-3">
+		<Control
+			label="Personal Website"
+			name="website"
+			errors={form.errors.website}
+			description="Link to your personal website"
+		>
 			<Input
-				type="url"
 				id="website"
+				type="text"
 				name="website"
-				placeholder="https://website.com/"
+				autocorrect="off"
+				autocomplete="off"
+				placeholder="https://example.com"
 				aria-invalid={form.errors.website ? "true" : undefined}
 				bind:value={form.data.website}
 				{...form.constraints.website}
 			/>
 		</Control>
-		<Control label="𝕏 / Twitter" name="twitter" errors={form.errors.twitter}>
+		<Control
+			label="𝕏 Profile"
+			name="twitter"
+			errors={form.errors.twitter}
+			description="Link to your Twitter / 𝕏 profile"
+		>
 			<Input
-				type="url"
 				id="twitter"
+				type="text"
 				name="twitter"
-				placeholder="https://x.com/"
+				autocorrect="off"
+				autocomplete="off"
+				placeholder="https://twitter.com/username"
 				aria-invalid={form.errors.twitter ? "true" : undefined}
 				bind:value={form.data.twitter}
 				{...form.constraints.twitter}
+			/>
+		</Control>
+
+		<Control
+			label="LinkedIn Profile"
+			name="linkedin"
+			errors={form.errors.linkedin}
+			description="Link to your LinkedIn profile"
+		>
+			<Input
+				id="linkedin"
+				type="text"
+				name="linkedin"
+				autocorrect="off"
+				autocomplete="off"
+				placeholder="https://linkedin.com/in/username"
+				aria-invalid={form.errors.linkedin ? "true" : undefined}
+				bind:value={form.data.linkedin}
+				{...form.constraints.linkedin}
+			/>
+		</Control>
+
+		<Control
+			label="GitHub Profile"
+			name="github"
+			errors={form.errors.github}
+			description="Link to your GitHub profile"
+		>
+			<Input
+				id="github"
+				type="text"
+				name="github"
+				autocorrect="off"
+				autocomplete="off"
+				placeholder="https://github.com/username"
+				aria-invalid={form.errors.github ? "true" : undefined}
+				bind:value={form.data.github}
+				{...form.constraints.github}
 			/>
 		</Control>
 	</div>
 
 	<Separator class="my-2" />
 
-	<div class="grid w-full gap-1.5">
-		<Markdown value="" placeholder="Write about yourself" />
-	</div>
+	<Control
+		label="Biography"
+		name="markdown"
+		errors={form.errors.markdown}
+		description="Here you can write about yourself"
+	>
+		<Markdown
+			variant="editor"
+			placeholder="# This project is about..."
+			bind:value={form.data.markdown}
+			{...form.constraints.markdown}
+		/>
+	</Control>
 
 	<Separator class="my-2" />
-	<div class="flex gap-2">
-		<Button type="submit">Submit</Button>
-		<Button variant="destructive" onclick={deleteCache}>
-			<Trash />
-			Clear Cache
-		</Button>
+
+	<div class="flex justify-between gap-2">
+		<div>
+			<Button type="submit" loading={form.submitting}>
+				<Save />
+				Save
+			</Button>
+			<Button
+				type="button"
+				variant="destructive"
+				disabled={form.submitting}
+				onclick={deleteCache}
+			>
+				<Trash />
+				Delete Cache
+			</Button>
+		</div>
+		<Tippy text="Request GDRP compliant data">
+			<Button
+				type="button"
+				disabled={form.submitting}
+				href="mailto:gdpr@example.com?subject=GDRP%20Data%20request.&body=%23%20GDRP%20Data%20request%0A%0AI%20would%20like%20to%20request%20all%20my%20data."
+			>
+				<Database />
+				GDPR Request
+			</Button>
+		</Tippy>
 	</div>
+
+	<!-- <Control
+		label="Display Name"
+		name="displayName"
+		errors={form.errors.displayName}
+		description="As logins cannot change your display name is a that you can use to visibly overwrite your name with"
+	>
+		<Input
+			id="displayName"
+			type="text"
+			name="displayName"
+			autocorrect="off"
+			autocomplete={null}
+			placeholder="x_johnny_silverhand_x"
+			aria-invalid={form.errors.displayName ? "true" : undefined}
+			bind:value={form.data.displayName}
+			{...form.constraints.displayName}
+		/>
+	</Control> -->
 </form>

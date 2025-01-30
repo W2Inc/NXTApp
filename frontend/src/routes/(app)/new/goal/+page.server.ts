@@ -11,8 +11,8 @@ import { problem, success, validate } from "$lib/utils/form.svelte";
 // ============================================================================
 
 const schema = z.object({
-	goalId: z.string().uuid().optional(),
-	name: z.string().nonempty(),
+	goalId: z.string().uuid().optional().readonly(),
+	name: z.string().min(4),
 	description: z.string().min(4).max(128),
 	markdown: z.string().min(128).max(2048),
 	public: z.boolean().optional().default(false),

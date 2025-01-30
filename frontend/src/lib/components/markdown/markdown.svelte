@@ -29,7 +29,7 @@
 	// Types
 
 	interface Props {
-		value: string;
+		value?: string;
 		placeholder?: string;
 		variant?: "editor" | "viewer";
 		maxlength?: number;
@@ -46,7 +46,7 @@
 
 	let textarea = $state<HTMLTextAreaElement>(null!);
 	let {
-		value = $bindable(),
+		value = $bindable(""),
 		placeholder,
 		variant = "editor",
 		maxlength,
@@ -98,7 +98,7 @@
 			icon: Ident,
 			tooltip: "Quote (Ctrl+Q)",
 			key: "q",
-			action: () => insertTemplate("> %c", 2),
+			action: () => insertTemplate("\> %c", 2),
 		},
 		{
 			icon: Code,
@@ -270,9 +270,8 @@
 				draggable="false"
 				{placeholder}
 				class="bg-background min-h-[100px] w-full overflow-y-auto rounded border p-4 outline-none data-[mode=preview]:hidden"
-				bind:value
+				bind:value={value}
 				name="markdown"
-				required
 				onkeydown={handleKeydown}
 			></Textarea>
 		{/if}
@@ -288,7 +287,7 @@
 					<IconMarkdown />
 					Markdown is supported
 				</span>
-				{#if maxlength}
+				{#if maxlength && value}
 					<span
 						class="inline-flex items-center gap-1 text-xs"
 						class:text-muted-foreground={value.length <= maxlength}

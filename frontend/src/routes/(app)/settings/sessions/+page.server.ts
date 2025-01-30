@@ -2,11 +2,11 @@ import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.auth();
+	const session = await locals.session();
 	const { data, response, error } = await locals.keycloak.GET("/admin/realms/{realm}/users/{user-id}/sessions", {
 		params: {
 			path: {
-				"user-id": session!.user!.id!,
+				"user-id": session!.user_id,
 				realm: "student"
 			}
 		}
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	delete: async ({ locals, request, url}) => {
-		const session = await locals.auth();
+		const session = await locals.session();
 		const form = await request.formData();
 		const id = form.get("id")?.toString();
 		if (!id)
@@ -39,16 +39,16 @@ export const actions: Actions = {
 		return redirect(301, url);
 	},
 	deleteAll: async({ locals, request}) => {
-		const session = await locals.auth();
+		const session = await locals.session();
 		const { data, response, error } = await locals.keycloak.POST("/admin/realms/{realm}/users/{user-id}/logout", {
 			params: {
 				path: {
-					"user-id": session?.user?.id!,
+					"user-id": session!.user_id,
 					realm: "student"
 				}
 			}
 		});
 
-		return redirect(301, url);
+		return redirect(301, "/");
 	}
 };
