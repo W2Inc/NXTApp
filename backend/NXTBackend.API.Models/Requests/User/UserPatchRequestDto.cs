@@ -16,8 +16,8 @@ namespace NXTBackend.API.Models.Requests.User;
 public class UserPatchRequestDTO : BaseRequestDTO
 {
     [UserDisplayNameValidation, StringLength(64, MinimumLength = 1)]
-    public string? DisplayName { get; set; }
+    public string? DisplayName { get; set; } = null;
 
     [Url]
-    public string? AvatarUrl { get; set; }
+    public string? AvatarUrl { get; set; } = null;
 }

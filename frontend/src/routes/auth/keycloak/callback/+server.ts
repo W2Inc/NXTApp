@@ -64,14 +64,24 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	try {
 		const tokens = await keycloak.validateAuthorizationCode(code, verifier);
 		const accessToken = tokens.accessToken();
+		const refreshToken = tokens.refreshToken();
+
 		// const accessTokenExpiresAt = tokens.accessTokenExpiresAt();
 		// const refreshToken = tokens.refreshToken();
 
-		cookies.set(KC_COOKIE_NAME, accessToken, {
+		cookies.set(`${KC_COOKIE_NAME}-a`, accessToken, {
 			secure: !dev,
 			path: "/",
 			httpOnly: true,
-			maxAge: tokens.accessTokenExpiresInSeconds(),
+			sameSite: 'strict',
+			// maxAge: tokens.accessTokenExpiresInSeconds(),
+		});
+
+		cookies.set(`${KC_COOKIE_NAME}-r`, refreshToken, {
+			secure: !dev,
+			path: "/",
+			httpOnly: true,
+			sameSite: 'strict',
 		});
 
 		return new Response(null, {

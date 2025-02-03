@@ -39,13 +39,14 @@
 <form method="POST" use:enhance enctype="multipart/form-data">
 	<h1 class="text-2xl">Profile Settings</h1>
 	<p class="text-muted-foreground text-sm">
-		Configure your profile here in anyway you want.
+		Configure your profile here in any way you want. You may provide a brief introduction about yourself, include any relevant links, and update your avatar if desired.
 	</p>
 	<Separator class="my-2" />
 	<Control
 		label="Image"
 		name="image"
 		description="Upload your own custom profile picture"
+		errors={form.errors.image}
 	>
 		<div class="group relative max-w-52">
 			<input
@@ -60,10 +61,10 @@
 					use:preview={{ input: fileUpload }}
 					src={form.data.image as string ?? Constants.FALLBACK_IMG}
 					alt="logo"
-					class="max-h-52 w-full rounded border object-cover"
+					class="max-h-52 w-full border object-cover rounded"
 				/>
 				<div
-					class="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+					class="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 rounded"
 				>
 					<Upload class="absolute inset-0 z-[1] m-auto size-8 text-white" />
 				</div>

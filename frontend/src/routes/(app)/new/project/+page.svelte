@@ -23,13 +23,15 @@
 	import { Constants } from "$lib/utils";
 	import { toast } from "svelte-sonner";
 	import { preview } from "$lib/utils/image.svelte";
+	import { Slider } from "$lib/components/ui/slider";
+	import { page } from "$app/state";
 
 	let { data } = $props();
 	const { enhance, form } = useForm(data.form, {
 		confirm: true,
 	});
 
-	const formaction = $derived(true ? `?/update` : "?/create");
+	const formaction = $derived(data.entity ? `?/update` : "?/create");
 
 	let fileUpload: HTMLInputElement;
 </script>
@@ -65,7 +67,7 @@
 					<div class="relative">
 						<img
 							use:preview={{ input: fileUpload, maxSize: 1 }}
-							src={form.data.thumbnailUrl ?? Constants.FALLBACK_IMG}
+							src={(form.data.image as string) ?? Constants.FALLBACK_IMG}
 							alt="logo"
 							class="max-h-52 w-full rounded border object-cover"
 						/>
@@ -87,12 +89,29 @@
 						autocorrect="off"
 						autocomplete={null}
 						placeholder="Project..."
-						required
 						aria-invalid={form.errors.name ? "true" : undefined}
 						bind:value={form.data.name}
 						{...form.constraints.name}
 					/>
 				</Control>
+				<Control
+					label="Max Members"
+					name="maxMembers"
+					errors={form.errors.maxMembers}
+					description="The max amount of users that can participate on this project together"
+				>
+					<Input
+						id="members"
+						type="number"
+						name="maxMembers"
+						autocorrect="off"
+						autocomplete={null}
+						aria-invalid={form.errors.maxMembers ? "true" : undefined}
+						bind:value={form.data.maxMembers}
+						{...form.constraints.maxMembers}
+					/>
+				</Control>
+				<Separator class="my-1" />
 				<Control
 					label="Public"
 					name="public"
@@ -102,8 +121,8 @@
 					<Switch
 						id="public"
 						name="public"
-						required
 						aria-invalid={form.errors.public ? "true" : undefined}
+						onCheckedChange={(v) => form.data.public = v}
 						bind:checked={form.data.public}
 						{...form.constraints.public}
 					/>
@@ -117,7 +136,6 @@
 					<Switch
 						id="enabled"
 						name="enabled"
-						required
 						aria-invalid={form.errors.enabled ? "true" : undefined}
 						bind:checked={form.data.enabled}
 						{...form.constraints.enabled}
@@ -125,26 +143,21 @@
 				</Control>
 				<Separator class="my-1" />
 				<Button class="w-full" type="submit" disabled={form.submitting} {formaction}>
-					<!-- {#if data.entity}
+					{#if data.entity}
 						Update
 					{:else}
 						Create
-					{/if} -->
-					Create
+					{/if}
 				</Button>
 			</div>
 		{/snippet}
 
 		{#snippet right()}
 			<div>
-				<Tippy
-					text="Creating a new project requires you write down a markdown sheet detailing what the project is about."
-				>
-					<h1 class="flex items-center gap-2 text-2xl font-bold">
-						New Project
-						<CircleHelp size={16} />
-					</h1>
-				</Tippy>
+				<h1 class="flex items-center gap-2 text-2xl font-bold">
+					Project: <code>@{page.data.session?.preferred_username}/{form.data.name}</code>
+					<CircleHelp size={16} />
+				</h1>
 				<p class="text-muted-foreground text-sm">
 					A project is a collection of your work that includes a thumbnail image, a
 					detailed markdown description of the project's proceedings, and a brief summary
@@ -214,7 +227,7 @@
 						</Control>
 						{@render gitAlert()}
 					</Tabs.Content>
-					<Tabs.Content value="markdown">
+					<Tabs.Content value="markdown" class="max-w-50">
 						<Markdown
 							variant="editor"
 							placeholder="# This project is about..."

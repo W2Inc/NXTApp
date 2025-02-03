@@ -11,9 +11,10 @@ public partial class UserDisplayNameValidation : ValidationAttribute
     /// <inheritdoc/>
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        if (value is null || value is not string displayName)
+        if (value is null)
+            return ValidationResult.Success;
+        if (value is not string displayName)
             return new ValidationResult("Invalid display name");
-
         var regex = DisplayNameMatching();
 
         return !regex.IsMatch(displayName) ? new ValidationResult("Invalid display name") : ValidationResult.Success;
@@ -22,4 +23,3 @@ public partial class UserDisplayNameValidation : ValidationAttribute
     [GeneratedRegex(@"^[a-zA-Z0-9]+(?:[_-][a-zA-Z0-9]+)*$", RegexOptions.Compiled)]
     private static partial Regex DisplayNameMatching();
 }
-

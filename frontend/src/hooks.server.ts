@@ -13,11 +13,14 @@ import createClient from "openapi-fetch";
 import {
 	KC_CLIENT_ID,
 	KC_CLIENT_SECRET,
+	KC_COOKIE_NAME,
 	KC_ISSUER,
 } from "$env/static/private";
 import KeycloakClient from "$lib/keycloak";
 import { useRetryAfter } from "$lib/utils/limiter.svelte";
 import type { Role } from "$lib/utils/roles.svelte";
+import { initLogger, logger } from "$lib/logger";
+// import config from "$lib/routes.json" with { type: "json" };
 
 // ============================================================================
 
@@ -37,17 +40,20 @@ const limiter = useRetryAfter({
  * Here you can configure the overal routes that need which role in order
  * to be accessed.
  */
+// const routes: Record<string, Role[]> = config;
+// or
 const routes: Record<string, Role[]> = {
 	"/": [],
 	"/settings": [],
 	"/auth": [],
 	"/users": ["student"],
-	"/new": ["staff"],
+	"/new": [],
 };
 
-// export const init: ServerInit = async () => {
-// 	console.log(Bun.s3);
-// };
+export const init: ServerInit = async () => {
+	initLogger();
+	logger.info("Starting FE...");
+}
 
 // ============================================================================
 
@@ -129,8 +135,9 @@ export const handle: Handle = sequence(
 export async function handleFetch({ fetch, request, event }) {
 	if (request.url.startsWith("http://localhost:3001/")) {
 		const session = await event.locals.session();
+		const accessToken = event.cookies.get(`${KC_COOKIE_NAME}-a`);
 		// request.headers.set("cookie", event.request.headers.get("cookie") ?? "");
-		request.headers.set("authorization", `Bearer ${session?.access_token}`);
+		request.headers.set("authorization", `Bearer ${accessToken}`);
 	}
 
 	if (request.url.startsWith("http://localhost:8089/")) {

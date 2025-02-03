@@ -26,7 +26,7 @@
 	import * as Breadcrumb from "./ui//breadcrumb";
 	import Search from "./search/search.svelte";
 	import type { IconLink } from "$lib/types";
-	import { encodeUUID64 } from "$lib/utils";
+	import { Constants, encodeUUID64 } from "$lib/utils";
 	import { hasRole } from "$lib/utils/roles.svelte";
 
 	const links: IconLink[] = [
@@ -126,7 +126,7 @@
 				<DropdownMenu.Trigger>
 					<Avatar.Root class="rounded-sm border border-gray-700">
 						<Avatar.Image
-							src="https://github.com/w2wizard.png"
+							src={page.data.session.avatarUrl ?? Constants.FALLBACK_IMG}
 							class="border-gray-400"
 							alt="@w2wizard"
 						/>

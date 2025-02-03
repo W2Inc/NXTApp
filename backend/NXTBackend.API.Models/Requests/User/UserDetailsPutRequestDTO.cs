@@ -18,7 +18,7 @@ public class UserDetailsPutRequestDTO : BaseRequestDTO
     [EmailAddress]
     public string? Email { get; set; }
 
-    [StringLength(1024)]
+    // [StringLength(1024)]
     public string? Bio { get; set; }
 
     [DisplayName]

@@ -33,10 +33,10 @@ public class ProjectDO : BaseObjectDO<Project>
     public string Name { get; set; }
 
     [Required]
-    public string? Markdown { get; set; }
+    public string Markdown { get; set; }
 
     [Required]
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     [Required]
     public string Slug { get; set; }

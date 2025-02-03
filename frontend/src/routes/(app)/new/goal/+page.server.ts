@@ -18,6 +18,14 @@ const schema = z.object({
 	public: z.boolean().optional().default(false),
 	enabled: z.boolean().optional().default(false),
 	projects: z.string().array().default([]),
+	image: z
+	.union([
+		z.string(),
+		z
+			.instanceof(File, { message: "Please upload a file." })
+			.refine((file) => file.size < 100_000, "Max 100 kB upload size.")
+	])
+	.optional(),
 });
 
 // ============================================================================

@@ -9,12 +9,15 @@ import {
 	KC_CLIENT_SECRET,
 	KC_COOKIE_NAME,
 	KC_ISSUER,
+	S3_BUCKET,
+	S3_ENDPOINT,
 } from "$env/static/private";
-import { redirect, type Action, type Handle } from "@sveltejs/kit";
+import { error, redirect, type Action, type Handle } from "@sveltejs/kit";
 import { KeyCloak } from "arctic";
 import jsonwebtoken from "jsonwebtoken";
 import { dev } from "$app/environment";
 import { hasRole, type Role } from "./utils/roles.svelte";
+import { logger } from "./logger";
 
 // ============================================================================
 
@@ -74,9 +77,9 @@ export interface Session {
 	given_name: string;
 	family_name: string;
 	email: string;
-	user_id: string;
-	access_token: string;
+	user_id: GUID;
 	roles: Role[];
+	avatarUrl: string;
 }
 
 declare global {
@@ -91,44 +94,111 @@ declare global {
 }
 
 // ============================================================================
+//
+// The handle function checks whether the access token is expired. If it is,
+// it attempts to refresh it using the refresh token. Afterward, the user's
+// session data is set in event.locals for further use throughout your app.
+//
+// Note: The handle function must be async to use 'await' when refreshing.
+//
+// TODO: Storing sessions on the client as a cookie is "fine".
+// What we could do is rather hand out a session id and store the tokens on a keyvalue db
+// At least that way the user information isn't "directly" accessible and only will be retrieved via the server.
+// Also makes storing the session easier.
+//
+// It won't make things "more secure" as, well, once you have the session id it's game over anyway.
+// but they aren't accesible via javascript anyway.
 
-export const handle: Handle = ({ event, resolve }) => {
-	// TODO: this isn't ideal but it will work for now...
-	const jwt = event.cookies.get(KC_COOKIE_NAME);
-	event.locals.session = async () => {
+export const handle: Handle = async ({ event, resolve }) => {
+	const accessToken = event.cookies.get(`${KC_COOKIE_NAME}-a`);
+
+	const isTokenExpired = (token: string) => {
 		try {
-			if (!jwt) {
+			const decoded = jsonwebtoken.decode(token) as jsonwebtoken.JwtPayload;
+			if (!decoded || !decoded.exp) return true;
+			logger.debug("Keycloak access token is still valid")
+			return decoded.exp < Math.floor(Date.now() / 1000);
+		} catch {
+			return true;
+		}
+	};
+
+	const deleteCookies = () => {
+		logger.debug(`Deleting cookies: ${KC_COOKIE_NAME}`)
+		event.cookies.delete(`${KC_COOKIE_NAME}-a`, { path: "/" });
+		event.cookies.delete(`${KC_COOKIE_NAME}-r`, { path: "/" });
+	};
+
+	if (accessToken && isTokenExpired(accessToken)) {
+		const refreshToken = event.cookies.get(`${KC_COOKIE_NAME}-r`);
+		if (refreshToken) {
+			try {
+				logger.debug("New tokens are required, requesting new token...")
+				const tokens = await keycloak.refreshAccessToken(refreshToken);
+				event.cookies.set(`${KC_COOKIE_NAME}-a`, tokens.accessToken(), {
+					secure: !dev,
+					path: "/",
+					httpOnly: true,
+					sameSite: "strict",
+				});
+
+				event.cookies.set(`${KC_COOKIE_NAME}-r`, tokens.refreshToken(), {
+					secure: !dev,
+					path: "/",
+					sameSite: "strict",
+					httpOnly: true,
+				});
+			} catch (e) {
+				if (e instanceof arctic.OAuth2RequestError) {
+					// e.g: Invalid grant aka token & refresh token expired
+					/** @see https://datatracker.ietf.org/doc/html/rfc6749#section-5.2 */
+					logger.debug("Failed to request new tokens", e)
+				}
+				if (e instanceof arctic.ArcticFetchError) {
+					// Failed to call `fetch()`
+					logger.error(e)
+					error(500, e.message);
+				}
+				deleteCookies();
+			}
+		} else {
+			// No refresh token available; clear the expired access token
+			deleteCookies();
+		}
+	}
+
+	// Provide session data for use in +layout.server.ts or other SvelteKit hooks
+	event.locals.session = async () => {
+		const currentAccessToken = event.cookies.get(`${KC_COOKIE_NAME}-a`);
+		if (!currentAccessToken) {
+			return null;
+		}
+
+		try {
+			const decoded = jsonwebtoken.decode(currentAccessToken, { complete: true });
+			if (!decoded || typeof decoded === "string" || !decoded.payload) {
 				return null;
 			}
 
-			const token = jsonwebtoken.decode(jwt, { complete: true });
-			if (!token || typeof token === "string" || !token.payload) {
-				return null;
-			}
-			const payload = token.payload as jsonwebtoken.JwtPayload;
-			if (payload.exp && payload.exp * 1000 < Date.now()) {
-				return null;
-			}
+			const payload = decoded.payload as jsonwebtoken.JwtPayload;
 
-			const session: Session = {
-				email_verified: payload.email_verified || false,
-				name: payload.name || "",
-				preferred_username: payload.preferred_username || "",
-				given_name: payload.given_name || "",
-				family_name: payload.family_name || "",
-				email: payload.email || "",
+			return {
 				user_id: payload.sub || "",
-				// TODO: Get via ENV as this is technically a variable name depending on what the client is named...
+				email: payload.email,
+				email_verified: payload.email_verified,
+				name: payload.name,
+				preferred_username: payload.preferred_username,
+				given_name: payload.given_name,
+				family_name: payload.family_name,
 				roles: payload.resource_access?.intra?.roles ?? [],
-				access_token: jwt,
+				avatarUrl: `${S3_ENDPOINT}/${S3_BUCKET}/${payload.sub}.png`,
 			};
-
-			return session;
-		} catch (error) {
-			console.error("Error decoding JWT:", error);
+		} catch (e) {
+			console.error("Error decoding access token:", error);
 			return null;
 		}
 	};
 
+	// Proceed with the response
 	return resolve(event);
 };

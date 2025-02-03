@@ -3543,6 +3543,7 @@ export interface paths {
                     Size?: number;
                     OrderBy?: string;
                     Order?: components["schemas"]["Order"];
+                    /** @description Filter user projects based on the project name */
                     "filter[name]"?: string;
                     /** @description Give projects that are in the following state */
                     "filter[state]"?: string;
@@ -4316,8 +4317,8 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             name: string;
-            markdown: string | null;
-            description: string | null;
+            markdown: string;
+            description: string;
             slug: string;
             thumbnailUrl: string | null;
             public: boolean;
@@ -4336,8 +4337,8 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             name: string;
-            markdown: string | null;
-            description: string | null;
+            markdown: string;
+            description: string;
             slug: string;
             thumbnailUrl: string | null;
             public: boolean;

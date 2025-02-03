@@ -380,6 +380,7 @@ export async function validate<T extends ZodRawShape>(
 	try {
 		const formData = await request.formData();
 		const processedData = preprocessFormData(formData, schema);
+		console.log(processedData)
 		const result = schema.safeParse(processedData);
 
 		if (result.success) {
