@@ -219,7 +219,6 @@ function processFieldValue(value: FormDataEntryValue, field: ZodTypeAny): unknow
 		field._def.typeName === "ZodEffects" &&
 		field._def.schema._def.typeName === "ZodUnion"
 	) {
-		// This handles your z.instanceof(File).or(z.string()) case
 		if (stringValue === "") {
 			if (isNullishType(field)) {
 				if (field._def.typeName === "ZodOptional") return undefined;
@@ -230,21 +229,18 @@ function processFieldValue(value: FormDataEntryValue, field: ZodTypeAny): unknow
 		return stringValue;
 	}
 
-	// Rest of your existing processFieldValue logic...
 	// Handle boolean fields
 	if (field._def.typeName === "ZodBoolean") {
 		if (stringValue === "on" || stringValue === "true") return true;
 		if (stringValue === "" || stringValue === "false") return false;
 		return Boolean(stringValue);
 	}
-
 	// Handle number fields
 	if (field._def.typeName === "ZodNumber") {
 		if (!stringValue) return undefined;
 		const num = Number(stringValue);
 		return isNaN(num) ? undefined : num;
 	}
-
 	// Handle string fields with nullish variants
 	if (field._def.typeName === "ZodString" || isNullishType(field)) {
 		return shouldBeNullish(stringValue, field);

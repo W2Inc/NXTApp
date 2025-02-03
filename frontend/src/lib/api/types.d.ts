@@ -2328,7 +2328,7 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    category: "User" | "Project" | "Cursus" | "LearningGoal";
+                    category: components["schemas"]["Category"];
                 };
                 cookie?: never;
             };
@@ -4181,6 +4181,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {unknown} */
+        Category: "User" | "Project" | "Cursus" | "LearningGoal";
         CursusDO: {
             /** Format: uuid */
             id: string;
@@ -4244,6 +4246,7 @@ export interface components {
             gitUrl: string;
             gitBranch: string;
             gitCommit: string | null;
+            gitKind: components["schemas"]["GitSourceKind"];
         } | null;
         GitInfoRequestDto: {
             /** Format: uri */
@@ -4257,6 +4260,8 @@ export interface components {
             gitBranch?: string | null;
             gitCommit?: string | null;
         } | null;
+        /** @enum {unknown} */
+        GitSourceKind: "Thirdparty" | "Managed" | "Github";
         GoalPatchRequestDto: {
             name?: string | null;
             description?: string | null;

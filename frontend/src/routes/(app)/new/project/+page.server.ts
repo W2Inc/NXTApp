@@ -15,18 +15,19 @@ import { logger } from "$lib/logger";
 const schema = z.object({
 	name: z
 		.string()
-		.max(128)
+		.max(64)
 		.regex(
 			/^[a-zA-Z0-9-_]+$/,
 			"Only letters, numbers, hyphens and underscores are allowed",
-		)
-		.refine((name) => !name.startsWith("@"), "Name cannot start with @")
-		.refine((name) => !name.includes("/"), "Name cannot contain /"),
-	markdown: z.string().max(2048),
+		),
+	markdown: z.string().min(128).max(2048),
 	description: z.string().min(1).max(128),
 	maxMembers: z.number().min(1).max(5),
-	enabled: z.boolean(),
-	public: z.boolean(),
+	enabled: z.coerce.boolean(),
+	public: z.coerce.boolean(),
+	gitUrl: z.string().optional(),
+	gitBranch: z.string().optional(),
+	gitKind: z.enum(["Thirdparty" , "Managed" , "Github"]),
 	image: z
 		.union([
 			z.string(),

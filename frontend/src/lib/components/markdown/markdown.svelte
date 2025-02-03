@@ -33,6 +33,7 @@
 		placeholder?: string;
 		variant?: "editor" | "viewer";
 		maxlength?: number;
+		minlength?: number;
 	}
 
 	type Action = {
@@ -50,6 +51,8 @@
 		placeholder,
 		variant = "editor",
 		maxlength,
+		minlength,
+		...rest
 	}: Props = $props();
 	let mode = $state<"write" | "preview">(variant === "editor" ? "write" : "preview");
 
@@ -272,6 +275,7 @@
 				class="bg-background min-h-[100px] w-full overflow-y-auto rounded border p-4 outline-none data-[mode=preview]:hidden"
 				bind:value={value}
 				name="markdown"
+				{...rest}
 				onkeydown={handleKeydown}
 			></Textarea>
 		{/if}

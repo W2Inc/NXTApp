@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -41,23 +42,21 @@ public class Git : BaseEntity
         GitCommit = null;
     }
 
-    [Required]
-    [Column("git_url"), Url]
+    [Column("git_url")]
     public string GitUrl { get; set; }
 
-    [Required]
     [Column("git_branch")]
     public string GitBranch { get; set; }
 
     [Column("git_commit")]
     public string? GitCommit { get; set; }
 
-    [JsonIgnore]
+    [Column("source_kind")]
+    public GitSourceKind SourceKind { get; set; }
+
     public virtual IEnumerable<Project> Projects { get; set; }
 
-    [JsonIgnore]
     public virtual IEnumerable<Rubric> Rubrics { get; set; }
 
-    [JsonIgnore]
     public virtual IEnumerable<UserProject> UserProjects { get; set; }
 }

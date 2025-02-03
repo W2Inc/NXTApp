@@ -5,6 +5,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Enums;
 
 // ============================================================================
 
@@ -17,6 +18,7 @@ public class GitDO : BaseObjectDO<Git>
         GitUrl = git.GitUrl;
         GitBranch = git.GitBranch;
         GitCommit = git.GitCommit;
+        GitKind = git.SourceKind;
     }
 
     [Required]
@@ -27,6 +29,9 @@ public class GitDO : BaseObjectDO<Git>
 
     [Required]
     public string? GitCommit { get; set; }
+
+    [Required]
+    public GitSourceKind GitKind { get; set; }
 
     public static implicit operator GitDO?(Git? entity) => entity is null ? null : new(entity);
 }

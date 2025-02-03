@@ -32,6 +32,7 @@
 	});
 
 	const formaction = $derived(data.entity ? `?/update` : "?/create");
+	const sourceType = $derived.by(data.entity)
 
 	let fileUpload: HTMLInputElement;
 </script>
@@ -105,6 +106,7 @@
 						type="number"
 						name="maxMembers"
 						autocorrect="off"
+						placeholder="2"
 						autocomplete={null}
 						aria-invalid={form.errors.maxMembers ? "true" : undefined}
 						bind:value={form.data.maxMembers}
@@ -122,7 +124,7 @@
 						id="public"
 						name="public"
 						aria-invalid={form.errors.public ? "true" : undefined}
-						onCheckedChange={(v) => form.data.public = v}
+						onCheckedChange={(v) => (form.data.public = v)}
 						bind:checked={form.data.public}
 						{...form.constraints.public}
 					/>
@@ -228,12 +230,14 @@
 						{@render gitAlert()}
 					</Tabs.Content>
 					<Tabs.Content value="markdown" class="max-w-50">
-						<Markdown
-							variant="editor"
-							placeholder="# This project is about..."
-							bind:value={form.data.markdown}
-							{...form.constraints.markdown}
-						/>
+						<Control label="Git Branch" name="gitbranch" errors={form.errors.markdown}>
+							<Markdown
+								variant="editor"
+								placeholder="# This project is about..."
+								bind:value={form.data.markdown}
+								{...form.constraints.markdown}
+							/>
+						</Control>
 					</Tabs.Content>
 				</Tabs.Root>
 			</div>

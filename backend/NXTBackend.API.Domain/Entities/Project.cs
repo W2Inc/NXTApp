@@ -78,13 +78,13 @@ public class Project : BaseEntity
     /// The markdown content of the feature.
     /// </summary>
     [Column("description")]
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     /// <summary>
     /// The markdown content of the feature.
     /// </summary>
     [Column("markdown")]
-    public string? Markdown { get; set; }
+    public string Markdown { get; set; }
 
     [Column("slug")]
     public string Slug { get; set; }
