@@ -25,16 +25,61 @@
 	import { preview } from "$lib/utils/image.svelte";
 	import { Slider } from "$lib/components/ui/slider";
 	import { page } from "$app/state";
+	import { useDebounce } from "$lib/utils/debounce.svelte";
 
 	let { data } = $props();
 	const { enhance, form } = useForm(data.form, {
 		confirm: true,
 	});
 
+	const debounce = useDebounce(450);
 	const formaction = $derived(data.entity ? `?/update` : "?/create");
-	const sourceType = $derived.by(data.entity)
+	const name = $derived(form.data.gitUrl);
 
 	let fileUpload: HTMLInputElement;
+
+	let markdownText = $state<Promise<string>>();
+	async function fetchMarkdown() {
+		if (!form.data.gitUrl) return;
+
+		let url = form.data.gitUrl.trim();
+		const branch = form.data.gitBranch ?? "Norme";
+
+		// Ensure URL ends with .git
+		if (!url.endsWith(".git")) {
+			toast.error("URL must end with .git");
+			return;
+		}
+
+		// Remove .git suffix
+		url = url.slice(0, -4);
+
+		try {
+			// Try different URL patterns based on provider
+			const urlPatterns = [
+				// GitHub
+				url.replace("github.com", "raw.githubusercontent.com") + `/${branch}/README.md`,
+				// GitLab
+				`${url}/-/raw/${branch}/README.md`,
+				// Gitea
+				`${url}/raw/branch/${branch}/README.md`,
+			];
+
+			for (const pattern of urlPatterns) {
+				try {
+					const response = await fetch(pattern);
+					if (response.ok) {
+						markdownText = response.text();
+						return;
+					}
+				} catch {}
+			}
+
+			toast.error("Unable to get README.md, perhaps it doesn't allow access ?");
+		} catch (error) {
+			toast.error("Failed to fetch README.md. Make sure the repository is accessible.");
+		}
+	}
 </script>
 
 {#snippet gitAlert()}
@@ -199,7 +244,7 @@
 						{@render gitAlert()}
 					</Tabs.Content>
 					<Tabs.Content value="thirdparty">
-						<Control label="Git Url" name="giturl" errors={[]}>
+						<Control label="Git Url" name="giturl" errors={form.errors.gitUrl}>
 							<div class="flex">
 								<div class="bg-muted center-content rounded-l border px-3">
 									<GitBranch size={20} />
@@ -210,23 +255,43 @@
 									name="giturl"
 									autocorrect="off"
 									autocomplete={null}
+									oninput={() => debounce(fetchMarkdown)}
 									placeholder="https://git-provider.com/scope/repo"
 									class="rounded-l-none border-l-0"
+									aria-invalid={form.errors.gitUrl ? "true" : undefined}
+									bind:value={form.data.gitUrl}
+									{...form.constraints.gitUrl}
 								/>
 							</div>
 						</Control>
 
-						<!-- Branch -->
-						<Control label="Git Branch" name="gitbranch" errors={[]}>
+						<Control label="Git Branch" name="gitbranch" errors={form.errors.gitBranch}>
 							<Input
 								id="gitbranch"
 								type="text"
 								name="gitbranch"
 								autocorrect="off"
 								autocomplete={null}
+								oninput={() => debounce(fetchMarkdown)}
 								placeholder="master"
+								aria-invalid={form.errors.gitBranch ? "true" : undefined}
+								bind:value={form.data.gitBranch}
+								{...form.constraints.gitBranch}
 							/>
 						</Control>
+
+						{JSON.stringify(form.data)}
+
+						{#await markdownText}
+							Loading...
+						{:then text}
+							<Markdown variant="viewer" value={text} />
+						{:catch}
+							Error!
+						{/await}
+
+						<!-- Branch -->
+
 						{@render gitAlert()}
 					</Tabs.Content>
 					<Tabs.Content value="markdown" class="max-w-50">

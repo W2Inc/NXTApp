@@ -91,6 +91,7 @@ export const load: PageServerLoad = async ({ request, locals, url }) => {
 		markdown: "",
 		maxMembers: 1,
 		public: false,
+		gitKind: "Thirdparty",
 		enabled: false,
 	};
 
