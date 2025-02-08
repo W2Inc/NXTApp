@@ -3,6 +3,7 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
+using NXTBackend.API.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 // ============================================================================
@@ -14,22 +15,19 @@ namespace NXTBackend.API.Models.Requests;
 /// </summary>
 public class GitInfoRequestDto : BaseRequestDTO
 {
-    /// <summary>
-    /// The URL to the git repository
-    /// </summary>
-    /// <example>
-    /// https://github.com/W2Wizard/NXTBackend
-    /// </example>
+    // TODO: Should be a more stricter type
+    [Required]
+    public string GitNamespace { get; set; }
+
+    [Required]
+    public string GitName { get; set; }
+
     [Required, Url]
-    public string GitUrl { get; set; } = string.Empty;
+    public string GitUrl { get; set; }
 
-    /// <summary>
-    /// If null, will use the master branch
-    /// </summary>
-    public string? GitBranch { get; set; }
+    [Required]
+    public string GitBranch { get; set; }
 
-    /// <summary>
-    /// If null, will use the latest commit
-    /// </summary>
-    public string? GitCommit { get; set; }
+    [Required]
+    public GitProviderKind SourceKind { get; set; }
 }

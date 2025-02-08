@@ -15,23 +15,31 @@ public class GitDO : BaseObjectDO<Git>
 {
     public GitDO(Git git) : base(git)
     {
-        GitUrl = git.GitUrl;
-        GitBranch = git.GitBranch;
-        GitCommit = git.GitCommit;
-        GitKind = git.SourceKind;
+        Name = git.Name;
+        Namespace = git.Namespace;
+        Url = git.Url;
+        Branch = git.Branch;
+        ProviderType = git.ProviderType;
+        OwnerType = git.OwnerType;
     }
 
     [Required]
-    public string GitUrl { get; set; }
+    public string Name { get; set; }
 
     [Required]
-    public string GitBranch { get; set; }
+    public string Namespace { get; set; }
 
     [Required]
-    public string? GitCommit { get; set; }
+    public string Url { get; set; }
 
     [Required]
-    public GitSourceKind GitKind { get; set; }
+    public string Branch { get; set; }
+
+    [Required]
+    public GitProviderKind ProviderType { get; set; }
+
+    [Required]
+    public GitOwnerKind OwnerType { get; set; }
 
     public static implicit operator GitDO?(Git? entity) => entity is null ? null : new(entity);
 }

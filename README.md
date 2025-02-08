@@ -95,9 +95,26 @@ This provides:
 - SSL certificate management
 - Backups
 - ...
-  
+
 
 ## Minio Setup
 - Deploy Minio instance
 - Create bucket and access credentials
 - Configure S3 environment variables
+
+# Coolify Deployment Notes
+- In some cases the docker containers will be unable to connect properly. This is due to docker / docker compose and how things work with the DNS resolving etc I believe (not sure if that was the cause but it has to do with docker network)
+
+1. To fix 99% of the issue go into the coolify page and extract the service id from the url
+2. SSH into the VPS
+3. `sudo docker network inspect eddddddd8kokwokcwkokgoc4`
+4. Extract the container ipv4 address
+5. `sudo ufw allow from 10.0.3.3/24`
+6. `sudo ufw status & sudo ufw reload`
+7. PROFIT!
+
+## What to implement
+Master deployment script that you can setup NXTApp with a single curl command:
+- Ask for the type of setup (single deploy aka all in one server (BAD IDEA!!!))
+  - Single deploy: Nice for quick testing and checking out, installs coolify, sets up the services all on the current machine (bad idea btw)
+  - Multi deploy: For the relevant services what their IP / where to connect to so that we can create those servers into coolify and it all just works.

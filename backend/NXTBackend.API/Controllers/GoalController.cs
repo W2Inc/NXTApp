@@ -20,21 +20,6 @@ using NXTBackend.API.Utils;
 
 namespace NXTBackend.API.Controllers;
 
-public class GoalQueryParams
-{
-    [Description("Filter on names")]
-    [FromQuery(Name = "filter[name]")]
-    public string? Name { get; set; }
-
-    [Description("URL slug to filter on")]
-    [FromQuery(Name = "filter[slug]")]
-    public string? Slug { get; set; }
-
-    [Description("The entity id to filter on")]
-    [FromQuery(Name = "filter[id]")]
-    public Guid? Id { get; set; }
-}
-
 // ============================================================================
 
 [ApiController]
@@ -58,8 +43,12 @@ public class GoalController(
         [FromQuery(Name = "filter[name]")] string? name
     )
     {
-        var page = await goalService.GetAllAsync(paging, sorting);
+        var filters = new FilterDictionary()
+            .AddFilter("id", id)
+            .AddFilter("slug", slug)
+            .AddFilter("name", name);
 
+        var page = await goalService.GetAllAsync(paging, sorting, filters);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(c => new LearningGoalDO(c)));
     }

@@ -66,10 +66,11 @@ public class ProjectController(
     {
         Git git = new()
         {
-            GitUrl = data.GitInfo.GitUrl,
-            GitBranch = data.GitInfo.GitBranch ?? "master", // Assuming most branches are called master
-            GitCommit = data.GitInfo.GitCommit
+
         };
+
+        // gitService.CreateRemoteRepository(data.Name)
+
 
         var project = await projectService.CreateProjectWithGit(new()
         {

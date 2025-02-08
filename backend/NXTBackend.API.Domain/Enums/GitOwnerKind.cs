@@ -11,25 +11,18 @@ namespace NXTBackend.API.Domain.Enums;
 /// The different kinds of cursi that exist.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GitProviderKind
+public enum GitOwnerKind
 {
     /// <summary>
     /// External source control other than Github. E.g: (Gitea, Gitlab, Custom Home server, ...)
     /// </summary>
-    [JsonPropertyName(nameof(Other))]
-    Other,
+    [JsonPropertyName(nameof(User))]
+    User,
 
     /// <summary>
-    /// Managed referring to the self running instance of the application.
+    /// Uses the backend configured git source control, the ideal *boomer* option as most people just
+    /// want to "upload a file" but we want to provide source control towards whatever they provide.
     /// </summary>
-    [JsonPropertyName(nameof(Managed))]
-    Managed,
-
-    /// <summary>
-    /// Uses github integration to manage the git source control, this is essentially the same as
-    /// third party in essence except that because github is the more popular variant we *may* want
-    /// to offer some more features that they provide.
-    /// </summary>
-    // [JsonPropertyName(nameof(Github))]
-    // Github,
+    [JsonPropertyName(nameof(Organization))]
+    Organization,
 }

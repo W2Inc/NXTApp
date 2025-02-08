@@ -11,8 +11,10 @@
 	import Control from "$lib/components/forms/control.svelte";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
 
-	import GitBranch from "lucide-svelte/icons/git-branch";
+	import Trash from "lucide-svelte/icons/trash";
 	import ShieldAlert from "lucide-svelte/icons/shield-alert";
+	import Terminal from "lucide-svelte/icons/terminal";
+	import BookMarked from "lucide-svelte/icons/book-marked";
 
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
@@ -26,6 +28,7 @@
 	import { Slider } from "$lib/components/ui/slider";
 	import { page } from "$app/state";
 	import { useDebounce } from "$lib/utils/debounce.svelte";
+	import RemoteSelector from "$lib/components/remote-selector.svelte";
 
 	let { data } = $props();
 	const { enhance, form } = useForm(data.form, {
@@ -201,10 +204,18 @@
 
 		{#snippet right()}
 			<div>
-				<h1 class="flex items-center gap-2 text-2xl font-bold">
-					Project: <code>@{page.data.session?.preferred_username}/{form.data.name}</code>
-					<CircleHelp size={16} />
+				<h1 class="flex items-center justify-between gap-2 text-2xl font-bold">
+					<span>
+						Project: <code>@{page.data.session?.preferred_username}/{form.data.name}</code
+						>
+					</span>
+					{#if data.entity}
+						<Button type="submit" size="icon" variant="destructive" formaction="?/delete" >
+							<Trash />
+						</Button>
+					{/if}
 				</h1>
+				<Separator class="my-1" />
 				<p class="text-muted-foreground text-sm">
 					A project is a collection of your work that includes a thumbnail image, a
 					detailed markdown description of the project's proceedings, and a brief summary
@@ -225,14 +236,53 @@
 					/>
 				</Control>
 				<Separator class="my-1" />
-				<Tabs.Root value="markdown">
+				{#if data.entity}
+					<Button
+						variant="ghost"
+						class="flex h-full w-full items-center justify-start gap-3 text-left"
+					>
+						<BookMarked class="text-muted-foreground" />
+						<div class="flex flex-col">
+							<span class="font-medium">DEMO</span>
+							<span class="text-muted-foreground text-sm">DEM</span>
+						</div>
+					</Button>
+
+					{#await markdownText}
+						Loading...
+					{:then text}
+						<Markdown variant="viewer" value={text} />
+					{:catch}
+						Error!
+					{/await}
+				{:else}
+					<Control
+						label="Markdown"
+						name="markdown"
+						errors={form.errors.markdown}
+						description="The markdown sheet is the project itself"
+					>
+						<Markdown
+							variant="editor"
+							placeholder="# This project is about..."
+							bind:value={form.data.markdown}
+							{...form.constraints.markdown}
+						/>
+					</Control>
+					<Alert.Root>
+						<Terminal class="size-4" />
+						<Alert.Title>Managed</Alert.Title>
+						<Alert.Description>A repository will be made for you</Alert.Description>
+					</Alert.Root>
+				{/if}
+
+				<!-- <Tabs.Root value="markdown">
 					<Tabs.List class="w-full">
 						<Tabs.Trigger class="w-full" value="github">Github</Tabs.Trigger>
 						<Tabs.Trigger class="w-full" value="thirdparty">Thirdparty</Tabs.Trigger>
 						<Tabs.Trigger class="w-full" value="markdown">Markdown</Tabs.Trigger>
 					</Tabs.List>
 					<Tabs.Content value="github">
-						<!-- TODO: Support proper github integration for more convenient access -->
 						<Alert.Root variant="warning">
 							<ShieldAlert class="size-4" />
 							<Alert.Title>Oops!</Alert.Title>
@@ -290,8 +340,6 @@
 							Error!
 						{/await}
 
-						<!-- Branch -->
-
 						{@render gitAlert()}
 					</Tabs.Content>
 					<Tabs.Content value="markdown" class="max-w-50">
@@ -304,7 +352,7 @@
 							/>
 						</Control>
 					</Tabs.Content>
-				</Tabs.Root>
+				</Tabs.Root> -->
 			</div>
 		{/snippet}
 	</Base>

@@ -20,6 +20,7 @@ using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
 using NXTBackend.API.Jobs;
 using NXTBackend.API.Jobs.Interface;
+using NXTBackend.API.Options;
 using NXTBackend.API.Utils;
 using Quartz;
 using Serilog;
@@ -114,6 +115,17 @@ public static class Startup
         services.AddDistributedMemoryCache();
         services.AddResponseCompression();
 
+        // HTTP Client
+        services.AddHttpClient("NXTGit", c => {
+            var options = builder.Configuration.GetGitRemoteOptions<GitRemoteOptions>()
+                ?? throw new InvalidDataException("Git remote settings not found in appsettings.json");
+
+            c.BaseAddress = new Uri(options.ApiUrl);
+            c.Timeout = TimeSpan.FromSeconds(30);
+            c.DefaultRequestHeaders.Add("User-Agent", "NXTBackend");
+            c.DefaultRequestHeaders.Accept.Add(new("application/json"));
+        });
+
         // Dependency Injection for Services
         services.AddScoped<ICursusService, CursusService>();
         services.AddScoped<IUserService, UserService>();
@@ -128,6 +140,7 @@ public static class Startup
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
         services.AddScoped<IGitService, GitService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
+        services.AddSingleton(TimeProvider.System);
         services.AddSingleton(TimeProvider.System);
 
         // Rate Limiting

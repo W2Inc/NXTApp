@@ -37,22 +37,31 @@ public class Git : BaseEntity
 {
     public Git()
     {
-        GitUrl = string.Empty;
-        GitBranch = string.Empty;
-        GitCommit = null;
+        Name = string.Empty;
+        Namespace = string.Empty;
+        Url = string.Empty;
+        Branch = string.Empty;
+        ProviderType = GitProviderKind.Managed;
+        OwnerType = GitOwnerKind.User;
     }
 
+    [Column("git_name")]
+    public string Name { get; set; }
+
+    [Column("git_namespace")]
+    public string Namespace { get; set; }
+
     [Column("git_url")]
-    public string GitUrl { get; set; }
+    public string Url { get; set; }
 
     [Column("git_branch")]
-    public string GitBranch { get; set; }
+    public string Branch { get; set; }
 
-    [Column("git_commit")]
-    public string? GitCommit { get; set; }
+    [Column("git_provider")]
+    public GitProviderKind ProviderType { get; set; }
 
-    [Column("source_kind")]
-    public GitSourceKind SourceKind { get; set; }
+    [Column("git_owner")]
+    public GitOwnerKind OwnerType { get; set; }
 
     public virtual IEnumerable<Project> Projects { get; set; }
 

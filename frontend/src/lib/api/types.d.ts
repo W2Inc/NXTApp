@@ -2328,7 +2328,7 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    category: components["schemas"]["Category"];
+                    category: "User" | "Project" | "Cursus" | "LearningGoal";
                 };
                 cookie?: never;
             };
@@ -4181,8 +4181,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @enum {unknown} */
-        Category: "User" | "Project" | "Cursus" | "LearningGoal";
         CursusDO: {
             /** Format: uuid */
             id: string;
@@ -4243,25 +4241,33 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            gitUrl: string;
-            gitBranch: string;
-            gitCommit: string | null;
-            gitKind: components["schemas"]["GitSourceKind"];
+            name: string;
+            namespace: string;
+            url: string;
+            branch: string;
+            providerType: components["schemas"]["GitProviderKind"];
+            ownerType: components["schemas"]["GitOwnerKind"];
         } | null;
         GitInfoRequestDto: {
+            gitNamespace: string;
+            gitName: string;
             /** Format: uri */
             gitUrl: string;
-            gitBranch?: string | null;
-            gitCommit?: string | null;
+            gitBranch: string;
+            sourceKind: components["schemas"]["GitProviderKind"];
         };
         GitInfoRequestDto2: {
+            gitNamespace: string;
+            gitName: string;
             /** Format: uri */
             gitUrl: string;
-            gitBranch?: string | null;
-            gitCommit?: string | null;
+            gitBranch: string;
+            sourceKind: components["schemas"]["GitProviderKind"];
         } | null;
         /** @enum {unknown} */
-        GitSourceKind: "Thirdparty" | "Managed" | "Github";
+        GitOwnerKind: "User" | "Organization";
+        /** @enum {unknown} */
+        GitProviderKind: "Other" | "Managed";
         GoalPatchRequestDto: {
             name?: string | null;
             description?: string | null;

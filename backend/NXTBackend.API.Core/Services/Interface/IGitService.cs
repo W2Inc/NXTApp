@@ -12,5 +12,11 @@ namespace NXTBackend.API.Core.Services.Interface;
 /// </summary>
 public interface IGitService : IDomainService<Git>
 {
-
+    /// <summary>
+    /// Creates a remote Git repository.
+    /// </summary>
+    /// <param name="repositoryName">Name of the repository to create</param>
+    /// <param name="description">Optional description for the repository</param>
+    /// <returns>The created Git repository details</returns>
+    Task<Git> CreateRemoteRepository(string repositoryName, string? description = null);
 }
