@@ -10,10 +10,13 @@
 	import { Input } from "$lib/components/ui/input";
 	import Control from "$lib/components/forms/control.svelte";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
+	import * as Popover from "$lib/components/ui/popover";
 
 	import Trash from "lucide-svelte/icons/trash";
-	import ShieldAlert from "lucide-svelte/icons/shield-alert";
+	import Code from "lucide-svelte/icons/code";
 	import Terminal from "lucide-svelte/icons/terminal";
+	import Copy from "lucide-svelte/icons/copy";
+	import CopyCheck from "lucide-svelte/icons/copy-check";
 	import BookMarked from "lucide-svelte/icons/book-marked";
 
 	import * as Dialog from "$lib/components/ui/dialog";
@@ -29,6 +32,8 @@
 	import { page } from "$app/state";
 	import { useDebounce } from "$lib/utils/debounce.svelte";
 	import RemoteSelector from "$lib/components/remote-selector.svelte";
+	import useClipboard from "$lib/utils/clipboard.svelte";
+	import { fade, scale } from "svelte/transition";
 
 	let { data } = $props();
 	const { enhance, form } = useForm(data.form, {
@@ -36,71 +41,81 @@
 	});
 
 	const debounce = useDebounce(450);
+	const clipboard = useClipboard("");
 	const formaction = $derived(data.entity ? `?/update` : "?/create");
-	const name = $derived(form.data.gitUrl);
 
 	let fileUpload: HTMLInputElement;
 
-	let markdownText = $state<Promise<string>>();
-	async function fetchMarkdown() {
-		if (!form.data.gitUrl) return;
-
-		let url = form.data.gitUrl.trim();
-		const branch = form.data.gitBranch ?? "Norme";
-
-		// Ensure URL ends with .git
-		if (!url.endsWith(".git")) {
-			toast.error("URL must end with .git");
-			return;
-		}
-
-		// Remove .git suffix
-		url = url.slice(0, -4);
-
-		try {
-			// Try different URL patterns based on provider
-			const urlPatterns = [
-				// GitHub
-				url.replace("github.com", "raw.githubusercontent.com") + `/${branch}/README.md`,
-				// GitLab
-				`${url}/-/raw/${branch}/README.md`,
-				// Gitea
-				`${url}/raw/branch/${branch}/README.md`,
-			];
-
-			for (const pattern of urlPatterns) {
-				try {
-					const response = await fetch(pattern);
-					if (response.ok) {
-						markdownText = response.text();
-						return;
-					}
-				} catch {}
-			}
-
-			toast.error("Unable to get README.md, perhaps it doesn't allow access ?");
-		} catch (error) {
-			toast.error("Failed to fetch README.md. Make sure the repository is accessible.");
-		}
-	}
+	const clients = [
+		{
+			title: "VSCode",
+			url: "vscode://vscode.git/clone?url=",
+		},
+		{
+			title: "VSCode Insiders",
+			url: "vscode-insiders://vscode.git/clone?url=",
+		},
+		{
+			title: "GitHub Desktop",
+			url: "x-github-client://openRepo/",
+		},
+		{
+			title: "GitKraken",
+			url: "gitkraken://repo/clone/",
+		},
+		{
+			title: "Sourcetree",
+			url: "sourcetree://cloneRepo/",
+		},
+		{
+			title: "Sublime Merge",
+			url: "sublime-merge://new/repo/",
+		},
+		{
+			title: "Fork",
+			url: "fork://cloneRepo/",
+		},
+	];
 </script>
 
-{#snippet gitAlert()}
-	<Separator class="my-2" />
-	<Alert.Root variant="warning">
-		<CircleHelp class="size-4" />
-		<Alert.Title>Project structure</Alert.Title>
-		<Alert.Description>
-			Projects using git source control need have at least 2 files present in their
-			repository:
-			<ul class="mb-1 list-disc pl-4">
-				<li class="underline">README.md</li>
-				<li class="underline">PROJECT.md</li>
-			</ul>
-			These files need to be present at the
-			<bold class="font-bold underline">root</bold> of the repository.
-		</Alert.Description>
-	</Alert.Root>
+{#snippet gitInstructions(gitInfo: BackendTypes["GitDO"])}
+	{#snippet instruction(title: string, action: string)}
+		<li class="marker:pl-4">
+			{title}
+			<pre class="bg-muted">
+				<code>{action}</code>
+			</pre>
+		</li>
+	{/snippet}
+
+	<Dialog.Root>
+		<Dialog.Trigger type="button" class={buttonVariants({ variant: "outline" })}>
+			<Terminal />
+			Clone via Terminal
+		</Dialog.Trigger>
+		<Dialog.Content>
+			<Dialog.Header>
+				<Dialog.Title>How to clone the project repository</Dialog.Title>
+				<Separator />
+				<Dialog.Description>
+					<ol class="markdown-body space-y-2">
+						{@render instruction("Clone the repository", `git clone ${gitInfo?.url}`)}
+						{@render instruction(
+							"Change into the project directory",
+							`cd ${gitInfo?.name}`,
+						)}
+						{@render instruction("Make changes to files using your editor", "code .")}
+						{@render instruction("Stage your changes", "git add .")}
+						{@render instruction(
+							"Commit your changes",
+							"git commit -m 'Your commit message'",
+						)}
+						{@render instruction("Push changes back to repository", "git push")}
+					</ol>
+				</Dialog.Description>
+			</Dialog.Header>
+		</Dialog.Content>
+	</Dialog.Root>
 {/snippet}
 
 <form method="POST" use:enhance>
@@ -210,7 +225,7 @@
 						>
 					</span>
 					{#if data.entity}
-						<Button type="submit" size="icon" variant="destructive" formaction="?/delete" >
+						<Button type="submit" size="icon" variant="destructive" formaction="?/delete">
 							<Trash />
 						</Button>
 					{/if}
@@ -236,123 +251,97 @@
 					/>
 				</Control>
 				<Separator class="my-1" />
+				<Control
+					label="Markdown"
+					name="markdown"
+					errors={form.errors.markdown}
+					description="The markdown sheet is the project itself"
+				>
+					<Markdown
+						variant="editor"
+						placeholder="# This project is about..."
+						bind:value={form.data.markdown}
+						{...form.constraints.markdown}
+					/>
+				</Control>
 				{#if data.entity}
-					<Button
-						variant="ghost"
-						class="flex h-full w-full items-center justify-start gap-3 text-left"
-					>
-						<BookMarked class="text-muted-foreground" />
-						<div class="flex flex-col">
-							<span class="font-medium">DEMO</span>
-							<span class="text-muted-foreground text-sm">DEM</span>
-						</div>
-					</Button>
-
-					{#await markdownText}
-						Loading...
-					{:then text}
-						<Markdown variant="viewer" value={text} />
-					{:catch}
-						Error!
-					{/await}
-				{:else}
 					<Control
-						label="Markdown"
+						label="Git Repository"
 						name="markdown"
 						errors={form.errors.markdown}
-						description="The markdown sheet is the project itself"
+						description="Projects are remotely stored on a git server that allows you to track and collaborate on files"
 					>
-						<Markdown
-							variant="editor"
-							placeholder="# This project is about..."
-							bind:value={form.data.markdown}
-							{...form.constraints.markdown}
-						/>
+						<div
+							class="flex h-full w-full items-center justify-start gap-3 rounded border p-3 text-left"
+						>
+							<BookMarked class="text-muted-foreground" />
+							<div class="flex flex-col">
+								<span class="font-medium">{data.entity.gitInfo?.name}</span>
+								<span class="text-muted-foreground text-sm">
+									{data.entity.gitInfo?.url}
+								</span>
+							</div>
+							<Separator class="flex-1" />
+							<Tippy text="View project repository">
+								<Button href={data.entity.gitInfo?.url} type="button" variant="outline">
+									View
+								</Button>
+							</Tippy>
+							<Tippy text="Copy GIT url to clipboard">
+								<Button
+									type="button"
+									size="icon"
+									variant="outline"
+									onclick={() => clipboard.copy(data.entity.gitInfo?.url)}
+								>
+									{#if clipboard.copied}
+										<span in:scale>
+											<CopyCheck />
+										</span>
+									{:else}
+										<span in:scale>
+											<Copy />
+										</span>
+									{/if}
+								</Button>
+							</Tippy>
+						</div>
 					</Control>
+					<Separator class="my-2" />
+					<Popover.Root>
+						<Popover.Trigger class={buttonVariants({ variant: "outline" })}>
+							<Code />
+							Open in...
+						</Popover.Trigger>
+						<Popover.Content class="w-90">
+							<div class="grid grid-cols-2 gap-2">
+								{#each clients as client}
+									<Button
+										type="button"
+										variant="outline"
+										class="justify-start px-2"
+										href={`${client.url}${data.entity.gitInfo?.url}`}
+									>
+										<Code />
+										{client.title}
+									</Button>
+								{/each}
+							</div>
+						</Popover.Content>
+					</Popover.Root>
+					{@render gitInstructions(data.entity.gitInfo)}
+				{:else}
+					<Separator class="my-2" />
 					<Alert.Root>
 						<Terminal class="size-4" />
 						<Alert.Title>Managed</Alert.Title>
-						<Alert.Description>A repository will be made for you</Alert.Description>
+						<Alert.Description>
+							Once you create your project, it will be created for you. You can visit the
+							repository and collaborate with others to push changes and track the project
+							markdown itself.
+						</Alert.Description>
 					</Alert.Root>
 				{/if}
-
-				<!-- <Tabs.Root value="markdown">
-					<Tabs.List class="w-full">
-						<Tabs.Trigger class="w-full" value="github">Github</Tabs.Trigger>
-						<Tabs.Trigger class="w-full" value="thirdparty">Thirdparty</Tabs.Trigger>
-						<Tabs.Trigger class="w-full" value="markdown">Markdown</Tabs.Trigger>
-					</Tabs.List>
-					<Tabs.Content value="github">
-						<Alert.Root variant="warning">
-							<ShieldAlert class="size-4" />
-							<Alert.Title>Oops!</Alert.Title>
-							<Alert.Description>
-								Proper integration with github as a source provider is not yet setup.
-								However you can still use it by defining it as a thirdparty source.
-							</Alert.Description>
-						</Alert.Root>
-						{@render gitAlert()}
-					</Tabs.Content>
-					<Tabs.Content value="thirdparty">
-						<Control label="Git Url" name="giturl" errors={form.errors.gitUrl}>
-							<div class="flex">
-								<div class="bg-muted center-content rounded-l border px-3">
-									<GitBranch size={20} />
-								</div>
-								<Input
-									id="giturl"
-									type="url"
-									name="giturl"
-									autocorrect="off"
-									autocomplete={null}
-									oninput={() => debounce(fetchMarkdown)}
-									placeholder="https://git-provider.com/scope/repo"
-									class="rounded-l-none border-l-0"
-									aria-invalid={form.errors.gitUrl ? "true" : undefined}
-									bind:value={form.data.gitUrl}
-									{...form.constraints.gitUrl}
-								/>
-							</div>
-						</Control>
-
-						<Control label="Git Branch" name="gitbranch" errors={form.errors.gitBranch}>
-							<Input
-								id="gitbranch"
-								type="text"
-								name="gitbranch"
-								autocorrect="off"
-								autocomplete={null}
-								oninput={() => debounce(fetchMarkdown)}
-								placeholder="master"
-								aria-invalid={form.errors.gitBranch ? "true" : undefined}
-								bind:value={form.data.gitBranch}
-								{...form.constraints.gitBranch}
-							/>
-						</Control>
-
-						{JSON.stringify(form.data)}
-
-						{#await markdownText}
-							Loading...
-						{:then text}
-							<Markdown variant="viewer" value={text} />
-						{:catch}
-							Error!
-						{/await}
-
-						{@render gitAlert()}
-					</Tabs.Content>
-					<Tabs.Content value="markdown" class="max-w-50">
-						<Control label="Git Branch" name="gitbranch" errors={form.errors.markdown}>
-							<Markdown
-								variant="editor"
-								placeholder="# This project is about..."
-								bind:value={form.data.markdown}
-								{...form.constraints.markdown}
-							/>
-						</Control>
-					</Tabs.Content>
-				</Tabs.Root> -->
 			</div>
 		{/snippet}
 	</Base>

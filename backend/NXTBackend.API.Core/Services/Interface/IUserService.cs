@@ -68,4 +68,12 @@ public interface IUserService : IDomainService<User>
     /// <param name="projectId"></param>
     /// <returns></returns>
     public Task<UserProject> UnsubscribeFromProject(Guid userId, Guid projectId);
+
+    /// <summary>
+    /// Get the learning goals of a user
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="projectId"></param>
+    /// <returns></returns>
+    public Task<IEnumerable<LearningGoal>> GetLearningGoals(Guid userId, PaginationParams pagination);
 }

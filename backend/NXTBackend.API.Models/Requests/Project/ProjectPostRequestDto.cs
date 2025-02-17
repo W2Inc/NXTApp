@@ -55,15 +55,5 @@ public class ProjectPostRequestDto : BaseRequestDTO
     [Required]
     public bool Enabled { get; set; }
 
-    /// <summary>
-    /// The git information (Url, branch, commit) of the project
-    /// TODO: Use the GitInfoPostRequestDto
-    /// </summary>
-    [Required]
-    public GitInfoRequestDto GitInfo { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
     public string[] Tags { get; set; }
 }

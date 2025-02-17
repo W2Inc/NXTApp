@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using NXTBackend.API.Core.Services;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Infrastructure.Database;
@@ -122,11 +123,10 @@ public static class Startup
 
             c.BaseAddress = new Uri(options.ApiUrl);
             c.Timeout = TimeSpan.FromSeconds(30);
-            c.DefaultRequestHeaders.Add("User-Agent", "NXTBackend");
-            c.DefaultRequestHeaders.Accept.Add(new("application/json"));
         });
 
         // Dependency Injection for Services
+        services.AddHttpContextAccessor();
         services.AddScoped<ICursusService, CursusService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserCursusService, UserCursusService>();
@@ -140,7 +140,6 @@ public static class Startup
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
         services.AddScoped<IGitService, GitService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
-        services.AddSingleton(TimeProvider.System);
         services.AddSingleton(TimeProvider.System);
 
         // Rate Limiting

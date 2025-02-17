@@ -6,7 +6,7 @@
 import { z } from "zod";
 import type { Actions, PageServerLoad, RequestEvent } from "./$types";
 import { problem, success, validate } from "$lib/utils/form.svelte";
-import { error } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 import { logger } from "$lib/logger";
 
 // Form Schema
@@ -25,9 +25,6 @@ const schema = z.object({
 	maxMembers: z.number().min(1).max(5),
 	enabled: z.coerce.boolean(),
 	public: z.coerce.boolean(),
-	gitUrl: z.string().optional(),
-	gitBranch: z.string().optional(),
-	gitKind: z.enum(["Thirdparty" , "Managed" , "Github"]),
 	image: z
 		.union([
 			z.string(),
@@ -64,11 +61,20 @@ async function fetchProject(locals: App.Locals, id: string) {
 export const load: PageServerLoad = async ({ request, locals, url }) => {
 	const form = await validate(request, schema);
 	if (url.searchParams.has("edit")) {
-		const { error: err, data } = await locals.api.GET("/projects/{id}", {
+		const {
+			error: err,
+			data,
+			response,
+		} = await locals.api.GET("/projects/{id}", {
 			params: { path: { id: url.searchParams.get("edit")! } },
 		});
 
+		if (response.status === 404) {
+			error(404);
+		}
+
 		if (err || !data) {
+			logger.info(`${response.status}`);
 			error(err?.status ?? 500, err?.title ?? "Something went wrong...");
 		}
 
@@ -91,7 +97,6 @@ export const load: PageServerLoad = async ({ request, locals, url }) => {
 		markdown: "",
 		maxMembers: 1,
 		public: false,
-		gitKind: "Thirdparty",
 		enabled: false,
 	};
 
@@ -105,27 +110,61 @@ export const actions: Actions = {
 		const session = (await locals.session()) ?? error(401, "No session");
 		const form = await validate(request, schema);
 
-		logger.debug(`Submitted Form => ${url}`, form.data)
+		logger.debug(`Submitted Form => ${url}`, form.data);
 
 		if (!form.valid) {
 			logger.debug("Invalid form", form.errors);
 			return problem(400, "Unable to update project", { form });
 		}
 
-		let avatarUrl: string | undefined;
+		const { response, data, error: err } = await locals.api.POST("/projects", {
+			body: {
+				name: form.data.name,
+				description: form.data.description,
+				markdown: form.data.markdown,
+				maxMembers: form.data.maxMembers,
+				public: form.data.public,
+				enabled: form.data.enabled,
+				thumbnailUrl: "https://example.com",
+				tags: []
+			},
+		});
 
-		return success("Created!", { form });
+		if (err || !data || !response.ok) {
+			logger.error(err);
+			return problem(response.status, err?.title ?? "S", { form });
+		}
+		return redirect(303, `/new/project?edit=${data.id}`)
 	},
 	update: async ({ url, locals, request }) => {
 		const session = (await locals.session()) ?? error(401, "No session");
 		const form = await validate(request, schema);
 		let avatarUrl: string | undefined;
 
-		logger.debug(`Submitted Form => ${url}`, form.data)
+		logger.debug(`Submitted Form => ${url}`, form.data);
 
 		if (!form.valid) {
 			logger.debug("Invalid form", form.errors);
 			return problem(400, "Unable to update project", { form });
+		}
+
+		logger.info("Updating:", url.searchParams.get("edit"), url)
+		const { response, data, error: err } = await locals.api.PATCH("/projects/{id}", {
+			params: { path: { id: "019504a3-a0e9-70fe-b392-e4ef023addf5" }},
+			body: {
+				name: form.data.name,
+				description: form.data.description,
+				markdown: form.data.markdown,
+				maxMembers: form.data.maxMembers,
+				public: form.data.public,
+				enabled: form.data.enabled,
+				tags: []
+			},
+		});
+
+		if (err || !data || !response.ok) {
+			logger.error(err);
+			return problem(response.status, err?.title ?? "S", { form });
 		}
 
 		return success("Updated!", { form });

@@ -26,7 +26,7 @@
 	import * as Breadcrumb from "./ui//breadcrumb";
 	import Search from "./search/search.svelte";
 	import type { IconLink } from "$lib/types";
-	import { Constants, encodeUUID64 } from "$lib/utils";
+	import { Constants, encodeID } from "$lib/utils";
 	import { hasRole } from "$lib/utils/roles.svelte";
 
 	const links: IconLink[] = [
@@ -142,7 +142,7 @@
 								{@render link({
 									icon: User,
 									title: "Profile",
-									href: `/users/${encodeUUID64(page.data.session?.user_id)}`,
+									href: `/users/${encodeID(page.data.session?.user_id)}`,
 								})}
 							</DropdownMenu.Item>
 							<DropdownMenu.Item>

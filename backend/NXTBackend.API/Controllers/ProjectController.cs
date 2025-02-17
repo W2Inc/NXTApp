@@ -64,14 +64,8 @@ public class ProjectController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDto data)
     {
-        Git git = new()
-        {
-
-        };
-
-        // gitService.CreateRemoteRepository(data.Name)
-
-
+        // 1. Create Git repository
+        var git = await gitService.CreateRemoteRepository(data.Name, data.Description);
         var project = await projectService.CreateProjectWithGit(new()
         {
             CreatorId = User.GetSID(),
@@ -125,6 +119,7 @@ public class ProjectController(
         }
 
         var updatedProject = await projectService.UpdateAsync(project);
+        await gitService.UpsertFile(updatedProject.Creator.Login, project.Name, "README.md", data.Markdown, "Update README.md");
         return Ok(new ProjectDO(updatedProject));
     }
 

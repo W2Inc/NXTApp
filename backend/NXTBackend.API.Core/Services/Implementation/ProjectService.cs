@@ -23,9 +23,8 @@ public sealed class ProjectService : BaseService<Project>, IProjectService
 
     public async Task<Project> CreateProjectWithGit(Project project, Git git)
     {
-        var gitInfo = await _context.GitInfo.AddAsync(git);
         var newProject = await _context.Projects.AddAsync(project);
-        newProject.Entity.GitInfoId = gitInfo.Entity.Id;
+        newProject.Entity.GitInfoId = git.Id;
         await _context.SaveChangesAsync();
         return newProject.Entity;
     }

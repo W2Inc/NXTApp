@@ -3,7 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
-import { decodeUUID64 } from "$lib/utils";
+import { decodeID } from "$lib/utils";
 import type { ParamMatcher } from "@sveltejs/kit";
 
 // ============================================================================

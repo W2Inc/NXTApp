@@ -4255,14 +4255,6 @@ export interface components {
             gitUrl: string;
             gitBranch: string;
             sourceKind: components["schemas"]["GitProviderKind"];
-        };
-        GitInfoRequestDto2: {
-            gitNamespace: string;
-            gitName: string;
-            /** Format: uri */
-            gitUrl: string;
-            gitBranch: string;
-            sourceKind: components["schemas"]["GitProviderKind"];
         } | null;
         /** @enum {unknown} */
         GitOwnerKind: "User" | "Organization";
@@ -4370,7 +4362,7 @@ export interface components {
             thumbnailUrl?: string | null;
             public?: boolean | null;
             enabled?: boolean | null;
-            gitInfo?: components["schemas"]["GitInfoRequestDto2"];
+            gitInfo?: components["schemas"]["GitInfoRequestDto"];
         };
         ProjectPostRequestDto: {
             name: string;
@@ -4382,7 +4374,6 @@ export interface components {
             thumbnailUrl: string;
             public: boolean;
             enabled: boolean;
-            gitInfo: components["schemas"]["GitInfoRequestDto"];
             tags?: string[];
         };
         ReviewDO: {

@@ -29,6 +29,7 @@ public class UserController(
     ILogger<UserController> logger,
     IUserService userService,
     IUserProjectService userProjectService,
+    IUserGoalService userGoalService,
     ISpotlightEventService spotlightService,
     ISpotlightEventActionService spotlightActionService
 ) : Controller
@@ -257,15 +258,24 @@ public class UserController(
     [EndpointDescription("")]
     [ProducesResponseType<UserGoalDO[]>(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetUserGoals(Guid id, [FromQuery] PaginationParams pagination)
+    public async Task<IActionResult> GetUserGoals(
+        Guid id,
+        [FromQuery] PaginationParams pagination,
+        [FromQuery] SortingParams sorting,
+        [FromQuery(Name = "filter[name]"), Description("The name of the learning goal")] string? goalName
+    )
     {
         var user = await userService.FindByIdAsync(id);
         if (user is null)
             return NotFound("User not found");
 
-        return Ok();
-        // var cursi = await userService.GetUserGoals(user, pagination);
-        // return Ok(cursi.Items.Select(c => new UserGoalDO(c)));
+        var filters = new FilterDictionary()
+            .AddFilter("name", goalName)
+            .AddFilter("user_id", id);
+
+        var page = await userGoalService.GetAllAsync(pagination, sorting, filters);
+        page.AppendHeaders(Response.Headers);
+        return Ok(page.Items.Select(c => new UserGoalDO(c)));
     }
 
 

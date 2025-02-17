@@ -5,7 +5,7 @@
 
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad, RouteParams } from "./$types";
-import { decodeUUID64 } from "$lib/utils";
+import { decodeID } from "$lib/utils";
 
 // ============================================================================
 
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// First try to get the user's project subscription
 	const { data: userProjectData, error: userProjectError } = await locals.api.GET("/users/{id}/projects", {
 		params: {
-			path: { id: decodeUUID64(params.id) },
+			path: { id: decodeID(params.id) },
 			query: { "filter[slug]": params.project },
 		},
 	});

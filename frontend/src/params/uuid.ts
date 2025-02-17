@@ -3,12 +3,12 @@
 // See README in the root project for more information.
 // ============================================================================
 
-import { decodeUUID64 } from "$lib/utils";
+import { decodeID } from "$lib/utils";
 import type { ParamMatcher } from "@sveltejs/kit";
 
 // ============================================================================
 
 export const match: ParamMatcher = (param) => {
-	const uuid = decodeUUID64(param);
+	const uuid = decodeID(param);
 	return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
 };

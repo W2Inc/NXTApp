@@ -6,6 +6,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { getContext, setContext } from "svelte";
 import { twMerge } from "tailwind-merge";
+import { Base58 } from "./base58";
 
 // ============================================================================
 
@@ -29,34 +30,18 @@ export namespace Constants {
 // ============================================================================
 
 /**
- * Encode a UUID V4/7 into a URL Friendly short format.
+ * Encode a ID to a url friendy format
  * @param uuid The UUID
  * @returns The shortened UUID Version.
  */
-export function encodeUUID64(uuid: string) {
-	const hex = uuid.replace(/-/g, "");
-	const binary =
-		hex
-			.match(/.{1,2}/g)
-			?.map((byte) => String.fromCharCode(parseInt(byte, 16)))
-			.join("") || "";
-	return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-}
+export const encodeID = (uuid: string) => Base58.encodeUUID(uuid);
 
-export function decodeUUID64(encoded: string) {
-	const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
-	const binary = atob(base64);
-	const hex = Array.from(binary)
-		.map((char) => char.charCodeAt(0).toString(16).padStart(2, "0"))
-		.join("");
-	return [
-		hex.slice(0, 8),
-		hex.slice(8, 12),
-		hex.slice(12, 16),
-		hex.slice(16, 20),
-		hex.slice(20),
-	].join("-");
-}
+/**
+ *
+ * @param uuid
+ * @returns
+ */
+export const decodeID = (uuid: string) => Base58.decodeToUUID(uuid);
 
 // ============================================================================
 

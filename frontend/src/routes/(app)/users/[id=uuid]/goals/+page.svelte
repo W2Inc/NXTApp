@@ -11,10 +11,11 @@
 	import { z } from "zod";
 	import { useDebounce } from "$lib/utils/debounce.svelte";
 	import Base from "$lib/components/base.svelte";
+	import type { PageProps } from "./$types";
 
+	const { data }: PageProps = $props();
 	const debounce = useDebounce();
 	const query = useQuery(
-		$page.url.href,
 		z.object({
 			page: z.number().default(0),
 			search: z.string().nullable(),
@@ -47,13 +48,13 @@
 			oninput={(e) => debounce(setSearchQuery, e.currentTarget.value.trim())}
 		/>
 
-		<Label for="search-cursus">Search</Label>
+		<!-- <Label for="search-cursus">Search</Label>
 		<Input
 			id="search-cursus"
 			type="search"
 			placeholder="Search for cursus"
 			oninput={(e) => debounce(setFilterQuery)}
-		/>
+		/> -->
 	{/snippet}
 
 	{#snippet right()}
@@ -80,12 +81,9 @@
 			</nav>
 			<Separator class="my-2" />
 			<div class="flex flex-wrap gap-4">
-				<Taskcard href="goals/1" type="goal" title="Cursus!" />
-				<Taskcard href="goals/1" type="goal" title="Cursus!" />
-				<Taskcard href="goals/1" type="goal" title="Cursus!" />
-				<Taskcard href="goals/1" type="goal" title="Cursus!" />
-				<Taskcard href="goals/1" type="goal" title="Cursus!" />
-				<Taskcard href="goals/1" type="goal" title="Cursus!" />
+				{#each data.goals as goals}
+					<Taskcard href="goals/1" type="goal" title="Cursus!" />
+				{/each}
 			</div>
 		</div>
 	{/snippet}

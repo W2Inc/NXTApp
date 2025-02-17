@@ -21,9 +21,10 @@
 	import type { Component } from "svelte";
 	import Heart from "lucide-svelte/icons/heart";
 	import type { IconLink } from "$lib/types";
-	import { encodeUUID64 } from "$lib/utils";
+	import { encodeID } from "$lib/utils";
 
-	const id = page.data.session?.user_id ?? null;
+
+	const id = encodeID(page.data.session?.user_id ?? "null");
 	const links = $state.raw<IconLink[]>([
 		{
 			icon: User,

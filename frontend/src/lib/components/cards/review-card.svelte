@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Avatar from "$lib/components/ui/avatar";
-	import { encodeUUID64 } from "$lib/utils";
+	import { encodeID } from "$lib/utils";
 	import FormatDate from "$lib/utils/date.svelte";
 	import ArrowRight from "lucide-svelte/icons/arrow-right";
 
@@ -55,7 +55,7 @@
 
 <li>
 	<a
-		href="/reviews/{encodeUUID64(review.id ?? '')}"
+		href="/reviews/{encodeID(review.id ?? '')}"
 		class="center-content group cursor-pointer justify-between rounded border bg-muted p-2 pr-4 shadow-sm dark:border-none"
 	>
 		<div class="center-content">

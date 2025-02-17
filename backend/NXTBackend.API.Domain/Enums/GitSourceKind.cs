@@ -15,6 +15,7 @@ public enum GitProviderKind
 {
     /// <summary>
     /// External source control other than Github. E.g: (Gitea, Gitlab, Custom Home server, ...)
+    /// TODO: Not implemented yet
     /// </summary>
     [JsonPropertyName(nameof(Other))]
     Other,

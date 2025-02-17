@@ -46,7 +46,7 @@ const routes: Record<string, Role[]> = {
 	"/": [],
 	"/settings": [],
 	"/auth": [],
-	"/users": ["student"],
+	"/users": [],
 	"/new": [],
 };
 

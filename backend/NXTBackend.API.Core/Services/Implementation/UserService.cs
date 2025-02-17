@@ -21,6 +21,8 @@ public sealed class UserService : BaseService<User>, IUserService
 {
     public UserService(DatabaseContext ctx) : base(ctx)
     {
+        // DefineFilter<string>("goal_name", (q, name) => q.Where((u) => u.UserGoals.Any(ug => EF.Functions.Like(ug.Goal.Name, $"%{name}%"))));
+
         // DefineFilter<bool>("subscribed", (q, subscribed) => {
         //     q.Where((p) => )
         // });
@@ -51,6 +53,11 @@ public sealed class UserService : BaseService<User>, IUserService
         query = ApplyFilters(query, filters);
         query = await SortedList<User>.ApplyAsync(query, sorting);
         return await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
+    }
+
+    public Task<IEnumerable<LearningGoal>> GetLearningGoals(Guid userId, PaginationParams pagination)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<IEnumerable<SpotlightEvent>> GetSpotlights(Guid id)

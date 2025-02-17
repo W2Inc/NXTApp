@@ -2,7 +2,7 @@
 	import { page } from "$app/state";
 	import Navgroup from "$lib/components/navgroup.svelte";
 	import type { IconLink } from "$lib/types";
-	import { decodeUUID64, encodeUUID64 } from "$lib/utils.js";
+	import { decodeID, encodeID } from "$lib/utils.js";
 	import Trophy from "lucide-svelte/icons/trophy";
 	import Archive from "lucide-svelte/icons/archive";
 	import GraduationCap from "lucide-svelte/icons/graduation-cap";
@@ -35,38 +35,42 @@
 			title: "Galaxy",
 		},
 	]);
+
+	const socials = [
+		{ label: "Website", url: data.user.details?.websiteUrl },
+		{ label: "LinkedIn", url: data.user.details?.linkedinUrl },
+		{ label: "Twitter", url: data.user.details?.twitterUrl },
+		{ label: "GitHub", url: data.user.details?.githubUrl },
+	].filter((s) => s.url);
 </script>
 
 <div class="m-auto max-w-5xl px-4 py-8">
-	<div
-		class="flex p-8 rounded gap-4 bg-[url('/img.png')]"
-	>
+	<div class="flex gap-4 rounded bg-[url('/img.png')] p-8">
 		<Avatar.Root class="size-32 rounded-sm border border-gray-700">
 			<Avatar.Image
-				src="https://github.com/w2wizard.png"
+				src={data.user.avatarUrl}
 				class="border-gray-400"
-				alt="@w2wizard"
+				alt={data.user.login}
 			/>
 			<Avatar.Fallback class="rounded-sm">CN</Avatar.Fallback>
 		</Avatar.Root>
-		<div class="backdrop-blur-sm flex-1 rounded-lg px-4 py-2 bg-gray-700 bg-opacity-[0.2]">
-			<h1 class="md:text-2xl sm:text-lg font-bold">Display Name</h1>
+		<div
+			class="flex-1 rounded-lg bg-gray-700 bg-opacity-[0.2] px-4 py-2 backdrop-blur-sm"
+		>
+			<h1 class="font-bold sm:text-lg md:text-2xl">{data.user.displayName}</h1>
 			<div class="flex gap-1">
-				<a
-					href="https://github.com/w2wizard"
-					target="_blank"
-					class="text-blue-500 hover:underline">GitHub</a
-				>
-				<a
-					href="https://linkedin.com/in/w2wizard"
-					target="_blank"
-					class="text-blue-500 hover:underline">LinkedIn</a
-				>
+				{#each socials as social}
+					<a href={social.url} target="_blank" class="text-blue-500 hover:underline"
+						>{social.label}</a
+					>
+				{/each}
 			</div>
 		</div>
 	</div>
-	<div class="grid grid-cols-1 md:grid-cols-[256px,1fr] gap-2 pt-4">
+	<div class="grid grid-cols-1 gap-2 pt-4 md:grid-cols-[256px,1fr]">
 		<Navgroup title="General" navs={links}></Navgroup>
-			<Markdown variant="viewer" value="~~Markdown~~" />
+		{#if data.bio}
+			<Markdown variant="viewer" value={data.bio} />
+		{/if}
 	</div>
 </div>

@@ -5,7 +5,8 @@
 
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad, RouteParams } from "./$types";
-import { Constants, decodeUUID64 } from "$lib/utils";
+import { Constants, decodeID } from "$lib/utils";
+import { logger } from "$lib/logger";
 
 // ============================================================================
 
@@ -16,7 +17,11 @@ async function fetchProjects(locals: App.Locals, url: URL, id: string) {
 	const subscribed = url.searchParams.get("subscribed") === "true";
 
 	if (!subscribed) {
-		const { data, error: err } = await locals.api.GET("/projects", {
+		const {
+			data,
+			error: err,
+			response,
+		} = await locals.api.GET("/projects", {
 			params: {
 				query: {
 					Size: Constants.PER_PAGE,
@@ -27,14 +32,17 @@ async function fetchProjects(locals: App.Locals, url: URL, id: string) {
 			},
 		});
 
-		if (err) throw new Error(err.title || "Something went wrong...");
-		console.log(data)
+		logger.debug(`Response => ${response.url}`, { data });
 		return data!;
 	} else {
-		const { data, error: err, response } = await locals.api.GET("/users/{id}/projects", {
+		const {
+			data,
+			error: err,
+			response,
+		} = await locals.api.GET("/users/{id}/projects", {
 			params: {
 				path: {
-					id
+					id,
 				},
 				query: {
 					Size: Constants.PER_PAGE,
@@ -44,9 +52,7 @@ async function fetchProjects(locals: App.Locals, url: URL, id: string) {
 			},
 		});
 
-
-		if (err) throw new Error(err.title || "Something went wrong...");
-		console.log(data)
+		logger.debug(`Response => ${response.url}`, { data });
 		return data;
 	}
 }
@@ -55,6 +61,6 @@ async function fetchProjects(locals: App.Locals, url: URL, id: string) {
 
 export const load: PageServerLoad = async ({ locals, url, params }) => {
 	return {
-		projects: fetchProjects(locals, url, decodeUUID64(params.id)),
+		projects: fetchProjects(locals, url, decodeID(params.id)),
 	};
 };

@@ -13,7 +13,7 @@
 	import Trash from "lucide-svelte/icons/trash";
 	import SearchApi from "$lib/components/search-api.svelte";
 	import { SvelteSet } from "svelte/reactivity";
-	import { encodeUUID64 } from "$lib/utils";
+	import { encodeID } from "$lib/utils";
 	import { page } from "$app/state";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
 	import { useForm } from "$lib/utils/form.svelte.js";
@@ -193,7 +193,7 @@
 										<input hidden name="projects[]" value={form.data.projects[i]} />
 										<a
 											class="capitalize underline decoration-wavy"
-											href="/users/{encodeUUID64(
+											href="/users/{encodeID(
 												page.data.session?.user?.id ?? '',
 											)}/projects/{p.slug}"
 											target="_blank"
@@ -205,7 +205,7 @@
 									<Table.Cell>
 										<a
 											class="text-primary underline decoration-wavy"
-											href="/users/{encodeUUID64(p.creator?.id)}"
+											href="/users/{encodeID(p.creator?.id)}"
 											target="_blank"
 											rel="noopener noreferrer"
 										>
