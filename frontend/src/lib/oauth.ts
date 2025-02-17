@@ -153,6 +153,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 					// e.g: Invalid grant aka token & refresh token expired
 					/** @see https://datatracker.ietf.org/doc/html/rfc6749#section-5.2 */
 					logger.debug("Failed to request new tokens", e)
+
 				}
 				if (e instanceof arctic.ArcticFetchError) {
 					// Failed to call `fetch()`
@@ -160,6 +161,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 					error(500, e.message);
 				}
 				deleteCookies();
+				redirect(303, "/");
 			}
 		} else {
 			// No refresh token available; clear the expired access token

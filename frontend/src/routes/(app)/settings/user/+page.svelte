@@ -11,16 +11,21 @@
 	import { dialog } from "$lib/components/dialog/state.svelte.js";
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import { mode } from "mode-watcher";
-	import Markdown from "$lib/components/markdown/markdown.svelte";
+	import Markdown2 from "$lib/components/markdown/markdown.svelte";
 	import { useForm } from "$lib/utils/form.svelte.js";
 	import { page } from "$app/state";
 	import { Constants } from "$lib/utils.js";
 	import { preview } from "$lib/utils/image.svelte.js";
 	import { toast } from "svelte-sonner";
 	import Tippy from "$lib/components/tippy.svelte";
+	import Markdown from "svelte-exmarkdown";
 
 	const { data } = $props();
 	const { enhance, form } = useForm(data.form, { confirm: true });
+
+	// HACK: Some sort of issue where svelte-exmarkdown want it to be state... but yeah?
+	let md = $state(form.data.markdown.toString())
+
 
 	let fileUpload: HTMLInputElement;
 	async function deleteCache() {
@@ -34,12 +39,14 @@
 			toast.success("Cache cleared");
 		}
 	}
+
 </script>
 
 <form method="POST" use:enhance enctype="multipart/form-data">
 	<h1 class="text-2xl">Profile Settings</h1>
 	<p class="text-muted-foreground text-sm">
-		Configure your profile here in any way you want. You may provide a brief introduction about yourself, include any relevant links, and update your avatar if desired.
+		Configure your profile here in any way you want. You may provide a brief introduction
+		about yourself, include any relevant links, and update your avatar if desired.
 	</p>
 	<Separator class="my-2" />
 	<Control
@@ -59,12 +66,12 @@
 			<div class="relative">
 				<img
 					use:preview={{ input: fileUpload }}
-					src={form.data.image as string ?? Constants.FALLBACK_IMG}
+					src={(form.data.image as string) ?? Constants.FALLBACK_IMG}
 					alt="logo"
-					class="max-h-52 w-full border object-cover rounded"
+					class="max-h-52 w-full rounded border object-cover"
 				/>
 				<div
-					class="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 rounded"
+					class="absolute inset-0 rounded bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
 				>
 					<Upload class="absolute inset-0 z-[1] m-auto size-8 text-white" />
 				</div>
@@ -237,10 +244,10 @@
 		errors={form.errors.markdown}
 		description="Here you can write about yourself"
 	>
-		<Markdown
+		<Markdown2
 			variant="editor"
 			placeholder="# This project is about..."
-			bind:value={form.data.markdown}
+			bind:value={md}
 			{...form.constraints.markdown}
 		/>
 	</Control>

@@ -14,7 +14,7 @@ const schema = z.object({
 	firstName: z.string().nullish(),
 	lastName: z.string().nullish(),
 	displayName: z.string().min(4).max(128).nullish(),
-	markdown: z.string().min(4).max(2048).nullish(),
+	markdown: z.string().min(4).max(2048),
 	website: z.string().url().startsWith("https://").nullish(),
 	twitter: z.string().url().startsWith("https://x.com/").nullish(),
 	linkedin: z.string().url().startsWith("https://linkedin.com/").nullish(),
@@ -41,6 +41,7 @@ export const load: PageServerLoad = async ({ locals, request, url }) => {
 	const [userData, userBio] = await Promise.all([
 		locals.api.GET("/users/current"),
 		locals.api.GET("/users/{id}/bio", {
+			parseAs: "text",
 			params: { path: { id: session.user_id } },
 		}),
 	]);
@@ -103,7 +104,6 @@ export const actions = {
 				locals.api.PUT("/users/{id}/details", {
 					params: { path: { id: session.user_id } },
 					body: {
-						bio: form.data.markdown,
 						firstName: form.data.firstName,
 						lastName: form.data.lastName,
 						websiteUrl: form.data.website,
@@ -111,6 +111,10 @@ export const actions = {
 						linkedinUrl: form.data.linkedin,
 						githubUrl: form.data.github,
 					},
+				}),
+				locals.api.PUT("/users/{id}/bio", {
+					params: { path: { id: session.user_id } },
+					body: form.data.markdown
 				}),
 			]);
 
