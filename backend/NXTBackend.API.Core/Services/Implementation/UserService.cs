@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
@@ -10,6 +9,7 @@ using NXTBackend.API.Models;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Models.Responses.Objects;
 using Microsoft.AspNetCore.Http;
+using NXTBackend.API.Domain.Entities.Spotlight;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 

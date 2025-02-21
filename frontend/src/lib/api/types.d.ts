@@ -3459,6 +3459,10 @@ export interface paths {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                    /** @description The name of the learning goal */
+                    "filter[name]"?: string;
                 };
                 header?: never;
                 path: {

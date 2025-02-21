@@ -25,7 +25,8 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "cursus_kind", new[] { "dynamic", "fixed" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "member_invite_state", new[] { "pending", "accepted" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "notification_kind", new[] { "default", "new_cursus", "new_project", "new_goal", "new_event" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "notification_kind", new[] { "default", "invite", "system" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "notification_state", new[] { "none", "read" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "review_kind", new[] { "self", "peer", "async", "auto" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "review_state", new[] { "pending", "in_progress", "finished" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "task_state", new[] { "inactive", "active", "awaiting", "completed" });
@@ -422,52 +423,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.ToTable("tbl_learning_goal");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Notification.SpotlightEvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ActionText")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("action_text");
-
-                    b.Property<string>("BackgroundUrl")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("background_url");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Href")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("href");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("title");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("tbl_spotlight_event");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Notification.SpotlightEventAction", b =>
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Notification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -478,25 +434,30 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<bool>("IsDismissed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_dismissed");
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer")
+                        .HasColumnName("kind");
 
-                    b.Property<Guid>("SpotlightId")
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("message");
+
+                    b.Property<Guid?>("ResourceId")
                         .HasColumnType("uuid")
-                        .HasColumnName("spotlight_id");
+                        .HasColumnName("resource_id");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
                     b.HasKey("Id");
 
-                    b.ToTable("tbl_spotlight_event_action");
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("Kind");
+
+                    b.ToTable("tbl_notifications");
                 });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Project", b =>
@@ -574,6 +535,83 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.HasIndex("Slug");
 
                     b.ToTable("tbl_project");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Spotlight.SpotlightEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ActionText")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("action_text");
+
+                    b.Property<string>("BackgroundUrl")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("background_url");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Href")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("href");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_spotlight_event");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Spotlight.SpotlightEventAction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsDismissed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_dismissed");
+
+                    b.Property<Guid>("SpotlightId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("spotlight_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("tbl_spotlight_event_action");
                 });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.Details", b =>
@@ -786,6 +824,53 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("tbl_user_goal");
+                });
+
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("NotificationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("notification_id");
+
+                    b.Property<DateTimeOffset?>("ReadAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("read_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("NotificationId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "NotificationId")
+                        .IsUnique();
+
+                    b.ToTable("tbl_user_notifications");
                 });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserProject", b =>
@@ -1055,6 +1140,25 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("UserCursus");
                 });
 
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserNotification", b =>
+                {
+                    b.HasOne("NXTBackend.API.Domain.Entities.Notification", "Notification")
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
+                        .WithMany("UserNotifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Notification");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserProject", b =>
                 {
                     b.HasOne("NXTBackend.API.Domain.Entities.Git", "GitInfo")
@@ -1108,6 +1212,11 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("UserGoals");
                 });
 
+            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Notification", b =>
+                {
+                    b.Navigation("UserNotifications");
+                });
+
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Project", b =>
                 {
                     b.Navigation("Rubrics");
@@ -1134,6 +1243,8 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("UserCursi");
 
                     b.Navigation("UserGoals");
+
+                    b.Navigation("UserNotifications");
                 });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.UserCursus", b =>

@@ -4,7 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
-using NXTBackend.API.Domain.Entities.Notification;
+using NXTBackend.API.Domain.Entities.Spotlight;
 
 // ============================================================================
 

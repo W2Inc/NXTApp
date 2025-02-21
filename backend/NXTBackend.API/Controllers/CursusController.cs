@@ -13,7 +13,6 @@ using NXTBackend.API.Core.Graph;
 using NXTBackend.API.Core.Graph.V1;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
-using NXTBackend.API.Domain.Entities.Notification;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;

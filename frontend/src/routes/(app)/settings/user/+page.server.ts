@@ -13,7 +13,15 @@ const schema = z.object({
 	login: z.string().readonly(),
 	firstName: z.string().nullish(),
 	lastName: z.string().nullish(),
-	displayName: z.string().min(4).max(128).nullish(),
+	displayName: z
+		.string()
+		.min(4)
+		.max(128)
+		.regex(
+			/^[a-zA-Z0-9]+(?:[_-][a-zA-Z0-9]+)*$/,
+			"Display name can only contain letters, numbers and dashes",
+		)
+		.nullish(),
 	markdown: z.string().min(4).max(2048),
 	website: z.string().url().startsWith("https://").nullish(),
 	twitter: z.string().url().startsWith("https://x.com/").nullish(),
@@ -24,11 +32,7 @@ const schema = z.object({
 			z.string(),
 			z
 				.instanceof(File, { message: "Please upload a file." })
-				.refine((file) => file.size < 100_000, "Max 100 kB upload size.")
-				// .refine((file) => {
-				// 	const ext = file.name.toLowerCase().split(".").pop();
-				// 	return ["jpg", "jpeg", "png", "gif"].includes(ext ?? "");
-				// }, "Only jpg, png, and gif images are allowed."),
+				.refine((file) => file.size < 100_000, "Max 100 kB upload size."),
 		])
 		.optional(),
 });
@@ -67,7 +71,7 @@ export const load: PageServerLoad = async ({ locals, request, url }) => {
 		github: data.details?.githubUrl,
 	};
 
-	logger.debug(`Form data on ${url}`, form.data)
+	logger.debug(`Form data on ${url}`, form.data);
 
 	return { form };
 };
@@ -78,11 +82,11 @@ export const actions = {
 		const form = await validate(request, schema);
 		let avatarUrl: string | undefined;
 
-		logger.debug(`Submitted Form => ${url}`, form.data)
+		logger.debug(`Submitted Form => ${url}`, form.data);
 
 		try {
 			if (!form.valid) {
-				logger.debug("Invalid form", form.errors)
+				logger.debug("Invalid form", form.errors);
 				return problem(400, "Unable to update profile", { form });
 			}
 			if (form.data.image instanceof File && form.data.image.size > 0) {
@@ -104,6 +108,7 @@ export const actions = {
 				locals.api.PUT("/users/{id}/details", {
 					params: { path: { id: session.user_id } },
 					body: {
+						bio: form.data.markdown,
 						firstName: form.data.firstName,
 						lastName: form.data.lastName,
 						websiteUrl: form.data.website,
@@ -112,10 +117,10 @@ export const actions = {
 						githubUrl: form.data.github,
 					},
 				}),
-				locals.api.PUT("/users/{id}/bio", {
-					params: { path: { id: session.user_id } },
-					body: form.data.markdown
-				}),
+				// locals.api.PUT("/users/{id}/bio", {
+				// 	params: { path: { id: session.user_id } },
+				// 	body: form.data.markdown
+				// }),
 			]);
 
 			if (userUpdate.error || detailsUpdate.error) {

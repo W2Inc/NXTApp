@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Entities.Notification;
+using NXTBackend.API.Domain.Entities.Spotlight;
 using NXTBackend.API.Infrastructure.Database;
 
 namespace NXTBackend.API.Core.Services.Implementation;

@@ -3,7 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
-using NXTBackend.API.Domain.Entities.Notification;
+using NXTBackend.API.Domain.Entities.Spotlight;
 using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Core.Services.Interface;

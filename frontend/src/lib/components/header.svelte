@@ -17,6 +17,8 @@
 	import Archive from "lucide-svelte/icons/archive";
 	import FileBox from "lucide-svelte/icons/file-box";
 	import Ellipsis from "lucide-svelte/icons/ellipsis";
+	import Bell from "lucide-svelte/icons/bell";
+	import BellDot from "lucide-svelte/icons/bell-dot";
 
 	import Button from "./ui/button/button.svelte";
 	import { page } from "$app/state";
@@ -93,6 +95,9 @@
 			<Moon class="absolute scale-0 transition-all dark:rotate-0 dark:scale-100" />
 			<span class="sr-only">Toggle theme</span>
 		</Button>
+		<Button href="/notifications" variant="outline" size="icon">
+			<Bell />
+		</Button>
 		{#if page.data.session}
 			{#if hasRole("creator")}
 				<DropdownMenu.Root>
@@ -145,13 +150,13 @@
 									href: `/users/${encodeID(page.data.session?.user_id)}`,
 								})}
 							</DropdownMenu.Item>
-							<DropdownMenu.Item>
+							<!-- <DropdownMenu.Item>
 								{@render link({
 									icon: DollarSign,
 									title: "Billing",
 									href: `/billing`,
 								})}
-							</DropdownMenu.Item>
+							</DropdownMenu.Item> -->
 							<DropdownMenu.Item>
 								{@render link({
 									icon: Cog,
@@ -168,18 +173,18 @@
 								href: `https://github.com/W2Inc/NXTApp`,
 							})}
 						</DropdownMenu.Item>
-						<DropdownMenu.Item>
+						<!-- <DropdownMenu.Item>
 							{@render link({
 								icon: CircleHelp,
 								title: "Support",
 								href: `/help`,
 							})}
-						</DropdownMenu.Item>
+						</DropdownMenu.Item> -->
 						<DropdownMenu.Item>
 							{@render link({
 								icon: Server,
 								title: "API",
-								href: `/api`,
+								href: `http://localhost:3001/scalar/v1`,
 							})}
 						</DropdownMenu.Item>
 						<DropdownMenu.Separator />

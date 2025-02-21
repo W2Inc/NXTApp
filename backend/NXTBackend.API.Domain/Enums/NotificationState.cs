@@ -10,26 +10,20 @@ using System.Text.Json.Serialization;
 namespace NXTBackend.API.Domain.Enums;
 
 /// <summary>
-/// The state of a member invite.
+/// The type of action the user undertook for a given notification
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum NotificationKind
+public enum NotificationState
 {
     /// <summary>
-    /// Simple notification, basically just a message.
+    /// The user has taken no action on this notification thus far
     /// </summary>
-    [JsonPropertyName(nameof(Default))]
-    Default,
+    [JsonPropertyName(nameof(None))]
+    None,
 
     /// <summary>
-    /// Simple notification, basically just a message.
+    /// The user marked this notification as read
     /// </summary>
-    [JsonPropertyName(nameof(Invite))]
-    Invite,
-
-    /// <summary>
-    /// System wide notification visible as broadcasts.
-    /// </summary>
-    [JsonPropertyName(nameof(System))]
-    System,
+    [JsonPropertyName(nameof(Read))]
+    Read,
 }

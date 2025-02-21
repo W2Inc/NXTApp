@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
-using NXTBackend.API.Domain.Entities.Notification;
+using NXTBackend.API.Domain.Entities.Spotlight;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;

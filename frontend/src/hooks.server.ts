@@ -48,6 +48,7 @@ const routes: Record<string, Role[]> = {
 	"/auth": [],
 	"/users": [],
 	"/new": [],
+	"/notifications": [],
 };
 
 export const init: ServerInit = async () => {

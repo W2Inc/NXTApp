@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.Notification;
+using NXTBackend.API.Domain.Entities.Spotlight;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Configurations;
@@ -29,6 +29,7 @@ public class DatabaseContext : DbContext
         modelBuilder.HasPostgresEnum<CursusKind>();
         modelBuilder.HasPostgresEnum<MemberInviteState>();
         modelBuilder.HasPostgresEnum<NotificationKind>();
+        modelBuilder.HasPostgresEnum<NotificationState>();
         modelBuilder.HasPostgresEnum<ReviewKind>();
         modelBuilder.HasPostgresEnum<ReviewState>();
 
@@ -47,9 +48,11 @@ public class DatabaseContext : DbContext
         new UserCursusConfiguration().Configure(modelBuilder.Entity<UserCursus>());
         new UserGoalConfiguration().Configure(modelBuilder.Entity<UserGoal>());
         new UserProjectConfiguration().Configure(modelBuilder.Entity<UserProject>());
+        new UserNotificationConfiguration().Configure(modelBuilder.Entity<UserNotification>());
 
         // Other
         new MemberConfiguration().Configure(modelBuilder.Entity<Member>());
+        new NotificationConfiguration().Configure(modelBuilder.Entity<Notification>());
     }
 
 #nullable disable
@@ -70,5 +73,7 @@ public class DatabaseContext : DbContext
     public DbSet<Git> GitInfo { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<Member> Members { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<UserNotification> UserNotifications { get; set; }
 #nullable restore
 }

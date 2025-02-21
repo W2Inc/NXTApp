@@ -16,6 +16,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			params: { path: { id: userId }}
 		}),
 		locals.api.GET('/users/{id}/bio', {
+			parseAs: "text",
 			params: { path: { id: userId }}
 		})
 	]);

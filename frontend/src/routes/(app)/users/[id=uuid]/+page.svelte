@@ -42,6 +42,8 @@
 		{ label: "Twitter", url: data.user.details?.twitterUrl },
 		{ label: "GitHub", url: data.user.details?.githubUrl },
 	].filter((s) => s.url);
+
+	let md = $state(data.bio?.toString() ?? "");
 </script>
 
 <div class="m-auto max-w-5xl px-4 py-8">
@@ -69,8 +71,8 @@
 	</div>
 	<div class="grid grid-cols-1 gap-2 pt-4 md:grid-cols-[256px,1fr]">
 		<Navgroup title="General" navs={links}></Navgroup>
-		{#if data.bio}
-			<Markdown variant="viewer" value={data.bio} />
+		{#if data.bio !== undefined}
+			<Markdown variant="viewer" value={data.bio.toString()} />
 		{/if}
 	</div>
 </div>
