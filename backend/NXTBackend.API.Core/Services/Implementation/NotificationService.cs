@@ -74,7 +74,7 @@ public class NotificationService : BaseService<Notification>, INotificationServi
         var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new ServiceException(StatusCodes.Status422UnprocessableEntity, $"User with ID {userId} not found");
 
-        var now = DateTimeOffset.Now;
+        var now = DateTimeOffset.UtcNow;
         await _context.UserNotifications
             .Where(un => un.UserId == userId && un.Status == NotificationState.None)
             .ExecuteUpdateAsync(s => s
