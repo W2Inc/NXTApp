@@ -17,7 +17,6 @@ using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Domain.Services;
 using NXTBackend.API.Domain.Services.Impl;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;

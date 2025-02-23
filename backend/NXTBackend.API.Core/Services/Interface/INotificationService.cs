@@ -3,12 +3,10 @@
 // See README in the root project for more information.
 // ============================================================================
 
-using NXTBackend.API.Core;
 using NXTBackend.API.Domain.Entities;
-using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 
-namespace NXTBackend.API.Domain.Services;
+namespace NXTBackend.API.Core.Services.Interface;
 
 /// <summary>
 /// Service for managing notifications
@@ -45,8 +43,17 @@ public interface INotificationService : IDomainService<Notification>
     Task MarkAsReadAsync(Guid userId, Guid notificationId);
 
     /// <summary>
+    /// Marks a notification as read for a user
+    /// </summary>
+    /// <param name="userId">The user ID</param>
+    /// <param name="notificationId">The notification ID</param>
+    Task MarkAsReadAsync(Guid userId, IEnumerable<Guid> notificationIds);
+
+    /// <summary>
     /// Marks all notifications as read for a user
     /// </summary>
     /// <param name="userId">The user ID</param>
     Task MarkAllAsReadAsync(Guid userId);
+
+
 }

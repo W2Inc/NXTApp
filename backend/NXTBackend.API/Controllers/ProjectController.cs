@@ -25,7 +25,7 @@ namespace NXTBackend.API.Controllers;
 
 // ============================================================================
 
-[ApiController]
+[ApiController, Authorize]
 [Route("projects")]
 public class ProjectController(
     ILogger<ProjectController> logger,
@@ -33,7 +33,7 @@ public class ProjectController(
     IGitService gitService
 ) : Controller
 {
-    [HttpGet("/projects"), AllowAnonymous]
+    [HttpGet("/projects")]
     [EndpointSummary("Get all exisiting projects")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -56,9 +56,9 @@ public class ProjectController(
         return Ok(page.Items.Select(c => new ProjectDO(c)));
     }
 
-    [HttpPost("/projects"), Authorize]
+    [HttpPost("/projects"), Authorize(Roles = "creator")]
     [EndpointSummary("Create a project")]
-    [EndpointDescription("")]
+    [EndpointDescription("Creates a new project, also creates a remote repository for hosting the project.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(ProblemDetails))]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -81,7 +81,7 @@ public class ProjectController(
         return Ok(new ProjectDO(project));
     }
 
-    [HttpGet("/projects/{id:guid}"), AllowAnonymous]
+    [HttpGet("/projects/{id:guid}")]
     [EndpointSummary("Get a project")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -94,7 +94,7 @@ public class ProjectController(
         return Ok(new ProjectDO(project));
     }
 
-    [HttpPatch("/projects/{id:guid}")]
+    [HttpPatch("/projects/{id:guid}"), Authorize(Roles = "creator")]
     [EndpointSummary("Update a project")]
     [EndpointDescription("Updates a goal partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -105,7 +105,7 @@ public class ProjectController(
         var project = await projectService.FindByIdAsync(id);
         if (project is null)
             return NotFound();
-        if (User.GetSID() != project.CreatorId && !User.IsAdmin())
+        if (User.GetSID() != project.CreatorId)
             return Forbid();
 
         if (data.Markdown is not null)
@@ -124,7 +124,7 @@ public class ProjectController(
     }
 
 
-    [HttpDelete("/projects/{id:guid}")]
+    [HttpDelete("/projects/{id:guid}"), Authorize(Roles = "creator")]
     [EndpointSummary("Delete a project")]
     [EndpointDescription("Goal deletion is rarely done, and only result in deprecations if they have dependencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -158,7 +158,7 @@ public class ProjectController(
     //     return Ok(page.Items.Select(p => new ProjectDO(p)));
     // }
 
-    [HttpGet("/projects/{id:guid}/users"), AllowAnonymous]
+    [HttpGet("/projects/{id:guid}/users")]
     [EndpointSummary("Get the projects that are part of this goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]

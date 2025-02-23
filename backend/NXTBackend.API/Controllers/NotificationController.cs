@@ -5,7 +5,9 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NXTBackend.API.Domain.Services;
+using Microsoft.AspNetCore.OutputCaching;
+using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
 using NXTBackend.API.Models.Responses.Objects;
@@ -20,7 +22,7 @@ public class NotificationController(
     INotificationService notificationService
 ) : Controller
 {
-    [HttpGet("/notifications")]
+    [HttpGet("/notifications"), OutputCache(PolicyName = "1m")]
     [EndpointSummary("Get all notifications")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -31,14 +33,16 @@ public class NotificationController(
     )
     {
         var filters = new FilterDictionary()
-            .AddFilter("id", id);
+            .AddFilter(nameof(id), id)
+            // Notifications are by default, private, as such we can only give back system wide ones.
+            .AddFilter("type", NotificationKind.System);
 
         var page = await notificationService.GetAllAsync(paging, sorting, filters);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(item => new NotificationDO(item)));
     }
 
-    [HttpPost("/notifications")]
+    [HttpPost("/notifications"), Authorize(Roles = "admin")]
     [EndpointSummary("Create a notification")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -54,6 +58,16 @@ public class NotificationController(
         return Ok(new NotificationDO(entity));
     }
 
+    [HttpPost("/notifications/read")]
+    [EndpointSummary("Mark notifications as read")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create([FromBody] IEnumerable<Guid> data)
+    {
+        await notificationService.MarkAsReadAsync(User.GetSID(), data);
+        return Ok();
+    }
+
     [HttpGet("/notifications/{id:guid}")]
     [EndpointSummary("Get a notification")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -66,7 +80,7 @@ public class NotificationController(
         return Ok(new NotificationDO(entity));
     }
 
-    [HttpPatch("/notifications/{id:guid}")]
+    [HttpPatch("/notifications/{id:guid}"), Authorize(Roles = "admin")]
     [EndpointSummary("Update a notification")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -82,7 +96,7 @@ public class NotificationController(
         return Ok(new NotificationDO(updatedNotification));
     }
 
-    [HttpDelete("/notifications/{id:guid}")]
+    [HttpDelete("/notifications/{id:guid}"), Authorize(Roles = "admin")]
     [EndpointSummary("Delete a notification")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

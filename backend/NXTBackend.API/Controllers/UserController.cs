@@ -5,14 +5,11 @@
 
 using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.AspNetCore.RateLimiting;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities.Spotlight;
-using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.User;
@@ -73,13 +70,20 @@ public class UserController(
     [EndpointSummary("Get your notifications")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetNotifications()
+    public async Task<IActionResult> GetNotifications(
+        INotificationService notificationService,
+        [FromQuery] PaginationParams paging,
+        [FromQuery(Name = "filter[state]")] NotificationState? state,
+        [FromQuery] SortingParams sorting
+    )
     {
-        var user = await userService.FindByIdAsync(User.GetSID());
-        if (user is null)
-            return Forbid();
+        var filters = new FilterDictionary()
+            .AddFilter("user_id", User.GetSID())
+            .AddFilter("state", state);
 
-        return Problem(statusCode: StatusCodes.Status501NotImplemented);
+        var page = await notificationService.GetAllAsync(paging, sorting, filters);
+        page.AppendHeaders(Response.Headers);
+        return Ok(page.Items.Select(e => new NotificationDO(e)));
     }
 
     [HttpPost("/users/current/notifications/read")]

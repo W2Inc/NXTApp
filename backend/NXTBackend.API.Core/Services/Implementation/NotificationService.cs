@@ -6,11 +6,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Implementation;
+using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
+using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Domain.Services.Impl;
 
@@ -19,7 +21,16 @@ public class NotificationService : BaseService<Notification>, INotificationServi
 {
     public NotificationService(DatabaseContext ctx) : base(ctx)
     {
+        DefineFilter<Guid>("user_id", (q, id) => q.Where(p => p.UserNotifications.Any(un => un.UserId == id)));
         DefineFilter<NotificationKind>("type", (q, type) => q.Where(p => p.Kind == type));
+        DefineFilter<NotificationState>("state", (q, type) => q.Where(p => p.UserNotifications.Any(un => un.Status == type)));
+    }
+
+    public override async Task<PaginatedList<Notification>> GetAllAsync(PaginationParams pagination, SortingParams sorting, FilterDictionary? filters = null)
+    {
+        var query = ApplyFilters(_dbSet.AsQueryable(), filters);
+        // query = query.Union(_dbSet.Where(n => n.Kind == NotificationKind.System));
+        return await PaginatedList<Notification>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 
     /// <inheritdoc/>
@@ -80,5 +91,20 @@ public class NotificationService : BaseService<Notification>, INotificationServi
             .ExecuteUpdateAsync(s => s
                 .SetProperty(un => un.Status, NotificationState.Read)
                 .SetProperty(un => un.ReadAt, now));
+    }
+
+    public async Task MarkAsReadAsync(Guid userId, IEnumerable<Guid> notificationIds)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var userNotifications = notificationIds.Select(notificationId => new UserNotification
+        {
+            UserId = userId,
+            NotificationId = notificationId,
+            Status = NotificationState.Read,
+            ReadAt = now
+        });
+
+        await _context.UserNotifications.AddRangeAsync(userNotifications);
+        await _context.SaveChangesAsync();
     }
 }
