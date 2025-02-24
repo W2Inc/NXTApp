@@ -53,6 +53,8 @@ public class DatabaseContext : DbContext
         // Other
         new MemberConfiguration().Configure(modelBuilder.Entity<Member>());
         new NotificationConfiguration().Configure(modelBuilder.Entity<Notification>());
+        new UserFeedConfiguration().Configure(modelBuilder.Entity<UserFeed>());
+        new NotificationConfiguration().Configure(modelBuilder.Entity<Notification>());
     }
 
 #nullable disable
@@ -75,5 +77,7 @@ public class DatabaseContext : DbContext
     public DbSet<Member> Members { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<UserNotification> UserNotifications { get; set; }
+    public DbSet<UserFeed> UserFeeds { get; set; }
+    public DbSet<Feed> Feeds { get; set; }
 #nullable restore
 }

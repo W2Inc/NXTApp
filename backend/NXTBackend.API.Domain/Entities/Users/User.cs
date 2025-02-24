@@ -26,6 +26,7 @@ public class User : BaseEntity
         AvatarUrl = null;
         DetailsId = null;
         Details = null;
+        UserFeed = null;
     }
 
     [Column("login")]
@@ -42,6 +43,12 @@ public class User : BaseEntity
 
     [ForeignKey(nameof(DetailsId))]
     public virtual Details? Details { get; set; }
+
+    [JsonIgnore, Column("user_feed_id")]
+    public Guid? UserFeedId { get; set; }
+
+    [ForeignKey(nameof(UserFeedId))]
+    public virtual UserFeed? UserFeed { get; set; }
 
     /// <summary>
     /// The user was the evaluator on the following reviews.
@@ -92,4 +99,9 @@ public class User : BaseEntity
     /// Notifications
     /// </summary>
     public virtual ICollection<UserNotification> UserNotifications { get; set; }
+
+    /// <summary>
+    /// Feeds where the user is the actor
+    /// </summary>
+    public virtual ICollection<Feed> CreatedFeeds { get; set; }
 }

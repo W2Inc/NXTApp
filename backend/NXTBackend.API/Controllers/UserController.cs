@@ -45,8 +45,23 @@ public class UserController(
         return user is null ? Forbid() : Ok(new UserDO(user));
     }
 
+    [HttpGet("/users/current/feed")]
+    [EndpointSummary("Get the current user's news feed")]
+    [EndpointDescription("Get the activity feed for the user")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<FeedDO>>> GetActivityFeed(
+        IFeedService feedService,
+        [FromQuery] PaginationParams paging,
+        [FromQuery] SortingParams sorting
+        )
+    {
+        var page = await feedService.GetAllAsync(paging, sorting);
+        page.AppendHeaders(Response.Headers);
+        return Ok(page.Items.Select(e => new FeedDO(e)));
+    }
+
     [HttpGet("/users/current/spotlights")]
-    [EndpointSummary("Get the currently authenticated user's spotlights.")]
+    [EndpointSummary("Get spotlighted events")]
     [EndpointDescription("If they were dismissed they will get filtered out.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<SpotlightEvent>>> GetSpotlights()
@@ -55,8 +70,8 @@ public class UserController(
     }
 
     [HttpDelete("/users/current/spotlights/{id:guid}")]
-    [EndpointSummary("As the current user, dismiss a specific spotlight.")]
-    [EndpointDescription("If users dismiss a spotlight event, they won't getit shown in the future.")]
+    [EndpointSummary("Dismiss a spotlighted event")]
+    [EndpointDescription("If users dismiss a spotlight event, they won't shown in the future.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -70,11 +85,11 @@ public class UserController(
     [EndpointSummary("Get your notifications")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetNotifications(
+    public async Task<ActionResult<IEnumerable<NotificationDO>>> GetNotifications(
         INotificationService notificationService,
         [FromQuery] PaginationParams paging,
-        [FromQuery(Name = "filter[state]")] NotificationState? state,
-        [FromQuery] SortingParams sorting
+        [FromQuery] SortingParams sorting,
+        [FromQuery(Name = "filter[state]")] NotificationState? state
     )
     {
         var filters = new FilterDictionary()
@@ -87,32 +102,38 @@ public class UserController(
     }
 
     [HttpPost("/users/current/notifications/read")]
-    [EndpointSummary("Mark all your notifications as read")]
-    [EndpointDescription("")]
+    [EndpointSummary("Mark notifications as read")]
+    [EndpointDescription("Marks specified notifications or all notifications as read if no IDs are provided")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> MarkAllNotificationsAsRead()
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> MarkNotificationsAsRead(
+        INotificationService notificationService,
+        [FromBody, Description("Optional: Specific notification IDs to mark as read")] IEnumerable<Guid>? notificationIds = null)
     {
         var user = await userService.FindByIdAsync(User.GetSID());
         if (user is null)
             return Forbid();
 
-        return Problem(statusCode: StatusCodes.Status501NotImplemented);
+        await notificationService.MarkAsReadAsync(user.Id, notificationIds);
+        return Ok();
     }
 
-    [HttpGet("/users/current/notifications/{id:guid}/read")]
-    [EndpointSummary("Mark a given notifications as read")]
-    [EndpointDescription("")]
+    [HttpPost("/users/current/notifications/unread")]
+    [EndpointSummary("Mark notifications as unread")]
+    [EndpointDescription("Marks specified notifications or all notifications as unread if no IDs are provided. Maintains read history.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> MarkNotificationAsRead()
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> MarkNotificationsAsUnread(
+        INotificationService notificationService,
+        [FromBody, Description("Optional: Specific notification IDs to mark as unread")] IEnumerable<Guid>? notificationIds = null)
     {
         var user = await userService.FindByIdAsync(User.GetSID());
         if (user is null)
             return Forbid();
 
-        return Problem(statusCode: StatusCodes.Status501NotImplemented);
+        await notificationService.MarkAsUnreadAsync(user.Id, notificationIds);
+        return Ok();
     }
-
 
     [HttpGet("/users/current/events")]
     [EndpointSummary("")]
@@ -325,7 +346,11 @@ public class UserController(
         if (userID != id && !User.IsAdmin())
             return Forbid();
 
-        var userProject = await userService.SubscribeToProject(userID, projectId);
+        var user = await userService.FindByIdAsync(id);
+        if (user is null)
+            return NotFound("User not found");
+
+        var userProject = await userService.SubscribeToProject(user.Id, projectId);
         return Ok(new UserProjectDO(userProject));
     }
 
@@ -340,7 +365,11 @@ public class UserController(
         if (userID != id && !User.IsAdmin())
             return Forbid();
 
-        var userProject = await userService.UnsubscribeFromProject(userID, projectId);
+        var user = await userService.FindByIdAsync(id);
+        if (user is null)
+            return NotFound("User not found");
+
+        var userProject = await userService.UnsubscribeFromProject(user.Id, projectId);
         return Ok(new UserProjectDO(userProject));
     }
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NXTBackend.API.Infrastructure.Database;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NXTBackend.API.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250224153243_AddUserActivityFeed")]
+    partial class AddUserActivityFeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -332,7 +335,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid?>("ActorId")
+                    b.Property<Guid>("ActorId")
                         .HasColumnType("uuid")
                         .HasColumnName("actor_id");
 
@@ -342,7 +345,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.Property<int>("Kind")
                         .HasColumnType("integer")
-                        .HasColumnName("type");
+                        .HasColumnName("name");
 
                     b.Property<Guid?>("ResourceId")
                         .HasColumnType("uuid")
@@ -1099,7 +1102,9 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 {
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Actor")
                         .WithMany("CreatedFeeds")
-                        .HasForeignKey("ActorId");
+                        .HasForeignKey("ActorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Actor");
                 });

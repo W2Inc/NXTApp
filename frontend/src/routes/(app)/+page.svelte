@@ -53,8 +53,8 @@
 				<Markdown value="Hello World!" variant="viewer" />
 				<Markdown value="Hello World!" variant="editor" />
 				Middle
-				{#each Array(200).fill(0) as _, i}
-					<div>{i + 1}</div>
+				{#each data.feed as feed}
+					<div>{feed.id}</div>
 				{/each}
 			</div>
 			<aside class="hidden lg:block">

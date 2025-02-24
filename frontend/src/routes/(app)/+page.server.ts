@@ -1,4 +1,12 @@
-import type { Actions } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
+
+export const load: PageServerLoad = async ({ locals }) => {
+	const { data } = await locals.api.GET("/users/current/feed");
+
+	return {
+		feed: data ?? []
+	}
+};
 
 export const actions: Actions = {
 	search: async ({ request }) => {
