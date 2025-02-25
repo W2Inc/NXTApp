@@ -1,7 +1,10 @@
+import { logger } from "$lib/logger";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { data } = await locals.api.GET("/users/current/feed");
+
+	logger.debug("yeah", { data });
 
 	return {
 		feed: data ?? []

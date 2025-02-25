@@ -31,7 +31,7 @@
 		</Tabs.Root>
 	{/snippet}
 	{#snippet right()}
-		<div class="p-4">
+		<div class="px-24 py-4">
 			{#await data.notifications}
 				<Loader class="animate-spin" />
 			{:then notifications}

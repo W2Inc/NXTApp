@@ -14,6 +14,7 @@ using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.User;
 using NXTBackend.API.Models.Responses.Objects;
+using NXTBackend.API.Models.Responses.Objects.FeedResponses;
 using NXTBackend.API.Utils;
 
 // ============================================================================
@@ -57,7 +58,8 @@ public class UserController(
     {
         var page = await feedService.GetAllAsync(paging, sorting);
         page.AppendHeaders(Response.Headers);
-        return Ok(page.Items.Select(e => new FeedDO(e)));
+        var feedItems = page.Items.Select(FeedDO.Create).ToList();
+        return Ok(feedItems);
     }
 
     [HttpGet("/users/current/spotlights")]

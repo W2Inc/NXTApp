@@ -7,6 +7,7 @@
 	import type { IconLink, NamedLink } from "$lib/types.js";
 	import Base from "$lib/components/base.svelte";
 	import Markdown from "$lib/components/markdown/markdown.svelte";
+	import FeedCard from "$lib/components/cards/feed-card.svelte";
 
 	const { data } = $props();
 	const storage = useStorage();
@@ -44,22 +45,32 @@
 	{/snippet}
 
 	{#snippet right()}
-		<form method="post">
-			<button type="submit">Wtf</button>
-		</form>
-
-		<div class="m-auto flex max-w-xl gap-2">
+		<div class="w-full">
+			<div class="flex gap-2 p-4 max-w-[80rem] mx-auto">
+				<ul class="flex-auto">
+					{#each data.feed as feed}
+						<li>
+							<FeedCard data={feed} />
+						</li>
+					{/each}
+				</ul>
+				<aside class="hidden lg:block min-w-[346px]">
+					<SpotlightCard />
+				</aside>
+			</div>
+		</div>
+		<!-- <div class="m-auto flex max-w-xl gap-2">
 			<div class="flex-1">
 				<Markdown value="Hello World!" variant="viewer" />
 				<Markdown value="Hello World!" variant="editor" />
 				Middle
 				{#each data.feed as feed}
-					<div>{feed.id}</div>
+					<div>1: {feed.id}</div>
 				{/each}
 			</div>
 			<aside class="hidden lg:block">
 				<SpotlightCard />
 			</aside>
-		</div>
+		</div> -->
 	{/snippet}
 </Base>

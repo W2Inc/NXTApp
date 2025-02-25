@@ -4870,19 +4870,47 @@ export interface components {
             enabled: boolean;
             kind: components["schemas"]["CursusKind"];
         };
-        FeedDO: {
+        FeedDO: components["schemas"]["FeedDONewUserFeedDO"] | components["schemas"]["FeedDOCompletedProjectFeedDO"];
+        FeedDOCompletedProjectFeedDO: {
+            /** @enum {string} */
+            $type?: "CompletedProjectFeedDO";
             /** Format: uuid */
             id: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            kind: components["schemas"]["FeedKind"];
+            projectData: {
+                /** Format: uuid */
+                projectId?: string;
+                /** Format: date-time */
+                completedAt?: string;
+                projectName?: string;
+            };
+            kind: string;
             actor: components["schemas"]["MinimalUserDTO"];
             /** Format: uuid */
             resourceId: string | null;
         };
-        FeedKind: string;
+        FeedDONewUserFeedDO: {
+            /** @enum {string} */
+            $type?: "NewUserFeedDO";
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            newUserData: {
+                /** Format: date-time */
+                joinDate?: string;
+                displayName?: string;
+            };
+            kind: string;
+            actor: components["schemas"]["MinimalUserDTO"];
+            /** Format: uuid */
+            resourceId: string | null;
+        };
         GitDO: {
             /** Format: uuid */
             id: string;

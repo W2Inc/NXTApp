@@ -13,15 +13,19 @@ using Keycloak.AuthServices.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Domain.Services.Impl;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
+using NXTBackend.API.Infrastructure.OpenApi;
 using NXTBackend.API.Jobs;
 using NXTBackend.API.Jobs.Interface;
+using NXTBackend.API.Models.Responses.Objects;
 using NXTBackend.API.Options;
 using NXTBackend.API.Utils;
 using Quartz;
@@ -68,6 +72,7 @@ public static class Startup
             o.AddDocumentTransformer<InfoSchemeTransformer>();
             o.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             o.AddOperationTransformer<BasicResponsesOperationTransformer>();
+            o.AddSchemaTransformer<FeedSchemaTransformer>();
 
             // Keycloak Authentication
             o.AddDocumentTransformer((document, context, cancellationToken) =>
@@ -118,7 +123,8 @@ public static class Startup
         services.AddResponseCompression();
 
         // HTTP Client
-        services.AddHttpClient("NXTGit", c => {
+        services.AddHttpClient("NXTGit", c =>
+        {
             var options = builder.Configuration.GetGitRemoteOptions<GitRemoteOptions>()
                 ?? throw new InvalidDataException("Git remote settings not found in appsettings.json");
 
