@@ -4873,43 +4873,37 @@ export interface components {
         FeedDO: components["schemas"]["FeedDONewUserFeedDO"] | components["schemas"]["FeedDOCompletedProjectFeedDO"];
         FeedDOCompletedProjectFeedDO: {
             /** @enum {string} */
-            $type?: "CompletedProjectFeedDO";
+            $type?: "CompletedProject";
             /** Format: uuid */
             id: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            projectData: {
-                /** Format: uuid */
-                projectId?: string;
-                /** Format: date-time */
-                completedAt?: string;
-                projectName?: string;
-            };
-            kind: string;
-            actor: components["schemas"]["MinimalUserDTO"];
-            /** Format: uuid */
-            resourceId: string | null;
+            newProject: components["schemas"]["ProjectDO"];
         };
         FeedDONewUserFeedDO: {
             /** @enum {string} */
-            $type?: "NewUserFeedDO";
+            $type?: "NewUser";
             /** Format: uuid */
             id: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            newUserData: {
+            newUser: {
+                /** Format: uuid */
+                id: string;
                 /** Format: date-time */
-                joinDate?: string;
-                displayName?: string;
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                login: string;
+                displayName: string | null;
+                avatarUrl: string | null;
+                /** Format: uuid */
+                detailsId: string | null;
             };
-            kind: string;
-            actor: components["schemas"]["MinimalUserDTO"];
-            /** Format: uuid */
-            resourceId: string | null;
         };
         GitDO: {
             /** Format: uuid */

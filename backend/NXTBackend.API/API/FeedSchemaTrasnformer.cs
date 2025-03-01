@@ -12,49 +12,49 @@ namespace NXTBackend.API.Infrastructure.OpenApi
         public Task TransformAsync(OpenApiSchema schema, OpenApiSchemaTransformerContext context, CancellationToken cancellationToken)
         {
             // Handle the FeedDO type to set up polymorphic schema
-            if (context.JsonTypeInfo?.Type == typeof(FeedDO))
-            {
-                // Set up the discriminator for the base FeedDO schema
-                schema.Discriminator = new OpenApiDiscriminator
-                {
-                    PropertyName = "feedKind"
-                };
+            // if (context.JsonTypeInfo?.Type == typeof(FeedDO))
+            // {
+            //     // Set up the discriminator for the base FeedDO schema
+            //     schema.Discriminator = new OpenApiDiscriminator
+            //     {
+            //         PropertyName = "feedKind"
+            //     };
 
-                // Ensure required properties are present
-                if (schema.Required == null)
-                {
-                    schema.Required = new HashSet<string>();
-                }
+            //     // Ensure required properties are present
+            //     if (schema.Required == null)
+            //     {
+            //         schema.Required = new HashSet<string>();
+            //     }
 
-                schema.Required.Add("feedKind");
-            }
-            // Handle derived types
-            else if (context.JsonTypeInfo?.Type == typeof(CompletedProjectFeedDO))
-            {
-                AddAllOfReference(schema, typeof(FeedDO));
+            //     schema.Required.Add("feedKind");
+            // }
+            // // Handle derived types
+            // else if (context.JsonTypeInfo?.Type == typeof(CompletedProjectFeedDO))
+            // {
+            //     AddAllOfReference(schema, typeof(FeedDO));
 
-                // Add specific CommentFeedDO properties
-                if (schema.Properties.ContainsKey("feedKind"))
-                {
-                    schema.Properties["feedKind"].Enum = new List<Microsoft.OpenApi.Any.IOpenApiAny>
-                    {
-                        new Microsoft.OpenApi.Any.OpenApiString(FeedKind.CompletedProject.ToString())
-                    };
-                }
-            }
-            else if (context.JsonTypeInfo?.Type == typeof(NewUserFeedDO))
-            {
-                AddAllOfReference(schema, typeof(FeedDO));
+            //     // Add specific CommentFeedDO properties
+            //     if (schema.Properties.ContainsKey("feedKind"))
+            //     {
+            //         schema.Properties["feedKind"].Enum = new List<Microsoft.OpenApi.Any.IOpenApiAny>
+            //         {
+            //             new Microsoft.OpenApi.Any.OpenApiString(FeedKind.CompletedProject.ToString())
+            //         };
+            //     }
+            // }
+            // else if (context.JsonTypeInfo?.Type == typeof(NewUserFeedDO))
+            // {
+            //     AddAllOfReference(schema, typeof(FeedDO));
 
-                // Add specific LikeFeedDO properties
-                if (schema.Properties.ContainsKey("feedKind"))
-                {
-                    schema.Properties["feedKind"].Enum = new List<Microsoft.OpenApi.Any.IOpenApiAny>
-                    {
-                        new Microsoft.OpenApi.Any.OpenApiString(FeedKind.NewUser.ToString())
-                    };
-                }
-            }
+            //     // Add specific LikeFeedDO properties
+            //     if (schema.Properties.ContainsKey("feedKind"))
+            //     {
+            //         schema.Properties["feedKind"].Enum = new List<Microsoft.OpenApi.Any.IOpenApiAny>
+            //         {
+            //             new Microsoft.OpenApi.Any.OpenApiString(FeedKind.NewUser.ToString())
+            //         };
+            //     }
+            // }
 
             return Task.CompletedTask;
         }

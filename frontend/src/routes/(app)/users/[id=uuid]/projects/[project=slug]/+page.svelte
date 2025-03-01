@@ -13,8 +13,10 @@
 	import Button from "$lib/components/ui/button/button.svelte";
 	import ReviewCard from "$lib/components/cards/review-card.svelte";
 	import Pagination from "$lib/components/pagination.svelte";
+	import Markdown from "$lib/components/markdown/markdown.svelte";
 
 	const { data } = $props();
+	const md = $state(data.project.markdown);
 </script>
 
 <!-- {#await data.project}
@@ -24,7 +26,7 @@
 	<div class="grid grid-cols-1 gap-x-2 pt-4 md:grid-cols-[256px,1fr]">
 		<div class="flex max-h-fit flex-col gap-1 rounded border p-4">
 			<img
-				src="https://github.com/w2wizard.png"
+				src={data.project.thumbnailUrl}
 				alt="logo"
 				class="max-h-64 rounded border object-cover"
 			/>
@@ -33,7 +35,7 @@
 				<EvalRatio />
 			{/if}
 			<Separator class="my-1" />
-			<a class="center-content text-primary underline" href="#">
+			<a class="center-content text-primary underline" href={data.project.gitInfo?.url}>
 				<Box size={16} />
 				Project Source
 			</a>
@@ -118,7 +120,9 @@
 				</div>
 				<Separator />
 			{/if}
-			<div class="overflow-auto rounded border p-4">Markdown content goes here.</div>
+			<div class="overflow-auto rounded border p-4">
+				<Markdown value={md}/>
+			</div>
 		</div>
 	</div>
 </div>

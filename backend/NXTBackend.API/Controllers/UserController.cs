@@ -52,14 +52,13 @@ public class UserController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<FeedDO>>> GetActivityFeed(
         IFeedService feedService,
-        [FromQuery] PaginationParams paging,
+        [FromQuery] PaginationParams pagination,
         [FromQuery] SortingParams sorting
         )
     {
-        var page = await feedService.GetAllAsync(paging, sorting);
-        page.AppendHeaders(Response.Headers);
-        var feedItems = page.Items.Select(FeedDO.Create).ToList();
-        return Ok(feedItems);
+        Response.Headers.Append("X-Page", pagination.Page.ToString());
+        // TODO: Missing total pages...
+        return Ok(await feedService.ConstructFeed(pagination, sorting));
     }
 
     [HttpGet("/users/current/spotlights")]

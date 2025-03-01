@@ -8,6 +8,7 @@
 	import Base from "$lib/components/base.svelte";
 	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import FeedCard from "$lib/components/cards/feed-card.svelte";
+	import ChangelogCard from "$lib/components/cards/changelog-card.svelte";
 
 	const { data } = $props();
 	const storage = useStorage();
@@ -54,8 +55,9 @@
 						</li>
 					{/each}
 				</ul>
-				<aside class="hidden lg:block min-w-[346px]">
+				<aside class="hidden min-w-[346px] xl:flex flex-col gap-2">
 					<SpotlightCard />
+					<ChangelogCard />
 				</aside>
 			</div>
 		</div>

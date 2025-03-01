@@ -9,36 +9,19 @@ using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using System.Text.Json.Serialization;
+using NXTBackend.API.Domain.Common;
 
 
 namespace NXTBackend.API.Models.Responses.Objects.FeedResponses;
 
-[JsonDerivedType(typeof(NewUserFeedDO), typeDiscriminator: nameof(NewUserFeedDO))]
-[JsonDerivedType(typeof(CompletedProjectFeedDO), typeDiscriminator: nameof(CompletedProjectFeedDO))]
-// Add other derived types as needed
-public abstract class FeedDO : BaseObjectDO<Feed>
+[JsonDerivedType(typeof(NewUserFeedDO), typeDiscriminator: nameof(FeedKind.NewUser))]
+[JsonDerivedType(typeof(CompletedProjectFeedDO), typeDiscriminator: nameof(FeedKind.CompletedProject))]
+public abstract class FeedDO(Feed feed) : BaseObjectDO<Feed>(feed)
 {
-    protected FeedDO(Feed feed) : base(feed)
+    public static FeedDO Create<T>(Feed feed, T? resource) where T : BaseEntity => feed.Kind switch
     {
-        Kind = feed.Kind;
-        Actor = feed.Actor;
-        ResourceId = feed.ResourceId;
-    }
-
-    [Required]
-    public FeedKind Kind { get; set; }
-
-    [Required]
-    public MinimalUserDTO? Actor { get; set; }
-
-    [Required]
-    public Guid? ResourceId { get; set; }
-
-    // Factory method to create the appropriate derived type
-    public static FeedDO Create(Feed feed) => feed.Kind switch
-    {
-        FeedKind.NewUser => new NewUserFeedDO(feed),
-        FeedKind.CompletedProject => new CompletedProjectFeedDO(feed),
+        FeedKind.NewUser => new NewUserFeedDO(feed, resource),
+        FeedKind.CompletedProject => new CompletedProjectFeedDO(feed, resource),
         // Add other cases as needed
         _ => throw new ArgumentOutOfRangeException(nameof(feed.Kind), feed.Kind, "Unknown feed kind")
     };

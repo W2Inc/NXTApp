@@ -7,6 +7,7 @@ import { type ClassValue, clsx } from "clsx";
 import { getContext, setContext } from "svelte";
 import { twMerge } from "tailwind-merge";
 import { Base58 } from "./base58";
+import type { FetchResponse } from "openapi-fetch";
 
 // ============================================================================
 
@@ -90,4 +91,8 @@ export async function ensure<T, E = Error>(
  */
 export function defer(fn: Function) {
 	return { [Symbol.dispose]: fn };
+}
+
+export function isOkResponse<T>(response: FetchResponse<T>) {
+
 }

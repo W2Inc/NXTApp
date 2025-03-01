@@ -72,7 +72,7 @@ public static class Startup
             o.AddDocumentTransformer<InfoSchemeTransformer>();
             o.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             o.AddOperationTransformer<BasicResponsesOperationTransformer>();
-            o.AddSchemaTransformer<FeedSchemaTransformer>();
+            // o.AddSchemaTransformer<FeedSchemaTransformer>();
 
             // Keycloak Authentication
             o.AddDocumentTransformer((document, context, cancellationToken) =>

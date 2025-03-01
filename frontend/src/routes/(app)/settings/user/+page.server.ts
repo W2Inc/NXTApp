@@ -22,7 +22,7 @@ const schema = z.object({
 			"Display name can only contain letters, numbers and dashes",
 		)
 		.nullish(),
-	markdown: z.string().min(4).max(2048),
+	markdown: z.string().min(4).max(2048).nullish(),
 	website: z.string().url().startsWith("https://").nullish(),
 	twitter: z.string().url().startsWith("https://x.com/").nullish(),
 	linkedin: z.string().url().startsWith("https://linkedin.com/").nullish(),

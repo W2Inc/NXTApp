@@ -9,7 +9,7 @@ import { handle as authenticationHandle } from "./lib/oauth";
 import { dev } from "$app/environment";
 import type { paths as BackendRoutes } from "$lib/api/types";
 import type { paths as KeycloakRoutes } from "$lib/api/keycloak";
-import createClient from "openapi-fetch";
+import createClient, { type Middleware } from "openapi-fetch";
 import {
 	KC_CLIENT_ID,
 	KC_CLIENT_SECRET,
@@ -23,6 +23,33 @@ import { initLogger, logger } from "$lib/logger";
 // import config from "$lib/routes.json" with { type: "json" };
 
 // ============================================================================
+
+const apiValidation: Middleware = {
+  async onResponse({ request, response, options }) {
+    const { body, ...resOptions } = response;
+		switch (response.status) {
+			case 403:
+				error(response.status, "Forbidden")
+			case 401:
+				redirect(307, "/");
+			case 500:
+			case 501:
+				error(response.status, "This wasn't expected...")
+			case 421:
+				error(response.status, "Too many requests, please wait a little bit.")
+			default:
+				break;
+		}
+
+    return new Response(body, { ...resOptions, status: 200 });
+  },
+  async onError({ error: err }) {
+
+  },
+};
+
+// ============================================================================
+
 
 // TODO: Replace with arctic client...
 const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
@@ -95,6 +122,7 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 		fetch: event.fetch,
 	});
 
+	event.locals.api.use(apiValidation);
 	event.locals.keycloak = createClient<KeycloakRoutes>({
 		baseUrl: dev ? "http://localhost:8089/auth" : "http://localhost:8089/auth",
 		mode: "cors",

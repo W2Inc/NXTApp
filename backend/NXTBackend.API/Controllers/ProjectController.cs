@@ -56,7 +56,7 @@ public class ProjectController(
         return Ok(page.Items.Select(c => new ProjectDO(c)));
     }
 
-    [HttpPost("/projects"), Authorize(Roles = "creator")]
+    [HttpPost("/projects")]
     [EndpointSummary("Create a project")]
     [EndpointDescription("Creates a new project, also creates a remote repository for hosting the project.")]
     [ProducesResponseType(StatusCodes.Status200OK)]

@@ -10,7 +10,7 @@ namespace NXTBackend.API.Domain.Enums;
 /// <summary>
 /// The different kinds of feeds that exist.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter)), Flags]
+[JsonConverter(typeof(JsonStringEnumMemberNameAttribute)), Flags]
 public enum FeedKind
 {
     /// <summary>
