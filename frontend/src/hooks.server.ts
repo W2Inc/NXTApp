@@ -4,7 +4,13 @@
 // ============================================================================
 
 import { sequence } from "@sveltejs/kit/hooks";
-import { error, redirect, type Handle, type RequestEvent, type ServerInit } from "@sveltejs/kit";
+import {
+	error,
+	redirect,
+	type Handle,
+	type RequestEvent,
+	type ServerInit,
+} from "@sveltejs/kit";
 import { handle as authenticationHandle } from "./lib/oauth";
 import { dev } from "$app/environment";
 import type { paths as BackendRoutes } from "$lib/api/types";
@@ -25,31 +31,33 @@ import { initLogger, logger } from "$lib/logger";
 // ============================================================================
 
 const apiValidation: Middleware = {
-  async onResponse({ request, response, options }) {
-    const { body, ...resOptions } = response;
+	async onResponse({ request, response, options }) {
+		const { body, ...resOptions } = response;
+		console.log(response.status, "MIDDLE");
+
 		switch (response.status) {
 			case 403:
-				error(response.status, "Forbidden")
+			case 404:
+				error(response.status, "Forbidden");
 			case 401:
 				redirect(307, "/");
 			case 500:
 			case 501:
-				error(response.status, "This wasn't expected...")
-			case 421:
-				error(response.status, "Too many requests, please wait a little bit.")
+				error(response.status, "This wasn't expected...");
+			case 429:
+				error(response.status, "Too many requests, please wait a little bit.");
 			default:
 				break;
 		}
 
-    return new Response(body, { ...resOptions, status: 200 });
-  },
-  async onError({ error: err }) {
-
-  },
+		return new Response(body, { ...resOptions, status: 200 });
+	},
+	async onError({ error: err }) {
+		logger.error({ err });
+	},
 };
 
 // ============================================================================
-
 
 // TODO: Replace with arctic client...
 const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
@@ -81,7 +89,7 @@ const routes: Record<string, Role[]> = {
 export const init: ServerInit = async () => {
 	initLogger();
 	logger.info("Starting FE...");
-}
+};
 
 // ============================================================================
 
@@ -102,7 +110,7 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 		// Check if user is authenticated when roles are required
 		error(401, "Authentication required");
 	}
-	if (!requiredRoles.some(role => session.roles.includes(role))) {
+	if (!requiredRoles.some((role) => session.roles.includes(role))) {
 		// Check if user has required roles
 		error(403, "Insufficient permissions");
 	}
@@ -112,17 +120,13 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 
 /** Create the universal api fetch function */
 const apiHandle: Handle = async ({ event, resolve }) => {
-	const session = await event.locals.session();
 	event.locals.api = createClient<BackendRoutes>({
 		baseUrl: dev ? "http://localhost:3001" : "https://localhost:3000",
 		mode: "cors",
-		headers: {
-			Authorization: `Bearer ${session?.access_token}`,
-		},
 		fetch: event.fetch,
 	});
 
-	event.locals.api.use(apiValidation);
+	// event.locals.api.use(apiValidation);
 	event.locals.keycloak = createClient<KeycloakRoutes>({
 		baseUrl: dev ? "http://localhost:8089/auth" : "http://localhost:8089/auth",
 		mode: "cors",
@@ -147,6 +151,17 @@ const ratelimit: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
+const noSessionNoPost: Handle = async ({ event, resolve }) => {
+	const session = await event.locals.session();
+	if (
+		!session &&
+		!event.url.pathname.startsWith("/auth") &&
+		["POST", "PATCH", "PUT", "DELETE"].includes(event.request.method)
+	)
+		error(401, `Please login first before making any requests.`);
+	return resolve(event);
+};
+
 // First handle authentication, then authorization
 // Each function acts as a middleware, receiving the request handle
 // And returning a handle which gets passed to the next function
@@ -155,6 +170,7 @@ export const handle: Handle = sequence(
 	authenticationHandle,
 	authorizationHandle,
 	apiHandle,
+	noSessionNoPost,
 );
 
 // ============================================================================

@@ -46,7 +46,7 @@
 				</p>
 			</Tabs.Content>
 		</Tabs.Root>
-		<form>
+		<form role="search">
 			<Label for="search-cursus">Search</Label>
 			<Input id="search-cursus" type="search" placeholder="Search for cursus" />
 		</form>

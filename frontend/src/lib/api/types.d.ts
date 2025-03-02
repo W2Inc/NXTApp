@@ -1750,6 +1750,7 @@ export interface paths {
                 query?: {
                     Page?: number;
                     Size?: number;
+                    "filter[user_project_id]"?: string;
                     OrderBy?: string;
                     Order?: components["schemas"]["Order"];
                 };
@@ -2494,7 +2495,7 @@ export interface paths {
                 };
                 header?: never;
                 path: {
-                    category: components["schemas"]["Category"];
+                    category: "User" | "Project" | "Cursus" | "LearningGoal";
                 };
                 cookie?: never;
             };
@@ -4815,8 +4816,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @enum {unknown} */
-        Category: "User" | "Project" | "Cursus" | "LearningGoal";
         CursusDO: {
             /** Format: uuid */
             id: string;

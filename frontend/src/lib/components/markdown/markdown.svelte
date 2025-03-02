@@ -226,7 +226,7 @@
 	</li>
 {/snippet}
 
-<div class="mt-2 block">
+<div class="">
 	<!-- Menu bars -->
 	{#if variant === "editor"}
 		<div class="flex flex-wrap justify-between rounded-t border">

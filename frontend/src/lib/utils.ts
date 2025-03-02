@@ -7,7 +7,8 @@ import { type ClassValue, clsx } from "clsx";
 import { getContext, setContext } from "svelte";
 import { twMerge } from "tailwind-merge";
 import { Base58 } from "./base58";
-import type { FetchResponse } from "openapi-fetch";
+import type { ClientRequestMethod, FetchResponse } from "openapi-fetch";
+import { error } from "@sveltejs/kit";
 
 // ============================================================================
 
@@ -20,12 +21,7 @@ export function cn(...inputs: ClassValue[]) {
 export namespace Constants {
 	export const PER_PAGE = 20;
 	export const FALLBACK_IMG = "https://avatars.githubusercontent.com/u/0?v=4";
-	export const ROLES = [
-		"staff:view",
-		"staff:manage",
-		"creator",
-		"student",
-	]; // TODO: A nicer way to streamline this ?
+	export const ROLES = ["staff:view", "staff:manage", "creator", "student"]; // TODO: A nicer way to streamline this ?
 }
 
 // ============================================================================
@@ -76,6 +72,31 @@ export async function ensure<T, E = Error>(
 	}
 }
 
+type APIFetchResponse<T, E> = {
+	data: T;
+	error?: never;
+	response: Response;
+} | {
+	data?: never;
+	error: E;
+	response: Response;
+};
+
+export async function ensureAPI<T, E>(
+	promise: Promise<APIFetchResponse<T, E>>,
+): Promise<[NonNullable<T>, null] | [null, E]> {
+	const { data, error: err, response } = await promise;
+
+	if (err) {
+		// Somehow the request couldn't be made...
+		if (response.status === 400 || response.status === 422)
+			return [null, err];
+		// Everything else we can't honestly handle
+		error(response.status, response.statusText);
+	}
+	return [data!!, null]
+}
+
 /**
  * Tiny wrapper to create a deferred function.
  * @param fn The function to run.
@@ -93,6 +114,4 @@ export function defer(fn: Function) {
 	return { [Symbol.dispose]: fn };
 }
 
-export function isOkResponse<T>(response: FetchResponse<T>) {
-
-}
+export function isOkResponse<T>(response: FetchResponse<T>) {}

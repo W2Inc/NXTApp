@@ -30,6 +30,7 @@
 	import type { IconLink } from "$lib/types";
 	import { Constants, encodeID } from "$lib/utils";
 	import { hasRole } from "$lib/utils/roles.svelte";
+	import { enhance } from "$app/forms";
 
 	const links: IconLink[] = [
 		{
@@ -95,10 +96,10 @@
 			<Moon class="absolute scale-0 transition-all dark:rotate-0 dark:scale-100" />
 			<span class="sr-only">Toggle theme</span>
 		</Button>
-		<Button href="/notifications" variant="outline" size="icon">
-			<Bell />
-		</Button>
 		{#if page.data.session}
+			<Button href="/notifications" variant="outline" size="icon">
+				<Bell />
+			</Button>
 			{#if hasRole("creator")}
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger>
@@ -188,7 +189,12 @@
 							})}
 						</DropdownMenu.Item>
 						<DropdownMenu.Separator />
-						<form class="grid w-full" method="post" action="/auth/keycloak?/signout">
+						<form
+							method="post"
+							use:enhance
+							class="grid w-full"
+							action="/auth/keycloak?/signout"
+						>
 							<Button type="submit" variant="destructive" class="w-full">
 								<LogOut />
 								Logout
@@ -198,7 +204,7 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		{:else}
-			<form method="post" action="/auth/keycloak?/signin" enctype="multipart/form-data">
+			<form method="post" action="/auth/keycloak?/signin">
 				<Button type="submit">
 					<LogIn />
 					Signin

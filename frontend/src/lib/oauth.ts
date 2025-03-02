@@ -161,7 +161,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 					error(500, e.message);
 				}
 				deleteCookies();
-				redirect(303, "/");
 			}
 		} else {
 			// No refresh token available; clear the expired access token

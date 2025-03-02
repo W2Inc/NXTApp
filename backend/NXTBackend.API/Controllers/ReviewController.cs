@@ -53,10 +53,14 @@ public class ReviewController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<ReviewDO>>> GetAll(
         [FromQuery] PaginationParams paging,
+        [FromQuery(Name = "filter[user_project_id]")] Guid userProjectId,
         [FromQuery] SortingParams sorting
     )
     {
-        var page = await reviewService.GetAllAsync(paging, sorting);
+        var filters = new FilterDictionary()
+            .AddFilter("user_project_id", userProjectId);
+
+        var page = await reviewService.GetAllAsync(paging, sorting, filters);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(c => new ReviewDO(c)));
     }

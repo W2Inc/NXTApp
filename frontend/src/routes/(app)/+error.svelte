@@ -22,7 +22,7 @@
 		{#if page.status >= 500}
 			Silly cats! Rest assured this issue has been logged & reported.
 		{:else if page.status >= 400}
-			Oops! Something wasn't quite right with that request.
+		{page.error?.message ?? "Oops! Something wasn't quite right with that request."}
 		{/if}
 	</p>
 
