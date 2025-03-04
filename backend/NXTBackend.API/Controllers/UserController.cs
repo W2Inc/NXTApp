@@ -159,10 +159,14 @@ public class UserController(
     [HttpGet("/users"), OutputCache(PolicyName = "1m")]
     public async Task<ActionResult<IEnumerable<UserDO>>> GetAll(
         [FromQuery] PaginationParams paging,
-        [FromQuery] SortingParams sorting
+        [FromQuery] SortingParams sorting,
+        [FromQuery(Name = "filter[display_name]")] string displayName
     )
     {
-        var page = await userService.GetAllAsync(paging, sorting, null);
+        var filters = new FilterDictionary()
+            .AddFilter("display_name", displayName);
+
+        var page = await userService.GetAllAsync(paging, sorting, filters);
         page.AppendHeaders(Response.Headers);
         return Ok(page.Items.Select(e => new UserDO(e)));
     }

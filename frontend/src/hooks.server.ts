@@ -6,7 +6,6 @@
 import { sequence } from "@sveltejs/kit/hooks";
 import {
 	error,
-	redirect,
 	type Handle,
 	type RequestEvent,
 	type ServerInit,
@@ -27,35 +26,6 @@ import { useRetryAfter } from "$lib/utils/limiter.svelte";
 import type { Role } from "$lib/utils/roles.svelte";
 import { initLogger, logger } from "$lib/logger";
 // import config from "$lib/routes.json" with { type: "json" };
-
-// ============================================================================
-
-const apiValidation: Middleware = {
-	async onResponse({ request, response, options }) {
-		const { body, ...resOptions } = response;
-		console.log(response.status, "MIDDLE");
-
-		switch (response.status) {
-			case 403:
-			case 404:
-				error(response.status, "Forbidden");
-			case 401:
-				redirect(307, "/");
-			case 500:
-			case 501:
-				error(response.status, "This wasn't expected...");
-			case 429:
-				error(response.status, "Too many requests, please wait a little bit.");
-			default:
-				break;
-		}
-
-		return new Response(body, { ...resOptions, status: 200 });
-	},
-	async onError({ error: err }) {
-		logger.error({ err });
-	},
-};
 
 // ============================================================================
 
@@ -84,6 +54,8 @@ const routes: Record<string, Role[]> = {
 	"/users": [],
 	"/new": [],
 	"/notifications": [],
+	"/changelog": [],
+	"/search": [],
 };
 
 export const init: ServerInit = async () => {
@@ -126,7 +98,6 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 		fetch: event.fetch,
 	});
 
-	// event.locals.api.use(apiValidation);
 	event.locals.keycloak = createClient<KeycloakRoutes>({
 		baseUrl: dev ? "http://localhost:8089/auth" : "http://localhost:8089/auth",
 		mode: "cors",
@@ -151,17 +122,6 @@ const ratelimit: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-const noSessionNoPost: Handle = async ({ event, resolve }) => {
-	const session = await event.locals.session();
-	if (
-		!session &&
-		!event.url.pathname.startsWith("/auth") &&
-		["POST", "PATCH", "PUT", "DELETE"].includes(event.request.method)
-	)
-		error(401, `Please login first before making any requests.`);
-	return resolve(event);
-};
-
 // First handle authentication, then authorization
 // Each function acts as a middleware, receiving the request handle
 // And returning a handle which gets passed to the next function
@@ -170,7 +130,6 @@ export const handle: Handle = sequence(
 	authenticationHandle,
 	authorizationHandle,
 	apiHandle,
-	noSessionNoPost,
 );
 
 // ============================================================================
@@ -179,19 +138,13 @@ export const handle: Handle = sequence(
 // it would be stuck on the first client request's cookie.
 export async function handleFetch({ fetch, request, event }) {
 	if (request.url.startsWith("http://localhost:3001/")) {
-		const session = await event.locals.session();
 		const accessToken = event.cookies.get(`${KC_COOKIE_NAME}-a`);
-		// request.headers.set("cookie", event.request.headers.get("cookie") ?? "");
 		request.headers.set("authorization", `Bearer ${accessToken}`);
 	}
 
 	if (request.url.startsWith("http://localhost:8089/")) {
 		const token = await keycloak.getToken();
 		request.headers.set("Authorization", `Bearer ${token}`);
-		// console.log("KEYCLOAK CALL")
-		// const session = await event.locals.auth();
-		// request.headers.set('cookie', event.request.headers.get('cookie') ?? "");
-		// request.headers.set('authorization', `Bearer ${session?.access_token}`);
 	}
 
 	return fetch(request);

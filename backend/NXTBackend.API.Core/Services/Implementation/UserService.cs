@@ -21,14 +21,7 @@ public sealed class UserService : BaseService<User>, IUserService
 {
     public UserService(DatabaseContext ctx) : base(ctx)
     {
-        // DefineFilter<string>("goal_name", (q, name) => q.Where((u) => u.UserGoals.Any(ug => EF.Functions.Like(ug.Goal.Name, $"%{name}%"))));
-
-        // DefineFilter<bool>("subscribed", (q, subscribed) => {
-        //     q.Where((p) => )
-        // });
-
-        // DefineFilter<string>("slug", (q, slug) => q.Where((p) => p. == slug));
-
+        DefineFilter<string>("display_name", (q, name) => q.Where((u) => EF.Functions.Like(u.DisplayName, $"%{name}%")));
     }
 
     /// <inheritdoc/>

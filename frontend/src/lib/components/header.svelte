@@ -191,7 +191,6 @@
 						<DropdownMenu.Separator />
 						<form
 							method="post"
-							use:enhance
 							class="grid w-full"
 							action="/auth/keycloak?/signout"
 						>
@@ -204,7 +203,7 @@
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
 		{:else}
-			<form method="post" action="/auth/keycloak?/signin">
+			<form method="post" action="/auth/keycloak?/signin" use:enhance>
 				<Button type="submit">
 					<LogIn />
 					Signin

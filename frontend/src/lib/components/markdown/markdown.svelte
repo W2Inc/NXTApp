@@ -34,6 +34,7 @@
 		variant?: "editor" | "viewer";
 		maxlength?: number;
 		minlength?: number;
+		fullheight?: boolean;
 	}
 
 	type Action = {
@@ -52,6 +53,7 @@
 		variant = "editor",
 		maxlength,
 		minlength,
+		fullheight = false,
 		...rest
 	}: Props = $props();
 	let mode = $state<"write" | "preview">(variant === "editor" ? "write" : "preview");
@@ -281,7 +283,7 @@
 		{/if}
 		<div
 			data-mode={mode}
-			class="markdown max-h-96 min-h-40 overflow-auto rounded-b data-[mode=write]:hidden"
+			class="markdown { fullheight ? 'h-full' : 'max-h-96' } min-h-40 overflow-auto rounded-b data-[mode=write]:hidden"
 		>
 			<Markdown md={value} {plugins} />
 		</div>

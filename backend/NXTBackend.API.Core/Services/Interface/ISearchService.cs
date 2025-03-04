@@ -7,6 +7,8 @@ using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
 using Microsoft.EntityFrameworkCore;
+using NXTBackend.API.Domain.Enums;
+using NXTBackend.API.Models.Responses.Objects.SearchResponses;
 
 namespace NXTBackend.API.Core.Services.Interface;
 
@@ -21,5 +23,5 @@ public interface ISearchService
     /// <param name="sorting">The sorting parameters</param>
     /// <param name="query">The query used to search for on the model.</param>
     /// <returns>A enumarable value of possible results.</returns>
-    Task<IEnumerable<T>> SearchAsync<T>(SearchRequestDTO data, PaginationParams pagination, Func<DbSet<T>, IQueryable<T>> query) where T : BaseEntity;
+    Task<IEnumerable<SearchResultDO>> SearchAsync(string query, PaginationParams pagination, SearchKind? category = null);
 }

@@ -119,7 +119,7 @@
 							onsubmit={(e) => {
 								open = false;
 								e.preventDefault();
-								goto(`search?q=${query}`);
+								goto(`/search?q=${query}`, { invalidateAll: true });
 							}}
 						>
 							<Input

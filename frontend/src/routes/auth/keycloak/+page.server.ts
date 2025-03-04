@@ -14,7 +14,7 @@ import { KC_COOKIE_NAME } from "$env/static/private";
 
 export const load: PageServerLoad = async () => redirect(308, "/");
 export const actions: Actions = {
-	signin: async ({ cookies }) => {
+	signin: async ({ cookies, setHeaders }) => {
 		const state = arctic.generateState();
 		const codeVerifier = arctic.generateCodeVerifier();
 
@@ -46,6 +46,6 @@ export const actions: Actions = {
 
 		cookies.delete(`${KC_COOKIE_NAME}-a`, { path: "/" });
 		cookies.delete(`${KC_COOKIE_NAME}-r`, { path: "/" });
-		redirect(308, "/");
+		redirect(303, "/");
 	},
 };

@@ -7,7 +7,7 @@ import * as arctic from "arctic";
 import { keycloak } from "$lib/oauth";
 import type { RequestHandler } from "./$types";
 import jwt from "jsonwebtoken";
-import type { Cookies } from "@sveltejs/kit";
+import { redirect, type Cookies } from "@sveltejs/kit";
 import { KC_COOKIE_NAME } from "$env/static/private";
 import { dev } from "$app/environment";
 
@@ -85,9 +85,12 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		});
 
 		return new Response(null, {
-			status: 303,
+			status: 302,
 			headers: {
 				location: "/",
+				// "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+				// "Pragma": "no-cache",
+				"Refresh": "2;url=/",
 			},
 		});
 	} catch (e) {

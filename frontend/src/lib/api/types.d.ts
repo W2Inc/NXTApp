@@ -2489,13 +2489,14 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
+                    "filter[category]"?: string;
+                    "filter[query]"?: string;
                     Page?: number;
                     Size?: number;
-                    Query?: string;
                 };
                 header?: never;
                 path: {
-                    category: "User" | "Project" | "Cursus" | "LearningGoal";
+                    category: string;
                 };
                 cookie?: never;
             };
@@ -2507,9 +2508,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": unknown[];
-                        "application/json": unknown[];
-                        "text/json": unknown[];
+                        "text/plain": components["schemas"]["SearchResultDO"][];
+                        "application/json": components["schemas"]["SearchResultDO"][];
+                        "text/json": components["schemas"]["SearchResultDO"][];
                     };
                 };
                 /** @description Bad Request */
@@ -3541,6 +3542,7 @@ export interface paths {
                     Size?: number;
                     OrderBy?: string;
                     Order?: components["schemas"]["Order"];
+                    "filter[display_name]"?: string;
                 };
                 header?: never;
                 path?: never;
@@ -5117,6 +5119,29 @@ export interface components {
             project: components["schemas"]["ProjectDO2"];
             creator: components["schemas"]["UserDO"];
             gitInfo: components["schemas"]["GitDO"];
+        };
+        SearchResultDO: components["schemas"]["SearchResultDOUserSearchResultDO"] | components["schemas"]["SearchResultDOProjectSearchResultDO"];
+        SearchResultDOProjectSearchResultDO: {
+            /** @enum {string} */
+            $type?: "Project";
+            project: components["schemas"]["ProjectDO"];
+        };
+        SearchResultDOUserSearchResultDO: {
+            /** @enum {string} */
+            $type?: "User";
+            user: {
+                /** Format: uuid */
+                id: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                updatedAt: string;
+                login: string;
+                displayName: string | null;
+                avatarUrl: string | null;
+                /** Format: uuid */
+                detailsId: string | null;
+            };
         };
         SpotlightEvent: {
             title?: string;
