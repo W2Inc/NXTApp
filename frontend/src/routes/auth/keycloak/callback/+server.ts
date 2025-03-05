@@ -6,11 +6,9 @@
 import * as arctic from "arctic";
 import { keycloak } from "$lib/oauth";
 import type { RequestHandler } from "./$types";
-import jwt from "jsonwebtoken";
-import { redirect, type Cookies } from "@sveltejs/kit";
+import { type Cookies } from "@sveltejs/kit";
 import { KC_COOKIE_NAME } from "$env/static/private";
 import { dev } from "$app/environment";
-import { logger } from "$lib/logger";
 
 // ============================================================================
 
@@ -66,9 +64,6 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		const tokens = await keycloak.validateAuthorizationCode(code, verifier);
 		const accessToken = tokens.accessToken();
 		const refreshToken = tokens.refreshToken();
-
-		// const accessTokenExpiresAt = tokens.accessTokenExpiresAt();
-		// const refreshToken = tokens.refreshToken();
 
 		cookies.set(`${KC_COOKIE_NAME}-a`, accessToken, {
 			secure: !dev,

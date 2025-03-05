@@ -264,7 +264,7 @@
 
 	<!-- Content -->
 	<div
-		class="rounded-b border p-2 {variant === 'viewer'
+		class="rounded-b border p-2 shadow {variant === 'viewer'
 			? 'rounded-t border-t'
 			: 'border-t-0'}"
 	>
