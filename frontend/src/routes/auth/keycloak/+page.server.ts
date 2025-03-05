@@ -38,7 +38,6 @@ export const actions: Actions = {
 		);
 	},
 	signout: async ({ cookies }) => {
-		console.log("ok...?")
 		const token = cookies.get(`${KC_COOKIE_NAME}-a`);
 		if (token) {
 			await keycloak.revokeToken(token);

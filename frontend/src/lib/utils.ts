@@ -27,18 +27,25 @@ export namespace Constants {
 // ============================================================================
 
 /**
- * Encode a ID to a url friendy format
- * @param uuid The UUID
- * @returns The shortened UUID Version.
+ * Converts a UUID with hyphens to a URL-friendly format without hyphens
+ * @param uuid The UUID with hyphens (e.g., '0927cfb7-6637-4eee-8e29-c11548b23863')
+ * @returns The UUID without hyphens (e.g., '0927cfb766374eee8e29c11548b23863')
  */
-export const encodeID = (uuid: string) => Base58.encodeUUID(uuid);
+export const encodeID = (uuid: string) => uuid.replace(/-/g, '');
 
 /**
- *
- * @param uuid
- * @returns
+ * Converts a UUID without hyphens back to standard UUID format with hyphens
+ * @param encodedUuid The UUID without hyphens (e.g., '0927cfb766374eee8e29c11548b23863')
+ * @returns The UUID with hyphens (e.g., '0927cfb7-6637-4eee-8e29-c11548b23863')
  */
-export const decodeID = (uuid: string) => Base58.decodeToUUID(uuid);
+export const decodeID = (encodedUuid: string) => {
+	if (encodedUuid.length !== 32 || encodedUuid.includes('-'))
+		return encodedUuid;
+	return encodedUuid.replace(
+		/^(.{8})(.{4})(.{4})(.{4})(.{12})$/,
+		'$1-$2-$3-$4-$5'
+	);
+};
 
 // ============================================================================
 

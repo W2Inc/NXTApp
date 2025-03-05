@@ -116,7 +116,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		try {
 			const decoded = jsonwebtoken.decode(token) as jsonwebtoken.JwtPayload;
 			if (!decoded || !decoded.exp) return true;
-			logger.debug("Keycloak access token is still valid")
+			logger.debug("Keycloak access token is still valid");
 			return decoded.exp < Math.floor(Date.now() / 1000);
 		} catch {
 			return true;
@@ -124,7 +124,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	};
 
 	const deleteCookies = () => {
-		logger.debug(`Deleting cookies: ${KC_COOKIE_NAME}`)
+		logger.debug(`Deleting cookies: ${KC_COOKIE_NAME}`);
 		event.cookies.delete(`${KC_COOKIE_NAME}-a`, { path: "/" });
 		event.cookies.delete(`${KC_COOKIE_NAME}-r`, { path: "/" });
 	};
@@ -133,7 +133,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const refreshToken = event.cookies.get(`${KC_COOKIE_NAME}-r`);
 		if (refreshToken) {
 			try {
-				logger.debug("New tokens are required, requesting new token...")
+				logger.debug("New tokens are required, requesting new token...");
 				const tokens = await keycloak.refreshAccessToken(refreshToken);
 				event.cookies.set(`${KC_COOKIE_NAME}-a`, tokens.accessToken(), {
 					secure: !dev,
@@ -148,16 +148,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 					sameSite: "strict",
 					httpOnly: true,
 				});
+
+				logger.debug("Session Cookies", { cookies: event.cookies.getAll() });
 			} catch (e) {
 				if (e instanceof arctic.OAuth2RequestError) {
 					// e.g: Invalid grant aka token & refresh token expired
 					/** @see https://datatracker.ietf.org/doc/html/rfc6749#section-5.2 */
-					logger.debug("Failed to request new tokens", e)
-
+					logger.debug("Failed to request new tokens", e);
 				}
 				if (e instanceof arctic.ArcticFetchError) {
 					// Failed to call `fetch()`
-					logger.error(e)
+					logger.error(e);
 					error(500, e.message);
 				}
 				deleteCookies();
@@ -172,12 +173,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.session = async () => {
 		const currentAccessToken = event.cookies.get(`${KC_COOKIE_NAME}-a`);
 		if (!currentAccessToken) {
+			logger.debug("No session");
 			return null;
 		}
 
 		try {
 			const decoded = jsonwebtoken.decode(currentAccessToken, { complete: true });
 			if (!decoded || typeof decoded === "string" || !decoded.payload) {
+				logger.error("Bad JWT")
 				return null;
 			}
 
@@ -195,7 +198,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				avatarUrl: `${S3_ENDPOINT}/${S3_BUCKET}/${payload.sub}.png`,
 			};
 		} catch (e) {
-			console.error("Error decoding access token:", error);
+			logger.error("Error decoding access token:", e);
 			return null;
 		}
 	};

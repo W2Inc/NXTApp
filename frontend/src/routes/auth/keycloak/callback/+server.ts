@@ -10,6 +10,7 @@ import jwt from "jsonwebtoken";
 import { redirect, type Cookies } from "@sveltejs/kit";
 import { KC_COOKIE_NAME } from "$env/static/private";
 import { dev } from "$app/environment";
+import { logger } from "$lib/logger";
 
 // ============================================================================
 
@@ -73,24 +74,20 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 			secure: !dev,
 			path: "/",
 			httpOnly: true,
-			sameSite: 'strict',
-			// maxAge: tokens.accessTokenExpiresInSeconds(),
+			sameSite: "lax"
 		});
 
 		cookies.set(`${KC_COOKIE_NAME}-r`, refreshToken, {
 			secure: !dev,
 			path: "/",
 			httpOnly: true,
-			sameSite: 'strict',
+			sameSite: "lax"
 		});
 
 		return new Response(null, {
 			status: 302,
 			headers: {
 				location: "/",
-				// "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
-				// "Pragma": "no-cache",
-				"Refresh": "2;url=/",
 			},
 		});
 	} catch (e) {

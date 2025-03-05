@@ -8,5 +8,4 @@ import type { PageServerLoad } from "./$types";
 // ============================================================================
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	console.log("123", url.searchParams);
 };

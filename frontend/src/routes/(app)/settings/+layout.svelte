@@ -14,19 +14,19 @@
 		},
 		{
 			icon: Computer,
-			href: "sessions",
-			title: "Sessions",
+			href: "apps",
+			title: "Apps",
 		},
 		{
 			icon: FlaskConical,
 			href: "features",
 			title: "Features",
 		},
-		{
-			icon: Socials,
-			href: "socials",
-			title: "Socials",
-		},
+		// {
+		// 	icon: Socials,
+		// 	href: "socials",
+		// 	title: "Socials",
+		// },
 	];
 </script>
 

@@ -9,12 +9,12 @@
 	import { useQuery } from "$lib/utils/query.svelte";
 	import { z } from "zod";
 	import Base from "$lib/components/base.svelte";
-	import { invalidate, invalidateAll } from "$app/navigation";
-	import { tick } from "svelte";
+
 	import { useDebounce } from "$lib/utils/debounce.svelte.js";
 	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
+	import type { PageProps } from "./$types";
 
-	const { data } = $props();
+	const { data }: PageProps = $props();
 	const debounce = useDebounce();
 	const query = useQuery(
 		z.object({
@@ -24,16 +24,14 @@
 		}),
 	);
 
+	const subscribeType = $derived(query.read("subscribed") ? "subscribed" : "all");
+
 	function searchProject(search: string) {
 		if (search.length > 0) {
 			query.write("search", search);
 		} else {
 			query.write("search", undefined);
 		}
-	}
-
-	if (!page.data.session) {
-		query.write("subscribed", true);
 	}
 </script>
 
@@ -43,9 +41,9 @@
 
 <Base>
 	{#snippet left()}
-		{#if page.data.session}
+		{#if data.session && data.isCurrentUser}
 			<Tabs.Root
-				value={query.read("subscribed") ? "subscribed" : "all"}
+				value={subscribeType}
 				onValueChange={(v) => query.write("subscribed", v === "subscribed")}
 			>
 				<Tabs.List class="w-full">
@@ -83,7 +81,7 @@
 				{:then projects}
 					{#if projects && projects.length > 0}
 						{#each projects as p}
-							{#if query.read("subscribed") ?? false}
+							{#if subscribeType === "subscribed" || !data.isCurrentUser}
 								{@const userProject = p as BackendTypes["UserProjectDO"]}
 								<Taskcard
 									href="projects/{userProject.project?.slug}"
@@ -103,8 +101,6 @@
 					{:else}
 						Nothing here...
 					{/if}
-				{:catch}
-					Something went wrong...
 				{/await}
 			</div>
 		</div>

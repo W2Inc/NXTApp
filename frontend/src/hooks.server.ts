@@ -20,6 +20,8 @@ import {
 	KC_CLIENT_SECRET,
 	KC_COOKIE_NAME,
 	KC_ISSUER,
+	KC_HOST,
+	BE_HOST
 } from "$env/static/private";
 import KeycloakClient from "$lib/keycloak";
 import { useRetryAfter } from "$lib/utils/limiter.svelte";
@@ -29,12 +31,29 @@ import { initLogger, logger } from "$lib/logger";
 
 // ============================================================================
 
+const DebugLogMD: Middleware = {
+  // async onRequest({ request, options }) {
+	// 	logger.debug(`API: ${request.method.toUpperCase()} => ${request.url}`);
+  //   return request;
+  // },
+	async onResponse({ request, response, options }) {
+		logger.debug(`API: ${request.method.toUpperCase()} ${request.url} => [${response.status}:${response.statusText}]`);
+		if (!response.ok)
+			throw error(response.status, response.statusText);
+    return response;
+  },
+};
+
+// ============================================================================
+
 // TODO: Replace with arctic client...
 const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
 
 /**
  * Global rate limiting, you can use this rate limiter across pages or use
  * a new rate limiter to determine rate limits per page if so desired.
+ *
+ * @deprecated Use Traeffik.
  */
 const limiter = useRetryAfter({
 	IP: [10, "h"],
@@ -98,8 +117,10 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 		fetch: event.fetch,
 	});
 
+	event.locals.api.use(DebugLogMD);
+
 	event.locals.keycloak = createClient<KeycloakRoutes>({
-		baseUrl: dev ? "http://localhost:8089/auth" : "http://localhost:8089/auth",
+		baseUrl: KC_HOST,
 		mode: "cors",
 		fetch: event.fetch,
 	});
@@ -107,17 +128,12 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-const ratelimit: Handle = async ({ event, resolve }) => {
-	event.locals.limiter = limiter;
+const initial: Handle = async ({ event, resolve }) => {
+	logger.debug("Current cookies", { cookies: event.cookies.getAll().map(cookie => cookie.name) })
 	event.setHeaders({
 		"x-powered-by": `Bun ${Bun.version}`,
 		"x-application": "APP_NAME",
 	});
-
-	const limit = await limiter.check(event);
-	if (limit.isLimited) {
-		error(429, `Too many requests, try again in ${limit.retryAfter} seconds.`);
-	}
 
 	return resolve(event);
 };
@@ -126,23 +142,23 @@ const ratelimit: Handle = async ({ event, resolve }) => {
 // Each function acts as a middleware, receiving the request handle
 // And returning a handle which gets passed to the next function
 export const handle: Handle = sequence(
-	ratelimit,
+	initial,
 	authenticationHandle,
 	authorizationHandle,
 	apiHandle,
-);
+);;
 
 // ============================================================================
 
 // NOTE(W2): Attach authorization here as putting it in the client means
 // it would be stuck on the first client request's cookie.
 export async function handleFetch({ fetch, request, event }) {
-	if (request.url.startsWith("http://localhost:3001/")) {
+	if (request.url.startsWith(BE_HOST)) {
 		const accessToken = event.cookies.get(`${KC_COOKIE_NAME}-a`);
 		request.headers.set("authorization", `Bearer ${accessToken}`);
 	}
 
-	if (request.url.startsWith("http://localhost:8089/")) {
+	if (request.url.startsWith(KC_HOST)) {
 		const token = await keycloak.getToken();
 		request.headers.set("Authorization", `Bearer ${token}`);
 	}
