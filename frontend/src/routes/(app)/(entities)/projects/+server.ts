@@ -1,5 +1,6 @@
 import { json, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
+import { logger } from "$lib/logger";
 
 export const GET: RequestHandler = async ({ locals, url, fetch, request }) => {
 	// request = new Request(
@@ -18,9 +19,11 @@ export const GET: RequestHandler = async ({ locals, url, fetch, request }) => {
 		query["filter[name]"] = url.searchParams.get("name")!;
 	}
 
-	const { data } = await locals.api.GET("/projects", {
+	const { data, response } = await locals.api.GET("/projects", {
 		params: { query }
 	});
+
+	logger.debug(response.status)
 
 	return json(data);
 };

@@ -9,6 +9,7 @@
 	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import FeedCard from "$lib/components/cards/feed-card.svelte";
 	import ChangelogCard from "$lib/components/cards/changelog-card.svelte";
+	import Tilter from "$lib/components/tilter.svelte";
 
 	const { data } = $props();
 	const storage = useStorage();
@@ -27,8 +28,6 @@
 			title: "Our Github",
 		},
 	];
-
-	//= ... =//
 </script>
 
 <svelte:head>
@@ -48,17 +47,23 @@
 	{#snippet right()}
 		<div class="w-full">
 			<div class="flex gap-2 p-4 max-w-[80rem] mx-auto">
-				<!-- <ul class="flex-auto">
-					{#each data.feed as feed}
-						<li>
-							<FeedCard data={feed} />
-						</li>
-					{/each}
-				</ul> -->
-				<!-- <ScrollApi onNextPage={() => console.log("next")} items={Array.from({ length: 10 })}>
-
-				</ScrollApi> -->
-				<aside class="hidden min-w-[346px] xl:flex flex-col gap-2">
+				{#if data.feed.length == 0}
+					<div class="w-full flex flex-col items-center justify-center p-12 text-gray-400 opacity-75 text-lg">
+						<Tilter>
+							<span class="text-4xl mb-2">🤔</span>
+						</Tilter>
+						<p>Strange, there's nothing here?</p>
+					</div>
+				{:else}
+						<ul class="flex-auto">
+							{#each data.feed as feed}
+								<li>
+									<FeedCard data={feed} />
+								</li>
+							{/each}
+						</ul>
+				{/if}
+				<aside class="hidden min-w-[346px] xl:flex flex-col gap-2 sticky top-0 h-min pt-2">
 					<SpotlightCard />
 					<ChangelogCard />
 				</aside>

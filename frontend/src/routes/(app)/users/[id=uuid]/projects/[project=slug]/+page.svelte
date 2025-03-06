@@ -5,6 +5,7 @@
 	import * as Avatar from "$lib/components/ui/avatar";
 	import Box from "lucide-svelte/icons/box";
 	import Archive from "lucide-svelte/icons/archive";
+	import Pen from "lucide-svelte/icons/pen";
 	import ExternalLink from "lucide-svelte/icons/external-link";
 	import Users from "lucide-svelte/icons/users";
 	import Git from "lucide-svelte/icons/git-pull-request";
@@ -42,6 +43,13 @@
 				<Separator class="my-1" />
 				<EvalRatio />
 			{/if}
+			{#if data.project.creator?.id === data.session?.user_id}
+				<Separator class="my-1" />
+				<Button variant="outline" class="justify-start " href="/new/project?edit={data.project.id}">
+					<Pen size={16} />
+					Edit Project
+				</Button>
+			{/if}
 			<Separator class="my-1" />
 			<Button variant="outline" class="justify-start " href={data.project.gitInfo?.url}>
 				Project Source
@@ -49,7 +57,12 @@
 			</Button>
 			<Separator class="my-1" />
 			<form method="post" {action} use:enhance>
-				<input name="id" type="hidden" bind:value={form.data.id} {...form.constraints.id}/>
+				<input
+					name="id"
+					type="hidden"
+					bind:value={form.data.id}
+					{...form.constraints.id}
+				/>
 				<Button type="submit" class="w-full">
 					{#if !data.userProject}
 						Subscribe

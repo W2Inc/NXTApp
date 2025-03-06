@@ -1,26 +1,25 @@
 <script lang="ts">
-	// import { Canvas } from "@threlte/core";
-	import { T, Canvas  } from '@threlte/core'
+	import { T, Canvas } from "@threlte/core";
+	import { OrbitControls } from "@threlte/extras";
+	import * as THREE from "three";
+	import Scene from "./Scene.svelte";
+
 </script>
 
 <svelte:head>
-	<title>Users Galaxy</title>
+	<title>Learning Goals Galaxy</title>
 </svelte:head>
 
-{#snippet scene()}
-	<T.PerspectiveCamera
-		position={[10, 10, 10]}
-		on:create={({ ref }) => {
-			ref.lookAt(0, 0, 0);
-		}}
-	/>
+<div class="canvas">
+	<Canvas>
+		<Scene />
+	</Canvas>
+</div>
 
-	<T.Mesh>
-		<T.BoxGeometry args={[1, 1, 1]} />
-		<T.MeshBasicMaterial color="red" />
-	</T.Mesh>
-{/snippet}
-
-<Canvas>
-  {@render scene()}
-</Canvas>
+<style>
+	.canvas {
+		width: 100%;
+		height: 100vh;
+		display: block;
+	}
+</style>

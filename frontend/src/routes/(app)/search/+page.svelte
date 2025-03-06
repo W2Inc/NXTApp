@@ -3,7 +3,7 @@
 	import Control from "$lib/components/forms/control.svelte";
 	import { useQuery } from "$lib/utils/query.svelte";
 	import { z } from "zod";
-	import { Search } from "lucide-svelte";
+	import Search from "lucide-svelte/icons/search";
 	import Button from "$lib/components/ui/button/button.svelte";
 	import Input from "$lib/components/ui/input/input.svelte";
 	import * as Select from "$lib/components/ui/select";
@@ -29,19 +29,12 @@
 		<div class="p-6">
 			<div class="mx-auto max-w-3xl">
 				<h2 class="mb-6 text-2xl font-semibold">Find what you're looking for</h2>
-				<div class="flex flex-col gap-4 sm:flex-row">
-					<div class="relative flex-1">
-						<Input
-							type="text"
-							placeholder="Enter search terms..."
-							oninput={(e) => debounce(handleSearch, e.currentTarget.value)}
-							class="pl-10"
-						/>
-						<Search
-							class="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform"
-						/>
-					</div>
-				</div>
+				<Input
+					type="text"
+					icon={Search}
+					placeholder="Enter search terms..."
+					oninput={(e) => debounce(handleSearch, e.currentTarget.value)}
+				/>
 				<span class="text-muted-foreground text-sm">
 					Try searching for users, goals, projects or courses
 				</span>

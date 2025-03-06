@@ -75,6 +75,7 @@ const routes: Record<string, Role[]> = {
 	"/notifications": [],
 	"/changelog": [],
 	"/search": [],
+	"/projects": [],
 };
 
 export const init: ServerInit = async () => {
@@ -129,7 +130,7 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 };
 
 const initial: Handle = async ({ event, resolve }) => {
-	logger.debug("Current cookies", { cookies: event.cookies.getAll().map(cookie => cookie.name) })
+	// logger.debug("Current cookies", { cookies: event.cookies.getAll().map(cookie => cookie.name) })
 	event.setHeaders({
 		"x-powered-by": `Bun ${Bun.version}`,
 		"x-application": "APP_NAME",
@@ -146,7 +147,7 @@ export const handle: Handle = sequence(
 	authenticationHandle,
 	authorizationHandle,
 	apiHandle,
-);;
+);
 
 // ============================================================================
 

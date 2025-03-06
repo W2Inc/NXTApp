@@ -18,6 +18,10 @@
 	);
 </script>
 
+<svelte:head>
+	<title>Notifications</title>
+</svelte:head>
+
 <Base>
 	{#snippet left()}
 		<Tabs.Root
