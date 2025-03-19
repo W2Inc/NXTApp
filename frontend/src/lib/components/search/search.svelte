@@ -2,7 +2,7 @@
 	// import Logo from "$assets/logo.png";
 	import { page } from "$app/state";
 	import { Button } from "../ui/button";
-	import X from "lucide-svelte/icons/x";
+	import Search from "lucide-svelte/icons/search";
 	import User from "lucide-svelte/icons/user";
 	import Users from "lucide-svelte/icons/users";
 	import ArchiveBox from "lucide-svelte/icons/archive";
@@ -116,6 +116,7 @@
 					<Dialog.Description>
 						<form
 							role="search"
+							class="mb-2"
 							onsubmit={(e) => {
 								open = false;
 								e.preventDefault();
@@ -124,7 +125,7 @@
 						>
 							<Input
 								type="search"
-								class="mb-2"
+								icon={Search}
 								placeholder="Search..."
 								name="q"
 								bind:value={query}

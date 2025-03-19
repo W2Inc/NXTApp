@@ -27,8 +27,8 @@
 		}),
 	);
 
-	const subscribeType = $derived(query.read("subscribed") ? "subscribed" : "all");
-
+	// const subscribeType = $derived(query.read("subscribed") ? "subscribed" : "all");
+	// query.read("subscribed")
 	function searchProject(search: string) {
 		if (search.length > 0) {
 			query.write("search", search);
@@ -55,12 +55,12 @@
 		{#if data.session && data.isCurrentUser}
 			<Separator />
 			<Tabs.Root
-				value={subscribeType}
+				value={query.read("subscribed") ? "subscribed" : "all"}
 				onValueChange={(v) => query.write("subscribed", v === "subscribed")}
 			>
 				<Tabs.List class="w-full">
 					<Tabs.Trigger class="w-full" value="subscribed">Subscribed</Tabs.Trigger>
-					<Tabs.Trigger class="w-full" value="all">All</Tabs.Trigger>
+					<Tabs.Trigger class="w-full" value="all">Available</Tabs.Trigger>
 				</Tabs.List>
 			</Tabs.Root>
 		{/if}
@@ -82,33 +82,28 @@
 				{#await data.projects}
 					<Skeleton class="h-28 w-28" />
 				{:then projects}
-					{#if projects && projects.length > 0}
-						{#each projects as p}
-							{#if subscribeType === "subscribed" || !data.isCurrentUser}
-								{@const userProject = p as BackendTypes["UserProjectDO"]}
+					{#key query.read("subscribed")}
+						{#if query.read("subscribed") === true || !data.isCurrentUser}
+							{#each projects as up}
+								{@const userProject = up as BackendTypes["UserProjectDO"]}
 								<Taskcard
 									href="projects/{userProject.project?.slug}"
 									type="project"
-									title={userProject.project!.name}
+									title={userProject.project?.name}
 									state={userProject.state}
 								/>
-							{:else}
+							{/each}
+						{:else}
+							{#each projects as p}
 								{@const project = p as BackendTypes["ProjectDO"]}
 								<Taskcard
 									href="projects/{project.slug}"
 									type="project"
 									title={project.name}
 								/>
-							{/if}
-						{/each}
-					{:else}
-						<div
-							class="flex w-full flex-col items-center justify-center p-12 text-lg text-gray-400 opacity-75"
-						>
-							<Archive class="mb-2 text-4xl" />
-							<p>You have no subscribed projects</p>
-						</div>
-					{/if}
+							{/each}
+						{/if}
+					{/key}
 				{/await}
 			</div>
 		</div>

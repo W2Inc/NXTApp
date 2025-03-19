@@ -142,52 +142,7 @@ public class CursusController(
         return Ok(new CursusDO(cursus));
     }
 
-    [HttpPut("/cursus/{id:guid}/path")]
-    // [Consumes("application/octet-stream")]
-    [EndpointSummary("Define the track / path of a cursus")]
-    [EndpointDescription("Cursi can have a set track of goals ")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<CursusDO>> SetTrack(Guid id)
-    {
-        var cursus = await cursusService.FindByIdAsync(id);
-        if (cursus is null)
-            return NotFound("Cursus not found");
 
-        using var memoryStream = new MemoryStream();
-        await Request.Body.CopyToAsync(memoryStream);
-        memoryStream.Position = 0;
-
-        logger.LogInformation("{length}", memoryStream.Length);
-
-        try
-        {
-            logger.LogInformation("Reading graph...");
-            using var reader = new Reader(memoryStream);
-            reader.Deserialize();
-            //reader.RootNode;
-            // TODO(W2): Verify the data inside the graph
-            // - Do goals exist...
-            // - etc ...
-        }
-        catch (InvalidDataException e)
-        {
-            return UnprocessableEntity(new ProblemDetails()
-            {
-                Title = e.Message
-            });
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Failed to read graph data");
-            return Problem(e.Message);
-        }
-
-        cursus.Track = memoryStream.ToArray();
-        await cursusService.UpdateAsync(cursus);
-        logger.LogInformation("Cursus added");
-        return NoContent();
-    }
 
     [HttpGet("/cursus/{id:guid}/path"), AllowAnonymous]
     [Produces(contentType: "application/octet-stream")]

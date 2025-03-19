@@ -1,6 +1,6 @@
 {
 	"galaxy": {
-		"NUM_STARS": 4000,
+		"NUM_STARS": 20000,
 		"NUM_ARMS": 4,
 		"THICKNESS": 5,
 		"CORE_X_DIST": 33,
@@ -11,8 +11,8 @@
 		"ARM_Y_DIST": 50,
 		"ARM_X_MEAN": 200,
 		"ARM_Y_MEAN": 100,
-		"SPIRAL": 3.0,
-		"ARMS": 2.0
+		"SPIRAL": 1.87,
+		"ARMS": 4.0
 	},
 	"gfx": {
 		"STAR_MIN": 0.25,

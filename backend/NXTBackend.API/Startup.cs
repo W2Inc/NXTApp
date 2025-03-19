@@ -170,9 +170,9 @@ public static class Startup
                         });
                 }
 
-                return RateLimitPartition.GetFixedWindowLimiter(
+                return RateLimitPartition.GetSlidingWindowLimiter(
                     partitionKey: "AuthenticatedUsers",
-                    factory: _ => new FixedWindowRateLimiterOptions
+                    factory: _ => new SlidingWindowRateLimiterOptions
                     {
                         PermitLimit = 240, // More requests
                         Window = TimeSpan.FromMinutes(20),

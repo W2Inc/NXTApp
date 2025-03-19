@@ -99,6 +99,7 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 		return resolve(event);
 	}
 	if (!session) {
+		console.log("here!")
 		// Check if user is authenticated when roles are required
 		error(401, "Authentication required");
 	}

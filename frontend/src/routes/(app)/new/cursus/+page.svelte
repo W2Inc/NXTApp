@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { writable } from "svelte/store";
-	import { SvelteFlow, Background, Controls, MiniMap, type Edge, Position, type Node } from "@xyflow/svelte";
 	import { mode } from "mode-watcher";
 
 	import "@xyflow/svelte/dist/style.css";
@@ -8,8 +7,9 @@
 	import Input from "$lib/components/ui/input/input.svelte";
 	import Control from "$lib/components/forms/control.svelte";
 	import Pen from "lucide-svelte/icons/pen";
+	import Import from "lucide-svelte/icons/file-up";
+	import Export from "lucide-svelte/icons/file-down";
 	import CircleHelp from "lucide-svelte/icons/circle-help";
-
 	import * as Dialog from "$lib/components/ui/dialog";
 	import * as Select from "$lib/components/ui/select";
 	import { Button, buttonVariants } from "$lib/components/ui/button";
@@ -22,80 +22,43 @@
 	import Switch from "$lib/components/ui/switch/switch.svelte";
 	import ProjectNode from "$lib/components/nodes/project-node.svelte";
 	import { useForm } from "$lib/utils/form.svelte.js";
-
-  const nodeTypes = {
-    selectorNode: ProjectNode
-  };
-
-  const bgColor = writable('#1A192B');
-
-  const initialNodes: Node[] = [
-    {
-      id: '1',
-      type: 'input',
-      data: { label: 'An input node' },
-      position: { x: 0, y: 50 },
-      sourcePosition: Position.Right
-    },
-    {
-      id: '2',
-      type: 'selectorNode',
-      data: { color: bgColor },
-      style: 'border: 1px solid #777; padding: 10px;',
-      position: { x: 300, y: 50 }
-    },
-    {
-      id: '3',
-      type: 'output',
-      data: { label: 'Output A' },
-      position: { x: 650, y: 25 },
-      targetPosition: Position.Left
-    },
-    {
-      id: '4',
-      type: 'output',
-      data: { label: 'Output B' },
-      position: { x: 650, y: 100 },
-      targetPosition: Position.Left
-    }
-  ];
-
-  const initialEdges: Edge[] = [
-    {
-      id: 'e1-2',
-      source: '1',
-      target: '2',
-      animated: true,
-      style: 'stroke: #fff;'
-    },
-    {
-      id: 'e2a-3',
-      source: '2',
-      target: '3',
-      sourceHandle: 'a',
-      animated: true,
-      style: 'stroke: #fff;'
-    },
-    {
-      id: 'e2b-4',
-      source: '2',
-      target: '4',
-      sourceHandle: 'b',
-      animated: true,
-      style: 'stroke: #fff;'
-    }
-  ];
-
-  const nodes = writable<Node[]>(initialNodes);
-  const edges = writable(initialEdges);
-
-
+	import {
+		SvelteFlow,
+		Controls,
+		Background,
+		BackgroundVariant,
+		Position,
+		MiniMap,
+		Panel,
+		type ColorMode,
+	} from "@xyflow/svelte";
+	import "@xyflow/svelte/dist/style.css";
+	const nodeDefaults = {
+		sourcePosition: Position.Right,
+		targetPosition: Position.Left,
+	};
+	let nodes = $state.raw([
+		{
+			id: "A",
+			position: { x: 0, y: 150 },
+			data: { label: "A" },
+			...nodeDefaults,
+		},
+		{ id: "B", position: { x: 250, y: 0 }, data: { label: "B" }, ...nodeDefaults },
+		{ id: "C", position: { x: 250, y: 150 }, data: { label: "C" }, ...nodeDefaults },
+		{ id: "D", position: { x: 250, y: 300 }, data: { label: "D" }, ...nodeDefaults },
+	]);
+	let edges = $state.raw([
+		{ id: "A-B", source: "A", target: "B" },
+		{ id: "A-C", source: "A", target: "C" },
+		{ id: "A-D", source: "A", target: "D" },
+	]);
+	let colorMode: ColorMode = $state("system");
 
 	const { data } = $props();
 	const { enhance, form } = useForm(data.form, {
-		confirm: true
+		confirm: true,
 	});
-
 </script>
 
 <form method="POST" use:enhance>
@@ -135,7 +98,7 @@
 						<Pen />
 						Set Markdown
 					</Dialog.Trigger>
-					<Dialog.Content class="max-w-2xl block">
+					<Dialog.Content class="block max-w-2xl">
 						<Dialog.Header>
 							<Dialog.Title>Description</Dialog.Title>
 							<Dialog.Description>
@@ -152,7 +115,11 @@
 								{...form.constraints.markdown}
 							/>
 						</Control>
-						<Control label="Description" name="description" errors={form.errors.description}>
+						<Control
+							label="Description"
+							name="description"
+							errors={form.errors.description}
+						>
 							<Textarea
 								id="description"
 								name="description"
@@ -223,21 +190,33 @@
 		{/snippet}
 
 		{#snippet right()}
-			<div style=" color: black;">
-				<SvelteFlow {nodes} {edges} {nodeTypes} colorMode={$mode ?? "system"} minZoom={0} fitView>
-					<Background />
-					<Controls position="top-right" />
-				</SvelteFlow>
-			</div>
+			<SvelteFlow bind:nodes bind:edges {colorMode} colorModeSSR={"dark"} fitView>
+				<Controls position="top-right" />
+				<Background variant={BackgroundVariant.Dots} />
+
+				<Panel style="margin: 0px;" position="top-left" class="flex gap-2 bg-card rounded-br-lg border-b border-r p-2">
+					<Select.Root type="single" bind:value={colorMode}>
+						<Select.Trigger
+							class={buttonVariants({
+								variant: "secondary",
+								class: "w-[100px] justify-between capitalize",
+							})}>{colorMode}</Select.Trigger
+						>
+						<Select.Content>
+							<Select.Item value="light">Light</Select.Item>
+							<Select.Item value="dark">Dark</Select.Item>
+							<Select.Item value="system">System</Select.Item>
+						</Select.Content>
+					</Select.Root>
+					<Separator orientation="vertical" />
+					<Button variant="secondary" size="icon">
+						<Import />
+					</Button>
+					<Button variant="secondary" size="icon">
+						<Export />
+					</Button>
+				</Panel>
+			</SvelteFlow>
 		{/snippet}
 	</Base>
 </form>
-
-<style>
-	.scramble-button {
-		position: absolute;
-		right: 10px;
-		top: 30px;
-		z-index: 4;
-	}
-</style>

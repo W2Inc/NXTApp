@@ -1,39 +1,36 @@
 <script lang="ts">
-	import { tweened } from "svelte/motion";
+	import { Tween } from "svelte/motion";
 	import type { Audio as ThreeAudio } from "three";
 	import { useAudioListener, Audio } from "@threlte/extras";
 
-	//= Public =//
+	interface Props {
+		volume?: number;
+		playing: boolean;
+	}
 
-	export let volume = 0.5;
-  export let isPlaying = false
-	export let src: string = `music.mp3`;
-	export const toggle = async () => {
-		if (!hasStarted) {
-			await context.resume();
-			hasStarted = true;
-		}
-		// TODO: Actually set the context to suspended or not
-		if (isPlaying) {
-			playRate.set(0);
-			isPlaying = false;
-		} else {
-			playRate.set(1);
-			isPlaying = true;
-		}
-	};
+	const src = `/music.mp3`;
+	let { volume = 0.5, playing = $bindable(false) }: Props = $props();
 
-	//= Private =//
-
-	let audio: ThreeAudio;
-	let hasStarted = false;
-	let tweenDuration = 650;
-  let playRate = tweened(0, {
-    duration: tweenDuration
-  })
+	let audio = $state<ThreeAudio>();
+	let hasStarted = $state(false);
+	let playRate = new Tween(0, {
+		duration: 250,
+	});
 
 	const { context } = useAudioListener();
-	$: if (!audio) isPlaying = false;
+	$effect(() => {
+		if (!hasStarted && playing == true) {
+			context.resume().then(() => {
+				hasStarted = true;
+			});
+		}
+		if (!playing) {
+			playRate.set(0);
+			// TODO: Properly halt the audio context
+		} else {
+			playRate.set(1);
+		}
+	});
 </script>
 
-<Audio bind:ref={audio} {src} loop {volume} playbackRate={$playRate} />
+<Audio bind:ref={audio} {src} loop {volume} autoplay playbackRate={playRate.current} />

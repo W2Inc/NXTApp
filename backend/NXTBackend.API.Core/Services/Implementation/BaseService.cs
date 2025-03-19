@@ -70,6 +70,12 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
     }
 
     /// <inheritdoc />
+    public virtual async Task<bool> AreValid(IEnumerable<Guid> ids)
+    {
+        return ids.All(id => _dbSet.AsNoTracking().Select(p => p.Id).Contains(id));
+    }
+
+    /// <inheritdoc />
     public virtual async Task<T> CreateAsync(T entity)
     {
         var createdEntity = await _dbSet.AddAsync(entity);

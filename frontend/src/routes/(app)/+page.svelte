@@ -10,6 +10,8 @@
 	import FeedCard from "$lib/components/cards/feed-card.svelte";
 	import ChangelogCard from "$lib/components/cards/changelog-card.svelte";
 	import Tilter from "$lib/components/tilter.svelte";
+	import Landing from "./landing.svelte";
+	import { page } from "$app/state";
 
 	const { data } = $props();
 	const storage = useStorage();
@@ -35,26 +37,28 @@
 </svelte:head>
 
 <!-- Side bar -->
+{#if page.data.session}
+	<Base>
+		{#snippet left()}
+			<Navgroup title="Links" navs={navigations} />
+			{#if recent.length > 0}
+				<Navgroup title="Recently Visited" navs={recent} />
+			{/if}
+		{/snippet}
 
-<Base>
-	{#snippet left()}
-		<Navgroup title="Links" navs={navigations} />
-		{#if recent.length > 0}
-			<Navgroup title="Recently Visited" navs={recent} />
-		{/if}
-	{/snippet}
-
-	{#snippet right()}
-		<div class="w-full">
-			<div class="flex gap-2 p-4 max-w-[80rem] mx-auto">
-				{#if data.feed.length == 0}
-					<div class="w-full flex flex-col items-center justify-center p-12 text-gray-400 opacity-75 text-lg">
-						<Tilter>
-							<span class="text-4xl mb-2">🤔</span>
-						</Tilter>
-						<p>Strange, there's nothing here?</p>
-					</div>
-				{:else}
+		{#snippet right()}
+			<div class="w-full">
+				<div class="mx-auto flex max-w-[80rem] gap-2 p-4">
+					{#if data.feed.length == 0}
+						<div
+							class="flex w-full flex-col items-center justify-center p-12 text-lg text-gray-400 opacity-75"
+						>
+							<Tilter>
+								<span class="mb-2 text-4xl">🤔</span>
+							</Tilter>
+							<p>Strange, there's nothing here?</p>
+						</div>
+					{:else}
 						<ul class="flex-auto">
 							{#each data.feed as feed}
 								<li>
@@ -62,25 +66,17 @@
 								</li>
 							{/each}
 						</ul>
-				{/if}
-				<aside class="hidden min-w-[346px] xl:flex flex-col gap-2 sticky top-0 h-min pt-2">
-					<SpotlightCard />
-					<ChangelogCard />
-				</aside>
+					{/if}
+					<aside
+						class="sticky top-0 hidden h-min min-w-[346px] flex-col gap-2 pt-2 xl:flex"
+					>
+						<SpotlightCard />
+						<ChangelogCard />
+					</aside>
+				</div>
 			</div>
-		</div>
-		<!-- <div class="m-auto flex max-w-xl gap-2">
-			<div class="flex-1">
-				<Markdown value="Hello World!" variant="viewer" />
-				<Markdown value="Hello World!" variant="editor" />
-				Middle
-				{#each data.feed as feed}
-					<div>1: {feed.id}</div>
-				{/each}
-			</div>
-			<aside class="hidden lg:block">
-				<SpotlightCard />
-			</aside>
-		</div> -->
-	{/snippet}
-</Base>
+		{/snippet}
+	</Base>
+{:else}
+	<Landing />
+{/if}

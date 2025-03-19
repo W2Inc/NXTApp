@@ -38,7 +38,7 @@ public sealed class Writer(Stream stream) : EndianStreamWriter(stream, true)
         {
             // WriteCString(goal.Name);
             Write(goal.Id);
-            // Write((int)goal.State);
+            Write((int)goal.State);
             // WriteCString(goal.Description);
         }
 

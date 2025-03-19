@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { gfx} from "../config.json";
-	import { useThrelte, useRender } from '@threlte/core'
+	import { useThrelte, useTask } from '@threlte/core'
 	import * as THREE from 'three'
   import {
     EffectComposer,
@@ -31,10 +31,12 @@
 		composer.addPass(new EffectPass($camera, bloomEffect));
 	}
 
-	$: setupEffectCompoers()
-	$: composer.setSize($size.width, $size.height)
+	$effect(() => {
+		setupEffectCompoers();
+		composer.setSize($size.width, $size.height)
+	})
 
-  useRender((_, delta) => {
+  useTask((delta) => {
     composer.render(delta)
   });
 </script>

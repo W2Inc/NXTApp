@@ -13,16 +13,6 @@ public struct Goal
     public Guid Id { get; set; }
 
     /// <summary>
-    /// The name of the goal
-    /// </summary>
-    public string Name { get; set; }
-
-    /// <summary>
-    /// A description about the goal
-    /// </summary>
-    public string Description { get; set; }
-
-    /// <summary>
     /// The state of the goal
     /// </summary>
     public TaskState State { get; set; }
