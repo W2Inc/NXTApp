@@ -1,8 +1,10 @@
 ﻿
+using NXTBackend.API.Core.Services.Traits;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Core.Services.Interface;
-public interface ICursusService : IDomainService<Cursus>
+public interface ICursusService : ICollaborative<Cursus>, IDomainService<Cursus>
 {
-    public Task<Cursus?> FindByNameAsync(string name);
+    Task<Cursus?> FindByNameAsync(string name);
 }

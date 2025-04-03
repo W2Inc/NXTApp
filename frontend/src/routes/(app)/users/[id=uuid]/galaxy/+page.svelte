@@ -36,21 +36,21 @@
 
 	let graph = $state.raw<ClientGraph>();
 	$effect(() => {
-		// const reader = new XGraphV1.Reader(data.buff.buffer as ArrayBuffer);
-		// reader.deserialize();
+		const reader = new XGraphV1.Reader(data.buff as ArrayBuffer);
+		reader.deserialize();
 
-		// console.log(reader.version)
+		console.log(reader.version)
 
-		// if (reader.root) {
-		// 	graph = transformXGraphV1Data(
-		// 		reader.root,
-		// 		{
-		// 			addEndActionNodes: true, // Add action nodes to end nodes
-		// 			flatten: false, // Keep as 3D graph (set to true for 2D)
-		// 		},
-		// 		"your-seed-here",
-		// 	); // Optional seed for consistent randomization
-		// }
+		if (reader.root) {
+			graph = transformXGraphV1Data(
+				reader.root,
+				{
+					addEndActionNodes: true, // Add action nodes to end nodes
+					flatten: false, // Keep as 3D graph (set to true for 2D)
+				},
+				"your-seed-here",
+			); // Optional seed for consistent randomization
+		}
 	});
 
 	$inspect(graph);

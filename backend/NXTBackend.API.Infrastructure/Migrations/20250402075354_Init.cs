@@ -146,13 +146,29 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     enabled = table.Column<bool>(type: "boolean", nullable: false),
                     kind = table.Column<int>(type: "integer", nullable: false),
                     creator_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    track = table.Column<byte[]>(type: "bytea", nullable: true),
+                    track = table.Column<string>(type: "jsonb", nullable: true),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tbl_cursus", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tbl_feed",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    actor_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    type = table.Column<int>(type: "integer", nullable: false),
+                    resource_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tbl_feed", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -317,6 +333,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     display_name = table.Column<string>(type: "text", nullable: true),
                     avatar_url = table.Column<string>(type: "text", nullable: true),
                     details_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    user_feed_id = table.Column<Guid>(type: "uuid", nullable: true),
                     created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -375,6 +392,27 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     table.PrimaryKey("PK_tbl_user_details", x => x.id);
                     table.ForeignKey(
                         name: "FK_tbl_user_details_tbl_user_user_id",
+                        column: x => x.user_id,
+                        principalTable: "tbl_user",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tbl_user_feed",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    visible_feed = table.Column<int>(type: "integer", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tbl_user_feed", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_tbl_user_feed_tbl_user_user_id",
                         column: x => x.user_id,
                         principalTable: "tbl_user",
                         principalColumn: "id",
@@ -503,6 +541,11 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 column: "slug");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tbl_feed_actor_id",
+                table: "tbl_feed",
+                column: "actor_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tbl_feedback_review_id",
                 table: "tbl_feedback",
                 column: "review_id");
@@ -623,6 +666,12 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tbl_user_feed_user_id",
+                table: "tbl_user_feed",
+                column: "user_id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tbl_user_goal_goal_id",
                 table: "tbl_user_goal",
                 column: "goal_id");
@@ -729,6 +778,13 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_tbl_feed_tbl_user_actor_id",
+                table: "tbl_feed",
+                column: "actor_id",
+                principalTable: "tbl_user",
+                principalColumn: "id");
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_tbl_feedback_tbl_review_review_id",
                 table: "tbl_feedback",
                 column: "review_id",
@@ -819,10 +875,16 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 name: "tbl_feature");
 
             migrationBuilder.DropTable(
+                name: "tbl_feed");
+
+            migrationBuilder.DropTable(
                 name: "tbl_spotlight_event");
 
             migrationBuilder.DropTable(
                 name: "tbl_spotlight_event_action");
+
+            migrationBuilder.DropTable(
+                name: "tbl_user_feed");
 
             migrationBuilder.DropTable(
                 name: "tbl_user_goal");

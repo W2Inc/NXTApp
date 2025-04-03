@@ -104,4 +104,8 @@ public class User : BaseEntity
     /// Feeds where the user is the actor
     /// </summary>
     public virtual ICollection<Feed> CreatedFeeds { get; set; }
+
+    //= Collabs =//
+
+    public virtual ICollection<Cursus> CollaboratesOnCursi { get; set; }
 }

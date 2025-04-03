@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using NXTBackend.API.Core.Graph;
 using NXTBackend.API.Core.Graph.V1;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
+using NXTBackend.API.Domain;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
@@ -142,40 +144,41 @@ public class CursusController(
         return Ok(new CursusDO(cursus));
     }
 
+    [HttpPut("/cursus/{id:guid}/path")]
+    [EndpointSummary("Set the track / path of a cursus")]
+    [EndpointDescription("Sets the actual tree of the cursus")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<GraphNode>> SetTrack(Guid id, CursusTrackPutRequestDTO data)
+    {
+        // var cursus = await cursusService.FindByIdAsync(id);
+        // if (cursus is null)
+        //     return NotFound("Cursus not found");
+        // if (cursus.CreatorId != User.GetSID())
+        //     return Forbid("You can't edit this cursus");
 
 
-    [HttpGet("/cursus/{id:guid}/path"), AllowAnonymous]
-    [Produces(contentType: "application/octet-stream")]
+        var (cursus, user) = await cursusService.IsCollaboratorOnCursus(id, User.GetSID());
+        if (cursus is null)
+            return NotFound("Cursus not found");
+
+        if (cursus.Track is null)
+            return NoContent();
+        return Ok(cursus.Track);
+    }
+
+    [HttpGet("/cursus/{id:guid}/path")]
     [EndpointSummary("Get the track / path of a cursus")]
     [EndpointDescription("Lets you retrieve the binary data of the track ")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetTrack(Guid id)
+    public async Task<ActionResult<GraphNode>> GetTrack(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
         if (cursus is null)
             return NotFound("Cursus not found");
         if (cursus.Track is null)
             return NoContent();
-        try
-        {
-            var memoryStream = new MemoryStream(cursus.Track)
-            {
-                Position = 0
-            };
-
-            return new FileStreamResult(memoryStream, "application/octet-stream")
-            {
-                FileDownloadName = $"{id}.xgraph"
-            };
-        }
-        catch (InvalidDataException e)
-        {
-            return BadRequest(e.Message);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Failed to read graph data");
-            return Problem(e.Message);
-        }
+        return Ok(cursus.Track);
     }
 }
