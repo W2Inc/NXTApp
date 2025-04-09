@@ -23,21 +23,22 @@ public interface ICollaborative<T>
     /// <returns>A tuple containing two nullable values:
     /// - Item1 (T?): The entity if found, otherwise null.
     /// - Item2 (U?): The collaboration details if the user is a collaborator, otherwise null.</returns>
-    /// <remarks>If the user is the owner, the first item will contain the entity and the second will be null.
-    /// If the user is a collaborator, both items will be populated.</remarks>
-    Task<(T?, User?)> FindAsCollaboratorOrOwner(Guid entityId, Guid userId);
+    /// <remarks>
+    /// If the user is either an owner or a collaborator, user is not null.
+    /// </remarks>
+    Task<(T?, User?)> IsCollaborator(Guid entityId, Guid userId);
 
     /// <summary>
     /// Adds a user as collaborator to this entity
     /// </summary>
     /// <param name="userId">The ID of the user to add</param>
     /// <returns>True if successfully added, false if already a collaborator</returns>
-    Task<bool> AddCollaborator(Guid userId);
+    Task<bool> AddCollaborator(Guid entityId, Guid userId);
 
     /// <summary>
     /// Removes a user from collaborators
     /// </summary>
     /// <param name="userId">The ID of the user to remove</param>
     /// <returns>True if successfully removed, false if wasn't a collaborator</returns>
-    Task<bool> RemoveCollaborator(Guid userId);
+    Task<bool> RemoveCollaborator(Guid entityId, Guid userId);
 }

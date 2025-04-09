@@ -6,22 +6,13 @@
 using System.ComponentModel;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.AspNetCore.RateLimiting;
-using NXTBackend.API.Core.Graph;
-using NXTBackend.API.Core.Graph.V1;
 using NXTBackend.API.Core.Services.Interface;
-using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain;
-using NXTBackend.API.Domain.Entities.Users;
-using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Cursus;
-using NXTBackend.API.Models.Requests.User;
 using NXTBackend.API.Models.Responses.Objects;
+using NXTBackend.API.Models.Shared;
 using NXTBackend.API.Utils;
 
 // ============================================================================
@@ -46,7 +37,8 @@ public class CursusQueryParams
 public class CursusController(
     ILogger<CursusController> logger,
     ICursusService cursusService,
-    IUserService userService
+    IUserService userService,
+    IGoalService goalService
 ) : Controller
 {
     [HttpGet("/cursus"), AllowAnonymous]
@@ -149,22 +141,20 @@ public class CursusController(
     [EndpointDescription("Sets the actual tree of the cursus")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<GraphNode>> SetTrack(Guid id, CursusTrackPutRequestDTO data)
+    public async Task<ActionResult<GraphNode>> SetTrack(Guid id, [FromBody] CursusTrackDO data)
     {
-        // var cursus = await cursusService.FindByIdAsync(id);
-        // if (cursus is null)
-        //     return NotFound("Cursus not found");
-        // if (cursus.CreatorId != User.GetSID())
-        //     return Forbid("You can't edit this cursus");
-
-
-        var (cursus, user) = await cursusService.IsCollaboratorOnCursus(id, User.GetSID());
+        var (cursus, user) = await cursusService.IsCollaborator(id, User.GetSID());
         if (cursus is null)
-            return NotFound("Cursus not found");
+            return NotFound();
+        if (user is null)
+            return Forbid();
 
-        if (cursus.Track is null)
-            return NoContent();
-        return Ok(cursus.Track);
+        var goals = cursusService.ExtractTrackGoals(data);
+        if (!await goalService.AreValid(goals))
+            return UnprocessableEntity("Goal IDs detected that do not exist!");
+        var track = cursus.Track = JsonSerializer.Serialize(data);
+        await cursusService.UpdateAsync(cursus);
+        return Ok(track);
     }
 
     [HttpGet("/cursus/{id:guid}/path")]
@@ -179,6 +169,19 @@ public class CursusController(
             return NotFound("Cursus not found");
         if (cursus.Track is null)
             return NoContent();
-        return Ok(cursus.Track);
+
+        try
+        {
+            var lel = JsonSerializer.Deserialize<CursusTrackDO>(cursus.Track);
+            logger.LogInformation("Processing item {Id} with value {Value}", id, lel);
+            if (lel is null)
+                return Problem("Failed to deserialize track data");
+            return Ok(await cursusService.ConstructTrack(lel));
+        }
+        catch (System.Exception)
+        {
+
+            throw;
+        }
     }
 }

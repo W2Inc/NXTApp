@@ -54,7 +54,7 @@ app.UseRouting();
 app.UseResponseCompression();
 app.UseSerilogRequestLogging();
 // if (!app.Environment.IsDevelopment())
-    app.UseOutputCache();
+app.UseOutputCache();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseMiddleware<KeycloakUserMiddlerware>();

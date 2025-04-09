@@ -72,7 +72,15 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
     /// <inheritdoc />
     public virtual async Task<bool> AreValid(IEnumerable<Guid> ids)
     {
-        return ids.All(id => _dbSet.AsNoTracking().Select(p => p.Id).Contains(id));
+        if (!ids.Any())
+            return true;
+
+        var idSet = new HashSet<Guid>(ids);
+        var existingCount = await _dbSet.AsNoTracking()
+            .Where(p => idSet.Contains(p.Id))
+            .CountAsync();
+
+        return existingCount == idSet.Count;
     }
 
     /// <inheritdoc />

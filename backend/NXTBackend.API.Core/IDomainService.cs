@@ -34,6 +34,14 @@ public interface IDomainService<T> where T : BaseEntity
     public Task<T> UpdateAsync(T entity);
 
     /// <summary>
+    ///
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <returns></returns>
+    public Task<bool> AreValid(IEnumerable<Guid> ids);
+
+
+    /// <summary>
     /// Delete the entity.
     /// </summary>
     /// <param name="entity">The entity to delete</param>
