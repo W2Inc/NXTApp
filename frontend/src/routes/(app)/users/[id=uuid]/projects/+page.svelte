@@ -16,6 +16,7 @@
 	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
 	import type { PageProps } from "./$types";
 	import Tilter from "$lib/components/tilter.svelte";
+	import Empty from "$lib/components/empty.svelte";
 
 	const { data }: PageProps = $props();
 	const debounce = useDebounce();
@@ -80,8 +81,11 @@
 			<Separator class="my-2" />
 			<div class="flex flex-wrap gap-4">
 				{#await data.projects}
-					<Skeleton class="h-28 w-28" />
+					<Skeleton class="h-14 w-32" />
 				{:then projects}
+					{#if projects.length === 0}
+						<Empty />
+					{/if}
 					{#key query.read("subscribed")}
 						{#if query.read("subscribed") === true || !data.isCurrentUser}
 							{#each projects as up}

@@ -1,14 +1,16 @@
 import { applyAction, enhance } from "$app/forms";
-import { error, fail, type RequestEvent } from "@sveltejs/kit";
+import { error, fail, redirect, type RequestEvent } from "@sveltejs/kit";
 import { toast } from "svelte-sonner";
 import { ZodType, type z, type ZodObject, type ZodRawShape, type ZodTypeAny } from "zod";
 import {
 	dialog as useDialog,
 	type ConfirmProps,
 } from "$lib/components/dialog/state.svelte";
+import { goto } from "$app/navigation";
 
 interface FormResult<T> {
 	message: string;
+	redirect?: string;
 	form: FormValidation<T>;
 }
 
@@ -50,8 +52,14 @@ export function problem<T>(status = 400, message: string, rest: T = undefined as
 	return fail(status, { message, ...rest });
 }
 
-export function success<T>(message: string, rest: T = undefined as T) {
-	return { message, ...rest };
+/**
+ *
+ * @param message
+ * @param rest If _redirect: is specified it will redirect the user.
+ * @returns
+ */
+export function success<T>(message: string, rest: T = undefined as T, redirect?: string) {
+	return { message, ...rest, redirect };
 }
 
 /**
@@ -340,16 +348,19 @@ export function useForm<T extends Record<string, unknown>>(
 					// @ts-expect-error - Cool story bro
 					const formResultData = result.data as FormResult<T>;
 
-					formState.data = formResultData.form.data;
-					formState.valid = formResultData.form.valid;
-					formState.errors = formResultData.form.errors;
-					formState.constraints = formResultData.form.constraints;
-
 					if (result.type === "success") {
 						toast.success(formResultData.message);
 					} else {
 						toast.error(formResultData.message);
 					}
+					if (formResultData.redirect) {
+						return goto(formResultData.redirect);
+					}
+
+					formState.data = formResultData.form.data;
+					formState.valid = formResultData.form.valid;
+					formState.errors = formResultData.form.errors;
+					formState.constraints = formResultData.form.constraints;
 				}
 
 				if (options.reset) {
@@ -376,7 +387,7 @@ export async function validate<T extends ZodRawShape>(
 	try {
 		const formData = await request.formData();
 		const processedData = preprocessFormData(formData, schema);
-		console.log(processedData)
+		console.log(processedData);
 		const result = schema.safeParse(processedData);
 
 		if (result.success) {

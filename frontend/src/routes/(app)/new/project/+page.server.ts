@@ -169,4 +169,9 @@ export const actions: Actions = {
 
 		return success("Updated!", { form });
 	},
+	delete: async ({ url, locals, request }) => {
+		const session = (await locals.session()) ?? error(401, "No session");
+		const form = await validate(request, schema);
+		return success("Project was deleted.", { form }, "/");
+	}
 };

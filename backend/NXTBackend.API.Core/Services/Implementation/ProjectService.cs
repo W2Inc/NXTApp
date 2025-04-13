@@ -14,7 +14,6 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// </summary>
 public sealed class ProjectService : BaseService<Project>, IProjectService
 {
-
     public ProjectService(DatabaseContext ctx) : base(ctx)
     {
         DefineFilter<string>("slug", (q, slug) => q.Where(p => p.Slug == slug));

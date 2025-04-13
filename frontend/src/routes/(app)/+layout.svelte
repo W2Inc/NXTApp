@@ -10,8 +10,9 @@
 	import { afterNavigate, onNavigate } from "$app/navigation";
 	import { useStorage } from "$lib/utils/local.svelte";
 	import type { NamedLink } from "$lib/types";
+	import type { LayoutProps } from "./$types";
 
-	let { children } = $props();
+	let { children, data }: LayoutProps = $props();
 
 	const MAX_HISTORY = 5;
 	const storage = useStorage();
@@ -28,10 +29,12 @@
 </script>
 
 <Tooltip.Provider>
-	<ModeWatcher />
+	<ModeWatcher defaultMode="system"/>
 	<DialogProvider />
-	<Toaster closeButton richColors theme={$mode} duration={8000} />
-	<Header />
+	{#if data.session}
+		<Toaster closeButton richColors theme={$mode} duration={8000} />
+		<Header />
+	{/if}
 	<main>
 		{@render children?.()}
 	</main>

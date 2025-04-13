@@ -1,4 +1,6 @@
 <script lang="ts">
+	import "../../app.css";
+
 	import SpotlightCard from "$lib/components/cards/spotlight-card.svelte";
 	import Navgroup from "$lib/components/navgroup.svelte";
 	import Link from "lucide-svelte/icons/link";
@@ -12,6 +14,8 @@
 	import Tilter from "$lib/components/tilter.svelte";
 	import Landing from "./landing.svelte";
 	import { page } from "$app/state";
+	import Empty from "$lib/components/empty.svelte";
+	import Login from "./login.svelte";
 
 	const { data } = $props();
 	const storage = useStorage();
@@ -50,14 +54,7 @@
 			<div class="w-full">
 				<div class="mx-auto flex max-w-[80rem] gap-2 p-4">
 					{#if data.feed.length == 0}
-						<div
-							class="flex w-full flex-col items-center justify-center p-12 text-lg text-gray-400 opacity-75"
-						>
-							<Tilter>
-								<span class="mb-2 text-4xl">🤔</span>
-							</Tilter>
-							<p>Strange, there's nothing here?</p>
-						</div>
+						<Empty />
 					{:else}
 						<ul class="flex-auto">
 							{#each data.feed as feed}
@@ -78,5 +75,5 @@
 		{/snippet}
 	</Base>
 {:else}
-	<Landing />
+	<Login />
 {/if}

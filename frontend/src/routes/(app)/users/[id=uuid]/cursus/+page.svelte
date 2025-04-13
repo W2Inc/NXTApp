@@ -13,7 +13,6 @@
 
 	const mobile = new IsMobile();
 	const query = useQuery(
-		$page.url.href,
 		z.object({
 			page: z.number().default(0),
 			search: z.string().optional(),

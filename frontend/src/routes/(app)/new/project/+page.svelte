@@ -225,9 +225,11 @@
 						>
 					</span>
 					{#if data.entity}
-						<Button type="submit" size="icon" variant="destructive" formaction="?/delete">
-							<Trash />
-						</Button>
+						<form method="POST" use:enhance>
+							<Button type="submit" size="icon" variant="destructive" formaction="?/delete">
+								<Trash />
+							</Button>
+						</form>
 					{/if}
 				</h1>
 				<Separator class="my-1" />
