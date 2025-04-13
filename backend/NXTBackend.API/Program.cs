@@ -30,7 +30,7 @@ if (!await app.Services.CreateScope().ServiceProvider.GetRequiredService<Databas
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(o =>
+    app.MapScalarApiReference("/api-reference", o =>
     {
         o.Authentication = new ScalarAuthenticationOptions
         {
