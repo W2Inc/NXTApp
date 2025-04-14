@@ -118,7 +118,7 @@
 	</Dialog.Root>
 {/snippet}
 
-<form method="POST" use:enhance>
+<form method="POST" use:enhance enctype="multipart/form-data">
 	<Base variant="center-navbar">
 		{#snippet left()}
 			<div class="flex max-h-fit flex-col gap-1 rounded border p-4">
@@ -126,6 +126,7 @@
 					<input
 						bind:this={fileUpload}
 						type="file"
+						name="thumbnailUrl"
 						class="absolute inset-0 z-10 cursor-pointer opacity-0"
 					/>
 					<div class="relative">

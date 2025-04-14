@@ -38,8 +38,8 @@ const DebugLogMD: Middleware = {
   // },
 	async onResponse({ request, response, options }) {
 		logger.debug(`API: ${request.method.toUpperCase()} ${request.url} => [${response.status}:${response.statusText}]`);
-		if (!response.ok)
-			throw error(response.status, response.statusText);
+		// if (!response.ok)
+		// 	throw error(response.status, response.statusText);
     return response;
   },
 };

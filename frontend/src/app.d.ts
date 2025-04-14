@@ -12,13 +12,6 @@ import type { useRetryAfter } from "$lib/utils/limiter.svelte";
 declare global {
 	type GUID = string;
 	type BackendTypes = components["schemas"];
-	type Problem = {
-		type: string;
-		title: string;
-		detail: string;
-		status: number;
-		traceId: string;
-	};
 
 	type PaginationMeta = {
 		pages?: number;
