@@ -100,7 +100,7 @@
 						in:fade={{ delay: 1200, duration: 250 }}
 					>
 						<div
-							class="bg-card dark:bg-card border-border relative z-10 w-full max-w-md rounded-2xl border p-1 shadow-xl"
+							class="bg-card dark:bg-card border-border relative z-10 w-full max-w-md rounded-2xl border p-1 shadow-xl animate-mock"
 						>
 							<div
 								class="from-muted/30 to-background/30 dark:from-background/10 dark:to-muted/10 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br"
@@ -195,9 +195,25 @@
 		}
 	}
 
+	@keyframes float-mock {
+		0%, 100% {
+			transform: translateY(0) rotate(-1.5deg);
+		}
+		50% {
+			transform: translateY(-10px) rotate(1.5deg);
+		}
+	}
+
 	:global(.animate-float) {
 		@media (prefers-reduced-motion: no-preference) {
 			animation: float 4s ease-in-out infinite;
+		}
+	}
+
+	:global(.animate-mock) {
+		animation-delay: 250ms;
+		@media (prefers-reduced-motion: no-preference) {
+			animation: float-mock 10s ease-in-out infinite;
 		}
 	}
 
