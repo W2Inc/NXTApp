@@ -9,8 +9,6 @@ import {
 	KC_CLIENT_SECRET,
 	KC_COOKIE_NAME,
 	KC_ISSUER,
-	S3_BUCKET,
-	S3_ENDPOINT,
 } from "$env/static/private";
 import { error, redirect, type Action, type Handle } from "@sveltejs/kit";
 import { KeyCloak } from "arctic";
@@ -18,6 +16,7 @@ import jsonwebtoken from "jsonwebtoken";
 import { dev } from "$app/environment";
 import { hasRole, type Role } from "./utils/roles.svelte";
 import { logger } from "./logger";
+import { PUBLIC_S3_BUCKET, PUBLIC_S3_ENDPOINT } from "$env/static/public";
 
 // ============================================================================
 
@@ -195,7 +194,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				given_name: payload.given_name,
 				family_name: payload.family_name,
 				roles: payload.resource_access?.intra?.roles ?? [],
-				avatarUrl: `${S3_ENDPOINT}/${S3_BUCKET}/${payload.sub}.png`,
+				avatarUrl: `${PUBLIC_S3_ENDPOINT}/${PUBLIC_S3_BUCKET}/${payload.sub}.png`,
 			};
 		} catch (e) {
 			logger.error("Error decoding access token:", e);

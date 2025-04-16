@@ -3,16 +3,15 @@
 // See README in the root project for more information.
 // ============================================================================
 
-import { z } from "zod";
 import { error, fail } from "@sveltejs/kit";
 import { applyAction, enhance } from "$app/forms";
-import { env } from "$env/dynamic/public";
 import { toast } from "svelte-sonner";
 import {
 	dialog as useDialog,
 	type ConfirmProps,
 } from "$lib/components/dialog/state.svelte";
 import { goto } from "$app/navigation";
+import { PUBLIC_S3_BUCKET, PUBLIC_S3_ENDPOINT } from "$env/static/public";
 
 // ============================================================================
 
@@ -102,18 +101,6 @@ export type PageFormBundle<S, U, C> = Omit<
 	C;
 
 // ============================================================================
-// Zod Schema for the Problem Details structure
-// Make fields optional where appropriate according to RFC 7807 and common usage
-export const ProblemSchema = z.object({
-	type: z.string(),
-	title: z.string(),
-	detail: z.string().optional(),
-	status: z.number().int(),
-	traceId: z.string().optional(),
-	errors: z.record(z.string(), z.array(z.string())).optional(), // Key is string, value is array of strings
-});
-
-// ============================================================================
 
 // export function success2<T>(message: string, rest: T = undefined as T, redirect?: string) {
 // 	return { message, ...rest, redirect };
@@ -158,9 +145,9 @@ export async function formValueToS3<T>(
 
 	const fileName = `${Bun.randomUUIDv7()}.${ext}`;
 	return {
-		client: Bun.s3.file(fileName),
+		name: fileName,
 		file: thumbnail,
-		url: `${env.PUBLIC_S3_ENDPOINT}/${env.PUBLIC_S3_BUCKET}/${fileName}`,
+		url: `${PUBLIC_S3_ENDPOINT}/${PUBLIC_S3_BUCKET}/${fileName}`,
 	};
 }
 
@@ -185,6 +172,7 @@ export function useForm<T>(defaultValue: FormState<T>, options: FormOptions) {
 			formState.isLoading = true;
 			return async ({ result, update }) => {
 				formState.isLoading = false;
+				// NOTE(W2): This is straight up a development error
 				if (result.type === "error" && result.status === 404) {
 					toast.error("Not implemented form");
 					return;
@@ -218,27 +206,4 @@ export function useForm<T>(defaultValue: FormState<T>, options: FormOptions) {
 			return formState;
 		},
 	};
-}
-
-// ============================================================================
-
-// Define the structure for the validation result
-interface ValidationResult<K> {
-	/**
-	 * Contains the data extracted from FormData for the keys that were successfully found.
-	 * Values are FormDataEntryValue (string | File) and may require further parsing/coercion.
-	 * This is Partial because not all keys might be present if validation fails for some.
-	 */
-	data: Partial<Record<K, FormDataEntryValue>>;
-
-	/**
-	 * Maps keys (from the expected keys) to an array of error messages for that key.
-	 * This is Partial because a key will only be present here if it has errors.
-	 */
-	errors: Partial<Record<K, string[]>>;
-
-	/**
-	 * A boolean flag indicating if any errors were found.
-	 */
-	hasErrors: boolean;
 }

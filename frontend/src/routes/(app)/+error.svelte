@@ -5,12 +5,6 @@
 </script>
 
 <div>
-	<!-- {#if page.status == 401}
-		<Button href="/auth/login">
-			Login
-			<LogIn />
-		</Button>
-	{:else} -->
 	<img
 		class="rounded"
 		src="https://http.cat/{page.status}"

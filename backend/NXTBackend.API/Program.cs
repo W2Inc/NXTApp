@@ -53,11 +53,10 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseResponseCompression();
 app.UseSerilogRequestLogging();
-// if (!app.Environment.IsDevelopment())
 app.UseOutputCache();
 app.UseRateLimiter();
 app.UseAuthentication();
-app.UseMiddleware<KeycloakUserMiddlerware>();
 app.UseAuthorization();
+app.UseMiddleware<KeycloakUserMiddlerware>();
 app.MapControllers().RequireRateLimiting("DynamicPolicy");
 app.Run();

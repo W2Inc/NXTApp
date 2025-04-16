@@ -13,20 +13,41 @@ namespace NXTBackend.API.Models.Responses.Gitea;
 
 public class CreateRepoOption
 {
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
+	[JsonPropertyName("name")]
+	public string Name { get; set; } = string.Empty;
 
-    [JsonPropertyName("description")]
-    public string? Description { get; set; }
+	[JsonPropertyName("description")]
+	public string? Description { get; set; }
 
-    [JsonPropertyName("private")]
-    public bool Private { get; set; } = true;
+	[JsonPropertyName("private")]
+	public bool Private { get; set; } = true;
 
-    [JsonPropertyName("auto_init")]
-    public bool AutoInit { get; set; } = true;
+	[JsonPropertyName("auto_init")]
+	public bool AutoInit { get; set; } = true;
 
-    [JsonPropertyName("default_branch")]
-    public string DefaultBranch { get; set; } = "main";
+	[JsonPropertyName("has_actions")]
+	public bool HasActions { get; set; } = false;
+
+	[JsonPropertyName("has_issues")]
+	public bool HasIssues { get; set; } = true;
+
+	[JsonPropertyName("has_packages")]
+	public bool HasPackages { get; set; } = false;
+
+	[JsonPropertyName("has_projects")]
+	public bool HasProjects { get; set; } = false;
+
+	[JsonPropertyName("has_pull_requests")]
+	public bool HasPullRequests { get; set; } = true;
+
+	[JsonPropertyName("has_releases")]
+	public bool HasReleases { get; set; } = false;
+
+	[JsonPropertyName("has_wiki")]
+	public bool HasWiki { get; set; } = false;
+
+	[JsonPropertyName("default_branch")]
+	public string DefaultBranch { get; set; } = "main";
 }
 
 public class EditRepoOption

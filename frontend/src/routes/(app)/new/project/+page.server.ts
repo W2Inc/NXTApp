@@ -100,7 +100,11 @@ export const actions: Actions = {
 	create: async ({ locals, request }) => {
 		const form = await request.formData();
 		let [image, issue] = await ensure(formValueToS3<FormBundle>(form, "thumbnailUrl"));
-		let errors: Record<string, string[]>;
+
+		logger.debug("Tags =>", form.getAll("tags"));
+
+		logger.info("Form submitted =>", Object.fromEntries(form.entries()))
+
 		if (issue) {
 			return problem({
 				status: 422,
@@ -111,7 +115,9 @@ export const actions: Actions = {
 			});
 		}
 
-		const { client, url, file } = image!; // TODO: Typescript is a bit dumb here;
+		// TODO: Typescript is a bit dumb here;
+		const { name, url, file } = image!;
+		logger.debug("Image =>", image);
 		const { data, error } = await locals.api.POST("/projects", {
 			body: {
 				name: form.get("name")?.toString() ?? "",
@@ -135,14 +141,78 @@ export const actions: Actions = {
 			});
 		}
 
-		await client.write(file, { acl: "public-read", bucket: PUBLIC_S3_BUCKET });
-		return success("Project created!", `/new/project?edit=${data.id}`);
+		// Upload the image to S3
+		// await locals.buckets.thumbnail
+		// 	.file(name)
+		// 	.write(file, {
+		// 		acl: "public-read",
+		// 	});
+
+		return success("Project created!", `/new/project?edit=${0}`);
 	},
 	update: async ({ locals, request }) => {
 		console.log(request);
 		const form = await request.formData();
 		const id = form.get("id")?.toString();
-		console.log(id);
+		console.log("ID =>", id);
+		if (!id) {
+			return problem({
+				status: 422,
+				title: "Missing project ID on form.",
+				errors: {}
+			});
+		}
 
+		// let image: Awaited<ReturnType<typeof formValueToS3<FormBundle>>> | undefined;
+		logger.info("Form submitted =>", Object.fromEntries(form.entries()))
+		// const thumbnail = form.get("thumbnailUrl") as File | null;
+		// if (thumbnail && thumbnail?.size > 0) {
+		// 	const [thumb, issue] = await ensure(
+		// 		formValueToS3<FormBundle>(form, "thumbnailUrl"),
+		// 	);
+
+		// 	if (issue) {
+		// 		return problem({
+		// 			status: 422,
+		// 			title: "Please upload a thumbnail first",
+		// 			errors: {
+		// 				ThumbnailUrl: [issue.message],
+		// 			},
+		// 		});
+		// 	}
+		// 	image = thumb;
+		// 	form.set("thumbnailUrl", thumb.url);
+		// }
+
+
+		const { data, error } = await locals.api.PATCH("/projects/{id}", {
+			params: { path: { id } },
+			body: {
+				description: form.get("description")?.toString() ?? "",
+				markdown: form.get("markdown")?.toString() ?? "",
+				maxMembers: Number(form.get("maxMembers")),
+				public: form.get("public")?.toString() === "true",
+				enabled: form.get("enabled")?.toString() === "true",
+				tags: form.getAll("tags").flatMap((v) => v.toString()),
+				// thumbnailUrl: form.get("thumbnailUrl")?.toString() ?? "",
+			},
+		});
+
+		if (error || !data) {
+			logger.error(error);
+			return problem({
+				status: error?.status ?? 422,
+				title: error?.title ?? "Something went wrong...",
+				// @ts-ignore
+				errors: error.errors,
+			});
+		}
+
+		// if (image) {
+		// 	const { client, file } = image!;
+		// 	await client.write(file, { acl: "public-read", bucket: PUBLIC_S3_BUCKET });
+		// }
+
+		return success("Project updated!");
 	}
 };

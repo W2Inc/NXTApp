@@ -44,6 +44,7 @@ public sealed class GitService : BaseService<Git>, IGitService
 
     private async Task SetAuthorizationHeaderAsync()
     {
+		// TODO: this is *fine* but we need to make sure our proxy is set up correctly
         var httpContext = _httpContextAccessor.HttpContext;
         string? claim = httpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         var id = Guid.TryParse(claim, out var guid) ? guid : Guid.Empty;

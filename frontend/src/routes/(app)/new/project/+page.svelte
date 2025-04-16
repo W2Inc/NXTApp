@@ -30,10 +30,10 @@
 	import { Slider } from "$lib/components/ui/slider";
 	import { page } from "$app/state";
 	import { useDebounce } from "$lib/utils/debounce.svelte";
-	import RemoteSelector from "$lib/components/remote-selector.svelte";
 	import useClipboard from "$lib/utils/clipboard.svelte";
 	import { fade, scale } from "svelte/transition";
 	import { useForm } from "$lib/utils/api.svelte";
+	import TagInput from "$lib/components/tag-input.svelte";
 
 	let { data } = $props();
 	const { enhance, form } = useForm(data.form, {
@@ -265,9 +265,21 @@
 					<Markdown
 						variant="editor"
 						placeholder="# This project is about..."
+						maxlength={2048}
 						bind:value={form.data.markdown}
 					/>
 				</Control>
+				<Separator class="my-1" />
+				<Control
+					label="Tags"
+					name="tags"
+					errors={form.errors.Tags}
+					description="Use tags to categorize your project. Tags are used to filter for projects."
+				>
+					<TagInput />
+				</Control>
+				<Separator class="my-1" />
+
 				{#if data.entity}
 					<Control
 						label="Git Repository"

@@ -22,27 +22,40 @@ import {
 	KC_COOKIE_NAME,
 	KC_ISSUER,
 	KC_HOST,
-	BE_HOST
+	BE_HOST,
+	S3_ACCESS_KEY_ID,
+	S3_SECRET_ACCESS_KEY,
 } from "$env/static/private";
+
 import KeycloakClient from "$lib/keycloak";
-import { useRetryAfter } from "$lib/utils/limiter.svelte";
 import type { Role } from "$lib/utils/roles.svelte";
 import { initLogger, logger } from "$lib/logger";
-// import config from "$lib/routes.json" with { type: "json" };
+import { PUBLIC_S3_BUCKET, PUBLIC_S3_ENDPOINT } from "$env/static/public";
+import RouteConfig from "./config.json" with { type: "json" };
 
 // ============================================================================
 
+// Bun.S3Client = new Bun.S3Client({
+// 	endpoint: "https://s3.eu-central-1.amazonaws.com",
+// 	region: "eu-central-1",
+// 	credentials: {
+// 		accessKeyId: "AKI
+// AYZ5K3G4JX
+// 		secretAccessKey: "w2inc",
+// 	},
+// });
+
 const DebugLogMD: Middleware = {
-  // async onRequest({ request, options }) {
+	// async onRequest({ request, options }) {
 	// 	logger.debug(`API: ${request.method.toUpperCase()} => ${request.url}`);
-  //   return request;
-  // },
+	//   return request;
+	// },
 	async onResponse({ request, response, options }) {
 		logger.debug(`API: ${request.method.toUpperCase()} ${request.url} => [${response.status}:${response.statusText}]`);
 		// if (!response.ok)
 		// 	throw error(response.status, response.statusText);
-    return response;
-  },
+		return response;
+	},
 };
 
 // ============================================================================
@@ -54,19 +67,7 @@ const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
  * Here you can configure the overal routes that need which role in order
  * to be accessed.
  */
-// const routes: Record<string, Role[]> = config;
-// or
-const routes: Record<string, Role[]> = {
-	"/": [],
-	"/settings": [],
-	"/auth": [],
-	"/users": [],
-	"/new": [],
-	"/notifications": [],
-	"/changelog": [],
-	"/search": [],
-	"/projects": [],
-};
+const routes = RouteConfig as Record<string, Role[] | never[]>;
 
 export const init: ServerInit = async () => {
 	initLogger();
@@ -80,21 +81,18 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const url = `/${event.url.pathname.split("/")[1]}`;
 	const requiredRoles = routes[url];
 
-	if (!requiredRoles) {
-		// If route is not defined in routes, default to restricted access
-		error(403, "Access denied: Route not configured");
-	}
-	if (requiredRoles.length === 0) {
-		// If route requires no roles, allow access
+	// Redirect to home if no route config or unauthorized
+	if (!requiredRoles)
+		return redirect(303, "/");
+
+	// Allow if no roles required
+	if (requiredRoles.length === 0)
 		return resolve(event);
-	}
-	if (!session) {
-		// Check if user is authenticated when roles are required
-		error(401, "Authentication required");
-	}
-	if (!requiredRoles.some((role) => session.roles.includes(role))) {
-		// Check if user has required roles
-		error(403, "Insufficient permissions");
+
+	// Require authentication for protected routes
+	if (!session || (requiredRoles.length > 0 &&
+		!requiredRoles.some(role => session.roles.includes(role)))) {
+		return redirect(303, "/");
 	}
 
 	return resolve(event);
@@ -124,6 +122,16 @@ const initial: Handle = async ({ event, resolve }) => {
 		"x-powered-by": `Bun ${Bun.version}`,
 		"x-application": "APP_NAME",
 	});
+
+	// Configure various S3 buckets
+	event.locals.buckets ??= {
+		thumbnail: new Bun.S3Client({
+			endpoint: PUBLIC_S3_ENDPOINT,
+			bucket: PUBLIC_S3_BUCKET,
+			accessKeyId: S3_ACCESS_KEY_ID,
+			secretAccessKey: S3_SECRET_ACCESS_KEY,
+		}),
+	};
 
 	// Easter egg
 	if (event.url.pathname.startsWith("/powerwolf"))

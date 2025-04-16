@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -64,7 +65,6 @@ public class ProjectController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDto data)
     {
-        // 1. Create Git repository
         var git = await gitService.CreateRemoteRepository(data.Name, data.Description);
         var project = await projectService.CreateProjectWithGit(new()
         {
@@ -94,7 +94,7 @@ public class ProjectController(
         return Ok(new ProjectDO(project));
     }
 
-    [HttpPatch("/projects/{id:guid}"), Authorize(Roles = "creator")]
+    [HttpPatch("/projects/{id:guid}"), Authorize(Policy = "CanCreate")]
     [EndpointSummary("Update a project")]
     [EndpointDescription("Updates a goal partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -124,7 +124,7 @@ public class ProjectController(
     }
 
 
-    [HttpDelete("/projects/{id:guid}"), Authorize(Roles = "creator")]
+    [HttpDelete("/projects/{id:guid}"), Authorize(Policy = "CanCreate")]
     [EndpointSummary("Delete a project")]
     [EndpointDescription("Goal deletion is rarely done, and only result in deprecations if they have dependencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]

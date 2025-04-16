@@ -18,12 +18,16 @@ declare global {
 		perPage?: number;
 	};
 
+	// NOTE(W2): Figure out a way to autogenerate this ?
+	type S3Buckets = "thumbnail";
+
 	namespace App {
 		// interface Error {}
 		interface Locals {
 			api: Client<BackendRoutes>;
 			keycloak: Client<KeycloakRoutes>;
 			limiter: ReturnType<typeof useRetryAfter>;
+			buckets: Record<S3Buckets, Bun.S3Client>;
 		}
 		// interface PageData {}
 		// interface PageState {}

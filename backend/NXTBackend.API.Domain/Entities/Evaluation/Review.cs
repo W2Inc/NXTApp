@@ -82,6 +82,15 @@ public class Review : BaseEntity
     [Column("validated")]
     public bool Validated { get; set; }
 
+	// /// <summary>
+	// /// In some situations, the review can be anonymous. This is used for instance in the case of a peer review.
+	// /// In this case, the reviewer is not known to the user being reviewed.
+	// /// 
+	// /// This does not anonymize the review in the database necessarily.
+	// /// </summary>
+    // [Column("anonymous")]
+    // public bool Anonymous { get; set; }
+
     /// <summary>
     /// The user doing the review.
     /// </summary>

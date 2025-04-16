@@ -4,9 +4,9 @@ import type { PageServerLoad } from "./$types";
 import { problem, success, validate } from "$lib/utils/form.svelte";
 import { Constants } from "$lib/utils";
 import { keycloak } from "$lib/oauth";
-import { S3_BUCKET, S3_ENDPOINT } from "$env/static/private";
 import { logger } from "$lib/logger";
 import { page } from "$app/state";
+import { PUBLIC_S3_ENDPOINT } from "$env/static/public";
 
 const schema = z.object({
 	id: z.string().uuid().readonly(),
@@ -97,7 +97,7 @@ export const actions = {
 				const fileName = `${session.user_id}.${ext}`;
 				const file = Bun.s3.file(fileName);
 				await file.write(form.data.image, { acl: "public-read", bucket: "images" });
-				avatarUrl = `${S3_ENDPOINT}/${S3_BUCKET}/${fileName}`;
+				avatarUrl = `${PUBLIC_S3_ENDPOINT}/${PUBLIC_S3_ENDPOINT}/${fileName}`;
 			}
 
 			const [userUpdate, detailsUpdate] = await Promise.all([

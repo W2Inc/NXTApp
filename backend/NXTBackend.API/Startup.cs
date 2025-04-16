@@ -7,10 +7,12 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using Keycloak.AuthServices.Authentication;
 using Keycloak.AuthServices.Common;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,7 @@ using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Domain.Services.Impl;
+using NXTBackend.API.Infrastructure;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
 using NXTBackend.API.Infrastructure.OpenApi;
@@ -70,7 +73,9 @@ public static class Startup
 
 		// Authentication and Authorization (Keycloak)
 		services.AddKeycloakWebApiAuthentication(builder.Configuration);
-		services.AddAuthorizationBuilder().AddPolicy("admin", b => b.RequireRole("admin"));
+		services.AddAuthorizationBuilder()
+			.AddPolicy("CanCreate", policy => policy.RequireClaim(ClaimTypes.Role, "creator"));
+
 
 		// Swagger / OpenAPI Configuration
 		services.AddOpenApi(o =>

@@ -5,6 +5,7 @@
 
 // Remark & Rehype plugins
 import remarkGfm from "remark-gfm";
+// import remarkCollapse from "remark-collapse";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 // Shiki syntax highlighting
@@ -41,6 +42,7 @@ const shikiPlugin = {
 
 export const plugins: Plugin[] = [
 	{ remarkPlugin: [remarkGfm] },
+	// { remarkPlugin: [remarkCollapse, { test: "summary" }] },
 	{ remarkPlugin: [remarkMath], rehypePlugin: [rehypeKatex] },
 	shikiPlugin,
 ];

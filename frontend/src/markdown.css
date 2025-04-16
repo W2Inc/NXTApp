@@ -26,6 +26,10 @@
 	text-rendering: optimizeLegibility;
 	text-shadow: unset;
 
+	& .katex > * {
+		font-size: 1.1em;
+	}
+
 	& h1 {
 		font-size: 3.052em;
 		border-bottom: 1px solid hsl(var(--border));

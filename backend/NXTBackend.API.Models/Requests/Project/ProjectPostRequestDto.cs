@@ -5,6 +5,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using NXTBackend.API.Models.Validators;
 
 // ============================================================================
 
@@ -55,5 +56,9 @@ public class ProjectPostRequestDto : BaseRequestDTO
     [Required]
     public bool Enabled { get; set; }
 
-    public string[] Tags { get; set; }
+	/// <summary>
+	/// Tags for the project
+	/// /// </summary>
+	[MaxLength(24), StringLengthEnumerable(1, 64)]
+	public string[] Tags { get; set; }
 }
