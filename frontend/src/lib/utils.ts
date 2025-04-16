@@ -6,7 +6,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { getContext, setContext } from "svelte";
 import { twMerge } from "tailwind-merge";
-import type { ClientRequestMethod, FetchResponse } from "openapi-fetch";
 import { error } from "@sveltejs/kit";
 
 // ============================================================================
@@ -85,20 +84,6 @@ type APIFetchResponse<T, E> =
 			error: E;
 			response: Response;
 	  };
-
-export async function ensureAPI<T, E>(
-	promise: Promise<APIFetchResponse<T, E>>,
-): Promise<[NonNullable<T>, null] | [null, E]> {
-	const { data, error: err, response } = await promise;
-
-	if (err) {
-		// Somehow the request couldn't be made...
-		if (response.status === 400 || response.status === 422) return [null, err];
-		// Everything else we can't honestly handle
-		error(response.status, response.statusText);
-	}
-	return [data!!, null];
-}
 
 /**
  * Tiny wrapper to create a deferred function.

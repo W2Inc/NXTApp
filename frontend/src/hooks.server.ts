@@ -6,6 +6,7 @@
 import { sequence } from "@sveltejs/kit/hooks";
 import {
 	error,
+	redirect,
 	type Handle,
 	type RequestEvent,
 	type ServerInit,
@@ -48,17 +49,6 @@ const DebugLogMD: Middleware = {
 
 // TODO: Replace with arctic client...
 const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
-
-/**
- * Global rate limiting, you can use this rate limiter across pages or use
- * a new rate limiter to determine rate limits per page if so desired.
- *
- * @deprecated Use Traeffik.
- */
-const limiter = useRetryAfter({
-	IP: [10, "h"],
-	IPUA: [60, "m"],
-});
 
 /**
  * Here you can configure the overal routes that need which role in order
@@ -130,12 +120,14 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 };
 
 const initial: Handle = async ({ event, resolve }) => {
-	// logger.debug("Current cookies", { cookies: event.cookies.getAll().map(cookie => cookie.name) })
 	event.setHeaders({
 		"x-powered-by": `Bun ${Bun.version}`,
 		"x-application": "APP_NAME",
 	});
 
+	// Easter egg
+	if (event.url.pathname.startsWith("/powerwolf"))
+		redirect(308, "https://youtu.be/u0yZOriAUlA?t=15");
 	return resolve(event);
 };
 

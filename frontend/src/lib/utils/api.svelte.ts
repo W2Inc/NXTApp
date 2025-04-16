@@ -5,41 +5,80 @@
 
 import { z } from "zod";
 import { error, fail } from "@sveltejs/kit";
-import { enhance } from "$app/forms";
+import { applyAction, enhance } from "$app/forms";
+import { env } from "$env/dynamic/public";
+import { toast } from "svelte-sonner";
+import {
+	dialog as useDialog,
+	type ConfirmProps,
+} from "$lib/components/dialog/state.svelte";
+import { goto } from "$app/navigation";
 
 // ============================================================================
 
-/** .NET backend error response body (RFC 7807 Problem Details) */
-export interface Problem {
-	type: string;
+/** (RFC 7807 Problem Details) */
+export interface Problem<T = unknown> {
+	type?: string;
 	title: string;
 	detail?: string; // Often optional
 	status: number;
 	traceId?: string; // Often optional
 	/** Validation errors, keyed by field name (potentially capitalized) */
-	errors?: Record<string, string[]>; // Make errors optional as not all problems are validation errors
-};
-
-/** Represents validation errors for a specific form data structure T */
-export type FormErrors<T extends object> = {
-	// Partial allows only fields with errors to be present
-	[K in keyof T]?: string[];
-};
-
-/** Represents the result of validation, containing data and errors */
-export interface FormValidation<T extends object> {
-	/**
-	 * The data associated with the form.
-	 * If validation failed, this is typically the original data submitted by the user.
-	 * If validation succeeded, this might be the successful response data from the backend.
-	 */
-	data: T;
-	/** Validation errors keyed by field name. Empty if validation passed. */
-	errors: FormErrors<T>;
+	errors?: Record<Capitalize<Extract<keyof T, string>>, string[]>;
 }
 
+type FormResult<T> =
+	| {
+			type: "success";
+			status: number;
+			data: {
+				message: string;
+				redirect?: string;
+			};
+	  }
+	| {
+			type: "failure";
+			status: number;
+			data: {
+				problem: Problem<T>;
+			};
+	  };
+
+// interface FormResult<T> {
+
+// 	message: string;
+// 	redirect?: string;
+// 	// form: FormValidation<T>;
+// }
+
+/** Represents validation errors for a specific form data structure T */
+// export type FormErrors<T extends object> = {
+// 	// Partial allows only fields with errors to be present
+// 	[K in keyof T]?: string[];
+// };
+
+/** Represents the result of validation, containing data and errors */
+// export interface FormValidation<T extends object> {
+// 	/**
+// 	 * The data associated with the form.
+// 	 * If validation failed, this is typically the original data submitted by the user.
+// 	 * If validation succeeded, this might be the successful response data from the backend.
+// 	 */
+// 	data: T;
+// 	/** Validation errors keyed by field name. Empty if validation passed. */
+// 	errors: FormErrors<T>;
+// }
+
 export interface FormOptions {
-	confirm?: boolean;
+	/** First confirm before submit. */
+	confirm?: ConfirmProps | boolean;
+	reset?: boolean;
+}
+
+export interface FormState<T> {
+	isLoading: boolean;
+	errors: Record<Capitalize<Extract<keyof T, string>>, string[]>;
+	data: T;
 }
 
 /**
@@ -54,10 +93,13 @@ export interface FormOptions {
  * @template U - The update type containing properties to be combined with the source
  * @template C - The custom type containing properties that should override the combined result
  */
-export type PageFormBundle<S, U, C> = Omit<{
-	[K in keyof S & keyof U]-?: NonNullable<S[K]>;
-}, keyof C> & C;
-
+export type PageFormBundle<S, U, C> = Omit<
+	{
+		[K in keyof S & keyof U]-?: NonNullable<S[K]>;
+	},
+	keyof C
+> &
+	C;
 
 // ============================================================================
 // Zod Schema for the Problem Details structure
@@ -73,24 +115,110 @@ export const ProblemSchema = z.object({
 
 // ============================================================================
 
-export function success<T>(message: string, rest: T = undefined as T, redirect?: string) {
-	return { message, ...rest, redirect };
+// export function success2<T>(message: string, rest: T = undefined as T, redirect?: string) {
+// 	return { message, ...rest, redirect };
+// }
+
+// export function problem2<T>(status = 400, message: string, rest: T = undefined as T) {
+// 	return fail(status, { message, ...rest });
+// }
+
+export function success(message: string, redirect?: string) {
+	return { message, redirect };
 }
 
-export function problem<T>(status = 400, message: string, rest: T = undefined as T) {
-	return fail(status, { message, ...rest });
+export function problem(problem: Problem) {
+	return fail(problem.status, { problem });
+}
+
+/**
+ * Extracts a value from the form data and preps it to be uploaded to S3.
+ *
+ * @template T - A generic type representing the shape the form is mapped to.
+ * @param form - The FormData instance containing the file to be uploaded.
+ * @param key - The key within the form that references the file to upload.
+ * @param maxSize - An optional maximum allowed file size in bytes (defaults to 5 MB).
+ * @throws {Error} Throws if no file is provided or if the file size exceeds the allowed limit.
+ * @returns An object containing both the S3 file reference and the URL where the file can be accessed.
+ */
+export async function formValueToS3<T>(
+	form: FormData,
+	key: keyof T,
+	maxSize: number = 5 * 1024 * 1024,
+) {
+	const thumbnail = form.get(key as string) as File | null;
+	if (thumbnail === null || thumbnail.size === 0)
+		throw new Error("Please upload a image.");
+	if (thumbnail.size > maxSize)
+		throw new Error(`File size too large. Maximum size is ${maxSize}MB.`);
+
+	const fileNameParts = thumbnail.name.split(".");
+	const ext = fileNameParts.length > 1 ? fileNameParts.pop() : null;
+	if (!ext) throw new Error("Invalid file");
+
+	const fileName = `${Bun.randomUUIDv7()}.${ext}`;
+	return {
+		client: Bun.s3.file(fileName),
+		file: thumbnail,
+		url: `${env.PUBLIC_S3_ENDPOINT}/${env.PUBLIC_S3_BUCKET}/${fileName}`,
+	};
 }
 
 // ============================================================================
 
-export function useForm<TDTO>(options: FormOptions) {
+export function useForm<T>(defaultValue: FormState<T>, options: FormOptions) {
+	const formState = $state<FormState<T>>(defaultValue);
 	let opt = options ?? { confirm: false };
 
-	return {
-		enhance,
-		form: {} as TDTO,
+	function kitEnhance(form: HTMLFormElement) {
+		enhance(form, async ({ formElement, formData, action, cancel }) => {
+			if (opt.confirm) {
+				const props = typeof options.confirm === "boolean" ? undefined : options.confirm;
+				if (!(await useDialog.confirm(props))) {
+					cancel();
+					return;
+				}
+			}
+
+			toast.dismiss();
+			toast.loading("Please wait...");
+			formState.isLoading = true;
+			return async ({ result, update }) => {
+				formState.isLoading = false;
+				if (result.type === "error" && result.status === 404) {
+					toast.error("Not implemented form");
+					return;
+				}
+				if (result.type === "success" || result.type === "failure") {
+					toast.dismiss();
+					const formResult = result as FormResult<T>;
+
+					if (formResult.type === "success") {
+						toast.success(formResult.data.message);
+					} else {
+						toast.error(formResult.data.problem.title);
+						console.log(formResult.data.problem.errors);
+						if (formResult.data.problem.errors)
+							formState.errors = formResult.data.problem.errors;
+					}
+					if (formResult.type === "success" && formResult.data.redirect) {
+						return goto(formResult.data.redirect);
+					}
+				}
+
+				if (options.reset) await update({ reset: true });
+				await applyAction(result);
+			};
+		});
 	}
-};
+
+	return {
+		enhance: kitEnhance,
+		get form() {
+			return formState;
+		},
+	};
+}
 
 // ============================================================================
 
@@ -114,50 +242,3 @@ interface ValidationResult<K> {
 	 */
 	hasErrors: boolean;
 }
-
-type TypeToZod<T> = {
-	[K in keyof T]-?: T[K] extends
-	| Date
-	| string
-	| number
-	| boolean
-	| null
-	| undefined
-	? undefined extends T[K]
-	? z.ZodOptional<z.ZodType<Exclude<T[K], undefined>>>
-	: z.ZodType<T[K]>
-	: z.ZodObject<TypeToZod<T[K]>>
-	| z.ZodArray<z.ZodType<T[K]>>
-	| z.ZodNullable<z.ZodType<T[K]>>
-	| z.ZodUnion<readonly [z.ZodType<T[K]>, ...z.ZodType<T[K]>[]]> };
-
-export const createDTOSchema = <T>(obj: TypeToZod<T>) => {
-	return z.object(obj);
-};
-
-
-export async function preprocessForm<T>(formData: Promise<FormData>, callback?: (key: keyof T, value: FormDataEntryValue) => FormDataEntryValue | Promise<FormDataEntryValue>): Promise<T> {
-	let body: Record<string, any> = {};
-	const formDataObj = await formData;
-	formDataObj.forEach(async (value, key) => {
-		if (callback) {
-			value = await callback(key as keyof T, value);
-			console.log("Callback", key, value);
-		}
-
-		console.log("FormData", key, value);
-		const strValue = value.toString();
-		if (strValue === "true" || strValue === "false") {
-			body[key] = strValue === "true";
-		}
-		else if (/^-?\d+(\.\d+)?$/.test(strValue)) {
-			body[key] = Number(strValue);
-		}
-		else {
-			body[key] = strValue;
-		}
-	});
-
-	return body as T;
-}
-

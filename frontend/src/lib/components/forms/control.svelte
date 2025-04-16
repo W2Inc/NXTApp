@@ -4,7 +4,7 @@
 	import FileWarning from "lucide-svelte/icons/triangle-alert";
 
 	interface Props {
-		label: string;
+		label?: string;
 		name: string;
 		description?: string;
 		errors?: string[];
@@ -20,7 +20,9 @@
 
 <div class="flex-1">
 	<Label class="cursor-pointer" for={name}>
-		{label}
+		{#if label}
+			{label}
+		{/if}
 	</Label>
 	{#if description}
 		<p class="text-muted-foreground mb-2 text-xs">
@@ -29,8 +31,8 @@
 	{/if}
 	{@render children()}
 	{#if currentError}
-		<p class="text-destructive center-content mt-1 motion-safe:animate-pulse text-sm">
-			<FileWarning size={16} class="min-w-4"/>
+		<p class="text-destructive center-content mt-1 text-sm motion-safe:animate-pulse">
+			<FileWarning size={16} class="min-w-4" />
 			{currentError}
 		</p>
 	{/if}

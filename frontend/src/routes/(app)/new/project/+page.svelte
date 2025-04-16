@@ -23,7 +23,6 @@
 	import { Button, buttonVariants } from "$lib/components/ui/button/index.js";
 	import * as Tabs from "$lib/components/ui/tabs";
 	import * as Alert from "$lib/components/ui/alert/index.js";
-	import { useForm } from "$lib/utils/form.svelte";
 	import type { PageData } from "./$types";
 	import { Constants } from "$lib/utils";
 	import { toast } from "svelte-sonner";
@@ -34,6 +33,7 @@
 	import RemoteSelector from "$lib/components/remote-selector.svelte";
 	import useClipboard from "$lib/utils/clipboard.svelte";
 	import { fade, scale } from "svelte/transition";
+	import { useForm } from "$lib/utils/api.svelte";
 
 	let { data } = $props();
 	const { enhance, form } = useForm(data.form, {
@@ -119,34 +119,36 @@
 {/snippet}
 
 <form method="POST" use:enhance enctype="multipart/form-data">
+	<input type="text" hidden name="id" value={data.entity?.id} />
 	<Base variant="center-navbar">
 		{#snippet left()}
 			<div class="flex max-h-fit flex-col gap-1 rounded border p-4">
-				<div class="group relative">
-					<input
-						bind:this={fileUpload}
-						type="file"
-						name="thumbnailUrl"
-						class="absolute inset-0 z-10 cursor-pointer opacity-0"
-					/>
-					<div class="relative">
-						<img
-							use:preview={{ input: fileUpload, maxSize: 1 }}
-							src={(form.data.image as string) ?? Constants.FALLBACK_IMG}
-							alt="logo"
-							class="max-h-52 w-full rounded border object-cover"
+				<Control name="thumbnailUrl" errors={form.errors.ThumbnailUrl}>
+					<div class="group relative">
+						<input
+							bind:this={fileUpload}
+							type="file"
+							name="thumbnailUrl"
+							class="absolute inset-0 z-10 cursor-pointer opacity-0"
 						/>
-						<div
-							class="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
-						>
-							<Upload class="absolute inset-0 z-[1] m-auto size-8 text-white" />
+						<div class="relative">
+							<img
+								use:preview={{ input: fileUpload, maxSize: 1 }}
+								src={(form.data.thumbnailUrl as string) ?? Constants.FALLBACK_IMG}
+								alt="logo"
+								class="max-h-52 w-full rounded border object-cover"
+							/>
+							<div
+								class="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+							>
+								<Upload class="absolute inset-0 z-[1] m-auto size-8 text-white" />
+							</div>
 						</div>
 					</div>
-				</div>
+				</Control>
 
-				<!-- <EvalRatio /> -->
 				<Separator class="my-1" />
-				<Control label="Name" name="name" errors={form.errors.name}>
+				<Control label="Name" name="name" errors={form.errors.Name}>
 					<Input
 						id="name"
 						type="name"
@@ -154,15 +156,14 @@
 						autocorrect="off"
 						autocomplete={null}
 						placeholder="Project..."
-						aria-invalid={form.errors.name ? "true" : undefined}
+						aria-invalid={form.errors.Name ? "true" : undefined}
 						bind:value={form.data.name}
-						{...form.constraints.name}
 					/>
 				</Control>
 				<Control
 					label="Max Members"
 					name="maxMembers"
-					errors={form.errors.maxMembers}
+					errors={form.errors.MaxMembers}
 					description="The max amount of users that can participate on this project together"
 				>
 					<Input
@@ -172,9 +173,8 @@
 						autocorrect="off"
 						placeholder="2"
 						autocomplete={null}
-						aria-invalid={form.errors.maxMembers ? "true" : undefined}
+						aria-invalid={form.errors.MaxMembers ? "true" : undefined}
 						bind:value={form.data.maxMembers}
-						{...form.constraints.maxMembers}
 					/>
 				</Control>
 				<Separator class="my-1" />
@@ -182,33 +182,31 @@
 					label="Public"
 					name="public"
 					description="Set this to false if you don't wish for anyone to see this project other than maintainers."
-					errors={form.errors.public}
+					errors={form.errors.Public}
 				>
 					<Switch
 						id="public"
 						name="public"
-						aria-invalid={form.errors.public ? "true" : undefined}
+						aria-invalid={form.errors.Public ? "true" : undefined}
 						onCheckedChange={(v) => (form.data.public = v)}
 						bind:checked={form.data.public}
-						{...form.constraints.public}
 					/>
 				</Control>
 				<Control
 					label="Enabled"
 					name="enabled"
 					description="When true, other users can subscribe to this project."
-					errors={form.errors.enabled}
+					errors={form.errors.Enabled}
 				>
 					<Switch
 						id="enabled"
 						name="enabled"
-						aria-invalid={form.errors.enabled ? "true" : undefined}
+						aria-invalid={form.errors.Enabled ? "true" : undefined}
 						bind:checked={form.data.enabled}
-						{...form.constraints.enabled}
 					/>
 				</Control>
 				<Separator class="my-1" />
-				<Button class="w-full" type="submit" disabled={form.submitting} {formaction}>
+				<Button class="w-full" type="submit" disabled={form.isLoading} {formaction}>
 					{#if data.entity}
 						Update
 					{:else}
@@ -227,7 +225,12 @@
 					</span>
 					{#if data.entity}
 						<form method="POST" use:enhance>
-							<Button type="submit" size="icon" variant="destructive" formaction="?/delete">
+							<Button
+								type="submit"
+								size="icon"
+								variant="destructive"
+								formaction="?/delete"
+							>
 								<Trash />
 							</Button>
 						</form>
@@ -240,7 +243,7 @@
 					for quick reference.
 				</p>
 				<Separator class="my-1" />
-				<Control label="Description" name="description" errors={form.errors.description}>
+				<Control label="Description" name="description" errors={form.errors.Description}>
 					<Textarea
 						id="description"
 						name="description"
@@ -248,30 +251,28 @@
 						required
 						rows={3}
 						autocomplete={null}
-						aria-invalid={form.errors.description ? "true" : undefined}
+						aria-invalid={form.errors.Description ? "true" : undefined}
 						bind:value={form.data.description}
-						{...form.constraints.description}
 					/>
 				</Control>
 				<Separator class="my-1" />
 				<Control
 					label="Markdown"
 					name="markdown"
-					errors={form.errors.markdown}
+					errors={form.errors.Markdown}
 					description="The markdown sheet is the project itself"
 				>
 					<Markdown
 						variant="editor"
 						placeholder="# This project is about..."
 						bind:value={form.data.markdown}
-						{...form.constraints.markdown}
 					/>
 				</Control>
 				{#if data.entity}
 					<Control
 						label="Git Repository"
 						name="markdown"
-						errors={form.errors.markdown}
+						errors={form.errors.Markdown}
 						description="Projects are remotely stored on a git server that allows you to track and collaborate on files"
 					>
 						<div
