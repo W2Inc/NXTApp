@@ -1,137 +1,111 @@
-import { z } from "zod";
-import { error, fail } from "@sveltejs/kit";
+// ============================================================================
+// W2Inc, Amsterdam 2023-2024, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
+
 import type { PageServerLoad } from "./$types";
-import { problem, success, validate } from "$lib/utils/form.svelte";
-import { Constants } from "$lib/utils";
-import { keycloak } from "$lib/oauth";
+import { formValueToS3, problem, success, type FormState, type PageMixFormBundle } from "$lib/utils/api.svelte";
+import { error as kitError, redirect } from "@sveltejs/kit";
+import { Constants, ensure } from "$lib/utils";
 import { logger } from "$lib/logger";
-import { page } from "$app/state";
-import { PUBLIC_S3_ENDPOINT } from "$env/static/public";
 
-const schema = z.object({
-	id: z.string().uuid().readonly(),
-	login: z.string().readonly(),
-	firstName: z.string().nullish(),
-	lastName: z.string().nullish(),
-	displayName: z
-		.string()
-		.min(4)
-		.max(128)
-		.regex(
-			/^[a-zA-Z0-9]+(?:[_-][a-zA-Z0-9]+)*$/,
-			"Display name can only contain letters, numbers and dashes",
-		)
-		.nullish(),
-	markdown: z.string().min(4).max(2048).nullish(),
-	website: z.string().url().startsWith("https://").nullish(),
-	twitter: z.string().url().startsWith("https://x.com/").nullish(),
-	linkedin: z.string().url().startsWith("https://linkedin.com/").nullish(),
-	github: z.string().url().startsWith("https://github.com/").nullish(),
-	image: z
-		.union([
-			z.string(),
-			z
-				.instanceof(File, { message: "Please upload a file." })
-				.refine((file) => file.size < 100_000, "Max 100 kB upload size."),
-		])
-		.optional(),
-});
 
-export const load: PageServerLoad = async ({ locals, request, url }) => {
-	const session = (await locals.session()) ?? error(401, "No session");
-	const form = await validate(request, schema);
+// ============================================================================
 
-	// Example fetching user data
-	const [userData, userBio] = await Promise.all([
-		locals.api.GET("/users/current"),
-		locals.api.GET("/users/{id}/bio", {
-			parseAs: "text",
-			params: { path: { id: session.user_id } },
-		}),
-	]);
-	if (userData.error || !userData.data || userBio.error || !userBio) {
-		throw error(500, "Failed to fetch user data.");
+export type FormBundle = PageMixFormBundle<
+	BackendTypes["UserPatchRequestDTO"],
+	BackendTypes["UserDetailsPutRequestDTO"],
+	{
+		avatarUrl?: string | File;
+		markdown?: string;
+	}
+>;
+
+// ============================================================================
+
+export const load: PageServerLoad = async ({ locals }) => {
+	const session = await locals.session() ?? kitError(401);
+	const { data, error } = await locals.api.GET("/users/current");
+	if (error || !data) {
+		logger.error("Failed to fetch user data", error);
+		kitError(500);
 	}
 
-	const data = userData.data;
-	const bio = userBio.data ?? "";
-
-	// Populate form data with existing values
-	form.data = {
-		id: data.id,
-		login: data.login,
-		displayName: data.displayName,
-		firstName: data.details?.firstName ?? session.given_name,
-		lastName: data.details?.lastName ?? session.family_name,
-		markdown: bio,
-		image: data.avatarUrl ?? Constants.FALLBACK_IMG,
-		website: data.details?.websiteUrl,
-		linkedin: data.details?.linkedinUrl,
-		twitter: data.details?.twitterUrl,
-		github: data.details?.githubUrl,
-	};
-
-	logger.debug(`Form data on ${url}`, form.data);
-
-	return { form };
+	return {
+		form: {
+			data: {
+				firstName: data.details?.firstName,
+				lastName: data.details?.lastName,
+				displayName: data.displayName,
+				email: data.details?.email,
+				markdown: data.details.markdown,
+				websiteUrl: data.details?.websiteUrl,
+				twitterUrl: data.details?.twitterUrl,
+				linkedinUrl: data.details?.linkedinUrl,
+				githubUrl: data.details?.githubUrl,
+				avatarUrl: data.avatarUrl ?? session.avatarUrl ?? Constants.FALLBACK_IMG,
+			},
+			errors: {},
+			isLoading: false,
+		} as FormState<FormBundle>,
+	}
 };
+
+// ============================================================================
 
 export const actions = {
 	default: async ({ request, locals, setHeaders, url }) => {
-		const session = (await locals.session()) ?? error(401, "No session");
-		const form = await validate(request, schema);
-		let avatarUrl: string | undefined;
+		const session = await locals.session() ?? kitError(401);
+		const form = await request.formData();
 
-		logger.debug(`Submitted Form => ${url}`, form.data);
+		// const avatarUrl = form.get("avatarUrl");
+		// if (avatarUrl && avatarUrl instanceof File && avatarUrl.size > 0) {
 
-		try {
-			if (!form.valid) {
-				logger.debug("Invalid form", form.errors);
-				return problem(400, "Unable to update profile", { form });
-			}
-			if (form.data.image instanceof File && form.data.image.size > 0) {
-				if (session.avatarUrl) {
-					await Bun.s3.delete(session.avatarUrl);
-				}
-				const ext = form.data.image.name.split(".").pop() ?? "png";
-				const fileName = `${session.user_id}.${ext}`;
-				const file = Bun.s3.file(fileName);
-				await file.write(form.data.image, { acl: "public-read", bucket: "images" });
-				avatarUrl = `${PUBLIC_S3_ENDPOINT}/${PUBLIC_S3_ENDPOINT}/${fileName}`;
-			}
+		// }
 
-			const [userUpdate, detailsUpdate] = await Promise.all([
-				locals.api.PATCH("/users/{id}", {
-					params: { path: { id: session.user_id } },
-					body: { displayName: form.data.displayName, avatarUrl },
-				}),
-				locals.api.PUT("/users/{id}/details", {
-					params: { path: { id: session.user_id } },
-					body: {
-						bio: form.data.markdown,
-						firstName: form.data.firstName,
-						lastName: form.data.lastName,
-						websiteUrl: form.data.website,
-						twitterUrl: form.data.twitter,
-						linkedinUrl: form.data.linkedin,
-						githubUrl: form.data.github,
-					},
-				}),
-				// locals.api.PUT("/users/{id}/bio", {
-				// 	params: { path: { id: session.user_id } },
-				// 	body: form.data.markdown
-				// }),
-			]);
+		let [image, issue] = await ensure(formValueToS3<FormBundle>(form, "avatarUrl"));
 
-			if (userUpdate.error || detailsUpdate.error) {
-				return problem(400, "Unable to update profile", { form });
-			}
-			return success("Profile updated", { form });
-		} catch {
-			return problem(400, "Unable to update profile", { form });
-		} finally {
-			setHeaders({ "Cache-Control": "no-cache, must-revalidate, max-age=0" });
-			form.data.image = avatarUrl ?? session.avatarUrl;
+
+		setHeaders({ "Cache-Control": "no-cache, must-revalidate, max-age=0" });
+
+		const processAvatar = async (avatar: string | File | null) => {
+			return "";
+		};
+
+		const [userUpdate, detailsUpdate] = await Promise.all([
+			locals.api.PATCH("/users/{id}", {
+				params: { path: { id: session.user_id } },
+				body: {
+					displayName: form.get("displayName")?.toString(),
+					// avatarUrl: await processAvatar(form.get("avatarUrl")),
+				},
+			}),
+			locals.api.PUT("/users/{id}/details", {
+				params: { path: { id: session.user_id } },
+				body: {
+					firstName: form.get("firstName")?.toString(),
+					lastName: form.get("lastName")?.toString(),
+					websiteUrl: form.get("websiteUrl")?.toString(),
+					bio: form.get("markdown")?.toString(),
+					twitterUrl: form.get("twitterUrl")?.toString(),
+					linkedinUrl: form.get("linkedinUrl")?.toString(),
+					githubUrl: form.get("githubUrl")?.toString(),
+				},
+			}),
+		]);
+
+		if (userUpdate.error || detailsUpdate.error) {
+			const error = userUpdate.error || detailsUpdate.error;
+			return problem({
+				status: error?.status ?? 422,
+				title: error?.title ?? "Something went wrong...",
+				// @ts-ignore
+				errors: error?.errors ?? {},
+			});
 		}
-	},
+
+		// Upload
+
+		return success("Account details updated!");
+	}
 };

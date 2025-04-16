@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Entities.Users;
 
 // ============================================================================
@@ -15,7 +16,7 @@ public class UserDetailsDO : BaseObjectDO<Details>
     public UserDetailsDO(Details details) : base(details)
     {
         Email = details.Email;
-        // Bio = details.Bio;
+        Markdown = details.Bio;
         FirstName = details.FirstName;
         LastName = details.LastName;
         GithubUrl = details.GithubUrl;
@@ -32,12 +33,11 @@ public class UserDetailsDO : BaseObjectDO<Details>
     [Required]
     public string? Email { get; set; }
 
-    /// <summary>
-    /// NOTE: Not included in DO, use separate endpoint
-    /// Why ? Some Markdown Biographies can be full of shit. We won't want that
-    /// for EVERY single user we request.
-    /// </summary>
-    // public string? Bio { get; set; }
+	/// <summary>
+	/// 
+	/// </summary>
+    [Required]
+    public string? Markdown { get; set; }
 
     /// <summary>
     ///

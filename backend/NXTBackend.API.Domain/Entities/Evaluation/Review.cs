@@ -88,8 +88,8 @@ public class Review : BaseEntity
 	// /// 
 	// /// This does not anonymize the review in the database necessarily.
 	// /// </summary>
-    // [Column("anonymous")]
-    // public bool Anonymous { get; set; }
+    [Column("anonymous")]
+    public bool Anonymous { get; set; }
 
     /// <summary>
     /// The user doing the review.

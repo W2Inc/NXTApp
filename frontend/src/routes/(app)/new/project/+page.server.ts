@@ -3,9 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
-import { z } from "zod";
-import type { Actions, PageServerLoad, RequestEvent } from "./$types";
-import { PUBLIC_S3_BUCKET } from "$env/static/public";
+import type { Actions, PageServerLoad } from "./$types";
 import {
 	formValueToS3,
 	problem,

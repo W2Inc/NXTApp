@@ -100,6 +100,24 @@ export type PageFormBundle<S, U, C> = Omit<
 > &
 	C;
 
+/**
+ * Builds a convenient type for form bundles that merges source and update types,
+ * with override capabilities.
+ *
+ * E.G: User has two different DTOs for PATCH and PUT requests.
+ * This type allows you to combine them into a single type and that way you can have a single form.
+ *
+ * @template S - The source type containing original properties
+ * @template U - The update type containing properties to be combined with the source
+ * @template C - The custom type containing properties that should override the combined result
+ */
+export type PageMixFormBundle<S, U, C = {}> = Omit<
+	{
+		[K in keyof S | keyof U]: K extends keyof S ? S[K] : K extends keyof U ? U[K] : never;
+	},
+	keyof C
+> & C;
+
 // ============================================================================
 
 // export function success2<T>(message: string, rest: T = undefined as T, redirect?: string) {

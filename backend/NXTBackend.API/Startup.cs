@@ -186,7 +186,7 @@ public static class Startup
 					partitionKey: "AuthenticatedUsers",
 					factory: _ => new SlidingWindowRateLimiterOptions
 					{
-						PermitLimit = 240, // More requests
+						PermitLimit = 1680, // More requests
 						Window = TimeSpan.FromMinutes(20),
 						QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
 						QueueLimit = 5

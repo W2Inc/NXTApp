@@ -203,7 +203,7 @@ public class UserController(
         return Ok(new UserDO(user));
     }
 
-    [HttpPut("/users/{id:guid}/details"), Authorize]
+    [HttpPut("/users/{id:guid}/details")]
     [EndpointSummary("")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -230,41 +230,6 @@ public class UserController(
             return NotFound("User not found");
 
         return Ok(new UserDO(updatedUser));
-    }
-
-    [HttpGet("/users/{id:guid}/bio")]
-    [EndpointSummary("Gets the user defined biography")]
-    [EndpointDescription("A user can have a markdown biography to present themselves to others.")]
-    [ProducesResponseType<string>(StatusCodes.Status200OK, contentType: "text/plain")]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<UserDO>> GetUserBio(Guid id)
-    {
-        var user = await userService.FindByIdAsync(id);
-        if (user is null)
-            return NotFound();
-        if (user.Details is null)
-            return NoContent();
-        return Ok(user.Details.Bio);
-    }
-
-    [HttpPut("/users/{id:guid}/bio")]
-    [Consumes("text/plain")]
-    [EndpointSummary("Sets the user defined biography")]
-    [EndpointDescription("A user can have a markdown biography to present themselves to others.")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SetUserBio(Guid id, [FromBody] string markdown)
-    {
-        var user = await userService.UpsertDetails(id, new()
-        {
-            Bio = markdown
-        });
-
-        if (user is null)
-            return NotFound();
-
-        return Created();
     }
 
     [HttpGet("/users/{id:guid}/cursus")]
