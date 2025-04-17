@@ -7,6 +7,18 @@ using NXTBackend.API.Models;
 namespace NXTBackend.API.Core.Services.Interface;
 public interface IProjectService : IDomainService<Project>
 {
+	/// <summary>
+	/// Get a file from a project.
+	/// This will fetch the file from the git repository of the project.
+	/// 
+	/// File contents are cached.
+	/// </summary>
+	/// <param name="projectId"></param>
+	/// <param name="file"></param>
+	/// <param name="branch"></param>
+	/// </summary>
+    public Task<string> GetFileFromProject(Guid projectId, string file, string branch);
+
     /// <summary>
     ///
     /// </summary>
@@ -29,11 +41,4 @@ public interface IProjectService : IDomainService<Project>
     /// <param name="pagination"> The pagination parameters. </param>
     /// <returns></returns>
     public Task<PaginatedList<User>> GetUsers(Project project, PaginationParams pagination, SortingParams sorting);
-
-    /// <summary>
-    /// Get the git information of a project.
-    /// </summary>
-    /// <param name="project"></param>
-    /// <returns></returns>
-    public Task<Git> GetGitInfo(Project project);
 }

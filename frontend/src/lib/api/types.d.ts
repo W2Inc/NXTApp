@@ -1677,6 +1677,92 @@ export interface paths {
         };
         trace?: never;
     };
+    "/projects/{id}/markdown/{file}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a markdown of the project
+         * @description
+         *     Retrieves the current markdown file, may either be the README or the SUBJECT.
+         *     Subject is the actual subject sheet while the readme is simply an explanation of the project itself.
+         *
+         */
+        get: {
+            parameters: {
+                query?: {
+                    "filter[branch]"?: string;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                    file: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/markdown": string;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/projects/{id}/users": {
         parameters: {
             query?: never;
@@ -4902,7 +4988,6 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             name: string;
-            markdown: string;
             description: string;
             slug: string;
             thumbnailUrl: string | null;
@@ -4922,7 +5007,6 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             name: string;
-            markdown: string;
             description: string;
             slug: string;
             thumbnailUrl: string | null;
@@ -5145,16 +5229,12 @@ export interface components {
         } | null;
         UserDetailsPutRequestDTO: {
             email?: string | null;
-            bio?: string | null;
+            markdown?: string | null;
             firstName?: string | null;
             lastName?: string | null;
-            /** Format: uri */
             githubUrl?: string | null;
-            /** Format: uri */
             linkedinUrl?: string | null;
-            /** Format: uri */
             twitterUrl?: string | null;
-            /** Format: uri */
             websiteUrl?: string | null;
         };
         UserGoalDO: {

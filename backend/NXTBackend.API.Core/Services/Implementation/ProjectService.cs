@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
@@ -14,32 +17,57 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// </summary>
 public sealed class ProjectService : BaseService<Project>, IProjectService
 {
-    public ProjectService(DatabaseContext ctx) : base(ctx)
-    {
-        DefineFilter<string>("slug", (q, slug) => q.Where(p => p.Slug == slug));
-        DefineFilter<string>("name", (q, name) => q.Where(p => EF.Functions.Like(p.Name, $"%{name}%")));
-    }
+	private readonly IGitService _git;
+	private readonly IDistributedCache _cache;
 
-    public async Task<Project> CreateProjectWithGit(Project project, Git git)
-    {
-        var newProject = await _context.Projects.AddAsync(project);
-        newProject.Entity.GitInfoId = git.Id;
-        await _context.SaveChangesAsync();
-        return newProject.Entity;
-    }
+	public ProjectService(DatabaseContext ctx, IGitService git, IDistributedCache cache) : base(ctx)
+	{
+		_git = git ?? throw new ArgumentNullException(nameof(git));
+		_cache = cache ?? throw new ArgumentNullException(nameof(cache));
 
-    public Task<Git> GetGitInfo(Project project)
-    {
-        throw new NotImplementedException();
-    }
+		DefineFilter<string>("slug", (q, slug) => q.Where(p => p.Slug == slug));
+		DefineFilter<string>("name", (q, name) => q.Where(p => EF.Functions.Like(p.Name, $"%{name}%")));
+	}
 
-    public Task<PaginatedList<Rubric>> GetRubric(Project project, PaginationParams pagination)
-    {
-        throw new NotImplementedException();
-    }
+	public async Task<Project> CreateProjectWithGit(Project project, Git git)
+	{
+		var newProject = await _context.Projects.AddAsync(project);
+		newProject.Entity.GitInfoId = git.Id;
+		await _context.SaveChangesAsync();
+		return newProject.Entity;
+	}
 
-    public Task<PaginatedList<User>> GetUsers(Project project, PaginationParams pagination, SortingParams sorting)
-    {
-        throw new NotImplementedException();
-    }
+	/// <inheritdoc />
+	public async Task<string> GetFileFromProject(Guid projectId, string file, string branch)
+	{
+		var project = await _context.Projects
+			.Include(p => p.GitInfo)
+			.FirstOrDefaultAsync(p => p.Id == projectId)
+				?? throw new ServiceException(StatusCodes.Status404NotFound, "Project not found");
+
+		var cacheKey = $"{project.Id}:{branch}:{file}";
+		var markdown = await _cache.GetStringAsync(cacheKey);
+		if (markdown is null)
+		{
+			markdown = await _git.GetRawFileContent(project.GitInfo.Namespace, file, branch);
+			await _cache.SetStringAsync(cacheKey, markdown, options: new ()
+			{
+				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+			});
+		}
+
+		return markdown;
+	}
+
+	public Task<PaginatedList<Rubric>> GetRubric(Project project, PaginationParams pagination)
+	{
+		// Implementation using _context
+		throw new NotImplementedException();
+	}
+
+	public Task<PaginatedList<User>> GetUsers(Project project, PaginationParams pagination, SortingParams sorting)
+	{
+		// Implementation using _context
+		throw new NotImplementedException();
+	}
 }

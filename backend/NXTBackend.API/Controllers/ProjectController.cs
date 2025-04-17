@@ -112,28 +112,11 @@ Subject is the actual subject sheet while the readme is simply an explanation of
         [FromQuery(Name = "filter[branch]")] string branch = "main"
     )
     {
-        var project = await projectService.FindByIdAsync(id);
-        if (project is null)
-            return NotFound();
-
-        // Try to get markdown from cache first
-        var cacheKey = $"{project.Id}-{file.GetHashCode()}";
-        var markdown = await cache.GetStringAsync(cacheKey);
-        if (markdown is null)
-        {
-            try
-            {
-                markdown = await gitService.GetRawFileContent(project.GitInfo.Namespace, file, branch);
-                await cache.SetStringAsync(cacheKey, markdown);
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "Failed to fetch README.md for project {ProjectId}", project.Id);
-                return Problem(title: "Failed to fetch Markdown");
-            }
-        }
-
-        return Ok(markdown);
+		// NOTE(W2): Only support UTF-8 Strings for now.
+		var content = await projectService.GetFileFromProject(id, file, branch);
+		if (content is null)
+			return NotFound();
+		return Ok(content);
     }
 
     [HttpPatch("/projects/{id:guid}"), Authorize(Policy = "CanCreate")]

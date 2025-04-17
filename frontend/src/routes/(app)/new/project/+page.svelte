@@ -153,6 +153,7 @@
 						id="name"
 						type="name"
 						name="name"
+						required
 						autocorrect="off"
 						autocomplete={null}
 						placeholder="Project..."
@@ -171,6 +172,7 @@
 						type="number"
 						name="maxMembers"
 						autocorrect="off"
+						required
 						placeholder="2"
 						autocomplete={null}
 						aria-invalid={form.errors.MaxMembers ? "true" : undefined}
@@ -187,6 +189,7 @@
 					<Switch
 						id="public"
 						name="public"
+						required
 						aria-invalid={form.errors.Public ? "true" : undefined}
 						onCheckedChange={(v) => (form.data.public = v)}
 						bind:checked={form.data.public}
@@ -201,6 +204,7 @@
 					<Switch
 						id="enabled"
 						name="enabled"
+						required
 						aria-invalid={form.errors.Enabled ? "true" : undefined}
 						bind:checked={form.data.enabled}
 					/>
@@ -256,19 +260,21 @@
 					/>
 				</Control>
 				<Separator class="my-1" />
-				<Control
-					label="Markdown"
-					name="markdown"
-					errors={form.errors.Markdown}
-					description="The markdown sheet is the project itself"
-				>
-					<Markdown
-						variant="editor"
-						placeholder="# This project is about..."
-						maxlength={2048}
-						bind:value={form.data.markdown}
-					/>
-				</Control>
+				<div>
+					<Control
+						label="Markdown"
+						name="markdown"
+						errors={form.errors.Markdown}
+						description="The markdown sheet is the project itself"
+					>
+						<Markdown
+							variant="editor"
+							placeholder="# This project is about..."
+							maxlength={2048}
+							bind:value={form.data.markdown}
+						/>
+					</Control>
+				</div>
 				<Separator class="my-1" />
 				<Control
 					label="Tags"

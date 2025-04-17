@@ -32,6 +32,7 @@
 		value?: string;
 		placeholder?: string;
 		variant?: "editor" | "viewer";
+		name?: string;
 		maxlength?: number;
 		minlength?: number;
 		fullheight?: boolean;
@@ -53,6 +54,7 @@
 		variant = "editor",
 		maxlength,
 		minlength,
+		name = "markdown",
 		fullheight = false,
 		...rest
 	}: Props = $props();
@@ -276,14 +278,14 @@
 				{placeholder}
 				class="bg-background min-h-[100px] w-full overflow-y-auto rounded border p-4 outline-none data-[mode=preview]:hidden"
 				bind:value={value}
-				name="markdown"
+				{name}
 				{...rest}
 				onkeydown={handleKeydown}
 			></Textarea>
 		{/if}
 		<div
 			data-mode={mode}
-			class="markdown { fullheight ? 'h-full' : 'max-h-96' } min-h-40 overflow-auto rounded-b data-[mode=write]:hidden"
+			class="markdown { fullheight ? 'h-full' : 'max-h-[976px]' } min-h-40 overflow-auto rounded-b data-[mode=write]:hidden resize-y"
 		>
 			<Markdown md={value} {plugins} />
 		</div>

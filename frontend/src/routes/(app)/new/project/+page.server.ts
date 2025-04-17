@@ -39,22 +39,31 @@ const C_DEFAULT_BUNDLE: FormBundle = {
 // ============================================================================
 
 async function fetchProject(locals: App.Locals, id: string) {
-	const [project, rubric] = await Promise.all([
+	const [project, markdown] = await Promise.all([
 		locals.api.GET("/projects/{id}", {
 			params: { path: { id } },
 		}),
-		locals.api.GET("/rubrics", {
-			params: { query: { "filter[project_id]": id } },
+		locals.api.GET("/projects/{id}/markdown/{file}", {
+			params: { path: { id, file: "SUBJECT.md" } },
 		}),
 	]);
 
-	if (project.error || !project.data || rubric.error) {
-		kitError(project.response.status, "Something went wrong fetching the project...");
-	}
+	// const [project, rubric] = await Promise.all([
+	// 	locals.api.GET("/projects/{id}", {
+	// 		params: { path: { id } },
+	// 	}),
+	// 	locals.api.GET("/rubrics", {
+	// 		params: { query: { "filter[project_id]": id } },
+	// 	}),
+	// ]);
 
-	return {
-		project: project.data,
-	};
+	// if (project.error || !project.data || rubric.error) {
+	// 	kitError(project.response.status, "Something went wrong fetching the project...");
+	// }
+
+	// return {
+	// 	project: project.data,
+	// };
 }
 
 // ============================================================================
