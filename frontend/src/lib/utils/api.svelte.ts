@@ -199,6 +199,8 @@ export function useForm<T>(defaultValue: FormState<T>, options: FormOptions) {
 					toast.dismiss();
 					const formResult = result as FormResult<T>;
 
+					//@ts-ignore // TODO: Fix this
+					formState.errors = {};
 					if (formResult.type === "success") {
 						toast.success(formResult.data.message);
 					} else {
