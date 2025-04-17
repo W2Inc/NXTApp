@@ -4,7 +4,6 @@
 // ============================================================================
 
 using Microsoft.EntityFrameworkCore;
-using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Jobs.Interface;
 using Quartz;
@@ -25,13 +24,13 @@ public class ReviewCompositionJob(ILogger<ReviewCompositionJob> logger, Database
     public static string Identity => nameof(ReviewCompositionJob);
 
     /// <inheritdoc />
-    public static string? Schedule => "0 * * ? * *"; //"0 * * ? * *";
+    public static string? Schedule => "0 * * ? * *";
 
     /// <inheritdoc />
     public async Task Execute(IJobExecutionContext context)
     {
         logger.LogInformation("{Job} is starting", Identity);
-        logger.LogInformation("{users}", await ctx.Users.ToListAsync(context.CancellationToken));
+        // logger.LogInformation("{users}", await ctx.Users.ToListAsync(context.CancellationToken));
 
         await Task.CompletedTask;
     }

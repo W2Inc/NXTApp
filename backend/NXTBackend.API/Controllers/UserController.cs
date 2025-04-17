@@ -216,7 +216,7 @@ public class UserController(
 
         var updatedUser = await userService.UpsertDetails(userID, new()
         {
-            Bio = data.Bio,
+            Markdown = data.Markdown,
             Email = data.Email,
             FirstName = data.FirstName,
             LastName = data.LastName,
@@ -228,7 +228,6 @@ public class UserController(
 
         if (updatedUser is null)
             return NotFound("User not found");
-
         return Ok(new UserDO(updatedUser));
     }
 

@@ -22,6 +22,20 @@ public interface IGitService : IDomainService<Git>
     Task<Git> CreateRemoteRepository(string repositoryName, string? description = null);
 
     /// <summary>
+    /// Gets the raw content of a file from a repository.
+    /// </summary>
+    /// <param name="owner">Owner of the repository</param>
+    /// <param name="repo">Name of the repository</param>
+    /// <param name="path">Path to the file</param>
+    /// <param name="branch">Branch name (defaults to main)</param>
+    /// <returns>The raw content of the file as a string</returns>
+    Task<string> GetRawFileContent(
+        string name,
+        string path,
+        string branch = "main"
+    );
+
+    /// <summary>
     /// Archives a repository.
     /// </summary>
     /// <param name="owner">Owner of the repository</param>

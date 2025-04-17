@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -44,7 +45,7 @@ public sealed class GitService : BaseService<Git>, IGitService
 
     private async Task SetAuthorizationHeaderAsync()
     {
-		// TODO: this is *fine* but we need to make sure our proxy is set up correctly
+        // TODO: this is *fine* but we need to make sure our proxy is set up correctly
         var httpContext = _httpContextAccessor.HttpContext;
         string? claim = httpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         var id = Guid.TryParse(claim, out var guid) ? guid : Guid.Empty;
@@ -146,11 +147,22 @@ public sealed class GitService : BaseService<Git>, IGitService
         );
 
         response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<FileContentResponse>()
+            ?? throw new InvalidOperationException("Failed to upsert file");
+    }
 
-        var result = await response.Content.ReadFromJsonAsync<FileContentResponse>();
-        if (result == null)
-            throw new InvalidOperationException("Failed to upsert file");
+    public async Task<string> GetRawFileContent(
+        string name,
+        string path,
+        string branch = "main")
+    {
+        await SetAuthorizationHeaderAsync();
 
-        return result;
+        var requestUri = $"/api/v1/repos/{name}/raw/{path}?ref={branch}";
+        var response = await _httpClient.GetAsync(requestUri);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            throw new ServiceException(StatusCodes.Status404NotFound, "File not found");
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
     }
 }

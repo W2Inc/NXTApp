@@ -93,7 +93,7 @@
 
 	<Separator class="my-2" />
 
-	<Control label="First Name" name="firstName">
+	<Control label="First Name" name="firstName" errors={form.errors.FirstName}>
 		<Input
 			id="firstName"
 			type="text"
@@ -106,7 +106,7 @@
 		/>
 	</Control>
 
-	<Control label="Last Name" name="lastName">
+	<Control label="Last Name" name="lastName" errors={form.errors.LastName}>
 		<Input
 			id="lastName"
 			type="text"
@@ -120,7 +120,7 @@
 	</Control>
 
 	<Separator class="my-2" />
-	<div class="grid grid-cols-2 grid-rows-2 gap-3">
+	<div class="grid grid-cols-2 grid-rows-[min-content,min-content] gap-3">
 		<Control
 			label="Personal Website"
 			name="website"

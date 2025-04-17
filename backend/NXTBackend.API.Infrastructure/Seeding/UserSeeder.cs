@@ -12,7 +12,7 @@ public static class UserSeeder
     {
         var detailsFaker = new Faker<Details>()
             .RuleFor(d => d.Email, f => f.Internet.Email())
-            .RuleFor(d => d.Bio, f => f.Lorem.Paragraph())
+            .RuleFor(d => d.Markdown, f => f.Lorem.Paragraph())
             .RuleFor(d => d.FirstName, f => f.Name.FirstName())
             .RuleFor(d => d.LastName, f => f.Name.LastName())
             .RuleFor(d => d.GithubUrl, f => f.Internet.Url())
@@ -39,6 +39,3 @@ public static class UserSeeder
         }
     }
 }
-
-
-

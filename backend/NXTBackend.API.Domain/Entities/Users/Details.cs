@@ -10,7 +10,7 @@ public class Details : BaseEntity
     public Details()
     {
         Email = null;
-        Bio = null;
+        Markdown = null;
         FirstName = null;
         LastName = null;
         GithubUrl = null;
@@ -30,7 +30,7 @@ public class Details : BaseEntity
     public string? Email { get; set; }
 
     [Column("bio"), MaxLength(16384)]
-    public string? Bio { get; set; }
+    public string? Markdown { get; set; }
 
     [Column("first_name")]
     public string? FirstName { get; set; }

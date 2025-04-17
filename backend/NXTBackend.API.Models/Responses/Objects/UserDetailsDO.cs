@@ -16,7 +16,7 @@ public class UserDetailsDO : BaseObjectDO<Details>
     public UserDetailsDO(Details details) : base(details)
     {
         Email = details.Email;
-        Markdown = details.Bio;
+        Markdown = details.Markdown;
         FirstName = details.FirstName;
         LastName = details.LastName;
         GithubUrl = details.GithubUrl;
@@ -34,7 +34,7 @@ public class UserDetailsDO : BaseObjectDO<Details>
     public string? Email { get; set; }
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
     [Required]
     public string? Markdown { get; set; }

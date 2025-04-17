@@ -31,7 +31,7 @@
 	{/if}
 	{@render children()}
 	{#if currentError}
-		<p class="text-destructive flex gap-1 mt-1 text-sm motion-safe:animate-pulse">
+		<p class="text-destructive flex gap-1 mt-1 text-sm motion-safe:animate-pulse leading-0">
 			<FileWarning size={16} class="min-w-4" />
 			{currentError}
 		</p>

@@ -396,13 +396,26 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GraphNode"];
+                        "application/json": components["schemas"]["GraphNode"];
+                        "text/json": components["schemas"]["GraphNode"];
+                    };
+                };
                 /** @description Bad Request */
                 400: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/octet-stream": components["schemas"]["ProblemDetails"];
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -436,8 +449,8 @@ export interface paths {
             };
         };
         /**
-         * Define the track / path of a cursus
-         * @description Cursi can have a set track of goals
+         * Set the track / path of a cursus
+         * @description Sets the actual tree of the cursus
          */
         put: {
             parameters: {
@@ -448,14 +461,25 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CursusTrackDO"];
+                    "text/json": components["schemas"]["CursusTrackDO"];
+                    "application/*+json": components["schemas"]["CursusTrackDO"];
+                    "text/plain": components["schemas"]["CursusTrackDO"];
+                };
+            };
             responses: {
-                /** @description No Content */
-                204: {
+                /** @description OK */
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["GraphNode"];
+                        "application/json": components["schemas"]["GraphNode"];
+                        "text/json": components["schemas"]["GraphNode"];
+                    };
                 };
                 /** @description Bad Request */
                 400: {
@@ -3842,163 +3866,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{id}/bio": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Gets the user defined biography
-         * @description A user can have a markdown biography to present themselves to others.
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Too Many Requests */
-                429: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        /**
-         * Sets the user defined biography
-         * @description A user can have a markdown biography to present themselves to others.
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "text/plain": string;
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Unprocessable Entity */
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Too Many Requests */
-                429: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users/{id}/cursus": {
         parameters: {
             query?: never;
@@ -4871,6 +4738,10 @@ export interface components {
             enabled: boolean;
             kind: components["schemas"]["CursusKind"];
         };
+        CursusTrackDO: {
+            goals: string[];
+            next: components["schemas"]["GraphNodeData"][];
+        };
         FeedDO: components["schemas"]["FeedDONewUserFeedDO"] | components["schemas"]["FeedDOCompletedProjectFeedDO"];
         FeedDOCompletedProjectFeedDO: {
             /** @enum {string} */
@@ -4945,6 +4816,23 @@ export interface components {
             markdown: string;
             public: boolean;
             enabled: boolean;
+        };
+        GraphNode: {
+            /** Format: int32 */
+            id: number;
+            goals: components["schemas"]["GraphNodeGoal"][];
+            children: components["schemas"]["GraphNode"][];
+        };
+        GraphNodeData: {
+            goals: string[];
+            next: unknown[];
+        };
+        GraphNodeGoal: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            description: string;
+            state: components["schemas"]["TaskState"];
         };
         LearningGoalDO: {
             /** Format: uuid */
@@ -5068,7 +4956,6 @@ export interface components {
             thumbnailUrl: string;
             public: boolean;
             enabled: boolean;
-            tags?: string[];
         };
         ReviewDO: {
             /** Format: uuid */
@@ -5248,6 +5135,7 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             email: string | null;
+            markdown: string | null;
             firstName: string | null;
             lastName: string | null;
             githubUrl: string | null;

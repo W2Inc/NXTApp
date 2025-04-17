@@ -18,6 +18,7 @@ public interface IScheduledJob : IJob
     /// A cron schedule to determine how often to trigger the job.
     ///
     /// If null, the job may only be triggered manually via the trigger.
+    /// You may also use <see cref="CronScheduleBuilder"/> if it's easier.
     /// </summary>
     public static abstract string? Schedule { get; }
 

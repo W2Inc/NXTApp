@@ -183,7 +183,7 @@ public sealed class UserService : BaseService<User>, IUserService
     public async Task<User?> UpsertDetails(Guid id, Details details)
     {
         const int C_MAX_BIO = 16384;
-        if (details.Bio is not null && details.Bio.Length > C_MAX_BIO)
+        if (details.Markdown is not null && details.Markdown.Length > C_MAX_BIO)
             throw new ServiceException($"Biographies can only be {C_MAX_BIO} characters long");
 
         var user = await _context.Users
@@ -202,7 +202,7 @@ public sealed class UserService : BaseService<User>, IUserService
         }
         else
         {
-            user.Details.Bio = details.Bio;
+            user.Details.Markdown = details.Markdown;
             user.Details.Email = details.Email;
             user.Details.FirstName = details.FirstName;
             user.Details.LastName = details.LastName;

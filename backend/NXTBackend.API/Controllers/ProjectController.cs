@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Caching.Distributed;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Infrastructure.Database;
@@ -63,13 +64,13 @@ public class ProjectController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(ProblemDetails))]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDto data)
+    public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDto data, IDistributedCache cache)
     {
         var git = await gitService.CreateRemoteRepository(data.Name, data.Description);
         var project = await projectService.CreateProjectWithGit(new()
         {
             CreatorId = User.GetSID(),
-            Markdown = data.Markdown,
+            // Markdown = data.Markdown,
             Name = data.Name,
             Slug = data.Name.ToUrlSlug(),
             Description = data.Description,
@@ -78,6 +79,7 @@ public class ProjectController(
             Tags = data.Tags
         }, git);
 
+        await cache.SetStringAsync($"M_{project.Id}", data.Markdown);
         return Ok(new ProjectDO(project));
     }
 
@@ -91,7 +93,47 @@ public class ProjectController(
         var project = await projectService.FindByIdAsync(id);
         if (project is null)
             return NotFound();
+
         return Ok(new ProjectDO(project));
+    }
+
+    [HttpGet("/projects/{id:guid}/markdown/{file:regex(^(README|SUBJECT)\\.(md|MD|Md|mD)$)}")]
+    [EndpointSummary("Get a markdown of the project")]
+    [EndpointDescription(@"
+Retrieves the current markdown file, may either be the README or the SUBJECT.
+Subject is the actual subject sheet while the readme is simply an explanation of the project itself.
+    ")]
+    [ProducesResponseType<string>(StatusCodes.Status200OK, contentType: "text/markdown")]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<string>> GetMarkdown(
+        Guid id,
+        string file,
+        IDistributedCache cache,
+        [FromQuery(Name = "filter[branch]")] string branch = "main"
+    )
+    {
+        var project = await projectService.FindByIdAsync(id);
+        if (project is null)
+            return NotFound();
+
+        // Try to get markdown from cache first
+        var cacheKey = $"{project.Id}-{file.GetHashCode()}";
+        var markdown = await cache.GetStringAsync(cacheKey);
+        if (markdown is null)
+        {
+            try
+            {
+                markdown = await gitService.GetRawFileContent(project.GitInfo.Namespace, file, branch);
+                await cache.SetStringAsync(cacheKey, markdown);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to fetch README.md for project {ProjectId}", project.Id);
+                return Problem(title: "Failed to fetch Markdown");
+            }
+        }
+
+        return Ok(markdown);
     }
 
     [HttpPatch("/projects/{id:guid}"), Authorize(Policy = "CanCreate")]

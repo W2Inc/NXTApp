@@ -85,11 +85,11 @@ export const actions = {
 				body: {
 					firstName: form.get("firstName")?.toString(),
 					lastName: form.get("lastName")?.toString(),
-					websiteUrl: form.get("websiteUrl")?.toString(),
+					websiteUrl: form.get("website")?.toString(),
 					bio: form.get("markdown")?.toString(),
-					twitterUrl: form.get("twitterUrl")?.toString(),
-					linkedinUrl: form.get("linkedinUrl")?.toString(),
-					githubUrl: form.get("githubUrl")?.toString(),
+					twitterUrl: form.get("twitter")?.toString(),
+					linkedinUrl: form.get("linkedin")?.toString(),
+					githubUrl: form.get("github")?.toString(),
 				},
 			}),
 		]);
