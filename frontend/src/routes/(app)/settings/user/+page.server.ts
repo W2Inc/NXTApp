@@ -17,7 +17,6 @@ export type FormBundle = PageMixFormBundle<
 	BackendTypes["UserDetailsPutRequestDTO"],
 	{
 		avatarUrl?: string | File;
-		markdown?: string;
 	}
 >;
 
@@ -38,9 +37,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 				lastName: data.details?.lastName,
 				displayName: data.displayName,
 				email: data.details?.email,
-				markdown: data.details.markdown,
+				markdown: data.details?.markdown,
 				websiteUrl: data.details?.websiteUrl,
-				twitterUrl: data.details?.twitterUrl,
+				redditUrl: data.details?.redditUrl,
 				linkedinUrl: data.details?.linkedinUrl,
 				githubUrl: data.details?.githubUrl,
 				avatarUrl: data.avatarUrl ?? session.avatarUrl ?? Constants.FALLBACK_IMG,
@@ -86,8 +85,8 @@ export const actions = {
 					firstName: form.get("firstName")?.toString(),
 					lastName: form.get("lastName")?.toString(),
 					websiteUrl: form.get("website")?.toString(),
-					bio: form.get("markdown")?.toString(),
-					twitterUrl: form.get("twitter")?.toString(),
+					markdown: form.get("markdown")?.toString(),
+					redditUrl: form.get("reddit")?.toString(),
 					linkedinUrl: form.get("linkedin")?.toString(),
 					githubUrl: form.get("github")?.toString(),
 				},

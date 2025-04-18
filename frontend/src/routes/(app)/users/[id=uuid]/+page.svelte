@@ -39,7 +39,7 @@
 	const socials = [
 		{ label: "Website", url: data.user.details?.websiteUrl },
 		{ label: "LinkedIn", url: data.user.details?.linkedinUrl },
-		{ label: "Twitter", url: data.user.details?.twitterUrl },
+		{ label: "Reddit", url: data.user.details?.redditUrl },
 		{ label: "GitHub", url: data.user.details?.githubUrl },
 	].filter((s) => s.url);
 

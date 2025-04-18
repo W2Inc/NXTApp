@@ -222,7 +222,7 @@ public class UserController(
             LastName = data.LastName,
             GithubUrl = data.GithubUrl,
             WebsiteUrl = data.WebsiteUrl,
-            TwitterUrl = data.TwitterUrl,
+            RedditUrl = data.RedditUrl,
             LinkedinUrl = data.LinkedinUrl,
         });
 

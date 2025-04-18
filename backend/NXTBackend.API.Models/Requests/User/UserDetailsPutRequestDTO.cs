@@ -38,9 +38,9 @@ public class UserDetailsPutRequestDTO : BaseRequestDTO
         ErrorMessage = "LinkedIn URL must be a valid linkedin.com/in profile URL")]
     public string? LinkedinUrl { get; set; }
 
-    [RegularExpression(@"^https://(www\.)?(twitter|x)\.com/[\w-]+/?$",
-        ErrorMessage = "Twitter/X URL must be a valid profile URL")]
-    public string? TwitterUrl { get; set; }
+    [RegularExpression(@"^https://(www\.)?reddit\.com/user/[\w-]+/?$",
+        ErrorMessage = "Reddit URL must be a valid reddit.com/user profile URL")]
+    public string? RedditUrl { get; set; }
 
     [RegularExpression(@"^https://.*$",
         ErrorMessage = "Website URL must start with https://")]

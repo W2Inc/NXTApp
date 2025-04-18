@@ -139,20 +139,20 @@
 			/>
 		</Control>
 		<Control
-			label="𝕏 Profile"
-			name="twitter"
-			errors={form.errors.TwitterUrl}
-			description="Link to your Twitter / 𝕏 profile"
+			label="Reddit"
+			name="reddit"
+			errors={form.errors.RedditUrl}
+			description="Link to your Reddit profile"
 		>
 			<Input
-				id="twitter"
+				id="reddit"
 				type="text"
-				name="twitter"
+				name="reddit"
 				autocorrect="off"
 				autocomplete="off"
-				placeholder="https://twitter.com/username"
-				bind:value={form.data.twitterUrl}
-				aria-invalid={form.errors.TwitterUrl ? "true" : undefined}
+				placeholder="https://reddit.com/user/username"
+				bind:value={form.data.redditUrl}
+				aria-invalid={form.errors.RedditUrl ? "true" : undefined}
 			/>
 		</Control>
 

@@ -30,3 +30,6 @@ dotnet ef database update --project "NXTBackend.API.Infrastructure" -s "NXTBacke
 ```
 
 This command will apply all pending migrations to the database.
+
+
+https://stackexchange.github.io/StackExchange.Redis/Configuration.html

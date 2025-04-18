@@ -5224,7 +5224,7 @@ export interface components {
             lastName: string | null;
             githubUrl: string | null;
             linkedinUrl: string | null;
-            twitterUrl: string | null;
+            redditUrl: string | null;
             websiteUrl: string | null;
         } | null;
         UserDetailsPutRequestDTO: {
@@ -5234,7 +5234,7 @@ export interface components {
             lastName?: string | null;
             githubUrl?: string | null;
             linkedinUrl?: string | null;
-            twitterUrl?: string | null;
+            redditUrl?: string | null;
             websiteUrl?: string | null;
         };
         UserGoalDO: {

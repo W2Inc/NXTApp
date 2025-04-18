@@ -21,7 +21,7 @@ public class UserDetailsDO : BaseObjectDO<Details>
         LastName = details.LastName;
         GithubUrl = details.GithubUrl;
         LinkedinUrl = details.LinkedinUrl;
-        TwitterUrl = details.TwitterUrl;
+        RedditUrl = details.RedditUrl;
         WebsiteUrl = details.WebsiteUrl;
     }
 
@@ -67,7 +67,7 @@ public class UserDetailsDO : BaseObjectDO<Details>
     ///
     /// </summary>
     [Required]
-    public string? TwitterUrl { get; set; }
+    public string? RedditUrl { get; set; }
 
     /// <summary>
     ///

@@ -16,7 +16,7 @@ public static class UserSeeder
             .RuleFor(d => d.FirstName, f => f.Name.FirstName())
             .RuleFor(d => d.LastName, f => f.Name.LastName())
             .RuleFor(d => d.GithubUrl, f => f.Internet.Url())
-            .RuleFor(d => d.TwitterUrl, f => f.Internet.Url())
+            .RuleFor(d => d.RedditUrl, f => f.Internet.Url())
             .RuleFor(d => d.WebsiteUrl, f => f.Internet.Url())
             .RuleFor(d => d.LinkedinUrl, f => f.Internet.Url());
 

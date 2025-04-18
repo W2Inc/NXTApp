@@ -208,7 +208,7 @@ public sealed class UserService : BaseService<User>, IUserService
             user.Details.LastName = details.LastName;
             user.Details.GithubUrl = details.GithubUrl;
             user.Details.WebsiteUrl = details.WebsiteUrl;
-            user.Details.TwitterUrl = details.TwitterUrl;
+            user.Details.RedditUrl = details.RedditUrl;
             user.Details.LinkedinUrl = details.LinkedinUrl;
         }
 

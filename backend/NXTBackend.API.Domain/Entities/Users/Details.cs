@@ -15,7 +15,7 @@ public class Details : BaseEntity
         LastName = null;
         GithubUrl = null;
         LinkedinUrl = null;
-        TwitterUrl = null;
+        RedditUrl = null;
         WebsiteUrl = null;
         User = null!;
     }
@@ -44,8 +44,8 @@ public class Details : BaseEntity
     [Column("linkedin_url")]
     public string? LinkedinUrl { get; set; }
 
-    [Column("twitter_url")]
-    public string? TwitterUrl { get; set; }
+    [Column("reddit_url")]
+    public string? RedditUrl { get; set; }
 
     [Column("website_url")]
     public string? WebsiteUrl { get; set; }
