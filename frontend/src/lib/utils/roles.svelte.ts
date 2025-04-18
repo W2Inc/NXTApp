@@ -7,7 +7,7 @@ import { page } from "$app/state";
 
 // ============================================================================
 
-export type Role = "student" | "staff" | "creator";
+export type Role = "student" | "staff" | "creator" | "developer";
 /** Check if the current sessions (if it exists) has these roles. */
 export function hasRole(required: Role | Role[]): boolean {
 	const session = page.data.session;

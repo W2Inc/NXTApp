@@ -271,6 +271,7 @@
 							variant="editor"
 							placeholder="# This project is about..."
 							maxlength={2048}
+							class="border px-4 border-t-0 min-h-96 max-h-[976px] max-w-[] overflow-y-auto"
 							bind:value={form.data.markdown}
 						/>
 					</Control>

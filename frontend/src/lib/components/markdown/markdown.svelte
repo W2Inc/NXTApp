@@ -33,9 +33,11 @@
 		placeholder?: string;
 		variant?: "editor" | "viewer";
 		name?: string;
+		resize?: boolean;
 		maxlength?: number;
 		minlength?: number;
 		fullheight?: boolean;
+		class?: string;
 	}
 
 	type Action = {
@@ -49,11 +51,13 @@
 
 	let textarea = $state<HTMLTextAreaElement>(null!);
 	let {
+		class: className,
 		value = $bindable(""),
 		placeholder,
 		variant = "editor",
 		maxlength,
 		minlength,
+		resize = false,
 		name = "markdown",
 		fullheight = false,
 		...rest
@@ -230,8 +234,7 @@
 	</li>
 {/snippet}
 
-<div class="">
-	<!-- Menu bars -->
+<div>
 	{#if variant === "editor"}
 		<div class="flex flex-wrap justify-between rounded-t border">
 			<menu class="flex h-auto">
@@ -264,12 +267,59 @@
 		</div>
 	{/if}
 
-	<!-- Content -->
-	<div
-		class="rounded-b border p-2 {variant === 'viewer'
-			? 'rounded-t border-t'
-			: 'border-t-0'}"
-	>
+	{#if mode === "write"}
+		<Textarea
+			data-mode={mode}
+			bind:ref={textarea}
+			draggable="false"
+			{placeholder}
+			class="bg-background min-h-[100px] w-full overflow-y-auto rounded border border-t-0 p-4 outline-none data-[mode=preview]:hidden"
+			bind:value
+			{name}
+			{...rest}
+			onkeydown={handleKeydown}
+		></Textarea>
+	{:else}
+		<div class={cn("markdown", className)}>
+			<Markdown md={value} {plugins} />
+		</div>
+	{/if}
+</div>
+
+<!-- <div class="">
+	{#if variant === "editor"}
+		<div class="flex flex-wrap justify-between rounded-t border">
+			<menu class="flex h-auto">
+				{@render toggle("write")}
+				{@render toggle("preview")}
+			</menu>
+			{#if mode === "write"}
+				<menu class="flex items-center gap-[1px]">
+					{#each shortcuts.slice(0, 5) as props}
+						{@render shortcut(props)}
+					{/each}
+					{#if shortcuts.length > 5}
+						<Popover.Root>
+							<Popover.Trigger
+								class="bg-background hover:bg-muted outline-primary grid size-8 place-content-center rounded outline-1 focus-visible:outline"
+							>
+								<Ellipsis size={16} class="m-auto" />
+							</Popover.Trigger>
+							<Popover.Content class="w-10 p-2 py-1">
+								<menu class="flex flex-col items-center gap-1">
+									{#each shortcuts.slice(5) as props}
+										{@render shortcut(props)}
+									{/each}
+								</menu>
+							</Popover.Content>
+						</Popover.Root>
+					{/if}
+				</menu>
+			{/if}
+		</div>
+	{/if}
+
+	<div class="rounded-b {variant === 'viewer' ? 'rounded-t' : 'border-t-0'}">
 		{#if variant === "editor"}
 			<Textarea
 				data-mode={mode}
@@ -277,7 +327,7 @@
 				draggable="false"
 				{placeholder}
 				class="bg-background min-h-[100px] w-full overflow-y-auto rounded border p-4 outline-none data-[mode=preview]:hidden"
-				bind:value={value}
+				bind:value
 				{name}
 				{...rest}
 				onkeydown={handleKeydown}
@@ -285,7 +335,9 @@
 		{/if}
 		<div
 			data-mode={mode}
-			class="markdown { fullheight ? 'h-full' : 'max-h-[976px]' } min-h-40 overflow-auto rounded-b data-[mode=write]:hidden resize-y"
+			class="markdown {fullheight
+				? 'h-full'
+				: 'max-h-[976px]'} min-h-40 overflow-auto rounded-b data-[mode=write]:hidden"
 		>
 			<Markdown md={value} {plugins} />
 		</div>
@@ -307,4 +359,4 @@
 			{/if}
 		</div>
 	</div>
-</div>
+</div> -->

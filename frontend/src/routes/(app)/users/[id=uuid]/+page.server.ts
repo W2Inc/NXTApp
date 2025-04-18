@@ -11,25 +11,21 @@ import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const userId = decodeID(params.id);
-	const [userResponse, bioResponse] = await Promise.all([
+	const [userResponse] = await Promise.all([
 		locals.api.GET("/users/{id}", {
 			params: { path: { id: userId }}
 		}),
-		locals.api.GET('/users/{id}/bio', {
-			parseAs: "text",
-			params: { path: { id: userId }}
-		})
 	]);
 
 	if (!userResponse.data || userResponse.error) {
 		error(userResponse.response.status, userResponse.error?.title ?? "Something went wrong...")
 	}
-	if (bioResponse.error) {
-		error(bioResponse.response.status, bioResponse.error?.title ?? "Something went wrong...")
-	}
+	// if (bioResponse.error) {
+	// 	error(bioResponse.response.status, bioResponse.error?.title ?? "Something went wrong...")
+	// }
 
 	return {
 		user: userResponse.data,
-		bio: bioResponse.data
+		bio: userResponse.data.details?.markdown
 	}
 };

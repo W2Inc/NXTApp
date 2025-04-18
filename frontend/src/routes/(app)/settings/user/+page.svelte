@@ -200,7 +200,12 @@
 		name="markdown"
 		description="Here you can write about yourself"
 	>
-		<Markdown variant="editor" placeholder="# This project is about..." bind:value={md} />
+		<Markdown
+			variant="editor"
+			placeholder="# This project is about..."
+			bind:value={md}
+			class="border px-4 border-t-0 min-h-96 max-h-[976px] overflow-y-auto"
+		/>
 	</Control>
 
 	<Separator class="my-2" />

@@ -73,18 +73,6 @@ export async function ensure<T, E = Error>(
 	}
 }
 
-type APIFetchResponse<T, E> =
-	| {
-			data: T;
-			error?: never;
-			response: Response;
-	  }
-	| {
-			data?: never;
-			error: E;
-			response: Response;
-	  };
-
 /**
  * Tiny wrapper to create a deferred function.
  * @param fn The function to run.
