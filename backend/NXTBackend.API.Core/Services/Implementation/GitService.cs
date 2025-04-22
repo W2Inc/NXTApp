@@ -22,8 +22,7 @@ using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
-using NXTBackend.API.Models.Requests.Git;
-using NXTBackend.API.Models.Responses.Git;
+using NXTBackend.API.Models.Requests.ExternalGit;
 using NXTBackend.API.Models.Responses.Gitea;
 
 namespace NXTBackend.API.Core.Services;
@@ -59,32 +58,6 @@ public sealed class GitService(
         throw new NotImplementedException();
     }
 
-    public async Task<Git> CreateRepository(GitRepoPostRequestDTO DTO, OwnerKind OwnerType)
-    {
-        SetAuthorizationHeaderAsync();
-
-        var response = await _client.PostAsJsonAsync($"/api/v1/repos/{_gitTemplate}/generate", DTO);
-        logger.LogInformation("Response: {response}", response);
-
-        if (response.StatusCode is HttpStatusCode.Conflict)
-            throw new ServiceException(StatusCodes.Status409Conflict, "The repository with the same name already exists");
-
-        response.EnsureSuccessStatusCode();
-        var model = await response.Content.ReadFromJsonAsync<RepoDO>() ??
-            throw new ServiceException(StatusCodes.Status500InternalServerError, "Model mistmatch");
-        var git = new Git
-        {
-            Name = model.Name,
-            Namespace = model.FullName,
-            Url = model.CloneUrl,
-            Branch = model.DefaultBranch,
-            ProviderType = GitProviderKind.Managed, // This as well needs to be configurable
-            OwnerType = OwnerType
-        };
-
-        return await CreateAsync(git);
-    }
-
 
     public async Task<string> GetFile(string GitNamespace, string Path, string Branch = "main")
     {
@@ -101,7 +74,7 @@ public sealed class GitService(
         var fileContent = new FileContentRequest
         {
             Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
-            Message = message,
+            Message = $"U",
             Branch = branch,
             Sha = sha,
             Author = new GitUserInfo
@@ -154,108 +127,139 @@ public sealed class GitService(
         throw new NotImplementedException();
     }
 
-    // public async Task<Git> CreateRemoteRepository(string repositoryName, string? description = null)
-    // {
-    //     await SetAuthorizationHeaderAsync();
-    //     var createOption = new CreateRepoOption
-    //     {
-    //         Name = repositoryName,
-    //         Description = description,
-    //         Private = false,
-    //         AutoInit = true
-    //     };
+	public async Task<Git> CreateRepository(GitRepoPostRequestDTO DTO, OwnerKind OwnerType)
+	{
+        SetAuthorizationHeaderAsync();
 
-    //     var response = await _httpClient.PostAsJsonAsync("/api/v1/user/repos", createOption);
-    //     _logger.LogInformation("Response: {response}", response);
-    //     response.EnsureSuccessStatusCode();
+        var response = await _client.PostAsJsonAsync($"/api/v1/repos/{_gitTemplate}/generate", DTO);
+        logger.LogInformation("Response: {response}", response);
 
-    //     var repoResponse = await response.Content.ReadFromJsonAsync<JsonElement>();
+        if (response.StatusCode is HttpStatusCode.Conflict)
+            throw new ServiceException(StatusCodes.Status409Conflict, "The repository with the same name already exists");
 
-    //     // Map the response to our Git entity
-    //     var git = new Git
-    //     {
-    //         Name = repoResponse.GetProperty("name").GetString() ?? string.Empty,
-    //         Namespace = repoResponse.GetProperty("full_name").GetString() ?? string.Empty,
-    //         Url = repoResponse.GetProperty("clone_url").GetString() ?? string.Empty,
-    //         Branch = repoResponse.GetProperty("default_branch").GetString() ?? "main",
-    //         ProviderType = GitProviderKind.Managed,
-    //         OwnerType = GitOwnerKind.User // TODO: Once we support organizations within the app, this needs to be configurable
-    //     };
+        response.EnsureSuccessStatusCode();
+        var model = await response.Content.ReadFromJsonAsync<RepoDO>() ??
+            throw new ServiceException(StatusCodes.Status500InternalServerError, "Model mistmatch");
+        var git = new Git
+        {
+            Name = model.Name,
+            Namespace = model.FullName,
+            Url = model.CloneUrl,
+            Branch = model.DefaultBranch,
+            ProviderType = GitProviderKind.Managed, // This as well needs to be configurable
+            OwnerType = OwnerType
+        };
 
-    //     return await CreateAsync(git);
-    // }
+        return await CreateAsync(git);
+	}
 
-    // public async Task ArchiveRepository(string owner, string repo)
-    // {
-    //     await SetAuthorizationHeaderAsync();
-    //     var editOption = new EditRepoOption
-    //     {
-    //         Archived = true
-    //     };
+	public async Task DeleteRepository(string GitNamespace)
+	{
+		throw new NotImplementedException();
+	}
 
-    //     var response = await _httpClient.PatchAsync($"/api/v1/repos/{owner}/{repo}", JsonContent.Create(editOption));
-    //     response.EnsureSuccessStatusCode();
-    // }
+	// public async Task<Git> CreateRemoteRepository(string repositoryName, string? description = null)
+	// {
+	//     await SetAuthorizationHeaderAsync();
+	//     var createOption = new CreateRepoOption
+	//     {
+	//         Name = repositoryName,
+	//         Description = description,
+	//         Private = false,
+	//         AutoInit = true
+	//     };
 
-    // public async Task<FileContentResponse> UpsertFile(
-    //     string owner,
-    //     string repo,
-    //     string path,
-    //     string content,
-    //     string message,
-    //     string branch = "main")
-    // {
-    //     await SetAuthorizationHeaderAsync();
+	//     var response = await _httpClient.PostAsJsonAsync("/api/v1/user/repos", createOption);
+	//     _logger.LogInformation("Response: {response}", response);
+	//     response.EnsureSuccessStatusCode();
 
-    //     // First try to get the file to check if it exists
-    //     var getFileResponse = await _httpClient.GetAsync($"/api/v1/repos/{owner}/{repo}/contents/{path}");
-    //     string? sha = null;
+	//     var repoResponse = await response.Content.ReadFromJsonAsync<JsonElement>();
 
-    //     if (getFileResponse.IsSuccessStatusCode)
-    //     {
-    //         var existingFile = await getFileResponse.Content.ReadFromJsonAsync<ContentInfo>();
-    //         sha = existingFile?.Sha;
-    //     }
+	//     // Map the response to our Git entity
+	//     var git = new Git
+	//     {
+	//         Name = repoResponse.GetProperty("name").GetString() ?? string.Empty,
+	//         Namespace = repoResponse.GetProperty("full_name").GetString() ?? string.Empty,
+	//         Url = repoResponse.GetProperty("clone_url").GetString() ?? string.Empty,
+	//         Branch = repoResponse.GetProperty("default_branch").GetString() ?? "main",
+	//         ProviderType = GitProviderKind.Managed,
+	//         OwnerType = GitOwnerKind.User // TODO: Once we support organizations within the app, this needs to be configurable
+	//     };
 
-    //     var fileContent = new FileContentRequest
-    //     {
-    //         Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
-    //         Message = message,
-    //         Branch = branch,
-    //         Sha = sha,
-    //         Author = new GitUserInfo
-    //         {
-    //             Name = "NXT System",
-    //             Email = "nxt@system.local"
-    //         }
-    //     };
+	//     return await CreateAsync(git);
+	// }
 
-    //     var response = await _httpClient.PutAsync(
-    //         $"/api/v1/repos/{owner}/{repo}/contents/{path}",
-    //         new StringContent(
-    //             JsonSerializer.Serialize(fileContent),
-    //             Encoding.UTF8,
-    //             "application/json"
-    //         )
-    //     );
+	// public async Task ArchiveRepository(string owner, string repo)
+	// {
+	//     await SetAuthorizationHeaderAsync();
+	//     var editOption = new EditRepoOption
+	//     {
+	//         Archived = true
+	//     };
 
-    //     response.EnsureSuccessStatusCode();
-    //     return await response.Content.ReadFromJsonAsync<FileContentResponse>()
-    //         ?? throw new InvalidOperationException("Failed to upsert file");
-    // }
+	//     var response = await _httpClient.PatchAsync($"/api/v1/repos/{owner}/{repo}", JsonContent.Create(editOption));
+	//     response.EnsureSuccessStatusCode();
+	// }
 
-    // public async Task<string> GetRawFileContent(
-    //     string name,
-    //     string path,
-    //     string branch = "main")
-    // {
-    //     await SetAuthorizationHeaderAsync();
+	// public async Task<FileContentResponse> UpsertFile(
+	//     string owner,
+	//     string repo,
+	//     string path,
+	//     string content,
+	//     string message,
+	//     string branch = "main")
+	// {
+	//     await SetAuthorizationHeaderAsync();
 
-    //     var requestUri = $"/api/v1/repos/{name}/raw/{path}?ref={branch}";
-    //     var response = await _httpClient.GetAsync(requestUri);
-    //     if (response.StatusCode == HttpStatusCode.NotFound)
-    //         throw new ServiceException(StatusCodes.Status404NotFound, "File not found");
-    //     response.EnsureSuccessStatusCode();
-    //     return await response.Content.ReadAsStringAsync();
-    // }
+	//     // First try to get the file to check if it exists
+	//     var getFileResponse = await _httpClient.GetAsync($"/api/v1/repos/{owner}/{repo}/contents/{path}");
+	//     string? sha = null;
+
+	//     if (getFileResponse.IsSuccessStatusCode)
+	//     {
+	//         var existingFile = await getFileResponse.Content.ReadFromJsonAsync<ContentInfo>();
+	//         sha = existingFile?.Sha;
+	//     }
+
+	//     var fileContent = new FileContentRequest
+	//     {
+	//         Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
+	//         Message = message,
+	//         Branch = branch,
+	//         Sha = sha,
+	//         Author = new GitUserInfo
+	//         {
+	//             Name = "NXT System",
+	//             Email = "nxt@system.local"
+	//         }
+	//     };
+
+	//     var response = await _httpClient.PutAsync(
+	//         $"/api/v1/repos/{owner}/{repo}/contents/{path}",
+	//         new StringContent(
+	//             JsonSerializer.Serialize(fileContent),
+	//             Encoding.UTF8,
+	//             "application/json"
+	//         )
+	//     );
+
+	//     response.EnsureSuccessStatusCode();
+	//     return await response.Content.ReadFromJsonAsync<FileContentResponse>()
+	//         ?? throw new InvalidOperationException("Failed to upsert file");
+	// }
+
+	// public async Task<string> GetRawFileContent(
+	//     string name,
+	//     string path,
+	//     string branch = "main")
+	// {
+	//     await SetAuthorizationHeaderAsync();
+
+	//     var requestUri = $"/api/v1/repos/{name}/raw/{path}?ref={branch}";
+	//     var response = await _httpClient.GetAsync(requestUri);
+	//     if (response.StatusCode == HttpStatusCode.NotFound)
+	//         throw new ServiceException(StatusCodes.Status404NotFound, "File not found");
+	//     response.EnsureSuccessStatusCode();
+	//     return await response.Content.ReadAsStringAsync();
+	// }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using NXTBackend.API.Core.Services.Traits;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Models.Requests.Git;
+using NXTBackend.API.Models.Requests.ExternalGit;
 using NXTBackend.API.Models.Responses.Gitea;
 
 namespace NXTBackend.API.Core.Services.Interface;

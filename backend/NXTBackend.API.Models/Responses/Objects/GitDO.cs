@@ -4,7 +4,6 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
-using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Enums;
 
 // ============================================================================

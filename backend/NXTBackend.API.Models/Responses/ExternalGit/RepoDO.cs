@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace NXTBackend.API.Models.Responses.Git;
+namespace NXTBackend.API.Models.Requests.ExternalGit;
 
 public class RepoDO
 {

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace NXTBackend.API.Models.Requests.Git;
+namespace NXTBackend.API.Models.Requests.ExternalGit;
 
 /// <summary>
 /// Create a repository based on a template.
