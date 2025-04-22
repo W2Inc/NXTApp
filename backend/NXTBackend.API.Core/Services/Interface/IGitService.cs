@@ -3,7 +3,11 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using NXTBackend.API.Core.Services.Traits;
 using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Enums;
+using NXTBackend.API.Models.Requests.Git;
 using NXTBackend.API.Models.Responses.Gitea;
 
 namespace NXTBackend.API.Core.Services.Interface;
@@ -11,53 +15,50 @@ namespace NXTBackend.API.Core.Services.Interface;
 /// <summary>
 /// Service for the Git entity.
 /// </summary>
-public interface IGitService : IDomainService<Git>
+public interface IGitService : IDomainService<Git>, ICollaborative<Git>
 {
     /// <summary>
-    /// Creates a remote Git repository.
+    /// Creates a new remote repository
     /// </summary>
-    /// <param name="repositoryName">Name of the repository to create</param>
-    /// <param name="description">Optional description for the repository</param>
-    /// <returns>The created Git repository details</returns>
-    Task<Git> CreateRemoteRepository(string repositoryName, string? description = null);
+    /// <param name="DTO">The Data Transfer Object describing the Repos creation parameters.</param>
+    /// <returns>The Git information.</returns>
+    public Task<Git> CreateRepository(GitRepoPostRequestDTO DTO, OwnerKind OwnerType);
 
     /// <summary>
-    /// Gets the raw content of a file from a repository.
+    /// Hard delete a repository.
+    ///
+    /// WARNING: Should not be used to deprecate / archive repositories.
+    /// This function is intended to clean up mishaps such as:
+    ///     - Creating a repo + project but project creation fails.
     /// </summary>
-    /// <param name="owner">Owner of the repository</param>
-    /// <param name="repo">Name of the repository</param>
-    /// <param name="path">Path to the file</param>
-    /// <param name="branch">Branch name (defaults to main)</param>
-    /// <returns>The raw content of the file as a string</returns>
-    Task<string> GetRawFileContent(
-        string name,
-        string path,
-        string branch = "main"
-    );
+    /// <returns></returns>
+    public Task DeleteRepository(string GitNamespace);
 
     /// <summary>
-    /// Archives a repository.
+    /// Updates certain Repository settings
     /// </summary>
-    /// <param name="owner">Owner of the repository</param>
-    /// <param name="repo">Name of the repository</param>
-    Task ArchiveRepository(string owner, string repo);
+    /// <param name="GitNamespace">The namespace to update</param>
+    /// <param name="DTO">The Data Transfer Object describing the Repos update parameters.</param>
+    /// <returns></returns>
+    public Task<Git> UpdateRepository(string GitNamespace, GitRepoPatchRequestDTO DTO);
 
     /// <summary>
-    /// Creates or updates a file in a repository.
+    /// Get the file contents of a file in a given namespace and path.
     /// </summary>
-    /// <param name="owner">Owner of the repository</param>
-    /// <param name="repo">Name of the repository</param>
-    /// <param name="path">Path to the file</param>
-    /// <param name="content">Content of the file</param>
-    /// <param name="message">Commit message</param>
-    /// <param name="branch">Branch name (defaults to main)</param>
-    /// <returns>Response containing the file and commit information</returns>
-    Task<FileContentResponse> UpsertFile(
-        string owner,
-        string repo,
-        string path,
-        string content,
-        string message,
-        string branch = "main"
-    );
+    /// <param name="GitNamespace"></param>
+    /// <param name="Path"></param>
+    /// <param name="Branch"></param>
+    /// <returns></returns>
+    public Task<string> GetFile(string GitNamespace, string Path, string Branch = "main");
+
+    /// <summary>
+    /// Sets or updates a file in a Git repository with the specified content.
+    /// </summary>
+    /// <param name="GitNamespace">The Git namespace or repository path where the file should be set.</param>
+    /// <param name="Path">The path to the file within the repository.</param>
+    /// <param name="Content">The content to be written to the file.</param>
+    /// <param name="CommitMessage">The message describing the changes in the commit.</param>
+    /// <param name="Branch">The branch where the file should be updated. Defaults to "main".</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    public Task SetFile(string GitNamespace, string Path, string Content, string CommitMessage, string Branch = "main");
 }

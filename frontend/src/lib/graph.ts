@@ -4,7 +4,6 @@
 
 import * as THREE from "three";
 import AleaPRNG from "./utils";
-import type { XGraphV1 } from "@w2inc/xgraph";
 
 // Types
 // ============================================================================

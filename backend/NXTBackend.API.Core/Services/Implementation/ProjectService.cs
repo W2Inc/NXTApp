@@ -49,7 +49,7 @@ public sealed class ProjectService : BaseService<Project>, IProjectService
 		var markdown = await _cache.GetStringAsync(cacheKey);
 		if (markdown is null)
 		{
-			markdown = await _git.GetRawFileContent(project.GitInfo.Namespace, file, branch);
+			markdown = await _git.GetFile(project.GitInfo.Namespace, file, branch);
 			await _cache.SetStringAsync(cacheKey, markdown, options: new ()
 			{
 				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)

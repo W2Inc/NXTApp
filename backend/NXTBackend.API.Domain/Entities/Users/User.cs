@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Enums;
 
 // ============================================================================
 
@@ -49,6 +50,8 @@ public class User : BaseEntity
 
     [ForeignKey(nameof(UserFeedId))]
     public virtual UserFeed? UserFeed { get; set; }
+
+    //= Relations =//
 
     /// <summary>
     /// The user was the evaluator on the following reviews.

@@ -39,7 +39,7 @@ public class GitDO : BaseObjectDO<Git>
     public GitProviderKind ProviderType { get; set; }
 
     [Required]
-    public GitOwnerKind OwnerType { get; set; }
+    public OwnerKind OwnerType { get; set; }
 
     public static implicit operator GitDO?(Git? entity) => entity is null ? null : new(entity);
 }

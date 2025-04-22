@@ -1,7 +1,6 @@
 <script lang="ts">
 	import GoalNode from "$lib/components/graph/goal-node.svelte";
 	import GoalNode2 from "$lib/components/graph/goal-node.svelte";
-	import { XGraphV1 } from "@w2inc/xgraph";
 	import {
 		SvelteFlow,
 		Controls,

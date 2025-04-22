@@ -32,6 +32,7 @@ namespace NXTBackend.API.Controllers;
 public class ProjectController(
     ILogger<ProjectController> logger,
     IProjectService projectService,
+    IResourceOwnerService ownerService,
     IGitService gitService
 ) : Controller
 {
@@ -58,19 +59,34 @@ public class ProjectController(
         return Ok(page.Items.Select(c => new ProjectDO(c)));
     }
 
-    [HttpPost("/projects")]
+    [HttpPost("/projects"), Authorize(Policy = "CanCreate")]
     [EndpointSummary("Create a project")]
     [EndpointDescription("Creates a new project, also creates a remote repository for hosting the project.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(ProblemDetails))]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDto data, IDistributedCache cache)
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDTO data, IDistributedCache cache)
     {
-        var git = await gitService.CreateRemoteRepository(data.Name, data.Description);
+        var owner = await ownerService.FindByIdAsync(data.OwnerId);
+        if (owner is null)
+            return UnprocessableEntity("Non-existing user");
+
+        var git = await gitService.CreateRepository(new()
+        {
+            Name = data.Name,
+            Description = data.Description,
+        }, owner.Type);
+
+        await gitService.SetFile(
+            git.Namespace,
+            "readme.md",
+            data.Markdown,
+            "Initial Commit"
+        );
+
         var project = await projectService.CreateProjectWithGit(new()
         {
             CreatorId = User.GetSID(),
-            // Markdown = data.Markdown,
             Name = data.Name,
             Slug = data.Name.ToUrlSlug(),
             Description = data.Description,
@@ -112,11 +128,11 @@ Subject is the actual subject sheet while the readme is simply an explanation of
         [FromQuery(Name = "filter[branch]")] string branch = "main"
     )
     {
-		// NOTE(W2): Only support UTF-8 Strings for now.
-		var content = await projectService.GetFileFromProject(id, file, branch);
-		if (content is null)
-			return NotFound();
-		return Ok(content);
+        // NOTE(W2): Only support UTF-8 Strings for now.
+        var content = await projectService.GetFileFromProject(id, file, branch);
+        if (content is null)
+            return NotFound();
+        return Ok(content);
     }
 
     [HttpPatch("/projects/{id:guid}"), Authorize(Policy = "CanCreate")]
@@ -130,11 +146,15 @@ Subject is the actual subject sheet while the readme is simply an explanation of
         var project = await projectService.FindByIdAsync(id);
         if (project is null)
             return NotFound();
+
+
+
+
         if (User.GetSID() != project.CreatorId)
             return Forbid();
 
-        if (data.Markdown is not null)
-            project.Markdown = data.Markdown;
+        // if (data.Markdown is not null)
+        //     project.Markdown = data.Markdown;
         if (data.Description is not null)
             project.Description = data.Description;
         if (data.Name is not null)

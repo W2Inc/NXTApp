@@ -40,9 +40,10 @@
 		confirm: true,
 	});
 
-	const debounce = useDebounce(450);
+	// const debounce = useDebounce(450);
 	const clipboard = useClipboard("");
 	const formaction = $derived(data.entity ? `?/update` : "?/create");
+	const disabled = $derived(data.entity !== null)
 
 	let fileUpload: HTMLInputElement;
 
@@ -154,6 +155,7 @@
 						type="name"
 						name="name"
 						required
+						{disabled}
 						autocorrect="off"
 						autocomplete={null}
 						placeholder="Project..."

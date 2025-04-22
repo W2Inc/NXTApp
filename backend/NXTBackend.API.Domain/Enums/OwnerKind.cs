@@ -8,12 +8,21 @@ using System.Text.Json.Serialization;
 namespace NXTBackend.API.Domain.Enums;
 
 /// <summary>
-/// The type of owner for a specific entity.
-///
-/// E.G: A na
+/// Something being either owned by a user or an Org.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum OwnerKind
 {
+    /// <summary>
+    /// External source control other than Github. E.g: (Gitea, Gitlab, Custom Home server, ...)
+    /// </summary>
+    [JsonPropertyName(nameof(User))]
+    User,
 
+    /// <summary>
+    /// Uses the backend configured git source control, the ideal *boomer* option as most people just
+    /// want to "upload a file" but we want to provide source control towards whatever they provide.
+    /// </summary>
+    [JsonPropertyName(nameof(Organization))]
+    Organization,
 }

@@ -10,53 +10,6 @@ import { logger } from "$lib/logger";
 
 // ============================================================================
 
-// async function fetchProjects(locals: App.Locals, url: URL, id: string) {
-// 	const page = Number(url.searchParams.get("page") ?? 0);
-// 	const slug = url.searchParams.get("slug");
-// 	const name = url.searchParams.get("search");
-// 	const subscribed = url.searchParams.get("subscribed") === "true";
-
-// 	if (!subscribed) {
-// 		const {
-// 			data,
-// 			error: err,
-// 			response,
-// 		} = await locals.api.GET("/projects", {
-// 			params: {
-// 				query: {
-// 					Size: Constants.PER_PAGE,
-// 					Page: !isNaN(page) ? page : undefined,
-// 					"filter[slug]": slug || undefined,
-// 					"filter[name]": name || undefined,
-// 				},
-// 			},
-// 		});
-
-// 		logger.debug(`Response => ${response.url}`, { data });
-// 		return data!;
-// 	} else if (!) {
-// 		const {
-// 			data,
-// 			error: err,
-// 			response,
-// 		} = await locals.api.GET("/users/{id}/projects", {
-// 			params: {
-// 				path: {
-// 					id,
-// 				},
-// 				query: {
-// 					Size: Constants.PER_PAGE,
-// 					Page: !isNaN(page) ? page : undefined,
-// 					"filter[name]": name || undefined,
-// 				},
-// 			},
-// 		});
-
-// 		logger.debug(`Response => ${response.url}`, { data });
-// 		return data;
-// 	}
-// }
-
 async function getUserProjects(locals: App.Locals, params: URLSearchParams, userID: string) {
 	const name = params.get("search");
 	const page = Number(params.get("page") ?? 0);

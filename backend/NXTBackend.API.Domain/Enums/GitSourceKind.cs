@@ -30,6 +30,8 @@ public enum GitProviderKind
     /// Uses github integration to manage the git source control, this is essentially the same as
     /// third party in essence except that because github is the more popular variant we *may* want
     /// to offer some more features that they provide.
+    ///
+    /// TODO: Bundle it simply with other or offer a more tight integration ?
     /// </summary>
     // [JsonPropertyName(nameof(Github))]
     // Github,

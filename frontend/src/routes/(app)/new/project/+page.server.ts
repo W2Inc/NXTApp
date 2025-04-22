@@ -11,7 +11,7 @@ import {
 	type FormState,
 	type PageFormBundle,
 } from "$lib/utils/api.svelte";
-import { error as kitError, redirect } from "@sveltejs/kit";
+import { error, error as kitError, redirect } from "@sveltejs/kit";
 import { logger } from "$lib/logger";
 import { ensure } from "$lib/utils";
 
@@ -39,12 +39,13 @@ const C_DEFAULT_BUNDLE: FormBundle = {
 // ============================================================================
 
 async function fetchProject(locals: App.Locals, id: string) {
-	const [project, markdown] = await Promise.all([
+	return await Promise.all([
 		locals.api.GET("/projects/{id}", {
 			params: { path: { id } },
 		}),
 		locals.api.GET("/projects/{id}/markdown/{file}", {
-			params: { path: { id, file: "SUBJECT.md" } },
+			parseAs: "text",
+			params: { path: { id, file: "README.md" } },
 		}),
 	]);
 
@@ -71,19 +72,28 @@ async function fetchProject(locals: App.Locals, id: string) {
 // ============================================================================
 
 export const load: PageServerLoad = async ({ request, locals, url }) => {
-	if (url.searchParams.has("edit")) {
-		const { project } = await fetchProject(locals, url.searchParams.get("edit")!)
+	const projectId = url.searchParams.get("edit");
+	if (projectId) {
+		const [project, markdown] = await fetchProject(locals, projectId);
+		if (project.error && markdown.error) {
+			error(422, "Failed to fetch both project and markdown");
+		} else if (project.error || !project.data) {
+			error(project.response?.status || 422, `Failed to fetch project: ${project.error.title || 'Unknown error'}`);
+		} else if (markdown.error || !markdown.data) {
+			error(markdown.response?.status || 422, `Failed to fetch markdown: ${markdown.error.title || 'Unknown error'}`);
+		}
+
 		return {
-			entity: project,
+			entity: project.data,
 			form: {
 				data: {
-					name: project.name,
-					description: project.description,
-					markdown: project.markdown,
-					maxMembers: project.maxMembers,
-					public: project.public,
-					enabled: project.enabled,
-					thumbnailUrl: project.thumbnailUrl,
+					name: project.data.name,
+					description: project.data.description,
+					markdown: markdown.data,
+					maxMembers: project.data.maxMembers,
+					public: project.data.public,
+					enabled: project.data.enabled,
+					thumbnailUrl: project.data.thumbnailUrl,
 				},
 				errors: {},
 				isLoading: false,
@@ -109,8 +119,7 @@ export const actions: Actions = {
 		let [image, issue] = await ensure(formValueToS3<FormBundle>(form, "thumbnailUrl"));
 
 		logger.debug("Tags =>", form.getAll("tags"));
-
-		logger.info("Form submitted =>", Object.fromEntries(form.entries()))
+		logger.debug("Form submitted =>", Object.fromEntries(form.entries()))
 
 		if (issue) {
 			return problem({
@@ -149,11 +158,11 @@ export const actions: Actions = {
 		}
 
 		// Upload the image to S3
-		// await locals.buckets.thumbnail
-		// 	.file(name)
-		// 	.write(file, {
-		// 		acl: "public-read",
-		// 	});
+		await locals.buckets.thumbnail
+			.file(name)
+			.write(file, {
+				acl: "public-read",
+			});
 
 		return success("Project created!", `/new/project?edit=${0}`);
 	},

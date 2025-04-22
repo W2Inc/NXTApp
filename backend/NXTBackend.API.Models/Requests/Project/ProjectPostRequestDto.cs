@@ -12,7 +12,7 @@ using NXTBackend.API.Models.Validators;
 namespace NXTBackend.API.Models.Requests.Project;
 
 
-public class ProjectPostRequestDto : BaseRequestDTO
+public class ProjectPostRequestDTO : BaseRequestDTO
 {
     /// <summary>
     /// The title of the project
@@ -31,6 +31,12 @@ public class ProjectPostRequestDto : BaseRequestDTO
     /// </summary>
     [Required, StringLength(2048, MinimumLength = 128)]
     public string Markdown { get; set; }
+
+    /// <summary>
+    /// The entity / user to own this project
+    /// </summary>
+    [Required]
+    public Guid OwnerId { get; set; }
 
     /// <summary>
     /// The maximum amount of members that can join this project
@@ -56,9 +62,9 @@ public class ProjectPostRequestDto : BaseRequestDTO
     [Required]
     public bool Enabled { get; set; }
 
-	/// <summary>
-	/// Tags for the project
-	/// /// </summary>
-	[MaxLength(24), StringLengthEnumerable(1, 64), JsonIgnore]
-	public string[] Tags { get; set; }
+    /// <summary>
+    /// Tags for the project
+    /// /// </summary>
+    [MaxLength(24), StringLengthEnumerable(1, 64), JsonIgnore]
+    public string[] Tags { get; set; }
 }

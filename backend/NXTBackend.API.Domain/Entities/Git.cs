@@ -40,7 +40,7 @@ public class Git : BaseEntity
         Url = string.Empty;
         Branch = string.Empty;
         ProviderType = GitProviderKind.Managed;
-        OwnerType = GitOwnerKind.User;
+        OwnerType = OwnerKind.User;
     }
 
     [Column("git_name")]
@@ -59,7 +59,7 @@ public class Git : BaseEntity
     public GitProviderKind ProviderType { get; set; }
 
     [Column("git_owner")]
-    public GitOwnerKind OwnerType { get; set; }
+    public OwnerKind OwnerType { get; set; }
 
     public virtual IEnumerable<Project> Projects { get; set; }
 

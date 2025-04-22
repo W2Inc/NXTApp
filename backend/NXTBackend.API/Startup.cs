@@ -157,6 +157,7 @@ public static class Startup
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IRubricService, RubricService>();
         services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IResourceOwnerService, ResourceOwnerService>();
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
         services.AddScoped<IGitService, GitService>();
         services.AddScoped<INotificationService, NotificationService>();
