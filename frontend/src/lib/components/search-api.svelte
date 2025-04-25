@@ -7,6 +7,7 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { useDebounce } from "$lib/utils/debounce.svelte";
 	import Input from "./ui/input/input.svelte";
+	import { cn } from "$lib/utils";
 
 	const debounce = useDebounce();
 	let triggerRef = $state<HTMLButtonElement>(null!);
@@ -15,6 +16,7 @@
 	interface Props {
 		open?: boolean;
 		placeholder?: string;
+		class?: string;
 		item: Snippet<[{ value: TData }]>;
 		endpointFn: (search: string) => Promise<TData[]>;
 		onSelect: (value: TData) => void | Promise<void>;
@@ -23,6 +25,7 @@
 	let {
 		open = $bindable(false),
 		placeholder = "Search...",
+		class: className,
 		endpointFn,
 		onSelect,
 		item,
@@ -46,7 +49,7 @@
 		{#snippet child({ props })}
 			<Button
 				variant="outline"
-				class="w-[200px] justify-between"
+				class={cn("w-[200px] justify-between text-muted-foreground ", className)}
 				{...props}
 				role="combobox"
 				aria-expanded={open}
@@ -56,9 +59,8 @@
 			</Button>
 		{/snippet}
 	</Popover.Trigger>
-	<Popover.Content class="w-[350px] p-0">
-		<div class="flex items-center border-b px-3">
-			<Search class="opacity-50" />
+	<Popover.Content class="w-[350px] p-0" align="start">
+		<div class="flex border-b px-3">
 			<Input
 				oninput={(e) => debounce(searchFor, e.currentTarget.value.trim())}
 				class="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent py-3 pl-1 text-base outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"

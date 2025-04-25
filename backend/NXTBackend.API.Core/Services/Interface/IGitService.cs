@@ -32,7 +32,7 @@ public interface IGitService : IDomainService<Git>, ICollaborative<Git>
     ///     - Creating a repo + project but project creation fails.
     /// </summary>
     /// <returns></returns>
-    public Task DeleteRepository(string GitNamespace);
+    public Task DeleteRepository(Guid id);
 
     /// <summary>
     /// Updates certain Repository settings
@@ -40,7 +40,7 @@ public interface IGitService : IDomainService<Git>, ICollaborative<Git>
     /// <param name="GitNamespace">The namespace to update</param>
     /// <param name="DTO">The Data Transfer Object describing the Repos update parameters.</param>
     /// <returns></returns>
-    public Task<Git> UpdateRepository(string GitNamespace, GitRepoPatchRequestDTO DTO);
+    public Task<Git> UpdateRepository(Guid id, GitRepoPatchRequestDTO DTO);
 
     /// <summary>
     /// Get the file contents of a file in a given namespace and path.
@@ -49,7 +49,7 @@ public interface IGitService : IDomainService<Git>, ICollaborative<Git>
     /// <param name="Path"></param>
     /// <param name="Branch"></param>
     /// <returns></returns>
-    public Task<string> GetFile(string GitNamespace, string Path, string Branch = "main");
+    public Task<string> GetFile(Guid id, string Path, string Branch = "main");
 
     /// <summary>
     /// Sets or updates a file in a Git repository with the specified content.
@@ -60,5 +60,5 @@ public interface IGitService : IDomainService<Git>, ICollaborative<Git>
     /// <param name="CommitMessage">The message describing the changes in the commit.</param>
     /// <param name="Branch">The branch where the file should be updated. Defaults to "main".</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public Task SetFile(string GitNamespace, string Path, string Content, string CommitMessage, string Branch = "main");
+    public Task SetFile(Guid id, string Path, string Content, string CommitMessage, string Branch = "main");
 }

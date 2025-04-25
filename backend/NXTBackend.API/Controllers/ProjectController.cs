@@ -78,7 +78,7 @@ public class ProjectController(
         }, owner.Type);
 
         await gitService.SetFile(
-            git.Namespace,
+            git.Id,
             "readme.md",
             data.Markdown,
             "Initial Commit"
@@ -106,10 +106,18 @@ public class ProjectController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectDO>> Get(Guid id)
     {
-        var project = await projectService.FindByIdAsync(id);
+        // var project = await projectService.FindByIdAsync(id);
+
+
+        var (project, user) = await projectService.IsCollaborator(id, User.GetSID());
+        logger.LogInformation("==> Is User {UserId} a collaborator on project {ProjectId}: {isCollaborator}",
+            User.GetSID(),
+            id,
+            user is not null
+            );
+
         if (project is null)
             return NotFound();
-
         return Ok(new ProjectDO(project));
     }
 
@@ -121,10 +129,10 @@ Subject is the actual subject sheet while the readme is simply an explanation of
     ")]
     [ProducesResponseType<string>(StatusCodes.Status200OK, contentType: "text/markdown")]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [OutputCache(Duration = 300)] // Cache for 5 minutes
     public async Task<ActionResult<string>> GetMarkdown(
         Guid id,
         string file,
-        IDistributedCache cache,
         [FromQuery(Name = "filter[branch]")] string branch = "main"
     )
     {
@@ -143,28 +151,29 @@ Subject is the actual subject sheet while the readme is simply an explanation of
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProjectDO>> Update(Guid id, [FromBody] ProjectPatchRequestDto data)
     {
-        var project = await projectService.FindByIdAsync(id);
+        var (project, user) = await projectService.IsCollaborator(id, User.GetSID());
         if (project is null)
             return NotFound();
-
-
-
-
-        if (User.GetSID() != project.CreatorId)
+        if (user is null)
             return Forbid();
 
         // if (data.Markdown is not null)
-        //     project.Markdown = data.Markdown;
-        if (data.Description is not null)
-            project.Description = data.Description;
+            //     project.Markdown = data.Markdown;
+            if (data.Description is not null)
+                project.Description = data.Description;
         if (data.Name is not null)
         {
             project.Name = data.Name;
             project.Slug = project.Name.ToUrlSlug();
         }
 
+        if (data.Markdown is not null)
+        {
+            await gitService.SetFile(project.GitInfoId, "README.md", data.Markdown, "Update Readme");
+        }
+
         var updatedProject = await projectService.UpdateAsync(project);
-        await gitService.UpsertFile(updatedProject.Creator.Login, project.Name, "README.md", data.Markdown, "Update README.md");
+        // await gitService.UpsertFile(updatedProject.Creator.Login, project.Name, "README.md", data.Markdown, "Update README.md");
         return Ok(new ProjectDO(updatedProject));
     }
 

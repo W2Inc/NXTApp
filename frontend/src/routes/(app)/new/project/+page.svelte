@@ -34,16 +34,20 @@
 	import { fade, scale } from "svelte/transition";
 	import { useForm } from "$lib/utils/api.svelte";
 	import TagInput from "$lib/components/tag-input.svelte";
+	import { Search, User } from "lucide-svelte";
+	import SearchApi from "$lib/components/search-api.svelte";
+	import { SvelteSet } from "svelte/reactivity";
 
 	let { data } = $props();
 	const { enhance, form } = useForm(data.form, {
 		confirm: true,
 	});
 
-	// const debounce = useDebounce(450);
+	const debounce = useDebounce(450);
 	const clipboard = useClipboard("");
 	const formaction = $derived(data.entity ? `?/update` : "?/create");
-	const disabled = $derived(data.entity !== null)
+	const disabled = $derived(data.entity !== null);
+	let collaboratorUsers = new SvelteSet<BackendTypes["MinimalUserDTO"]>([]);
 
 	let fileUpload: HTMLInputElement;
 
@@ -77,6 +81,11 @@
 			url: "fork://cloneRepo/",
 		},
 	];
+
+	async function searchUsers(query: string) {
+		const response = await fetch(`/users?${new URLSearchParams({ name: query })}`);
+		return (await response.json()) as BackendTypes["MinimalUserDTO"][];
+	}
 </script>
 
 {#snippet gitInstructions(gitInfo: BackendTypes["GitDO"])}
@@ -119,6 +128,92 @@
 	</Dialog.Root>
 {/snippet}
 
+{#snippet collaborators()}
+	<Dialog.Root>
+		<Dialog.Trigger type="button" class={buttonVariants({ variant: "outline" })}>
+			<User />
+			Manage Collaborators
+		</Dialog.Trigger>
+		<Dialog.Content class="max-w-xl">
+			<Dialog.Header>
+				<Dialog.Title>Project Collaborators</Dialog.Title>
+				<Dialog.Description>
+					Manage users who can access and contribute to this project.
+				</Dialog.Description>
+				<Separator class="my-2" />
+
+				<!-- Search -->
+				<div class="flex gap-2">
+					<SearchApi
+						class="w-full"
+						endpointFn={searchUsers}
+						placeholder="Search..."
+						onSelect={(v) => {
+							collaboratorUsers.add(v);
+						}}
+					>
+						{#snippet item({ value })}
+							{#if !collaboratorUsers.has(value)}
+								<div class="flex w-full items-center justify-between gap-2 py-1">
+									<img
+										src={value?.avatarUrl || Constants.FALLBACK_IMG}
+										alt={value?.displayName || value?.login}
+										class="h-8 w-8 rounded-full object-cover"
+									/>
+									<div class="flex flex-col overflow-hidden">
+										<span class="truncate font-medium"
+											>{value?.displayName || value?.login}</span
+										>
+										<span class="text-muted-foreground truncate text-xs"
+											>{value?.login}</span
+										>
+									</div>
+								</div>
+							{/if}
+						{/snippet}
+					</SearchApi>
+				</div>
+
+				<div class="max-h-[300px] overflow-y-auto rounded">
+					<div class="divide-y">
+						{#if collaboratorUsers.size === 0}
+							<div class="text-muted-foreground p-4 text-center">
+								No collaborators yet. Add someone to get started.
+							</div>
+						{:else}
+							{#each collaboratorUsers as user}
+								<div class="flex items-center justify-between border p-3">
+									<div class="flex items-center gap-3">
+										<img
+											src={user?.avatarUrl || Constants.FALLBACK_IMG}
+											alt={user?.displayName}
+											class="h-10 w-10 rounded-full object-cover"
+										/>
+										<div>
+											<p class="font-medium">{user?.displayName}</p>
+											<p class="text-muted-foreground text-sm">Write Access</p>
+										</div>
+									</div>
+									<Button
+										variant="ghost"
+										size="icon"
+										class="text-destructive hover:bg-destructive/10"
+										onclick={() => collaboratorUsers.delete(user)}
+									>
+										<Trash class="h-4 w-4" />
+									</Button>
+								</div>
+							{/each}
+						{/if}
+					</div>
+				</div>
+				<Separator class="my-1" />
+				<Button>Save</Button>
+			</Dialog.Header>
+		</Dialog.Content>
+	</Dialog.Root>
+{/snippet}
+
 <form method="POST" use:enhance enctype="multipart/form-data">
 	<input type="text" hidden name="id" value={data.entity?.id} />
 	<Base variant="center-navbar">
@@ -148,6 +243,8 @@
 					</div>
 				</Control>
 
+				<Separator class="my-1" />
+				{@render collaborators()}
 				<Separator class="my-1" />
 				<Control label="Name" name="name" errors={form.errors.Name}>
 					<Input
@@ -273,7 +370,7 @@
 							variant="editor"
 							placeholder="# This project is about..."
 							maxlength={2048}
-							class="border px-4 border-t-0 min-h-96 max-h-[976px] max-w-[] overflow-y-auto"
+							class="max-h-[976px] min-h-96 max-w-[] overflow-y-auto border border-t-0 px-4"
 							bind:value={form.data.markdown}
 						/>
 					</Control>

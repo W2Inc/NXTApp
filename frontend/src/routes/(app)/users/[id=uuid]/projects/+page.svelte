@@ -28,8 +28,6 @@
 		}),
 	);
 
-	// const subscribeType = $derived(query.read("subscribed") ? "subscribed" : "all");
-	// query.read("subscribed")
 	function searchProject(search: string) {
 		if (search.length > 0) {
 			query.write("search", search);

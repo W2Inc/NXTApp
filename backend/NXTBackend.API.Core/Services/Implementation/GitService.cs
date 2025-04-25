@@ -6,10 +6,12 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
@@ -39,100 +41,167 @@ public sealed class GitService(
     private readonly string _gitTemplate = config.GetValue<string>("GitTemplate")
             ?? throw new InvalidDataException("A git template is required!");
 
-    private void SetAuthorizationHeaderAsync()
+    private Guid GetUserID()
     {
         var ctx = httpContext.HttpContext;
         string? claim = ctx?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         var id = Guid.TryParse(claim, out var guid) ? guid : Guid.Empty;
         if (id == Guid.Empty)
             throw new ServiceException(StatusCodes.Status401Unauthorized, "Unauthorized");
-
-        logger.LogInformation("Request as user: {user}", claim);
-        _client.DefaultRequestHeaders.Add("X-WEBAUTH-USER", claim);
+        return id;
     }
 
-    public Task<bool> AddCollaborator(Guid entityId, Guid userId)
+    private void SetWebauthHeader(string User)
     {
-        SetAuthorizationHeaderAsync();
-
-        throw new NotImplementedException();
+        if (_client.DefaultRequestHeaders.Contains("X-WEBAUTH-USER"))
+            _client.DefaultRequestHeaders.Remove("X-WEBAUTH-USER");
+        _client.DefaultRequestHeaders.Add("X-WEBAUTH-USER", User);
     }
 
-
-    public async Task<string> GetFile(string GitNamespace, string Path, string Branch = "main")
+    public async Task<string> GetFile(Guid id, string Path, string Branch = "main")
     {
-        SetAuthorizationHeaderAsync();
-
-        string? sha = null;
-        var getFileResponse = await _client.GetAsync($"/api/v1/repos/{GitNamespace}/contents/{Path}");
-        if (getFileResponse.IsSuccessStatusCode)
+        var git = await FindByIdAsync(id) ?? throw new ServiceException(StatusCodes.Status404NotFound, "Not found");
+        var response = await _client.GetAsync($"/api/v1/repos/{git.Namespace}/contents/{Path}?ref={Branch}");
+        if (response.IsSuccessStatusCode)
         {
-            var existingFile = await getFileResponse.Content.ReadFromJsonAsync<ContentInfo>();
-            sha = existingFile?.Sha;
+            var body = await response.Content.ReadFromJsonAsync<RepoFileContentsDO>()
+                ?? throw new ServiceException();
+            return body.Content;
         }
 
-        var fileContent = new FileContentRequest
+        return response.StatusCode switch
         {
-            Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
-            Message = $"U",
-            Branch = branch,
-            Sha = sha,
-            Author = new GitUserInfo
-            {
-                Name = "NXT System",
-                Email = "nxt@system.local"
-            }
+            HttpStatusCode.NotFound => throw new ServiceException(StatusCodes.Status404NotFound, "Not found"),
+            _ => throw new ServiceException(StatusCodes.Status500InternalServerError, "Something went wrong...")
         };
-
-        var response = await _httpClient.PutAsync(
-            $"/api/v1/repos/{owner}/{repo}/contents/{path}",
-            new StringContent(
-                JsonSerializer.Serialize(fileContent),
-                Encoding.UTF8,
-                "application/json"
-            )
-        );
-
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<FileContentResponse>()
-            ?? throw new InvalidOperationException("Failed to upsert file");
-
     }
 
-    public Task<(Git?, User?)> IsCollaborator(Guid entityId, Guid userId)
+    public async Task<bool> AddCollaborator(Guid entityId, Guid userId)
     {
-        SetAuthorizationHeaderAsync();
+        var result = await GetUserAndGit(entityId, userId);
+        var git = result.Item1;
+        var user = result.Item2;
+        if (git is null)
+            throw new ServiceException(StatusCodes.Status404NotFound, "Remote does not exist");
+        if (user is null)
+            throw new ServiceException(StatusCodes.Status404NotFound, "User does not exist");
 
-        throw new NotImplementedException();
+        SetWebauthHeader(user.Login);
+        var response = await _client.PutAsJsonAsync($"/api/v1/repos/{git.Namespace}/collaborators/{user.Login}", new
+        {
+            // TODO: Propergate the permissions somehow, for now default to just write (no repo is private anyway for subjects)
+            Permission = "write"
+        });
+
+        return response.StatusCode switch
+        {
+            HttpStatusCode.NoContent => true,
+            HttpStatusCode.Unauthorized => false,
+            HttpStatusCode.NotFound => false,
+            HttpStatusCode.Forbidden => throw new ServiceException(StatusCodes.Status403Forbidden, "Forbidden"),
+            _ => throw new ServiceException()
+        };
     }
 
-    public Task<bool> RemoveCollaborator(Guid entityId, Guid userId)
+    public async Task<(Git?, User?)> IsCollaborator(Guid entityId, Guid userId)
     {
-        SetAuthorizationHeaderAsync();
+        var result = await GetUserAndGit(entityId, userId);
+        var git = result.Item1;
+        var user = result.Item2;
+        if (git is null || user is null)
+            return result;
 
-        throw new NotImplementedException();
+        // NOTE(W2): Using the GIT service as a source of truth to sync collaborators.
+        SetWebauthHeader(user.Login);
+        var response = await _client.GetAsync($"/api/v1/repos/{git.Namespace}/collaborators/{user.Login}");
+        return response.StatusCode switch
+        {
+            HttpStatusCode.NoContent => (git, user), // User is a collaborator
+            HttpStatusCode.Unauthorized => (git, null), // TODO: Is this correct ? API Does not document.
+            HttpStatusCode.NotFound => (git, null), // User is not a collaborator
+            _ => throw new ServiceException()
+        };
     }
 
-    public Task SetFile(string GitNamespace, string Path, string Content, string CommitMessage, string Branch = "main")
+    public async Task<bool> RemoveCollaborator(Guid entityId, Guid userId)
     {
-        SetAuthorizationHeaderAsync();
+        var result = await GetUserAndGit(entityId, userId);
+        var git = result.Item1;
+        var user = result.Item2;
+        if (git is null)
+            throw new ServiceException(StatusCodes.Status404NotFound, "Remote does not exist");
+        if (user is null)
+            throw new ServiceException(StatusCodes.Status404NotFound, "User does not exist");
 
-        throw new NotImplementedException();
+        SetWebauthHeader(user.Login);
+        var response = await _client.DeleteAsync($"/api/v1/repos/{git.Namespace}/collaborators/{user.Login}");
+        return response.StatusCode switch
+        {
+            HttpStatusCode.NoContent => true, // User is a collaborator
+            HttpStatusCode.Unauthorized => false, // TODO: Is this correct ? API Does not document.
+            HttpStatusCode.NotFound => false, // User is not a collaborator
+            _ => throw new ServiceException()
+        };
     }
 
-    public Task<Git> UpdateRepository(string GitNamespace, GitRepoPatchRequestDTO DTO)
+    public async Task SetFile(Guid id, string Path, string Content, string CommitMessage, string Branch = "main")
     {
-        SetAuthorizationHeaderAsync();
+        var result = await GetUserAndGit(id, GetUserID());
+        var git = result.Item1 ?? throw new ServiceException(StatusCodes.Status404NotFound, "Git not found");
+        var user = result.Item2 ?? throw new ServiceException(StatusCodes.Status404NotFound, "User not found");
 
-        throw new NotImplementedException();
+        SetWebauthHeader(user.Login);
+        var response = await _client.GetAsync($"/api/v1/repos/{git.Namespace}/contents/{Path}?ref={Branch}");
+        if (response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadFromJsonAsync<RepoFileContentsDO>() ?? throw new ServiceException();
+            var setFileResponse = await _client.PutAsJsonAsync($"/api/v1/repos/{git.Namespace}/contents/{Path}", new
+            {
+                Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(Content)),
+                Branch,
+                body.Sha,
+                Message = CommitMessage,
+                Author = new
+                {
+                    Name = user.Login
+                },
+            });
+
+            var responseContent = await setFileResponse.Content.ReadAsStringAsync();
+            logger.LogInformation("Response status: {Status}, content: {Content}", setFileResponse.StatusCode, responseContent);
+            if (setFileResponse.IsSuccessStatusCode)
+                return;
+            throw new ServiceException();
+        }
+
+        throw response.StatusCode switch
+        {
+            HttpStatusCode.NotFound => new ServiceException(StatusCodes.Status404NotFound, "Not found"),
+            _ => new ServiceException(StatusCodes.Status500InternalServerError, "Something went wrong...")
+        };
     }
 
-	public async Task<Git> CreateRepository(GitRepoPostRequestDTO DTO, OwnerKind OwnerType)
-	{
-        SetAuthorizationHeaderAsync();
+    public async Task<Git> UpdateRepository(Guid id, GitRepoPatchRequestDTO DTO)
+    {
+        GetUserID();
+        var git = await FindByIdAsync(id) ?? throw new ServiceException(StatusCodes.Status404NotFound, "Not found");
+        var response = await _client.PatchAsJsonAsync($"/api/v1/repos/{git.Namespace}", DTO);
 
+        if (response.IsSuccessStatusCode)
+            return git;
+        throw response.StatusCode switch
+        {
+            HttpStatusCode.Forbidden => new ServiceException(StatusCodes.Status403Forbidden, "Forbidden"),
+            HttpStatusCode.NotFound => new ServiceException(StatusCodes.Status404NotFound, "Not Found"),
+            _ => new ServiceException(),
+        };
+    }
+
+    public async Task<Git> CreateRepository(GitRepoPostRequestDTO DTO, OwnerKind OwnerType)
+    {
+        GetUserID();
         var response = await _client.PostAsJsonAsync($"/api/v1/repos/{_gitTemplate}/generate", DTO);
-        logger.LogInformation("Response: {response}", response);
+        // logger.LogInformation("Response: {response}", response);
 
         if (response.StatusCode is HttpStatusCode.Conflict)
             throw new ServiceException(StatusCodes.Status409Conflict, "The repository with the same name already exists");
@@ -151,115 +220,33 @@ public sealed class GitService(
         };
 
         return await CreateAsync(git);
-	}
+    }
 
-	public async Task DeleteRepository(string GitNamespace)
-	{
-		throw new NotImplementedException();
-	}
+    public async Task DeleteRepository(Guid id)
+    {
+        GetUserID();
+        var git = await FindByIdAsync(id) ?? throw new ServiceException(StatusCodes.Status404NotFound, "Not found");
+        var response = await _client.DeleteAsync($"/api/v1/repos/{git.Namespace}");
+        if (response.IsSuccessStatusCode)
+            return;
 
-	// public async Task<Git> CreateRemoteRepository(string repositoryName, string? description = null)
-	// {
-	//     await SetAuthorizationHeaderAsync();
-	//     var createOption = new CreateRepoOption
-	//     {
-	//         Name = repositoryName,
-	//         Description = description,
-	//         Private = false,
-	//         AutoInit = true
-	//     };
+        throw response.StatusCode switch
+        {
+            HttpStatusCode.Forbidden => new ServiceException(StatusCodes.Status403Forbidden, "Forbidden"),
+            HttpStatusCode.NotFound => new ServiceException(StatusCodes.Status404NotFound, "Not Found"),
+            _ => new ServiceException(),
+        };
+    }
 
-	//     var response = await _httpClient.PostAsJsonAsync("/api/v1/user/repos", createOption);
-	//     _logger.LogInformation("Response: {response}", response);
-	//     response.EnsureSuccessStatusCode();
+    private async Task<(Git?, User?)> GetUserAndGit(Guid entityId, Guid userId)
+    {
+        var query = from g in _dbSet.AsNoTracking()
+                    where g.Id == entityId
+                    from u in _context.Users.AsNoTracking()
+                    where u.Id == userId // Cross Join
+                    select new { Git = g, User = u };
 
-	//     var repoResponse = await response.Content.ReadFromJsonAsync<JsonElement>();
-
-	//     // Map the response to our Git entity
-	//     var git = new Git
-	//     {
-	//         Name = repoResponse.GetProperty("name").GetString() ?? string.Empty,
-	//         Namespace = repoResponse.GetProperty("full_name").GetString() ?? string.Empty,
-	//         Url = repoResponse.GetProperty("clone_url").GetString() ?? string.Empty,
-	//         Branch = repoResponse.GetProperty("default_branch").GetString() ?? "main",
-	//         ProviderType = GitProviderKind.Managed,
-	//         OwnerType = GitOwnerKind.User // TODO: Once we support organizations within the app, this needs to be configurable
-	//     };
-
-	//     return await CreateAsync(git);
-	// }
-
-	// public async Task ArchiveRepository(string owner, string repo)
-	// {
-	//     await SetAuthorizationHeaderAsync();
-	//     var editOption = new EditRepoOption
-	//     {
-	//         Archived = true
-	//     };
-
-	//     var response = await _httpClient.PatchAsync($"/api/v1/repos/{owner}/{repo}", JsonContent.Create(editOption));
-	//     response.EnsureSuccessStatusCode();
-	// }
-
-	// public async Task<FileContentResponse> UpsertFile(
-	//     string owner,
-	//     string repo,
-	//     string path,
-	//     string content,
-	//     string message,
-	//     string branch = "main")
-	// {
-	//     await SetAuthorizationHeaderAsync();
-
-	//     // First try to get the file to check if it exists
-	//     var getFileResponse = await _httpClient.GetAsync($"/api/v1/repos/{owner}/{repo}/contents/{path}");
-	//     string? sha = null;
-
-	//     if (getFileResponse.IsSuccessStatusCode)
-	//     {
-	//         var existingFile = await getFileResponse.Content.ReadFromJsonAsync<ContentInfo>();
-	//         sha = existingFile?.Sha;
-	//     }
-
-	//     var fileContent = new FileContentRequest
-	//     {
-	//         Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(content)),
-	//         Message = message,
-	//         Branch = branch,
-	//         Sha = sha,
-	//         Author = new GitUserInfo
-	//         {
-	//             Name = "NXT System",
-	//             Email = "nxt@system.local"
-	//         }
-	//     };
-
-	//     var response = await _httpClient.PutAsync(
-	//         $"/api/v1/repos/{owner}/{repo}/contents/{path}",
-	//         new StringContent(
-	//             JsonSerializer.Serialize(fileContent),
-	//             Encoding.UTF8,
-	//             "application/json"
-	//         )
-	//     );
-
-	//     response.EnsureSuccessStatusCode();
-	//     return await response.Content.ReadFromJsonAsync<FileContentResponse>()
-	//         ?? throw new InvalidOperationException("Failed to upsert file");
-	// }
-
-	// public async Task<string> GetRawFileContent(
-	//     string name,
-	//     string path,
-	//     string branch = "main")
-	// {
-	//     await SetAuthorizationHeaderAsync();
-
-	//     var requestUri = $"/api/v1/repos/{name}/raw/{path}?ref={branch}";
-	//     var response = await _httpClient.GetAsync(requestUri);
-	//     if (response.StatusCode == HttpStatusCode.NotFound)
-	//         throw new ServiceException(StatusCodes.Status404NotFound, "File not found");
-	//     response.EnsureSuccessStatusCode();
-	//     return await response.Content.ReadAsStringAsync();
-	// }
+        var result = await query.FirstOrDefaultAsync();
+        return result is null ? (null, null) : (result.Git, result.User);
+    }
 }

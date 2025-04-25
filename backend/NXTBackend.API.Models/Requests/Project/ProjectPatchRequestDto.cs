@@ -64,6 +64,6 @@ public class ProjectPatchRequestDto : BaseRequestDTO
 	/// <summary>
 	/// Tags for the project
 	/// /// </summary>
-	[MaxLength(24), StringLengthEnumerable(1, 64), JsonIgnore]
+	// [MaxLength(24), StringLengthEnumerable(1, 64), JsonIgnore]
 	public string[]? Tags { get; set; }
 }
