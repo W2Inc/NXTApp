@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -56,7 +57,7 @@ public sealed class ProjectService : BaseService<Project>, IProjectService
             });
         }
 
-        return markdown;
+		return Encoding.UTF8.GetString(Convert.FromBase64String(markdown));
     }
 
     public Task<PaginatedList<Rubric>> GetRubric(Project project, PaginationParams pagination)
