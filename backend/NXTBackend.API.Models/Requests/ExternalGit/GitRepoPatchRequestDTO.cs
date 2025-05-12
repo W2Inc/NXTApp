@@ -8,6 +8,6 @@ public class GitRepoPatchRequestDTO : BaseRequestDTO
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    [JsonPropertyName("archive")]
-    public bool? Archive { get; set; }
+    [JsonPropertyName("archived")]
+    public bool? Archived { get; set; }
 }

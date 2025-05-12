@@ -48,4 +48,52 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
 
         return await PaginatedList<Project>.CreateAsync(query, pagination.Page, pagination.Size);
     }
+
+    public async Task<(LearningGoal?, User?)> IsCollaborator(Guid entityId, Guid userId)
+    {
+        var query = from g in _dbSet.AsNoTracking()
+                    where g.Id == entityId
+                    select new
+                    {
+                        Goal = g,
+                        Collaborator = g.CreatorId == userId ? g.Creator : g.Collaborators.FirstOrDefault(co => co.Id == userId)
+                    };
+
+        var result = await query.FirstOrDefaultAsync();
+        return (result?.Goal, result?.Collaborator);
+    }
+
+    public async Task<bool> AddCollaborator(Guid entityId, Guid userId)
+    {
+        var goal = await _dbSet.Include(c => c.Collaborators)
+                                .FirstOrDefaultAsync(c => c.Id == entityId);
+        if (goal is null)
+            return false;
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user is null)
+            return false;
+
+        if (!goal.Collaborators.Any(c => c.Id == userId))
+            goal.Collaborators.Add(user);
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> RemoveCollaborator(Guid entityId, Guid userId)
+    {
+        var goal = await _dbSet.Include(c => c.Collaborators)
+                                .FirstOrDefaultAsync(c => c.Id == entityId);
+        if (goal is null)
+            return false;
+
+        var user = goal.Collaborators.FirstOrDefault(u => u.Id == userId);
+        if (user is null)
+            return false;
+
+        goal.Collaborators.Remove(user);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

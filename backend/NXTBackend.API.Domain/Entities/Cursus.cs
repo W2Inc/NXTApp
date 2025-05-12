@@ -68,6 +68,7 @@ public class Cursus : BaseEntity
         Description = string.Empty;
         Markdown = string.Empty;
         Slug = string.Empty;
+        Deprecated = false;
         Public = false;
         Enabled = false;
     }
@@ -107,6 +108,12 @@ public class Cursus : BaseEntity
     /// </summary>
     [Column("enabled"), Required]
     public bool Enabled { get; set; }
+
+    /// <summary>
+    /// The Cursus allows for subscribers to create new Cursus based on this Cursus.
+    /// </summary>
+    [Column("deprecated"), Required]
+    public bool Deprecated { get; set; }
 
     /// <summary>
     /// The kind of cursus.

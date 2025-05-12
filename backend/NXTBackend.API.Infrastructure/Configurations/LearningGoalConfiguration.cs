@@ -18,6 +18,11 @@ public class LearningGoalConfiguration : IEntityTypeConfiguration<LearningGoal>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder
+            .HasMany(c => c.Collaborators)
+            .WithMany(c => c.CollaboratedGoals)
+            .UsingEntity("CollaboratorsOnGoals");
+
+        builder
             .HasMany(lg => lg.Projects)
             .WithMany(p => p.Goals);
 

@@ -26,17 +26,6 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
         _goalService = goalService;
     }
 
-    /// <summary>
-    /// Validates, processes, and converts a CursusTrackPutRequestDTO to a GraphNode
-    /// </summary>
-    /// <param name="data">The DTO containing track data</param>
-    /// <returns>A tuple containing the processed GraphNode and its serialized representation</returns>
-    /// <exception cref="InvalidOperationException">Thrown when validation fails</exception>
-    // public async Task<GraphNode> ValidateTrackData(IGraphTrack data)
-    // {
-
-    // }
-
     public async Task<GraphNode> ConstructTrack(IGraphTrack track)
     {
         var goalIds = ExtractTrackGoals(track).Distinct().ToArray();
@@ -97,25 +86,12 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
     }
 
     /// <summary>
-    /// Depending on the state of the cursus either does a "soft delete" or
-    /// a hard delete.
+    /// Simply marks the cursus as deprecated
     /// </summary>
-    /// <remarks>
-    /// If a cursus has no references to any goals, projects etc it can be
-    /// safely hard deleted. However in most cases this would lead to a
-    /// very messed up state of models referencing a cursus that is gone.
-    ///
-    /// Furthermore for curriculums, a user might want to see their old cursus
-    /// even if it is considered "old and stale".
-    /// </remarks>
     public override async Task<Cursus> DeleteAsync(Cursus entity)
     {
         // If no references exist, we can't hard delete.
-        entity.Enabled = false;
-        if (entity.UserCursi.Count < 1)
-            _dbSet.Remove(entity);
-        else
-            await UpdateAsync(entity);
+        entity.Deprecated = false;
         await _context.SaveChangesAsync();
         return entity;
     }

@@ -3,6 +3,7 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Users;
@@ -46,6 +47,10 @@ public class LearningGoal : BaseEntity
         Description = string.Empty;
         CreatorId = Guid.Empty;
         Creator = null!;
+
+        Public = false;
+        Enabled = false;
+        Deprecated = false;
     }
 
     [Column("name")]
@@ -59,6 +64,24 @@ public class LearningGoal : BaseEntity
 
     [Column("description")]
     public string Description { get; set; }
+
+    /// <summary>
+    /// The Cursus is public / visible to anyone.
+    /// </summary>
+    [Column("public"), DefaultValue(false)]
+    public bool Public { get; set; }
+
+    /// <summary>
+    /// The Cursus allows for subscribers to create new Cursus based on this Cursus.
+    /// </summary>
+    [Column("enabled"), DefaultValue(false)]
+    public bool Enabled { get; set; }
+
+    /// <summary>
+    /// The Cursus allows for subscribers to create new Cursus based on this Cursus.
+    /// </summary>
+    [Column("deprecated"), DefaultValue(false)]
+    public bool Deprecated { get; set; }
 
     [Column("creator_id")]
     public Guid CreatorId { get; set; }
@@ -75,4 +98,6 @@ public class LearningGoal : BaseEntity
     /// The instances of this goal
     /// </summary>
     public virtual ICollection<UserGoal> UserGoals { get; set; }
+
+    public virtual ICollection<User> Collaborators { get; set; }
 }

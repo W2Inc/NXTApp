@@ -57,6 +57,7 @@ public class Project : BaseEntity
         Markdown = string.Empty;
         Slug = string.Empty;
         ThumbnailUrl = null;
+        Deprecated = false;
         Public = false;
         Enabled = false;
         MaxMembers = 1;
@@ -97,6 +98,9 @@ public class Project : BaseEntity
 
     [Column("enabled"), DefaultValue(false)]
     public bool Enabled { get; set; }
+
+    [Column("deprecated"), DefaultValue(false)]
+    public bool Deprecated { get; set; }
 
     [Column("max_members"), DefaultValue(3)]
     public int MaxMembers { get; set; }

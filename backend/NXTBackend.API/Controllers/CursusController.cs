@@ -178,9 +178,8 @@ public class CursusController(
                 return Problem("Failed to deserialize track data");
             return Ok(await cursusService.ConstructTrack(lel));
         }
-        catch (System.Exception)
+        catch (Exception)
         {
-
             throw;
         }
     }

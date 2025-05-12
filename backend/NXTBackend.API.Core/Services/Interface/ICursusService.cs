@@ -5,7 +5,7 @@ using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Core.Services.Interface;
-public interface ICursusService : ICollaborative<Cursus>, IDomainService<Cursus>
+public interface ICursusService : IDomainService<Cursus>, ICollaborative<Cursus>
 {
     /// <summary>
     /// Extract all the goal IDs inside the trakc

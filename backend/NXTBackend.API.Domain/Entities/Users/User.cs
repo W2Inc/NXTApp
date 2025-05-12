@@ -108,7 +108,15 @@ public class User : BaseEntity
     /// </summary>
     public virtual ICollection<Feed> CreatedFeeds { get; set; }
 
-    //= Collabs =//
+    //= Collaborations =//
 
-    public virtual ICollection<Cursus> CollaboratesOnCursi { get; set; }
+    public virtual ICollection<Cursus> CollaboratedCursi { get; set; }
+    public virtual ICollection<LearningGoal> CollaboratedGoals { get; set; }
+
+    // NOTE(W2): Project collaboration is tracked via the external git source control.
+    // That way we can sync the state more conveniently in case user gets added as a collaborator
+    // via the frontend or directly from Gitea.
+    //
+    // Therefor this Many-To-Many relationship is not necessary.
+    // public virtual ICollection<Project> CollaboratesOnProjects { get; set; }
 }

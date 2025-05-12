@@ -1,10 +1,11 @@
 ﻿
+using NXTBackend.API.Core.Services.Traits;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Interface;
-public interface IGoalService : IDomainService<LearningGoal>
+public interface IGoalService : IDomainService<LearningGoal>, ICollaborative<LearningGoal>
 {
     /// <summary>
     /// Remove a project from a learning goal.

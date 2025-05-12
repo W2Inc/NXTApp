@@ -13,18 +13,18 @@ public class CursusConfiguration : IEntityTypeConfiguration<Cursus>
 
         builder
             .HasMany(c => c.Collaborators)
-            .WithMany(c => c.CollaboratesOnCursi)
-            .UsingEntity("CollaboratosToCursi");
+            .WithMany(c => c.CollaboratedCursi)
+            .UsingEntity("CollaboratorsOnCursi");
 
         builder
             .HasOne(c => c.Creator)
-                .WithMany(u => u.CreatedCursus)
-                .HasForeignKey(c => c.CreatorId)
-                .OnDelete(DeleteBehavior.Restrict);
+            .WithMany(u => u.CreatedCursus)
+            .HasForeignKey(c => c.CreatorId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasMany(c => c.UserCursi)
-                .WithOne(uc => uc.Cursus)
-                .HasForeignKey(uc => uc.CursusId);
+            .WithOne(uc => uc.Cursus)
+            .HasForeignKey(uc => uc.CursusId);
     }
 }

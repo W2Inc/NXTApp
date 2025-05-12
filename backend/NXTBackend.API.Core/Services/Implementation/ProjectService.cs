@@ -71,6 +71,18 @@ public sealed class ProjectService : BaseService<Project>, IProjectService
         throw new NotImplementedException();
     }
 
+    public override async Task<Project> DeleteAsync(Project entity)
+    {
+        await _git.UpdateRepository(entity.GitInfoId, new()
+        {
+            Archived = true
+        });
+
+        _dbSet.Update(entity);
+        await _context.SaveChangesAsync();
+        return entity;
+    }
+
     public async Task<(Project?, User?)> IsCollaborator(Guid entityId, Guid userId)
     {
         var project = await FindByIdAsync(entityId);

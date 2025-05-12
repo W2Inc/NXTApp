@@ -183,8 +183,11 @@ public sealed class GitService(
 
     public async Task<Git> UpdateRepository(Guid id, GitRepoPatchRequestDTO DTO)
     {
-        GetUserID();
-        var git = await FindByIdAsync(id) ?? throw new ServiceException(StatusCodes.Status404NotFound, "Not found");
+        var result = await GetUserAndGit(id, GetUserID());
+        var git = result.Item1 ?? throw new ServiceException(StatusCodes.Status404NotFound, "Git not found");
+        var user = result.Item2 ?? throw new ServiceException(StatusCodes.Status404NotFound, "User not found");
+
+        SetWebauthHeader(user.Login);
         var response = await _client.PatchAsJsonAsync($"/api/v1/repos/{git.Namespace}", DTO);
 
         if (response.IsSuccessStatusCode)
