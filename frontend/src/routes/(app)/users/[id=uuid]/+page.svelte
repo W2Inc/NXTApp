@@ -61,12 +61,12 @@
 		if (warn) {
 			const confirm = await dialog.confirm({
 				title: "Navigate to URL?",
-				message: `Link navigates to: ${href}`,
+				message: `Will navigate you to: ${href}`,
 			});
 
 			if (!confirm) return;
 		}
-		window.location = href;
+		window.location.assign(href);
 	}
 </script>
 
@@ -100,10 +100,10 @@
 				class="absolute inset-0 rounded-t-[inherit] bg-[url('/img.png')] bg-cover bg-center opacity-20"
 			></div>
 			<Avatar.Root
-				class="border-background absolute left-4 top-4 size-32 rounded-xl border-2 shadow-xl"
+				class="border-background absolute left-4 top-4 size-32 rounded border-2 shadow-xl"
 			>
 				<Avatar.Image src={data.user.avatarUrl} alt={data.user.login} />
-				<Avatar.Fallback class="rounded-xl text-2xl font-bold">
+				<Avatar.Fallback class="rounded text-2xl font-bold">
 					{data.user.displayName?.substring(0, 2) ||
 						data.user.login?.substring(0, 2) ||
 						"U"}

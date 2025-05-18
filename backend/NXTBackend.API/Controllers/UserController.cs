@@ -160,7 +160,7 @@ public class UserController(
     public async Task<ActionResult<IEnumerable<UserDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
-        [FromQuery(Name = "filter[display_name]")] string displayName
+        [FromQuery(Name = "filter[display_name]")] string? displayName
     )
     {
         var filters = new FilterDictionary()
@@ -176,7 +176,7 @@ public class UserController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [HttpGet("/users/{id:guid}"), OutputCache(PolicyName = "1m")]
-    public async Task<ActionResult<UserDO>> GetUser(Guid id)
+    public async Task<ActionResult<MinimalUserDTO>> GetUser(Guid id)
     {
         var user = await userService.FindByIdAsync(id);
         return user is null ? NotFound() : Ok(new UserDO(user));

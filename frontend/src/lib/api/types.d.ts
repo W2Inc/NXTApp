@@ -1390,10 +1390,10 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ProjectPostRequestDto"];
-                    "text/json": components["schemas"]["ProjectPostRequestDto"];
-                    "application/*+json": components["schemas"]["ProjectPostRequestDto"];
-                    "text/plain": components["schemas"]["ProjectPostRequestDto"];
+                    "application/json": components["schemas"]["ProjectPostRequestDTO"];
+                    "text/json": components["schemas"]["ProjectPostRequestDTO"];
+                    "application/*+json": components["schemas"]["ProjectPostRequestDTO"];
+                    "text/plain": components["schemas"]["ProjectPostRequestDTO"];
                 };
             };
             responses: {
@@ -1406,17 +1406,6 @@ export interface paths {
                         "text/plain": components["schemas"]["ProjectDO"];
                         "application/json": components["schemas"]["ProjectDO"];
                         "text/json": components["schemas"]["ProjectDO"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
                     };
                 };
                 /** @description Unauthorized */
@@ -1439,6 +1428,17 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
                 };
                 /** @description Too Many Requests */
                 429: {
@@ -4875,7 +4875,7 @@ export interface components {
             url: string;
             branch: string;
             providerType: components["schemas"]["GitProviderKind"];
-            ownerType: components["schemas"]["GitOwnerKind"];
+            ownerType: components["schemas"]["OwnerKind"];
         } | null;
         GitInfoRequestDto: {
             gitNamespace: string;
@@ -4885,8 +4885,6 @@ export interface components {
             gitBranch: string;
             sourceKind: components["schemas"]["GitProviderKind"];
         } | null;
-        /** @enum {unknown} */
-        GitOwnerKind: "User" | "Organization";
         /** @enum {unknown} */
         GitProviderKind: "Other" | "Managed";
         GoalPatchRequestDto: {
@@ -4972,6 +4970,8 @@ export interface components {
         NullableOfReviewState: "Pending" | "InProgress" | "Finished" | null;
         /** @enum {unknown} */
         Order: "Ascending" | "Descending";
+        /** @enum {unknown} */
+        OwnerKind: "User" | "Organization";
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -5029,11 +5029,14 @@ export interface components {
             public?: boolean | null;
             enabled?: boolean | null;
             gitInfo?: components["schemas"]["GitInfoRequestDto"];
+            tags?: string[] | null;
         };
-        ProjectPostRequestDto: {
+        ProjectPostRequestDTO: {
             name: string;
             description: string;
             markdown: string;
+            /** Format: uuid */
+            ownerId: string;
             /** Format: int32 */
             maxMembers: number;
             /** Format: uri */

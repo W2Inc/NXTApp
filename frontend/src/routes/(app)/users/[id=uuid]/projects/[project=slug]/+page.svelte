@@ -19,6 +19,7 @@
 	import { Constants } from "$lib/utils.js";
 	import Input from "$lib/components/ui/input/input.svelte";
 	import { useForm } from "$lib/utils/form.svelte";
+	import { page } from "$app/state";
 
 	const { data } = $props();
 	const md = $state(data.project.markdown);
@@ -42,7 +43,11 @@
 			{/if}
 			{#if data.project.creator?.id === data.session?.user_id}
 				<Separator class="my-1" />
-				<Button variant="outline" class="justify-start " href="/new/project?edit={data.project.id}">
+				<Button
+					variant="outline"
+					class="justify-start "
+					href="/new/project?edit={data.project.id}"
+				>
 					<Pen size={16} />
 					Edit Project
 				</Button>
@@ -115,12 +120,8 @@
 						</ul>
 						<Separator class="my-1" />
 						<div class="center-content">
-							<Button class="shadow-l">
-								<!-- {#if page.data.session?.user?.id !== ""}
+							<Button href="{data.project.slug}/review" class="shadow-l">
 								Create a review
-							{:else}
-								Request a review
-							{/if} -->
 								<ShieldCheck />
 							</Button>
 							<Button variant="outline" class="shadow-l">
