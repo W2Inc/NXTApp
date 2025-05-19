@@ -8,6 +8,7 @@ import {
 	error,
 	redirect,
 	type Handle,
+	type HandleServerError,
 	type RequestEvent,
 	type ServerInit,
 } from "@sveltejs/kit";
@@ -32,31 +33,7 @@ import type { Role } from "$lib/utils/roles.svelte";
 import { initLogger, logger } from "$lib/logger";
 import { PUBLIC_S3_BUCKET, PUBLIC_S3_ENDPOINT } from "$env/static/public";
 import RouteConfig from "./config.json" with { type: "json" };
-
-// ============================================================================
-
-// Bun.S3Client = new Bun.S3Client({
-// 	endpoint: "https://s3.eu-central-1.amazonaws.com",
-// 	region: "eu-central-1",
-// 	credentials: {
-// 		accessKeyId: "AKI
-// AYZ5K3G4JX
-// 		secretAccessKey: "w2inc",
-// 	},
-// });
-
-const DebugLogMD: Middleware = {
-	// async onRequest({ request, options }) {
-	// 	logger.debug(`API: ${request.method.toUpperCase()} => ${request.url}`);
-	//   return request;
-	// },
-	async onResponse({ request, response, options }) {
-		logger.debug(`API: ${request.method.toUpperCase()} ${request.url} => [${response.status}:${response.statusText}]`);
-		// if (!response.ok)
-		// 	throw error(response.status, response.statusText);
-		return response;
-	},
-};
+import type { Problem } from "$lib/utils/api.svelte";
 
 // ============================================================================
 
@@ -82,16 +59,17 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const requiredRoles = routes[url];
 
 	// Redirect to home if no route config or unauthorized
-	if (!requiredRoles)
-		return redirect(303, "/");
+	if (!requiredRoles) return redirect(303, "/");
 
 	// Allow if no roles required
-	if (requiredRoles.length === 0)
-		return resolve(event);
+	if (requiredRoles.length === 0) return resolve(event);
 
 	// Require authentication for protected routes
-	if (!session || (requiredRoles.length > 0 &&
-		!requiredRoles.some(role => session.roles.includes(role)))) {
+	if (
+		!session ||
+		(requiredRoles.length > 0 &&
+			!requiredRoles.some((role) => session.roles.includes(role)))
+	) {
 		return redirect(303, "/");
 	}
 
@@ -105,8 +83,6 @@ const apiHandle: Handle = async ({ event, resolve }) => {
 		mode: "cors",
 		fetch: event.fetch,
 	});
-
-	event.locals.api.use(DebugLogMD);
 
 	event.locals.keycloak = createClient<KeycloakRoutes>({
 		baseUrl: KC_HOST,
@@ -164,5 +140,7 @@ export async function handleFetch({ fetch, request, event }) {
 		request.headers.set("Authorization", `Bearer ${token}`);
 	}
 
-	return fetch(request);
+	return fetch(request);;
 }
+
+// ============================================================================

@@ -148,7 +148,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 					httpOnly: true,
 				});
 
-				logger.debug("Session Cookies", { cookies: event.cookies.getAll() });
+				// logger.debug("Session Cookies", { cookies: event.cookies.getAll() });
 			} catch (e) {
 				if (e instanceof arctic.OAuth2RequestError) {
 					// e.g: Invalid grant aka token & refresh token expired

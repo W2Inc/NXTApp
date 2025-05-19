@@ -18,19 +18,27 @@
 	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import { Constants } from "$lib/utils.js";
 	import Input from "$lib/components/ui/input/input.svelte";
-	import { useForm } from "$lib/utils/form.svelte";
 	import { page } from "$app/state";
+	import { useForm } from "$lib/utils/api.svelte.js";
+	import Card from "$lib/components/ui/card/card.svelte";
 
 	const { data } = $props();
-	const md = $state(data.project.markdown);
+	const md = $state(data.markdown ?? undefined);
 	const action = $derived(!data.userProject ? "?/subscribe" : "?/unsubscribe");
 
-	const { form, enhance } = useForm(data.form);
+	const { form, enhance } = useForm(data.form, { confirm: true });
 </script>
+
+{#snippet img(src: string, fallback: string, className: string, alt?: string)}
+	<Avatar.Root class="rounded">
+		<Avatar.Image class={className} {src} {alt} />
+		<Avatar.Fallback class={className}>{fallback}</Avatar.Fallback>
+	</Avatar.Root>
+{/snippet}
 
 <div class="m-auto max-w-6xl px-4 py-2">
 	<div class="grid grid-cols-1 gap-x-2 pt-4 md:grid-cols-[256px,1fr]">
-		<div class="flex max-h-fit flex-col gap-1 rounded border p-4">
+		<Card class="flex max-h-fit flex-col gap-1">
 			<img
 				loading="eager"
 				src={data.project.thumbnailUrl ?? Constants.FALLBACK_IMG}
@@ -53,18 +61,15 @@
 				</Button>
 			{/if}
 			<Separator class="my-1" />
-			<Button variant="outline" class="justify-start " href={data.project.gitInfo?.url}>
-				Project Source
-				<ExternalLink size={16} />
-			</Button>
+			{#if data.project.gitInfo}
+				<Button variant="outline" class="justify-start" href={data.project.gitInfo.url} target="_blank">
+					Project Source
+					<ExternalLink size={16} />
+				</Button>
+			{/if}
 			<Separator class="my-1" />
 			<form method="post" {action} use:enhance>
-				<input
-					name="id"
-					type="hidden"
-					bind:value={form.data.id}
-					{...form.constraints.id}
-				/>
+				<input name="id" type="hidden" value={form.data.id} />
 				<Button type="submit" class="w-full">
 					{#if !data.userProject}
 						Subscribe
@@ -73,11 +78,11 @@
 					{/if}
 				</Button>
 			</form>
-		</div>
+		</Card>
 		<Separator class="my-2 md:hidden" />
 		<div class="flex flex-col gap-2">
-			{#if data.project}
-				<div class="flex flex-col gap-3 overflow-auto rounded border p-4">
+			{#if data.userProject}
+				<Card class="flex flex-col gap-3 overflow-auto">
 					<h1 class="center-content gap-2 text-2xl font-bold">
 						<Users size={36} />
 						{data.project.name}
@@ -97,7 +102,7 @@
 						</li>
 					</ul>
 					<Separator class="my-1" />
-					{#await data.reviews}
+					{#await data.userProject}
 						Loading...
 					{:then reviews}
 						<div class="center-content justify-between">
@@ -130,10 +135,12 @@
 							</Button>
 						</div>
 					{/await}
-				</div>
+				</Card>
 				<Separator />
 			{/if}
-			<Markdown variant="viewer" value={md} />
+			<Card class="px-4">
+				<Markdown value={md} variant="viewer" />
+			</Card>
 		</div>
 	</div>
 </div>

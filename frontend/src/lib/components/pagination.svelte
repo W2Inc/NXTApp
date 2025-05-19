@@ -51,28 +51,30 @@
 </script>
 
 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-	<div class="shrink-0 items-center gap-2 hidden lg:flex">
-		<Select.Root
-			type="single"
-			value={perPage.toString()}
-			onValueChange={(val) => handlePageSizeChange(Number(val))}
-		>
-			<Select.Trigger class="h-9 w-[80px]">
-				{perPage.toString()}
-			</Select.Trigger>
-			<Select.Content>
-				<Select.Group>
-					{#each pageSizeOptions as size}
-						<Select.Item value={size.toString()}>
-							{size}
-						</Select.Item>
-					{/each}
-				</Select.Group>
-			</Select.Content>
-		</Select.Root>
-	</div>
-	<Separator orientation="vertical" class="hidden lg:block" />
+	{#if variant === "default"}
+		<div class="hidden shrink-0 items-center gap-2 lg:flex">
+			<Select.Root
+				type="single"
+				value={perPage.toString()}
+				onValueChange={(val) => handlePageSizeChange(Number(val))}
+			>
+				<Select.Trigger class="h-9 w-[80px]">
+					{perPage.toString()}
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Group>
+						{#each pageSizeOptions as size}
+							<Select.Item value={size.toString()}>
+								{size}
+							</Select.Item>
+						{/each}
+					</Select.Group>
+				</Select.Content>
+			</Select.Root>
+		</div>
+	{/if}
 
+	<Separator orientation="vertical" class="hidden lg:block" />
 
 	<!-- Pagination Component -->
 	<div class="flex-1">
@@ -93,7 +95,7 @@
 					</Pagination.Item>
 
 					{#if variant === "default"}
-						<div class="hidden items-center sm:flex border rounded">
+						<div class="hidden items-center rounded border sm:flex">
 							{#each pages as page (page.key)}
 								{#if page.type === "ellipsis"}
 									<Pagination.Item>
@@ -106,7 +108,10 @@
 										<Pagination.Link
 											{page}
 											isActive={currentPage === page.value}
-											class={buttonVariants({ variant: "ghost", class: "shadow-none border-none [data-selected]:bg-primary"})}
+											class={buttonVariants({
+												variant: "ghost",
+												class: "[data-selected]:bg-primary border-none shadow-none",
+											})}
 										>
 											{page.value}
 										</Pagination.Link>
@@ -124,7 +129,7 @@
 
 					<Pagination.Item>
 						<Pagination.NextButton
-							class={buttonVariants({ variant: "outline"})}
+							class={buttonVariants({ variant: "outline" })}
 							onclick={() => onNext && onNext(currentPage)}
 							disabled={currentPage >= totalPages}
 						>

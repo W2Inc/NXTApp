@@ -1,10 +1,8 @@
 <script lang="ts">
-	import type { XGraphV1 } from '@w2inc/xgraph';
 	import { Handle, Position, type NodeProps, type Node } from '@xyflow/svelte';
 
 	// Pass data to the node via this interface instead...
 	interface GoalNodeData extends Record<string, unknown> {
-		node: XGraphV1.Node;
 		direction: Position;
 		parentPosition: [number, number] // X, Y
 	}

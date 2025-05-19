@@ -15,8 +15,8 @@
 	import { useDebounce } from "$lib/utils/debounce.svelte.js";
 	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
 	import type { PageProps } from "./$types";
-	import Tilter from "$lib/components/tilter.svelte";
 	import Empty from "$lib/components/empty.svelte";
+	import * as Alert from "$lib/components/ui/alert";
 
 	const { data }: PageProps = $props();
 	const debounce = useDebounce();
@@ -69,44 +69,35 @@
 		<div class="p-6">
 			<menu class="flex justify-between">
 				<h1 class="text-2xl font-bold">Projects</h1>
-				<Pagination
-					pages={1}
-					perPage={10}
-					variant="default"
-					onPage={(p) => query.write("page", p)}
-				/>
+				<Pagination variant="default" onPage={(p) => query.write("page", p)} />
 			</menu>
 			<Separator class="my-2" />
 			<div class="flex flex-wrap gap-4">
-				{#await data.projects}
-					<Skeleton class="h-14 w-32" />
-				{:then projects}
-					{#if projects.length === 0}
-						<Empty />
+				{#if data.projects.length === 0}
+					<Empty />
+				{/if}
+				{#key query.read("subscribed")}
+					{#if query.read("subscribed") === true || !data.isCurrentUser}
+						{#each data.projects as up}
+							{@const userProject = up as BackendTypes["UserProjectDO"]}
+							<Taskcard
+								href="projects/{userProject.project?.slug}"
+								type="project"
+								title={userProject.project?.name}
+								state={userProject.state}
+							/>
+						{/each}
+					{:else}
+						{#each data.projects as p}
+							{@const project = p as BackendTypes["ProjectDO"]}
+							<Taskcard
+								href="projects/{project.slug}"
+								type="project"
+								title={project.name}
+							/>
+						{/each}
 					{/if}
-					{#key query.read("subscribed")}
-						{#if query.read("subscribed") === true || !data.isCurrentUser}
-							{#each projects as up}
-								{@const userProject = up as BackendTypes["UserProjectDO"]}
-								<Taskcard
-									href="projects/{userProject.project?.slug}"
-									type="project"
-									title={userProject.project?.name}
-									state={userProject.state}
-								/>
-							{/each}
-						{:else}
-							{#each projects as p}
-								{@const project = p as BackendTypes["ProjectDO"]}
-								<Taskcard
-									href="projects/{project.slug}"
-									type="project"
-									title={project.name}
-								/>
-							{/each}
-						{/if}
-					{/key}
-				{/await}
+				{/key}
 			</div>
 		</div>
 	{/snippet}

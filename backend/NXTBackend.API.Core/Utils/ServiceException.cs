@@ -22,7 +22,7 @@ public class ServiceException : Exception
     /// </summary>
     public string? Detail { get; set; }
 
-    public ServiceException()
+    public ServiceException() : base("Unprocessable Entity")
     {
     }
 

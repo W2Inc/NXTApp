@@ -14,9 +14,10 @@ import {
 import { error, error as kitError, redirect } from "@sveltejs/kit";
 import { logger } from "$lib/logger";
 import { ensure } from "$lib/utils";
+import { check } from "$lib/utils/check.svelte";
 
 export type FormBundle = PageFormBundle<
-	BackendTypes["ProjectPostRequestDto"],
+	BackendTypes["ProjectPostRequestDTO"],
 	BackendTypes["ProjectPatchRequestDto"],
 	{
 		thumbnailUrl?: string | File;
@@ -36,35 +37,20 @@ const C_DEFAULT_BUNDLE: FormBundle = {
 // Form Schema
 // ============================================================================
 
-// ============================================================================
-
 async function fetchProject(locals: App.Locals, id: string) {
 	return await Promise.all([
-		locals.api.GET("/projects/{id}", {
-			params: { path: { id } },
-		}),
-		locals.api.GET("/projects/{id}/markdown/{file}", {
-			parseAs: "text",
-			params: { path: { id, file: "README.md" } },
-		}),
+		check(
+			locals.api.GET("/projects/{id}", {
+				params: { path: { id } },
+			}),
+		),
+		check(
+			locals.api.GET("/projects/{id}/markdown/{file}", {
+				parseAs: "text",
+				params: { path: { id, file: "README.md" } },
+			}),
+		),
 	]);
-
-	// const [project, rubric] = await Promise.all([
-	// 	locals.api.GET("/projects/{id}", {
-	// 		params: { path: { id } },
-	// 	}),
-	// 	locals.api.GET("/rubrics", {
-	// 		params: { query: { "filter[project_id]": id } },
-	// 	}),
-	// ]);
-
-	// if (project.error || !project.data || rubric.error) {
-	// 	kitError(project.response.status, "Something went wrong fetching the project...");
-	// }
-
-	// return {
-	// 	project: project.data,
-	// };
 }
 
 // ============================================================================
@@ -72,16 +58,15 @@ async function fetchProject(locals: App.Locals, id: string) {
 // ============================================================================
 
 export const load: PageServerLoad = async ({ request, locals, url }) => {
-	const projectId = url.searchParams.get("edit");
-	if (projectId) {
+	const queryKey = "edit";
+
+	if (url.searchParams.has(queryKey)) {
+		const projectId = url.searchParams.get(queryKey)!;
 		const [project, markdown] = await fetchProject(locals, projectId);
-		if (project.error && markdown.error) {
-			error(422, "Failed to fetch both project and markdown");
-		} else if (project.error || !project.data) {
-			error(project.response?.status || 422, `Failed to fetch project: ${project.error.title || 'Unknown error'}`);
-		} else if (markdown.error || !markdown.data) {
-			error(markdown.response?.status || 422, `Failed to fetch markdown: ${markdown.error.title || 'Unknown error'}`);
-		}
+
+		// Project doesn't exist
+		if (!project.data)
+			error(404);
 
 		return {
 			entity: project.data,
@@ -97,8 +82,8 @@ export const load: PageServerLoad = async ({ request, locals, url }) => {
 				},
 				errors: {},
 				isLoading: false,
-			} as FormState<FormBundle>
-		}
+			} as FormState<FormBundle>,
+		};
 	}
 
 	return {
@@ -119,7 +104,7 @@ export const actions: Actions = {
 		let [image, issue] = await ensure(formValueToS3<FormBundle>(form, "thumbnailUrl"));
 
 		logger.debug("Tags =>", form.getAll("tags"));
-		logger.debug("Form submitted =>", Object.fromEntries(form.entries()))
+		logger.debug("Form submitted =>", Object.fromEntries(form.entries()));
 
 		if (issue) {
 			return problem({
@@ -143,7 +128,7 @@ export const actions: Actions = {
 				public: form.get("public")?.toString() === "true",
 				enabled: form.get("enabled")?.toString() === "true",
 				tags: form.getAll("tags").flatMap((v) => v.toString()),
-				thumbnailUrl: url
+				thumbnailUrl: url,
 			},
 		});
 
@@ -158,11 +143,9 @@ export const actions: Actions = {
 		}
 
 		// Upload the image to S3
-		await locals.buckets.thumbnail
-			.file(name)
-			.write(file, {
-				acl: "public-read",
-			});
+		await locals.buckets.thumbnail.file(name).write(file, {
+			acl: "public-read",
+		});
 
 		return success("Project created!", `/new/project?edit=${0}`);
 	},
@@ -175,12 +158,12 @@ export const actions: Actions = {
 			return problem({
 				status: 422,
 				title: "Missing project ID on form.",
-				errors: {}
+				errors: {},
 			});
 		}
 
 		// let image: Awaited<ReturnType<typeof formValueToS3<FormBundle>>> | undefined;
-		logger.info("Form submitted =>", Object.fromEntries(form.entries()))
+		logger.info("Form submitted =>", Object.fromEntries(form.entries()));
 		// const thumbnail = form.get("thumbnailUrl") as File | null;
 		// if (thumbnail && thumbnail?.size > 0) {
 		// 	const [thumb, issue] = await ensure(
@@ -199,7 +182,6 @@ export const actions: Actions = {
 		// 	image = thumb;
 		// 	form.set("thumbnailUrl", thumb.url);
 		// }
-
 
 		const { data, error } = await locals.api.PATCH("/projects/{id}", {
 			params: { path: { id } },
@@ -230,5 +212,5 @@ export const actions: Actions = {
 		// }
 
 		return success("Project updated!");
-	}
+	},
 };

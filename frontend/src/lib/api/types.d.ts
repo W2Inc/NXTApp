@@ -2235,6 +2235,7 @@ export interface paths {
                     Order?: components["schemas"]["Order"];
                     "filter[name]"?: string;
                     "filter[project_id]"?: string;
+                    "filter[project_slug]"?: string;
                 };
                 header?: never;
                 path?: never;
@@ -3744,9 +3745,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["UserDO2"];
-                        "application/json": components["schemas"]["UserDO2"];
-                        "text/json": components["schemas"]["UserDO2"];
+                        "text/plain": components["schemas"]["MinimalUserDTO2"];
+                        "application/json": components["schemas"]["MinimalUserDTO2"];
+                        "text/json": components["schemas"]["MinimalUserDTO2"];
                     };
                 };
                 /** @description Bad Request */
@@ -4849,19 +4850,7 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            newUser: {
-                /** Format: uuid */
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                login: string;
-                displayName: string | null;
-                avatarUrl: string | null;
-                /** Format: uuid */
-                detailsId: string | null;
-            };
+            newUser: components["schemas"]["MinimalUserDTO2"];
         };
         GitDO: {
             /** Format: uuid */
@@ -4944,6 +4933,19 @@ export interface components {
             /** Format: uuid */
             detailsId: string | null;
         } | null;
+        MinimalUserDTO2: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            login: string;
+            displayName: string | null;
+            avatarUrl: string | null;
+            /** Format: uuid */
+            detailsId: string | null;
+        };
         NotificationDO: {
             /** Format: uuid */
             id: string;
@@ -5103,19 +5105,7 @@ export interface components {
         SearchResultDOUserSearchResultDO: {
             /** @enum {string} */
             $type?: "User";
-            user: {
-                /** Format: uuid */
-                id: string;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-                login: string;
-                displayName: string | null;
-                avatarUrl: string | null;
-                /** Format: uuid */
-                detailsId: string | null;
-            };
+            user: components["schemas"]["MinimalUserDTO2"];
         };
         SpotlightEvent: {
             title?: string;

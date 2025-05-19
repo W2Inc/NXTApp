@@ -1,5 +1,4 @@
 <script>
-	// Define review types
 	const reviewTypes = [
 		{
 			id: "auto",

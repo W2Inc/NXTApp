@@ -11,6 +11,7 @@ import { consoleFormat } from "winston-console-format";
 
 /** Logger for writing logs */
 export let logger: Logger;
+
 /** Initialize the logger */
 export function initLogger() {
 	logger = createLogger({

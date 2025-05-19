@@ -7,13 +7,19 @@ import { error } from "@sveltejs/kit";
 import type { PageServerLoad, RouteParams } from "./$types";
 import { Constants, decodeID } from "$lib/utils";
 import { logger } from "$lib/logger";
+import type { FetchResponse } from "openapi-fetch";
+import { check } from "$lib/utils/check.svelte";
 
 // ============================================================================
 
-async function getUserProjects(locals: App.Locals, params: URLSearchParams, userID: string) {
+async function getUserProjects(
+	locals: App.Locals,
+	params: URLSearchParams,
+	userID: string,
+) {
 	const name = params.get("search");
 	const page = Number(params.get("page") ?? 0);
-	const { data, error: err, response } = await locals.api.GET("/users/{id}/projects", {
+	const { data } = await check(locals.api.GET("/users/{id}/projects", {
 		params: {
 			path: { id: userID },
 			query: {
@@ -22,20 +28,16 @@ async function getUserProjects(locals: App.Locals, params: URLSearchParams, user
 				"filter[name]": name || undefined,
 			},
 		},
-	});
+	}))
 
-	if (err || !data) {
-		error(response.status, err?.title ?? "Something went wrong...");
-	}
-
-	return data;
+	return data!;
 }
 
 async function getProjects(locals: App.Locals, params: URLSearchParams) {
 	const name = params.get("search");
 	const page = Number(params.get("page") ?? 0);
 	const slug = params.get("slug");
-	const { data, error: err, response } = await locals.api.GET("/projects", {
+	const { data } = await check(locals.api.GET("/projects", {
 		params: {
 			query: {
 				Size: Constants.PER_PAGE,
@@ -44,14 +46,11 @@ async function getProjects(locals: App.Locals, params: URLSearchParams) {
 				"filter[name]": name || undefined,
 			},
 		},
-	});
+	}));
 
-	if (err || !data) {
-		error(response.status, err?.title ?? "Something went wrong...");
-	}
-
-	return data;
+	return data!;
 }
+
 
 // ============================================================================
 
@@ -60,11 +59,11 @@ export const load: PageServerLoad = async ({ locals, url, params, parent }) => {
 	const subscribed = url.searchParams.get("subscribed") === "true";
 	if (subscribed || !parentData.isCurrentUser) {
 		return {
-			projects: getUserProjects(locals, url.searchParams, decodeID(params.id))
-		}
+			projects: await getUserProjects(locals, url.searchParams, decodeID(params.id)),
+		};
 	} else {
 		return {
-			projects: getProjects(locals, url.searchParams)
-		}
+			projects: await getProjects(locals, url.searchParams),
+		};
 	}
 };

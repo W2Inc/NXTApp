@@ -9,41 +9,18 @@ import { decodeID } from "$lib/utils";
 import { logger } from "$lib/logger";
 import { z } from "zod";
 import { success, validate } from "$lib/utils/form.svelte";
+import { check } from "$lib/utils/check.svelte";
+import { problem, type FormState, type PageFormBundle } from "$lib/utils/api.svelte";
 
 // ============================================================================
 
-const schema = z.object({
-	id: z.string().uuid(),
-});
+// async function getReviews(upId: string, locals: App.Locals, params: RouteParams) {
+// 	const { data } = await locals.api.GET("/reviews", {
+// 		params: { query: { "filter[user_project_id]": upId } },
+// 	});
 
-// ============================================================================
-
-async function getUserProject(locals: App.Locals, params: RouteParams) {
-	const { data } = await locals.api.GET("/users/{id}/projects", {
-		params: {
-			path: { id: decodeID(params.id) },
-			query: { "filter[slug]": params.project },
-		},
-	});
-
-	return data?.at(0);
-}
-
-async function getProject(locals: App.Locals, params: RouteParams) {
-	const { data } = await locals.api.GET("/projects", {
-		params: { query: { "filter[slug]": params.project } },
-	});
-
-	return data?.at(0);
-}
-
-async function getReviews(upId: string, locals: App.Locals, params: RouteParams) {
-	const { data } = await locals.api.GET("/reviews", {
-		params: { query: { "filter[user_project_id]": upId } },
-	});
-
-	return data ?? [];
-}
+// 	return data ?? [];
+// }
 
 async function subscribeToProject(projectId: string, locals: App.Locals, params: RouteParams) {
 	const { data, error: err } = await locals.api.POST("/users/{id}/projects/{projectId}", {
@@ -63,36 +40,41 @@ async function unSubscribeToProject(projectId: string, locals: App.Locals, param
 	return data!;
 }
 
+// export type FormBundle = PageFormBundle<
+// 	BackendTypes["ProjectPostRequestDTO"],
+// 	BackendTypes["ProjectPatchRequestDto"],
+// 	{
+// 		thumbnailUrl?: string | File;
+// 	}
+// >;
+
+export type FormBundle = PageFormBundle<{}, {}, { id: GUID }>;
+
+// ============================================================================
+async function getProjectMarkdown(id: GUID, locals: App.Locals) {
+	const { data } = await check(
+		locals.api.GET("/projects/{id}/markdown/{file}", {
+			parseAs: "text",
+			params: { path: { id, file: "README.md" } },
+		}),
+	);
+
+	return data;
+}
+
 // ============================================================================
 
-export const load: PageServerLoad = async ({ locals, params, request }) => {
-	const form = await validate(request, schema);
-	const [project, userProject] = await Promise.all([
-		getProject(locals, params),
-		getUserProject(locals, params),
-	]);
-
-	if (!project) {
-		error(404);
-	}
-
-	form.data.id = project.id;
-
-	// Project is still being developed
-	if (userProject && userProject.state !== "Active") {
-		return {
-			userProject: userProject,
-			project: project,
-			reviews: getReviews(userProject.id, locals, params),
-			form
-		};
-	}
-
+export const load: PageServerLoad = async ({ locals, params, request, parent }) => {
+	const { project } = await parent();
 	return {
-		userProject: userProject,
-		project: project,
-		reviews: [],
-		form
+		markdown: await getProjectMarkdown(project.id, locals),
+		form: {
+			data: {
+				id: project.id,
+			},
+			errors: {},
+			isLoading: false,
+		} as FormState<FormBundle>,
 	};
 };
 
@@ -100,16 +82,25 @@ export const load: PageServerLoad = async ({ locals, params, request }) => {
 
 export const actions: Actions = {
 	subscribe: async ({ locals, request, url, params }) => {
-		const form = await validate(request, schema);
-		logger.debug(`Form data on ${url}`, form.data);
-		await subscribeToProject(form.data.id, locals, params);
-		return success("Subscribed", { form });
+		const form = await request.formData();
+		logger.debug(`Form data on ${url}`, form.entries());
 
+		const id = form.get("id")?.toString();
+		if (!id)
+			return problem({ status: 400, title: "Missing project ID." })
+
+		await subscribeToProject(id, locals, params);
+		return success("Subscribed", { form });
 	},
 	unsubscribe: async ({ locals, request, url, params }) => {
-		const form = await validate(request, schema);
-		logger.debug(`Form data on ${url}`, form.data);
-		await unSubscribeToProject(form.data.id, locals, params);
-		return success("Unsubscribed", { form });
+		const form = await request.formData();
+		logger.debug(`Form data on ${url}`, form.entries());
+
+		const id = form.get("id")?.toString();
+		if (!id)
+			return problem({ status: 400, title: "Missing project ID." })
+
+		await unSubscribeToProject(id, locals, params);
+		return success("Subscribed", { form });
 	},
 };

@@ -52,12 +52,14 @@ public class RubricsController(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
         [FromQuery(Name = "filter[name]")] string? name,
-        [FromQuery(Name = "filter[project_id]")] string? projectId
+        [FromQuery(Name = "filter[project_id]")] string? projectId,
+        [FromQuery(Name = "filter[project_slug]")] string? projectSlug
     )
     {
         var filters = new FilterDictionary()
             .AddFilter("name", name)
-            .AddFilter("project_id", projectId);
+            .AddFilter("project_id", projectId)
+            .AddFilter("project_slug", projectSlug);
 
         var page = await rubricService.GetAllAsync(paging, sorting, filters);
         page.AppendHeaders(Response.Headers);

@@ -4,41 +4,10 @@
 // ============================================================================
 
 import { z } from "zod";
-import { XGraphV1 } from "@w2inc/xgraph";
 import type { Actions, PageServerLoad } from "./$types";
 import { validate } from "$lib/utils/form.svelte";
 
 // ============================================================================
-
-const node: XGraphV1.Node = {
-	id: 0,
-	parentId: -1,
-	goals: [],
-	children: [
-		{
-			id: 1,
-			parentId: 0,
-			goals: [],
-			children: [],
-		},
-		{
-			id: 2,
-			parentId: 0,
-			goals: [
-				{
-					goalGUID: "d0fd9301-e04c-e67d-865e-a075db322e13",
-				},
-				{
-					goalGUID: "d0fd9301-e04c-e67d-865e-a075db322e13",
-				},
-				{
-					goalGUID: "d0fd9301-e04c-e67d-865e-a075db322e13",
-				}
-			],
-			children: [],
-		},
-	],
-};
 
 const schema = z.object({
 	name: z.string(),
@@ -68,11 +37,11 @@ export const load: PageServerLoad = async ({ locals, request }) => {
 
 export const actions: Actions = {
 	default: ({ }) => {
-		const writer = new XGraphV1.Writer();
-		writer.serialize(node);
-		writer.toArrayBuffer()
+		// const writer = new XGraphV1.Writer();
+		// writer.serialize(node);
+		// writer.toArrayBuffer()
 
-		const reader = new XGraphV1.Reader(writer.toArrayBuffer());
-		reader.deserialize();
+		// const reader = new XGraphV1.Reader(writer.toArrayBuffer());
+		// reader.deserialize();
 	}
 };
