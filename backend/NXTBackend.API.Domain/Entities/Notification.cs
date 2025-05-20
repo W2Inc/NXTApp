@@ -11,14 +11,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace NXTBackend.API.Domain.Entities;
 
 [Table("tbl_notifications")]
-public class Notification : BaseEntity
+public class DatabaseNotification : BaseEntity
 {
-    public Notification()
+    public DatabaseNotification()
     {
+        ReadAt = null;
         Message = string.Empty;
         Kind = NotificationKind.Default;
         UserNotifications = new HashSet<UserNotification>();
     }
+    
+    /// <summary>
+    /// When the notification was read
+    /// </summary>
+    [Column("read_at")]
+    public DateTimeOffset? ReadAt { get; set; }
 
     /// <summary>
     /// The notification message

@@ -32,10 +32,6 @@ public sealed class UserProjectService : BaseService<UserProject>, IUserProjectS
     public async Task<bool> AddCollaborator(Guid entityId, Guid userId)
     {
 
-        _notificationService.CreateAsync(new()
-        {
-
-        });
         throw new NotImplementedException();
     }
 
