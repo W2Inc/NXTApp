@@ -39,6 +39,7 @@ public class Git : BaseEntity
         Namespace = string.Empty;
         Url = string.Empty;
         Branch = string.Empty;
+        Hash = null;
         ProviderType = GitProviderKind.Managed;
         OwnerType = OwnerKind.User;
     }
@@ -52,8 +53,19 @@ public class Git : BaseEntity
     [Column("git_url")]
     public string Url { get; set; }
 
+    /// <summary>
+    /// Branch to pin the git info to.
+    /// If null, then refer to the default branch and the latest commit (unless commit is null)
+    /// </summary>
     [Column("git_branch")]
     public string Branch { get; set; }
+
+    /// <summary>
+    /// Hash to pin the git info to.
+    /// If null, then refer to the latest branch commit.
+    /// </summary>
+    [Column("git_hash")]
+    public string? Hash { get; set; }
 
     [Column("git_provider")]
     public GitProviderKind ProviderType { get; set; }

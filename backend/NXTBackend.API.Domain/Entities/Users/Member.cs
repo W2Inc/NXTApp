@@ -52,6 +52,12 @@ public class Member : BaseEntity
     public MemberInviteState State { get; set; }
 
     /// <summary>
+    /// The state of the invite. On Decline the row will be removed.
+    /// </summary>
+    [Column("kind")]
+    public MemberKind Kind { get; set; }
+
+    /// <summary>
     /// The user that is part of the project.
     /// </summary>
     [Column("user_id")]

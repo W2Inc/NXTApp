@@ -54,7 +54,6 @@ public class Project : BaseEntity
     {
         Name = string.Empty;
         Description = string.Empty;
-        Markdown = string.Empty;
         Slug = string.Empty;
         ThumbnailUrl = null;
         Deprecated = false;
@@ -80,12 +79,6 @@ public class Project : BaseEntity
     /// </summary>
     [Column("description")]
     public string Description { get; set; }
-
-    /// <summary>
-    /// The markdown content of the feature.
-    /// </summary>
-    [Column("markdown")]
-    public string Markdown { get; set; }
 
     [Column("slug")]
     public string Slug { get; set; }
