@@ -5,6 +5,7 @@
 
 using Bogus;
 using Microsoft.Extensions.Caching.Distributed;
+using NXTBackend.API.Core.Notifications.Welcome;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Utils;

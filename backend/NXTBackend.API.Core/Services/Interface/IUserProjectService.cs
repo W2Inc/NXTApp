@@ -3,12 +3,15 @@
 // See README in the root project for more information.
 // ============================================================================
 
+using NXTBackend.API.Core.Services.Traits;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Interface;
-public interface IUserProjectService : IDomainService<UserProject>
+
+public interface IUserProjectService : IDomainService<UserProject>, ICollaborative<UserProject>
 {
+
 }

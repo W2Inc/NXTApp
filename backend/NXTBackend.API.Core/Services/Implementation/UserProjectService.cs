@@ -4,7 +4,6 @@ using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Domain.Services.Impl;
 using NXTBackend.API.Infrastructure.Database;
 
 namespace NXTBackend.API.Core.Services.Implementation;
@@ -37,9 +36,6 @@ public sealed class UserProjectService : BaseService<UserProject>, IUserProjectS
 
     public async Task<(UserProject?, User?)> IsCollaborator(Guid entityId, Guid userId)
     {
-
-
-        return
         throw new NotImplementedException();
     }
 

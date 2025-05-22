@@ -25,13 +25,12 @@ public class DatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasPostgresEnum<TaskState>();
-        modelBuilder.HasPostgresEnum<CursusKind>();
-        modelBuilder.HasPostgresEnum<MemberInviteState>();
-        modelBuilder.HasPostgresEnum<NotificationKind>();
-        modelBuilder.HasPostgresEnum<NotificationState>();
-        modelBuilder.HasPostgresEnum<ReviewKind>();
-        modelBuilder.HasPostgresEnum<ReviewState>();
+        // modelBuilder.HasPostgresEnum<TaskState>();
+        // modelBuilder.HasPostgresEnum<CursusKind>();
+        // modelBuilder.HasPostgresEnum<MemberInviteState>();
+        // modelBuilder.HasPostgresEnum<NotificationState>();
+        // modelBuilder.HasPostgresEnum<ReviewKind>();
+        // modelBuilder.HasPostgresEnum<ReviewState>();
 
         // Entities
         new ProjectConfiguration().Configure(modelBuilder.Entity<Project>());
@@ -48,7 +47,6 @@ public class DatabaseContext : DbContext
         new UserCursusConfiguration().Configure(modelBuilder.Entity<UserCursus>());
         new UserGoalConfiguration().Configure(modelBuilder.Entity<UserGoal>());
         new UserProjectConfiguration().Configure(modelBuilder.Entity<UserProject>());
-        new UserNotificationConfiguration().Configure(modelBuilder.Entity<UserNotification>());
 
         // Other
         new MemberConfiguration().Configure(modelBuilder.Entity<Member>());
@@ -76,7 +74,6 @@ public class DatabaseContext : DbContext
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<Member> Members { get; set; }
     public DbSet<Notification> Notifications { get; set; }
-    public DbSet<UserNotification> UserNotifications { get; set; }
     public DbSet<UserFeed> UserFeeds { get; set; }
     public DbSet<Feed> Feeds { get; set; }
 #nullable restore

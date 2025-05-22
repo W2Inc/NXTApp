@@ -8,7 +8,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Enums;
 
 // ============================================================================
 
@@ -97,11 +96,6 @@ public class User : BaseEntity
     /// All membership instances towards a user project.
     /// </summary>
     public virtual ICollection<Member> ProjectMember { get; set; }
-
-    /// <summary>
-    /// Notifications
-    /// </summary>
-    public virtual ICollection<UserNotification> UserNotifications { get; set; }
 
     /// <summary>
     /// Feeds where the user is the actor

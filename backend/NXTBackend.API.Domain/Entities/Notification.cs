@@ -4,23 +4,20 @@
 // ============================================================================
 
 using NXTBackend.API.Domain.Common;
-using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NXTBackend.API.Domain.Entities;
 
 [Table("tbl_notifications")]
-public class DatabaseNotification : BaseEntity
+public class Notification : BaseEntity
 {
-    public DatabaseNotification()
+    public Notification()
     {
         ReadAt = null;
-        Message = string.Empty;
-        Kind = NotificationKind.Default;
-        UserNotifications = new HashSet<UserNotification>();
+        State = NotificationState.Unprocessed;
     }
-    
+
     /// <summary>
     /// When the notification was read
     /// </summary>
@@ -28,25 +25,29 @@ public class DatabaseNotification : BaseEntity
     public DateTimeOffset? ReadAt { get; set; }
 
     /// <summary>
-    /// The notification message
+    /// The notification data.
     /// </summary>
-    [Column("message")]
-    public string Message { get; set; }
+    [Column("data", TypeName = "jsonb")]
+    public string Data { get; set; }
 
     /// <summary>
-    /// The type of notification
+    /// Notifications get dispatched at a set interval, this marks that it has been processed.
     /// </summary>
-    [Column("kind")]
-    public NotificationKind Kind { get; set; }
+    [Column("state")]
+    public NotificationState State { get; set; }
+
+    /// <summary>
+    /// The entity that received the notification.
+    ///
+    /// Given that UUIDv7's are *highly* unique we can simply query whatever entity against this
+    /// id and assume that if it is a match it was meant for it.
+    /// </summary>
+    [Column("notifiable_id")]
+    public Guid NotifiableId { get; set; }
 
     /// <summary>
     /// Optional reference to a resource this notification is about
     /// </summary>
     [Column("resource_id")]
     public Guid? ResourceId { get; set; }
-
-    /// <summary>
-    /// Collection of user-specific notification states
-    /// </summary>
-    public virtual ICollection<UserNotification> UserNotifications { get; set; }
 }

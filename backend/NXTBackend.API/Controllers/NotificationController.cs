@@ -6,6 +6,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using NXTBackend.API.Core.Notifications.Welcome;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
@@ -19,7 +20,8 @@ namespace NXTBackend.API.Controllers;
 [Route("notifications"), Authorize]
 public class NotificationController(
     ILogger<NotificationController> logger,
-    INotificationService notificationService
+    INotificationService notificationService,
+    IUserService userService
 ) : Controller
 {
     // [HttpGet("/notifications"), OutputCache(PolicyName = "1m")]
@@ -48,8 +50,11 @@ public class NotificationController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data)
     {
-        var entity = await notificationService.SendNotificationRangeAsync([data.UserId], data.Message, data.Kind);
-        return Ok(new NotificationDO(entity));
+        var user = await userService.FindByIdAsync(data.UserId);
+        if (user is null)
+            return NotFound();
+        await notificationService.ToUser(user, new Welcome(user));
+        return Ok();
     }
 
     // [HttpPost("/notifications/read")]

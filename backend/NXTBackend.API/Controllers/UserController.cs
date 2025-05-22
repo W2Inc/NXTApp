@@ -6,6 +6,8 @@
 using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.OutputCaching;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
@@ -115,7 +117,7 @@ public class UserController(
         if (user is null)
             return Forbid();
 
-        await notificationService.MarkAsReadAsync(user.Id, notificationIds);
+        // await notificationService.MarkAsReadAsync(user.Id, notificationIds);
         return Ok();
     }
 
@@ -132,7 +134,7 @@ public class UserController(
         if (user is null)
             return Forbid();
 
-        await notificationService.MarkAsUnreadAsync(user.Id, notificationIds);
+        // await notificationService.MarkAsUnreadAsync(user.Id, notificationIds);
         return Ok();
     }
 
@@ -407,8 +409,12 @@ public class UserController(
     [EndpointDescription("Send a invitation to a user project")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> InviteUserToUserPorject(Guid id)
+    public async Task<IActionResult> InviteUserToUserPorject(Guid id, INotificationService notification)
     {
+        var user = await userService.FindByIdAsync(id);
+
+
+        // await notification.Send(user, new WelcomeNotification(user));
         throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
     }
 

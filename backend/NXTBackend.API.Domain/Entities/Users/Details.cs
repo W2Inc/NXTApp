@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NXTBackend.API.Domain.Common;
+using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Domain.Entities.Users;
 
@@ -18,6 +19,7 @@ public class Details : BaseEntity
         RedditUrl = null;
         WebsiteUrl = null;
         User = null!;
+        NotificationPreference = NotificationPreference.All;
     }
 
     [Column("user_id")]
@@ -37,6 +39,9 @@ public class Details : BaseEntity
 
     [Column("last_name")]
     public string? LastName { get; set; }
+
+    [Column("notification_preference")]
+    public NotificationPreference NotificationPreference { get; set; }
 
     [Column("github_url")]
     public string? GithubUrl { get; set; }

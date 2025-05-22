@@ -19,8 +19,8 @@ public class NotificationPostDTO
     /// <summary>
     /// The type of notification
     /// </summary>
-    [Required]
-    public NotificationKind Kind { get; set; }
+    // [Required]
+    // public NotificationKind Kind { get; set; }
 
     /// <summary>
     /// The ID of the user to send the notification to

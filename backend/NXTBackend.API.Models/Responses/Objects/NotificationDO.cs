@@ -13,22 +13,22 @@ public class NotificationDO : BaseObjectDO<Notification>
 {
     public NotificationDO(Notification notification) : base(notification)
     {
-        Message = notification.Message;
-        Kind = notification.Kind;
+        // Message = notification.Message;
+        // Kind = notification.Kind;
         ResourceId = notification.ResourceId;
     }
 
     /// <summary>
     /// The notification message
     /// </summary>
-    [Required]
-    public string Message { get; set; }
+    // [Required]
+    // public string Message { get; set; }
 
     /// <summary>
     /// The type of notification
     /// </summary>
-    [Required]
-    public NotificationKind Kind { get; set; }
+    // [Required]
+    // public NotificationKind Kind { get; set; }
 
     /// <summary>
     /// Optional reference to a resource this notification is about

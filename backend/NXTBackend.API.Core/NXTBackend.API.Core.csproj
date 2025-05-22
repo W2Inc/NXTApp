@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
-    <PackageReference Include="Snowberry.IO" Version="2.0.0.1" />
+    <PackageReference Include="Snowberry.IO" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,4 +17,10 @@
     <ProjectReference Include="..\NXTBackend.API.Models\NXTBackend.API.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Notifications\**\*.html">
+      <Link>templates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

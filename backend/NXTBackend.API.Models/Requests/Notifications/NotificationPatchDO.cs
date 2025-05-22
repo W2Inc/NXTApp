@@ -17,11 +17,6 @@ public class NotificationPatchDTO
     public string? Message { get; set; }
 
     /// <summary>
-    /// The type of notification
-    /// </summary>
-    public NotificationKind? Kind { get; set; }
-
-    /// <summary>
     /// Optional reference to a resource this notification is about
     /// </summary>
     public Guid? ResourceId { get; set; }

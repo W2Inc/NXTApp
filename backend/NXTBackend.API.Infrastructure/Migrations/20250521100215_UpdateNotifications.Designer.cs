@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NXTBackend.API.Infrastructure.Database;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NXTBackend.API.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250521100215_UpdateNotifications")]
+    partial class UpdateNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,6 +26,12 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "cursus_kind", new[] { "dynamic", "fixed" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "member_invite_state", new[] { "pending", "accepted" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "notification_state", new[] { "none", "read" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "review_kind", new[] { "self", "peer", "async", "auto" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "review_state", new[] { "pending", "in_progress", "finished" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "task_state", new[] { "inactive", "active", "awaiting", "completed" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("CollaboratorsOnCursi", b =>
@@ -542,10 +551,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("resource_id");
 
-                    b.Property<int>("State")
-                        .HasColumnType("integer")
-                        .HasColumnName("state");
-
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -781,10 +786,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasMaxLength(16384)
                         .HasColumnType("character varying(16384)")
                         .HasColumnName("bio");
-
-                    b.Property<int>("NotificationPreference")
-                        .HasColumnType("integer")
-                        .HasColumnName("notification_preference");
 
                     b.Property<string>("RedditUrl")
                         .HasColumnType("text")

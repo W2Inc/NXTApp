@@ -15,15 +15,15 @@ namespace NXTBackend.API.Domain.Enums;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum NotificationState
 {
-    /// <summary>
-    /// The user has taken no action on this notification thus far
-    /// </summary>
-    [JsonPropertyName(nameof(None))]
-    None,
 
-    /// <summary>
-    /// The user marked this notification as read
-    /// </summary>
-    [JsonPropertyName(nameof(Read))]
-    Read,
+    [JsonPropertyName(nameof(Unprocessed))]
+    Unprocessed,
+
+
+    [JsonPropertyName(nameof(Dispatched))]
+    Dispatched,
+
+
+    [JsonPropertyName(nameof(Failed))]
+    Failed,
 }

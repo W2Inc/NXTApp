@@ -23,7 +23,6 @@ using NXTBackend.API.Core.Services;
 using NXTBackend.API.Core.Services.Implementation;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Domain.Services.Impl;
 using NXTBackend.API.Infrastructure;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
@@ -34,6 +33,7 @@ using NXTBackend.API.Models.Responses.Objects;
 using NXTBackend.API.Options;
 using NXTBackend.API.Utils;
 using Quartz;
+using Resend;
 using Serilog;
 using Serilog.Templates;
 using Serilog.Templates.Themes;
@@ -145,6 +145,15 @@ public static class Startup
             c.Timeout = TimeSpan.FromSeconds(30);
         });
 
+        // Resend
+        services.AddOptions();
+        services.AddHttpClient<ResendClient>();
+        services.Configure<ResendClientOptions>(o =>
+        {
+            o.ApiToken = builder.Configuration["Resend:Token"]
+                ?? "demo";
+        });
+
         // Dependency Injection for Services
         services.AddHttpContextAccessor();
         services.AddScoped<ICursusService, CursusService>();
@@ -163,6 +172,7 @@ public static class Startup
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IFeedService, FeedService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
+        services.AddTransient<IResend, ResendClient>();
         services.AddSingleton(TimeProvider.System);
 
         // Rate Limiting
@@ -229,6 +239,7 @@ public static class Startup
             q.UseDefaultThreadPool(x => x.MaxConcurrency = 5);
 
             RegisterJob<ReviewCompositionJob>(q);
+            RegisterJob<DispatchNotificationsJob>(q);
         });
 
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
