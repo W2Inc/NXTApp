@@ -1,97 +1,87 @@
-// ============================================================================
-// Copyright (c) 2024 - W2Wizard.
-// See README.md in the project root for license information.
-// ============================================================================
-
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
+using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Services.Interface.Queues;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Jobs.Interface;
-using NXTBackend.API.Models.Shared;
+using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Resend;
-
-// ============================================================================
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace NXTBackend.API.Jobs;
 
-/// <summary>
-/// A job that computes the composition of a project's review.
-/// Essentially projects are made up of multiple reviews.
-/// </summary>
-/// <param name="ctx">Database</param>
-/// <param name="logger">Logger</param>
-public class DispatchNotificationsJob(ILogger<DispatchNotificationsJob> logger, DatabaseContext ctx, IResend resend) : IScheduledJob
+[DisallowConcurrentExecution]
+public class DispatchNotificationsJob(
+	DatabaseContext ctx,
+	ILogger<DispatchNotificationsJob> logger,
+	INotificationQueue queue,
+	IDistributedCache cache,
+	IResend resend
+) : IScheduledJob
 {
-    /// <inheritdoc />
-    public static string Identity => nameof(DispatchNotificationsJob);
 
-    /// <inheritdoc />
-    public static string? Schedule => "0 0/5 * ? * *";
+	public static string Identity => nameof(DispatchNotificationsJob);
+
+	public static string? Schedule => "0 0/1 * ? * *";
+
+	public async Task Execute(IJobExecutionContext context)
+	{
+		logger.LogInformation("{Job} is starting", Identity);
 
 
-    /// <inheritdoc />
-    public async Task Execute(IJobExecutionContext context)
-    {
-        logger.LogInformation("{Job} is starting", Identity);
-        var pendingNotifications = await ctx.Notifications
-            .Where(n => n.State != NotificationState.Dispatched)
-            .ToListAsync(context.CancellationToken);
+		// Early return if queue is empty
+		if (queue.QueueLength == 0)
+		{
+			logger.LogInformation("{Job} finished early. No notifications in queue: {Length}", Identity, queue.QueueLength);
+			return;
+		}
 
-        if (pendingNotifications.Count == 0)
-        {
-            logger.LogInformation("{Job} finished early. Nothing to dispatch", Identity);
-            return;
-        }
+		var emails = new List<EmailMessage>(queue.QueueLength);
+		while (queue.TryDequeue(out var notificationEntry))
+		{
+			var (user, notification) = notificationEntry;
+			logger.LogInformation("Processing notification for user {userId}", user.Id);
+			if (!notification.ShouldSend())
+			{
+				if (notification.ShouldBeDiscarded())
+				{
+					logger.LogDebug("Notification will be discarded");
+					return;
+				}
 
-        logger.LogInformation("Found {Count} notifications to dispatch", pendingNotifications.Count);
-        var successfulIds = new List<Guid>();
-        var failedIds = new List<Guid>();
+				queue.Enqueue(user, notification);
+				logger.LogDebug("Notification will be re-queued");
+				continue;
+			}
 
-        foreach (var notification in pendingNotifications)
-        {
-            try
-            {
-                logger.LogInformation("Processing notification ID: {Id}", notification.Id);
-                var data = JsonSerializer.Deserialize<NotificationDataDO>(notification.Data);
+			var mail = notification.ToMail();
+			if (mail is not null)
+			{
+				emails.Add(new EmailMessage
+				{
+					HtmlBody = mail.Body,
+					Subject = mail.Subject,
+					To = mail.To.Select(addr => addr.Address).ToArray()
+				});
+			}
 
-                if (data?.Text is not null)
-                {
-                    // Process text notification
-                }
+			var text = notification.ToText();
+			if (text is not null)
+			{
+				// Here you would implement the actual SMS sending logic
+				// For example, using Twilio or another SMS service
+			}
 
-                // TODO: Implement actual email sending using the resend service
-                // Example: await resend.Emails.SendAsync(new EmailMessage { ... });
+			await ctx.Notifications.AddAsync(notification.ToDatabase(), context.CancellationToken);
+		}
 
-                successfulIds.Add(notification.Id);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to process notification ID: {Id}", notification.Id);
-                failedIds.Add(notification.Id);
-            }
-        }
-
-        if (successfulIds.Count != 0)
-        {
-            await ctx.Notifications
-                .Where(n => successfulIds.Contains(n.Id))
-                .ExecuteUpdateAsync(
-                    setters => setters.SetProperty(n => n.State, NotificationState.Dispatched),
-                    context.CancellationToken);
-
-            logger.LogInformation("Successfully dispatched {Count} notifications", successfulIds.Count);
-        }
-        if (failedIds.Count != 0)
-        {
-            await ctx.Notifications
-                .Where(n => failedIds.Contains(n.Id))
-                .ExecuteUpdateAsync(
-                    setters => setters.SetProperty(n => n.State, NotificationState.Failed),
-                    context.CancellationToken);
-
-            logger.LogWarning("{Count} notifications failed to dispatch", failedIds.Count);
-        }
-    }
+		// Send all emails in a single batch
+		if (emails.Count > 0)
+		{
+			logger.LogInformation("Sending {count} email notifications in batch", emails.Count);
+			// var response = await resend.EmailBatchAsync([.. emails], context.CancellationToken);
+		}
+		
+		await ctx.SaveChangesAsync(context.CancellationToken);
+	}
 }

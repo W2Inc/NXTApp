@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using NXTBackend.API.Core.Notifications.Welcome;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Services.Interface.Queues;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
@@ -21,6 +22,7 @@ namespace NXTBackend.API.Controllers;
 public class NotificationController(
     ILogger<NotificationController> logger,
     INotificationService notificationService,
+	INotificationQueue notifications,
     IUserService userService
 ) : Controller
 {
@@ -50,10 +52,13 @@ public class NotificationController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data)
     {
-        var user = await userService.FindByIdAsync(data.UserId);
+        var user = await userService
+			.Include(x => x.Details)
+			.FindByIdAsync(data.UserId);
+			
         if (user is null)
-            return NotFound();
-        await notificationService.ToUser(user, new Welcome(user));
+			return NotFound();
+		notifications.Enqueue(user, new Welcome(user));
         return Ok();
     }
 

@@ -10,33 +10,43 @@ using System.Net;
 
 namespace NXTBackend.API.Core.Notifications.Welcome;
 
-public class Welcome(User user) : Notification
+public class Welcome : Notification
 {
     public override string View => nameof(Welcome);
+	
+	private readonly User user;
 
-    public override MailMessage ToMail()
-    {
-        var mail = new MailMessage();
+	public Welcome(User to)
+	{
+		user = to;
+	}
 
-        mail.To.Add(user.Details?.Email ?? throw new ServiceException("No Email!"));
-        mail.Subject = "Welcome to our platform!";
+	public override MailMessage ToMail()
+	{
+		var mail = new MailMessage();
 
-        // Render the view to HTML
-        // TODO: Instead I may want to use Razor, but I don't wanna spend 6 years implementing that now
-        mail.Body = GetTemplate()
-            .Replace("{{login}}", user.Login);
-        mail.IsBodyHtml = true;
+		mail.To.Add(user.Details?.Email ?? throw new ServiceException("No Email!"));
+		mail.Subject = "Welcome to our platform!";
 
-        return mail;
-    }
+		// Render the view to HTML
+		// TODO: Instead I may want to use Razor, but I don't wanna spend 6 years implementing that now
+		mail.Body = GetTemplate()
+			.Replace("{{login}}", user.Login);
+		mail.IsBodyHtml = true;
+
+		return mail;
+	}
 
     public override bool ShouldSend()
     {
-        return user.Details?.Email is not null;
+        return true;
     }
 
     public override Domain.Entities.Notification ToDatabase()
     {
-        throw new NotImplementedException();
+        return new Domain.Entities.Notification
+		{
+			Type = nameof(Welcome),
+		};
     }
 }

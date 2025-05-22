@@ -15,7 +15,6 @@ public class NotificationDO : BaseObjectDO<Notification>
     {
         // Message = notification.Message;
         // Kind = notification.Kind;
-        ResourceId = notification.ResourceId;
     }
 
     /// <summary>

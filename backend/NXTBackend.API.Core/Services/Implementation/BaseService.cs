@@ -14,22 +14,22 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// <typeparam name="T"></typeparam>
 public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 {
-    protected readonly DatabaseContext _context;
-    protected readonly DbSet<T> _dbSet;
-    protected readonly Dictionary<string, Func<IQueryable<T>, object?, IQueryable<T>>> _filterHandlers;
+	protected readonly DatabaseContext _context;
+	protected readonly DbSet<T> _dbSet;
+	protected readonly Dictionary<string, Func<IQueryable<T>, object?, IQueryable<T>>> _filterHandlers;
+	private readonly List<Expression<Func<T, object>>> _includes = new();
 
-    public BaseService(DatabaseContext context)
-    {
-        _context = context;
-        _dbSet = context.Set<T>();
-        _filterHandlers = new()
-        {
-            // Base filters availble for all entities
-            ["id"] = (query, value) => value is Guid id ? query.Where(e => e.Id == id) : query,
-            ["created_at"] = (query, value) => value is DateTimeOffset date ? query.Where(e => e.CreatedAt == date) : query,
-            ["updated_at"] = (query, value) => value is DateTimeOffset date ? query.Where(e => e.UpdatedAt == date) : query
-        };
-    }
+	public BaseService(DatabaseContext context)
+	{
+		_context = context;
+		_dbSet = context.Set<T>();
+		_filterHandlers = new()
+		{
+			["id"] = (query, value) => value is Guid id ? query.Where(e => e.Id == id) : query,
+			["created_at"] = (query, value) => value is DateTimeOffset date ? query.Where(e => e.CreatedAt == date) : query,
+			["updated_at"] = (query, value) => value is DateTimeOffset date ? query.Where(e => e.UpdatedAt == date) : query
+		};
+	}
 
     /// <summary>
     /// Registers a new filter handler that can perform any query transformation
@@ -47,71 +47,82 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
         };
     }
 
-    /// <summary>
-    /// Applies the provided filters to the query
-    /// </summary>
-    protected virtual IQueryable<T> ApplyFilters(IQueryable<T> query, FilterDictionary? filters)
-    {
-        if (filters is null || !filters.Any())
-            return query;
+	protected IQueryable<T> CreateQuery(bool tracking = true)
+	{
+		var query = tracking ? _dbSet : _dbSet.AsNoTracking();
 
-        foreach (var filter in filters)
-            if (_filterHandlers.TryGetValue(filter.Key.ToLowerInvariant(), out var handler))
-                query = handler(query, filter.Value);
-        return query;
-    }
+		foreach (var include in _includes)
+		{
+			query = query.Include(include);
+		}
 
-    /// <inheritdoc />
-    public virtual async Task<T?> FindByIdAsync(Guid id)
-    {
-        return await _dbSet
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id);
-    }
+		_includes.Clear();
+		return query;
+	}
 
-    /// <inheritdoc />
-    public virtual async Task<bool> AreValid(IEnumerable<Guid> ids)
-    {
-        if (!ids.Any())
-            return true;
+	protected virtual IQueryable<T> ApplyFilters(IQueryable<T> query, FilterDictionary? filters)
+	{
+		if (filters is null || !filters.Any())
+			return query;
 
-        var idSet = new HashSet<Guid>(ids);
-        var existingCount = await _dbSet.AsNoTracking()
-            .Where(p => idSet.Contains(p.Id))
-            .CountAsync();
+		foreach (var filter in filters)
+			if (_filterHandlers.TryGetValue(filter.Key.ToLowerInvariant(), out var handler))
+				query = handler(query, filter.Value);
+		return query;
+	}
 
-        return existingCount == idSet.Count;
-    }
+	public virtual async Task<T?> FindByIdAsync(Guid id)
+	{
+		return await CreateQuery(tracking: false)
+			.FirstOrDefaultAsync(x => x.Id == id);
+	}
 
-    /// <inheritdoc />
-    public virtual async Task<T> CreateAsync(T entity)
-    {
-        var createdEntity = await _dbSet.AddAsync(entity);
-        await _context.SaveChangesAsync();
-        return createdEntity.Entity;
-    }
+	public virtual async Task<bool> AreValid(IEnumerable<Guid> ids)
+	{
+		if (!ids.Any())
+			return true;
 
-    /// <inheritdoc />
-    public virtual async Task<T> UpdateAsync(T entity)
-    {
-        _dbSet.Update(entity);
-        await _context.SaveChangesAsync();
-        return entity;
-    }
+		var idSet = new HashSet<Guid>(ids);
+		var existingCount = await CreateQuery(tracking: false)
+			.Where(p => idSet.Contains(p.Id))
+			.CountAsync();
 
-    /// <inheritdoc />
-    public virtual async Task<T> DeleteAsync(T entity)
-    {
-        _dbSet.Remove(entity);
-        await _context.SaveChangesAsync();
-        return entity;
-    }
+		return existingCount == idSet.Count;
+	}
 
-    /// <inheritdoc />
-    public virtual async Task<PaginatedList<T>> GetAllAsync(PaginationParams pagination, SortingParams sorting, FilterDictionary? filters = null)
-    {
-        var query = ApplyFilters(_dbSet.AsQueryable(), filters);
-        // query = await SortedList<T>.ApplyAsync(query, sorting);
-        return await PaginatedList<T>.CreateAsync(query, pagination.Page, pagination.Size);
-    }
+	public virtual async Task<T> CreateAsync(T entity)
+	{
+		var createdEntity = await _dbSet.AddAsync(entity);
+		await _context.SaveChangesAsync();
+		return createdEntity.Entity;
+	}
+
+	public virtual async Task<T> UpdateAsync(T entity)
+	{
+		_dbSet.Update(entity);
+		await _context.SaveChangesAsync();
+		return entity;
+	}
+
+	public virtual async Task<T> DeleteAsync(T entity)
+	{
+		_dbSet.Remove(entity);
+		await _context.SaveChangesAsync();
+		return entity;
+	}
+
+	public virtual async Task<PaginatedList<T>> GetAllAsync(
+		PaginationParams pagination,
+		SortingParams sorting,
+		FilterDictionary? filters = null)
+	{
+		var query = ApplyFilters(CreateQuery(), filters);
+		return await PaginatedList<T>.CreateAsync(query, pagination.Page, pagination.Size);
+	}
+
+	IDomainService<T> IDomainService<T>.Include(Expression<Func<T, object>> includeExpression)
+	{
+		_includes.Add(includeExpression);
+		return this;
+	}
 }

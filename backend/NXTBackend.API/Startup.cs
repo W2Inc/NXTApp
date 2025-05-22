@@ -21,7 +21,9 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Services;
 using NXTBackend.API.Core.Services.Implementation;
+using NXTBackend.API.Core.Services.Implementation.Queues;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Services.Interface.Queues;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure;
 using NXTBackend.API.Infrastructure.Database;
@@ -173,6 +175,7 @@ public static class Startup
         services.AddScoped<IFeedService, FeedService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
         services.AddTransient<IResend, ResendClient>();
+        services.AddSingleton<INotificationQueue, InMemoryNotificationQueue>();
         services.AddSingleton(TimeProvider.System);
 
         // Rate Limiting
@@ -245,30 +248,31 @@ public static class Startup
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
     }
 
-    private static void AddDistributedCache(WebApplicationBuilder builder)
-    {
-        try
-        {
-            var redis = builder.Configuration.GetConnectionString("Cache")
-                ?? throw new Exception("Missing Cache connection string. Please configure.");
-            var password = builder.Configuration["NXTCache:Password"]
-                ?? throw new Exception("Missing Cache password. Please configure.");
+	private static void AddDistributedCache(WebApplicationBuilder builder)
+	{
+		try
+		{
+			var redis = builder.Configuration.GetConnectionString("Cache")
+				?? throw new Exception("Missing Cache connection string. Please configure.");
+			var password = builder.Configuration["NXTCache:Password"]
+				?? throw new Exception("Missing Cache password. Please configure.");
 
-            builder.Services.AddStackExchangeRedisCache(o =>
-            {
-                o.Configuration = $"{redis},password={password}";
-                o.InstanceName = "NXTCache";
-            });
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Using memory cache instead of Cache");
-            builder.Services.AddDistributedMemoryCache();
-        }
-        finally
-        {
-            Log.Information("Cache configured");
-        }
+			builder.Services.AddStackExchangeRedisCache(o =>
+			{
+				o.Configuration = $"{redis},password={password}";
+				o.InstanceName = "NXTCache";
+			});
+		}
+		catch (Exception ex)
+		{
+			Log.Error(ex, "Using memory cache instead of Cache");
+			builder.Services.AddDistributedMemoryCache();
+		}
+		finally
+		{
+			Log.Information("Cache configured");
+		}
+		
     }
 
     public static void RegisterJob<Job>(IServiceCollectionQuartzConfigurator quartz) where Job : IScheduledJob

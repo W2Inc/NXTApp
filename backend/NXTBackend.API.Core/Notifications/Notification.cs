@@ -5,8 +5,13 @@ namespace NXTBackend.API.Core.Notifications;
 /// <summary>
 /// Represents an abstract base class for notifications that can be sent through various channels.
 /// </summary>
-public abstract class Notification()
+public abstract class Notification
 {
+    /// <summary>
+    /// The ID of the user who should receive this notification
+    /// </summary>
+    public Guid NotifiableId { get; set; }
+
     /// <summary>
     /// Gets the view name for this notification.
     /// Can be overridden by implementing classes.
@@ -24,7 +29,7 @@ public abstract class Notification()
     public virtual string ToText() => string.Empty;
 
     /// <summary>
-    /// Stores this notification in the database using the provided service.
+    /// Stores this notification in the database.
     /// Must be implemented by derived classes.
     /// </summary>
     public abstract Domain.Entities.Notification ToDatabase();
@@ -33,28 +38,18 @@ public abstract class Notification()
     /// Determines whether this notification should be sent.
     /// </summary>
     public virtual bool ShouldSend() => true;
+	
+	/// <summary>
+    /// Determines whether this notification should be ignored / discarded.
+    /// </summary>
+    public virtual bool ShouldBeDiscarded() => false;
 
     /// <summary>
-    /// Retrieves the View (HTML) of this notification
-    /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    public string GetTemplate()
-    {
-        // string cacheKey = $"template_{View}";
-        // var cachedTemplate = _cache.GetString(cacheKey);
-        // if (!string.IsNullOrEmpty(cachedTemplate))
-        //     return cachedTemplate;
-
-        // Cache miss - read from file
-        string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "templates", $"{View}.html");
-        string template = File.ReadAllText(templatePath);
-        // var cacheOptions = new DistributedCacheEntryOptions
-        // {
-        //     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
-        // };
-
-        // _cache.SetString(cacheKey, template, cacheOptions);
-        return template;
-    }
+	/// Retrieves the HTML template for this notification
+	/// </summary>
+	public string GetTemplate()
+	{
+		string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "templates", $"{View}.html");
+		return File.ReadAllText(templatePath);
+	}
 }

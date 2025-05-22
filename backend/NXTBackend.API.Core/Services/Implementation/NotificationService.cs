@@ -45,17 +45,7 @@ public class NotificationService : BaseService<Notification>, INotificationServi
 
     public async Task<bool> ToUser(User user, Notifications.Notification notification)
     {
-        var message = notification.ToMail();
-        await _dbSet.AddAsync(new()
-        {
-            Data = JsonSerializer.Serialize(new NotificationDataDO()
-            {
-                Html = message.Body,
-                Text = notification.ToText(),
-                RecipientAddress = message.To.First().Address,
-                Subject = message.Subject
-            })
-        });
+		_context.Notifications.Include
 
         await _context.SaveChangesAsync();
         return true;
