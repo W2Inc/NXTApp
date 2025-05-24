@@ -26,25 +26,26 @@ public class NotificationController(
     IUserService userService
 ) : Controller
 {
-    // [HttpGet("/notifications"), OutputCache(PolicyName = "1m")]
-    // [EndpointSummary("Get all notifications")]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    // public async Task<ActionResult<IEnumerable<NotificationDO>>> GetAll(
-    //     [FromQuery] PaginationParams paging,
-    //     [FromQuery] SortingParams sorting,
-    //     [FromQuery(Name = "filter[id]")] Guid? id
-    // )
-    // {
-    //     var filters = new FilterDictionary()
-    //         .AddFilter(nameof(id), id)
-    //         // Notifications are by default, private, as such we can only give back system wide ones.
-    //         .AddFilter("type", NotificationKind.System);
+    [HttpGet("/notifications"), OutputCache(PolicyName = "1m")]
+    [EndpointSummary("Get all notifications")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<NotificationDO>>> GetAll(
+        [FromQuery] PaginationParams paging,
+        [FromQuery] SortingParams sorting,
+        [FromQuery(Name = "filter[id]")] Guid? id,
+        [FromQuery(Name = "filter[read]")] bool? read
+    )
+    {
+        var filters = new FilterDictionary()
+            .AddFilter(nameof(id), id)
+            .AddFilter(nameof(read), read)
+            .AddFilter("user_id", User.GetSID());
 
-    //     var page = await notificationService.GetAllAsync(paging, sorting, filters);
-    //     page.AppendHeaders(Response.Headers);
-    //     return Ok(page.Items.Select(item => new NotificationDO(item)));
-    // }
+        var page = await notificationService.GetAllAsync(paging, sorting, filters);
+        page.AppendHeaders(Response.Headers);
+        return Ok(page.Items.Select(item => new NotificationDO(item)));
+    }
 
     [HttpPost("/notifications"), /* Authorize(Roles = "admin") */]
     [EndpointSummary("Create a notification")]
@@ -53,72 +54,39 @@ public class NotificationController(
     public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data)
     {
         var user = await userService
-			.Include(x => x.Details)
 			.FindByIdAsync(data.UserId);
-			
+
         if (user is null)
 			return NotFound();
 		notifications.Enqueue(user, new Welcome(user));
         return Ok();
     }
 
-    // [HttpPost("/notifications/read")]
-    // [EndpointSummary("Mark notifications as read")]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    // public async Task<IActionResult> MarkAsRead([FromBody] IEnumerable<Guid> notificationIds)
-    // {
-    //     // Validate that the notifications exist and user has access to them
-    //     var notifications = await notificationService.FindByIdsAsync(notificationIds);
-    //     var invalidIds = notificationIds.Except(notifications.Select(n => n.Id));
+    [HttpPost("/notifications/read")]
+    [EndpointSummary("Mark notifications as read")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> MarkAsRead([FromBody] IEnumerable<Guid>? notificationIds)
+    {
+        if (notificationIds is not null && !await notificationService.AreValid(notificationIds))
+            return BadRequest("Request contains invalid Notification IDs");
 
-    //     if (invalidIds.Any())
-    //     {
-    //         return BadRequest($"Invalid notification IDs: {string.Join(", ", invalidIds)}");
-    //     }
+        await notificationService.MarkAsReadAsync(User.GetSID(), notificationIds);
+        return Ok();
+    }
 
-    //     // Check if user has access to these notifications
-    //     var userId = User.GetSID();
-    //     var unauthorized = notifications.Where(n =>
-    //         n.Kind != NotificationKind.System &&
-    //         !n.UserNotifications.Any(un => un.UserId == userId));
+    [HttpPost("/notifications/unread")]
+    [EndpointSummary("Mark notifications as unread")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> MarkAUnRead([FromBody] IEnumerable<Guid>? notificationIds)
+    {
+        if (notificationIds is not null && !await notificationService.AreValid(notificationIds))
+            return BadRequest("Request contains invalid Notification IDs");
 
-    //     if (unauthorized.Any())
-    //     {
-    //         return Forbid();
-    //     }
-
-    //     await notificationService.MarkAsReadAsync(userId, notificationIds);
-    //     return Ok();
-    // }
-
-    // [HttpGet("/notifications/{id:guid}")]
-    // [EndpointSummary("Get a notification")]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    // public async Task<ActionResult<NotificationDO>> Get(Guid id)
-    // {
-    //     var entity = await notificationService.FindByIdAsync(id);
-    //     if (entity is null)
-    //         return NotFound();
-    //     return Ok(new NotificationDO(entity));
-    // }
-
-    // [HttpPatch("/notifications/{id:guid}"), Authorize(Roles = "admin")]
-    // [EndpointSummary("Update a notification")]
-    // [ProducesResponseType(StatusCodes.Status200OK)]
-    // [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    // public async Task<ActionResult<NotificationDO>> Update(Guid id, [FromBody] NotificationPatchDTO data)
-    // {
-    //     var entity = await notificationService.FindByIdAsync(id);
-    //     if (entity is null)
-    //         return NotFound();
-    //     if (!User.IsAdmin())
-    //         return Forbid();
-
-    //     var updatedNotification = await notificationService.UpdateAsync(entity);
-    //     return Ok(new NotificationDO(updatedNotification));
-    // }
+        await notificationService.MarkAsUnreadAsync(User.GetSID(), notificationIds);
+        return Ok();
+    }
 
     [HttpDelete("/notifications/{id:guid}"), Authorize(Roles = "admin")]
     [EndpointSummary("Delete a notification")]

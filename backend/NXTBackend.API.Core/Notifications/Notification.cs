@@ -1,4 +1,5 @@
 using System.Net.Mail;
+using NXTBackend.API.Domain.Entities;
 
 namespace NXTBackend.API.Core.Notifications;
 
@@ -21,12 +22,18 @@ public abstract class Notification
     /// <summary>
     /// Sends this notification as an email.
     /// </summary>
-    public virtual MailMessage ToMail() => new();
+    public virtual MailMessage? ToMail() => null;
 
     /// <summary>
     /// Sends this notification as a text message.
     /// </summary>
-    public virtual string ToText() => string.Empty;
+    public virtual string? ToText() => null;
+
+    /// <summary>
+    /// If defined will create a feed response.
+    /// </summary>
+    /// <returns></returns>
+    public virtual Feed? ToFeed() => null;
 
     /// <summary>
     /// Stores this notification in the database.
@@ -38,7 +45,7 @@ public abstract class Notification
     /// Determines whether this notification should be sent.
     /// </summary>
     public virtual bool ShouldSend() => true;
-	
+
 	/// <summary>
     /// Determines whether this notification should be ignored / discarded.
     /// </summary>

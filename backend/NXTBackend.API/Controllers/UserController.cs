@@ -409,7 +409,7 @@ public class UserController(
     [EndpointDescription("Send a invitation to a user project")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> InviteUserToUserPorject(Guid id, INotificationService notification)
+    public async Task<IActionResult> InviteUserToUserPorject(Guid id, INotificationService notification, IFeedService feed)
     {
         var user = await userService.FindByIdAsync(id);
 

@@ -19,6 +19,7 @@ public enum FeedKind
     [JsonPropertyName(nameof(NewUser))]
     NewUser = 1 << 0,
 
+
     /// <summary>
     /// Some user has completed a project, hoorah!
     /// </summary>
@@ -60,4 +61,10 @@ public enum FeedKind
     /// </summary>
     [JsonPropertyName(nameof(CursusDeprecated))]
     CursusDeprecated = 1 << 7,
+
+        /// <summary>
+    /// A new user has joined the app
+    /// </summary>
+    [JsonPropertyName(nameof(Invite))]
+    Invite = 1 << 8,
 }
