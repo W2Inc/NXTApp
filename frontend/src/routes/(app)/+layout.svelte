@@ -32,7 +32,7 @@
 	<ModeWatcher defaultMode="system"/>
 	<DialogProvider />
 	{#if data.session}
-		<Toaster closeButton richColors theme={$mode} duration={8000} />
+		<Toaster closeButton richColors duration={8000} />
 		<Header />
 	{/if}
 	<main>
