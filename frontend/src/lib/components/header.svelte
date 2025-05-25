@@ -64,7 +64,7 @@
 {/snippet}
 
 <header
-	class="bg-muted dark:bg-card z-50 flex h-[var(--header-height)] w-full items-center justify-between gap-2 border-b p-3"
+	class="bg-muted dark:bg-card z-50 flex h-(--header-height) w-full items-center justify-between gap-2 border-b p-3"
 >
 	<!-- Right side -->
 	<div class="flex flex-1 items-center gap-2">

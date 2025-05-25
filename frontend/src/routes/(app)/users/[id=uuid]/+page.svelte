@@ -94,7 +94,7 @@
 <div class="container mx-auto max-w-5xl gap-3 py-8">
 	<Card.Root class="h-min shadow-sm">
 		<div
-			class="relative h-48 rounded-t-[inherit] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+			class="relative h-48 rounded-t-[inherit] bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
 		>
 			<div
 				class="absolute inset-0 rounded-t-[inherit] bg-[url('/img.png')] bg-cover bg-center opacity-20"
@@ -148,7 +148,7 @@
 		</div>
 	</Card.Root>
 
-	<div class="grid grid-cols-1 gap-3 pt-3 md:grid-cols-[250px,1fr]">
+	<div class="grid grid-cols-1 gap-3 pt-3 md:grid-cols-[250px_1fr]">
 		<Card.Root class="h-min p-4 shadow-sm ">
 			<Navgroup title="Navigation" navs={links} />
 		</Card.Root>

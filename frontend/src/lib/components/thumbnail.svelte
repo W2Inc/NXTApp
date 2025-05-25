@@ -30,7 +30,7 @@
 		<div
 			class="absolute inset-0 rounded bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
 		>
-			<Upload class="absolute inset-0 z-[1] m-auto size-8 text-white" />
+			<Upload class="absolute inset-0 z-1 m-auto size-8 text-white" />
 		</div>
 	</div>
 </div>

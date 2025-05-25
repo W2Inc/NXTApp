@@ -5,7 +5,7 @@
 </script>
 
 <div class="min-h-screen flex items-center justify-center p-4">
-	<div class="w-full max-w-md bg-card/90 backdrop-blur rounded-xl shadow-xl border border-border overflow-hidden">
+	<div class="w-full max-w-md bg-card/90 backdrop-blur rounded-xl shadow-xl border border overflow-hidden">
 		<div class="overflow-hidden">
 			<img
 				class="w-full"

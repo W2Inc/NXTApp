@@ -25,7 +25,7 @@
 	<Input
 		placeholder="Add tag..."
 		maxlength={64}
-		class="border-none bg-transparent shadow-none h-min focus-visible:ring-0 p-0 w-auto min-w-[8rem]"
+		class="border-none bg-transparent shadow-none h-min focus-visible:ring-0 p-0 w-auto min-w-32"
 		onkeydown={(e) => {
 			if (e.key === "Enter") {
 				e.preventDefault();

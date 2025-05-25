@@ -30,7 +30,7 @@
 	];
 </script>
 
-<div class="mx-auto flex max-w-screen-lg flex-col gap-4 px-8 py-16 md:flex-row">
+<div class="mx-auto flex max-w-(--breakpoint-lg) flex-col gap-4 px-8 py-16 md:flex-row">
 	<aside class="md:sticky md:top-0 min-w-64 h-fit pt-4">
 		<Navgroup title="Profile Settings" navs={recentNavigations} />
 	</aside>

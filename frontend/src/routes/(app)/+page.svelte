@@ -52,7 +52,7 @@
 
 		{#snippet right()}
 			<div class="w-full">
-				<div class="mx-auto flex max-w-[80rem] gap-2 p-4">
+				<div class="mx-auto flex max-w-7xl gap-2 p-4">
 					{#if data.feed.length == 0}
 						<Empty />
 					{:else}

@@ -29,28 +29,3 @@
 	{/if}
 </a>
 
-<style>
-	.status-tag::before {
-		@apply relative top-0 inline-block h-6 rounded px-4 font-bold text-white shadow;
-	}
-
-	.status-tag[data-status="Active"]::before {
-		content: "Active";
-		@apply bg-green-500;
-	}
-
-	.status-tag[data-status="Inactive"]::before {
-		content: "Inactive";
-		@apply bg-gray-700;
-	}
-
-	.status-tag[data-status="Awaiting"]::before {
-		content: "Awaiting";
-		@apply bg-yellow-500;
-	}
-
-	.status-tag[data-status="Completed"]::before {
-		content: "Completed";
-		@apply bg-blue-600;
-	}
-</style>

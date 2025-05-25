@@ -37,7 +37,7 @@
 {/snippet}
 
 <div class="m-auto max-w-6xl px-4 py-2">
-	<div class="grid grid-cols-1 gap-x-2 pt-4 md:grid-cols-[256px,1fr]">
+	<div class="grid grid-cols-1 gap-x-2 pt-4 md:grid-cols-[256px_1fr]">
 		<Card class="flex max-h-fit flex-col gap-1">
 			<img
 				loading="eager"

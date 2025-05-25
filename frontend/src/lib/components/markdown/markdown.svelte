@@ -242,7 +242,7 @@
 				{@render toggle("preview")}
 			</menu>
 			{#if mode === "write"}
-				<menu class="flex items-center gap-[1px]">
+				<menu class="flex items-center gap-px">
 					{#each shortcuts.slice(0, 5) as props}
 						{@render shortcut(props)}
 					{/each}
@@ -294,7 +294,7 @@
 				{@render toggle("preview")}
 			</menu>
 			{#if mode === "write"}
-				<menu class="flex items-center gap-[1px]">
+				<menu class="flex items-center gap-px">
 					{#each shortcuts.slice(0, 5) as props}
 						{@render shortcut(props)}
 					{/each}

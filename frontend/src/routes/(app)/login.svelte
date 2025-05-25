@@ -32,12 +32,12 @@
 		<!-- Animated decorative elements -->
 		<div class="animate-float-slow absolute right-10 top-20 hidden md:block">
 			<div
-				class="from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 h-24 w-24 rotate-12 rounded-xl bg-gradient-to-br backdrop-blur-sm"
+				class="from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 h-24 w-24 rotate-12 rounded-xl bg-linear-to-br backdrop-blur-sm"
 			></div>
 		</div>
 		<div class="animate-float-slow absolute bottom-20 left-10 hidden md:block">
 			<div
-				class="from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 h-16 w-16 -rotate-12 rounded-lg bg-gradient-to-br backdrop-blur-sm"
+				class="from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 h-16 w-16 -rotate-12 rounded-lg bg-linear-to-br backdrop-blur-sm"
 			></div>
 		</div>
 
@@ -60,7 +60,7 @@
 						>
 							<span class="block">Access Your</span>
 							<span
-								class="from-primary to-accent bg-gradient-to-r bg-clip-text text-transparent"
+								class="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent"
 							>
 								Learning Journey
 							</span>
@@ -100,16 +100,16 @@
 						in:fade={{ delay: 1200, duration: 250 }}
 					>
 						<div
-							class="bg-card dark:bg-card border-border relative z-10 w-full max-w-md rounded-2xl border p-1 shadow-xl animate-mock"
+							class="bg-card dark:bg-card border relative z-10 w-full max-w-md rounded-2xl p-1 shadow-xl animate-mock"
 						>
 							<div
-								class="from-muted/30 to-background/30 dark:from-background/10 dark:to-muted/10 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br"
+								class="from-muted/30 to-background/30 dark:from-background/10 dark:to-muted/10 flex aspect-4/3 items-center justify-center overflow-hidden rounded-xl bg-linear-to-br"
 							>
 								<!-- Platform UI mockup -->
 								<div class="flex h-full w-full flex-col">
 									<!-- Mock navigation -->
 									<div
-										class="bg-background dark:bg-card border-border flex items-center justify-between border-b p-4"
+										class="bg-background dark:bg-card border flex items-center justify-between border-b p-4"
 									>
 										<div class="flex items-center space-x-3">
 											<div class="bg-destructive h-3 w-3 rounded-full"></div>

@@ -120,7 +120,7 @@
 	</Control>
 
 	<Separator class="my-2" />
-	<div class="grid grid-cols-2 grid-rows-[min-content,min-content] gap-3">
+	<div class="grid grid-cols-2 grid-rows-[min-content_min-content] gap-3">
 		<Control
 			label="Personal Website"
 			name="website"

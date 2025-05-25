@@ -9,8 +9,8 @@ interface Props {
 const { data }: Props = $props();
 </script>
 
-<a href="/users/{encodeID(data?.id ?? "")}" class="flex items-center p-4 rounded-lg border border-border bg-card text-card-foreground shadow-sm hover:shadow transition-shadow duration-200 cursor-pointer">
-	<div class="flex-shrink-0 mr-3">
+<a href="/users/{encodeID(data?.id ?? "")}" class="flex items-center p-4 rounded-lg border border bg-card text-card-foreground shadow-sm hover:shadow transition-shadow duration-200 cursor-pointer">
+	<div class="shrink-0 mr-3">
 		{#if data?.avatarUrl}
 			<img src={data.avatarUrl} alt="{data.displayName}" class="h-10 w-10 rounded-full object-cover" />
 		{:else}

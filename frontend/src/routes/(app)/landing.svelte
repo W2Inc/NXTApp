@@ -178,7 +178,7 @@
 							class="from-primary to-accent absolute -inset-1 rounded-2xl bg-gradient-to-r opacity-30 blur-md motion-safe:animate-pulse dark:opacity-20"
 						></div>
 						<div
-							class="bg-card dark:bg-card border-border relative z-10 rounded-2xl border p-1 shadow-xl"
+							class="bg-card dark:bg-card relative z-10 rounded-2xl border p-1 shadow-xl"
 						>
 							<div
 								class="from-muted/30 to-background/30 dark:from-background/10 dark:to-muted/10 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br"
@@ -187,7 +187,7 @@
 								<div class="flex h-full w-full flex-col">
 									<!-- Mock navigation -->
 									<div
-										class="bg-background dark:bg-card border-border flex items-center justify-between border-b p-4"
+										class="bg-background dark:bg-card flex items-center justify-between border-b p-4"
 									>
 										<div class="flex items-center space-x-3">
 											<div class="bg-destructive h-3 w-3 rounded-full"></div>
@@ -280,7 +280,7 @@
 				{#if visibleSections.features}
 					{#each features as feature, i}
 						<div
-							class="bg-card dark:bg-card shadow-muted/20 border-border rounded-xl border p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:shadow-black/20"
+							class="bg-card dark:bg-card shadow-muted/20 border rounded-xl border p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:shadow-black/20"
 							in:fly={{ y: 30, duration: 700, delay: 300 + i * 100 }}
 						>
 							<div
@@ -386,7 +386,7 @@
 
 					<div in:fly={{ x: 50, duration: 700 }}>
 						<div
-							class="bg-card/50 dark:bg-card/50 border-border rounded-xl border p-8 backdrop-blur-sm"
+							class="bg-card/50 dark:bg-card/50 rounded-xl border p-8 backdrop-blur-sm"
 						>
 							<h3 class="text-foreground mb-6 text-2xl font-bold">Our Values</h3>
 
@@ -625,7 +625,7 @@
 			</div>
 
 			<div
-				class="border-border flex flex-col items-center justify-between border-t pt-8 md:flex-row"
+				class="flex flex-col items-center justify-between border-t pt-8 md:flex-row"
 			>
 				<p class="text-muted-foreground mb-4 text-sm md:mb-0">
 					© {new Date().getFullYear()} W2 B.V. All rights reserved.

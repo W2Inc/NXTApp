@@ -22,7 +22,7 @@
 	<div
 		class="bg-background hover:bg-accent flex items-center gap-x-4 rounded-lg border p-4 shadow transition-colors mb-2"
 	>
-		<div class="flex-shrink-0">
+		<div class="shrink-0">
 			{#if data.$type === "NewUser"}
 				<Avatar.Root>
 					<Avatar.Image class="border" src={data.newUser.displayName ?? data.newUser.login} alt="@shadcn" />
