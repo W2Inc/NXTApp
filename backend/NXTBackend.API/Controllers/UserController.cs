@@ -57,9 +57,12 @@ public class UserController(
 		[FromQuery] SortingParams sorting
 		)
 	{
-		return Ok();	
-        // TODO: Missing total pages...
-		// return Ok(await feedService.ConstructFeed(pagination, sorting));
+		var filters = new FilterDictionary()
+			.AddFilter("notifiable", User.GetSID());
+
+		var page = await feedService.GetAllAsync(pagination, sorting, filters);
+		page.AppendHeaders(Response.Headers);
+		return Ok(page.Items.Select(f => new FeedDO(f)));
 	}
 
     [HttpGet("/users/current/spotlights")]

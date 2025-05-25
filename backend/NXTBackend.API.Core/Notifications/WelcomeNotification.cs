@@ -49,7 +49,7 @@ public class Welcome(User to) : Notification
 	{
 		return new()
 		{
-			Kind = FeedKind.Default | FeedKind.Private,
+			Kind = FeedKind.Default | FeedKind.Private | FeedKind.Welcome,
 			NotifiableId = to.Id
 		};
 	}

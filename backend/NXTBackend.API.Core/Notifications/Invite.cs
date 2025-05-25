@@ -8,6 +8,7 @@ using NXTBackend.API.Core.Utils;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using NXTBackend.API.Domain.Enums;
+using System.Text.Json;
 
 namespace NXTBackend.API.Core.Notifications;
 
@@ -39,14 +40,14 @@ public class Invite(User to, UserProject project) : Notification
 
     public override bool ShouldSend()
     {
-        return Project.Members.Any(m => m.UserId != User.Id);
+		return true;
     }
 
     public override Domain.Entities.Feed? ToFeed()
     {
         return new()
         {
-            Kind = FeedKind.AcceptOrDecline | FeedKind.Private,
+            Kind = FeedKind.AcceptOrDecline | FeedKind.Private | FeedKind.Project,
 			NotifiableId = User.Id,
             ResourceId = Project.Id
         };
@@ -55,6 +56,10 @@ public class Invite(User to, UserProject project) : Notification
     public override Domain.Entities.Notification ToDatabase() => new()
     {
         Type = nameof(Invite),
+		Data = JsonSerializer.Serialize(new Data(
+			null,
+			$"You have been invited to join the project '{Project.Project.Name}'"
+		)),
         NotifiableId = User.Id,
     };
 

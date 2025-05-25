@@ -50,7 +50,7 @@ public class NotificationController(
     [EndpointSummary("Create a notification")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data)
+    public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data, IUserProjectService userProjectService)
     {
         var user = await userService
 			.Include(u => u.Details)
@@ -58,7 +58,13 @@ public class NotificationController(
 
         if (user is null)
 			return NotFound();
-		notifications.Enqueue(user, new Welcome(user));
+		// notifications.Enqueue(user, new Welcome(user));
+
+		var up = await userProjectService
+			.Include(up => up.Project)
+			.Include(up => up.Members)
+			.FindByIdAsync(new Guid("01966da1-6e6f-738b-96bf-7dc64970881f"));
+		notifications.Enqueue(user, new Invite(user, up));
         return Ok();
     }
 

@@ -71,4 +71,10 @@ public enum FeedKind
 	/// </summary>
 	[JsonPropertyName(nameof(Review))]
 	Review = 1 << 8,
+
+	/// <summary>
+	/// Feed related to being welcomed.
+	/// </summary>
+	[JsonPropertyName(nameof(Welcome))]
+	Welcome = 1 << 9,
 }

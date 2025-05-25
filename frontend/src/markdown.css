@@ -26,8 +26,6 @@
 	text-rendering: optimizeLegibility;
 	text-shadow: unset;
 
-	overflow: hidden;
-
 	& > * {
 		overflow: hidden;
 	}
