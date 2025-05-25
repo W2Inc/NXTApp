@@ -10,10 +10,10 @@ public class FeedConfiguration : IEntityTypeConfiguration<Feed>
     public void Configure(EntityTypeBuilder<Feed> builder)
     {
         // Relationships
-        builder
-            .HasOne(m => m.Actor)
-            .WithMany(u => u.CreatedFeeds)
-            .HasForeignKey(m => m.ActorId)
-            .OnDelete(DeleteBehavior.Restrict);
+        // builder
+        //     .HasOne(m => m)
+        //     .WithMany(u => u.CreatedFeeds)
+        //     .HasForeignKey(m => m.ActorId)
+        //     .OnDelete(DeleteBehavior.Restrict);
     }
 }

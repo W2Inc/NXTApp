@@ -6,10 +6,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
-using NXTBackend.API.Core.Notifications.Welcome;
+using NXTBackend.API.Core.Notifications;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Services.Interface.Queues;
-using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
 using NXTBackend.API.Models.Responses.Objects;
@@ -54,6 +53,7 @@ public class NotificationController(
     public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data)
     {
         var user = await userService
+			.Include(u => u.Details)
 			.FindByIdAsync(data.UserId);
 
         if (user is null)

@@ -1,35 +1,59 @@
-# API
+# NXTBackend.API
 
-The `NXTBackend.API` project is the central hub for handling all API traffic. It includes the controllers, services, middleware, and other classes that are used to interact with the API. This project is responsible for defining all the various routes that the API will expose to the client and the logic that will be executed when those routes are hit.
+This is the main API project for the NXTApp platform.
 
-## Key Components
+## Prerequisites
 
-### Controllers
-Controllers define the endpoints that the API exposes. Each controller is responsible for handling specific routes and processing incoming HTTP requests. They interact with services to perform operations and return appropriate responses.
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Keycloak](https://www.keycloak.org/)
 
-### Services
-Services contain the business logic of the application. They are used by controllers to perform operations such as data retrieval, processing, and manipulation. Services interact with the database through repositories or directly using Entity Framework.
+## Setup Instructions
 
-### Middleware
-Middleware components are used to handle cross-cutting concerns such as authentication, logging, and error handling. They are executed in the order they are registered in the pipeline and can modify the request and response objects.
+1. **Install Dependencies**:
+   ```bash
+   dotnet restore
+   ```
 
-## Running Migrations
+2. **Configure Environment Variables**:
+   - Add a `UserSecretsId` in `appsettings.json` to manage sensitive configurations.
+   - Example:
+     ```json
+     {
+       "ConnectionStrings": {
+         "DefaultConnection": "Host=localhost;Database=NXTApp;Username=postgres;Password=password"
+       },
+       "Keycloak": {
+         "Realm": "nxtapp",
+         "ClientId": "nxtapp-client",
+         "ClientSecret": "secret"
+       }
+     }
+     ```
 
-To add a new migration, use the following command:
+3. **Run Migrations**:
+   ```bash
+   dotnet ef migrations add InitialCreate
+   dotnet ef database update
+   ```
 
-```bash
-dotnet ef migrations add <MigrationName> --project "NXTBackend.API.Infrastructure" -s "NXTBackend.API"
-```
+4. **Run the Application**:
+   ```bash
+   dotnet run
+   ```
 
-Replace `<MigrationName>` with the name of your migration. This command will create a new migration file in the `NXTBackend.API.Infrastructure` project.
+5. **Access the API**:
+   The API will be available at `http://localhost:5000`.
 
-To apply the migrations to the database, use the following command:
+## Key Features
 
-```bash
-dotnet ef database update --project "NXTBackend.API.Infrastructure" -s "NXTBackend.API"
-```
+- Authentication via Keycloak.
+- Entity Framework Core for database management.
+- Redis caching.
 
-This command will apply all pending migrations to the database.
+## Dependencies
 
-
-https://stackexchange.github.io/StackExchange.Redis/Configuration.html
+- `Microsoft.AspNetCore.Authentication.JwtBearer`
+- `Microsoft.EntityFrameworkCore.Design`
+- `Quartz.AspNetCore`
+- `Serilog.AspNetCore`

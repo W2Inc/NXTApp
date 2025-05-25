@@ -1,4 +1,5 @@
 using System.Net.Mail;
+using System.Text.Json.Serialization;
 using NXTBackend.API.Domain.Entities;
 
 namespace NXTBackend.API.Core.Notifications;
@@ -8,10 +9,20 @@ namespace NXTBackend.API.Core.Notifications;
 /// </summary>
 public abstract class Notification
 {
+	public record Data(
+		[property: JsonPropertyName("html")]
+		[property: JsonInclude]
+		string? HtmlBody = null,
+
+		[property: JsonInclude]
+		[property: JsonPropertyName("text")]
+		string? TextBody = null
+	);
+	
     /// <summary>
-    /// The ID of the user who should receive this notification
-    /// </summary>
-    public Guid NotifiableId { get; set; }
+	/// The ID of the user who should receive this notification
+	/// </summary>
+	public Guid NotifiableId { get; init; }
 
     /// <summary>
     /// Gets the view name for this notification.
@@ -45,11 +56,6 @@ public abstract class Notification
     /// Determines whether this notification should be sent.
     /// </summary>
     public virtual bool ShouldSend() => true;
-
-	/// <summary>
-    /// Determines whether this notification should be ignored / discarded.
-    /// </summary>
-    public virtual bool ShouldBeDiscarded() => false;
 
     /// <summary>
 	/// Retrieves the HTML template for this notification

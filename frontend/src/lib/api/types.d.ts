@@ -1143,7 +1143,75 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get all notifications */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    Size?: number;
+                    OrderBy?: string;
+                    Order?: components["schemas"]["Order"];
+                    "filter[id]"?: string;
+                    "filter[read]"?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["NotificationDO"][];
+                        "application/json": components["schemas"]["NotificationDO"][];
+                        "text/json": components["schemas"]["NotificationDO"][];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         put?: never;
         /** Create a notification */
         post: {
@@ -1172,6 +1240,166 @@ export interface paths {
                         "application/json": components["schemas"]["NotificationDO"];
                         "text/json": components["schemas"]["NotificationDO"];
                     };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark notifications as read */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": string[] | null;
+                    "text/json": string[] | null;
+                    "application/*+json": string[] | null;
+                    "text/plain": string[] | null;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/notifications/unread": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark notifications as unread */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": string[] | null;
+                    "text/json": string[] | null;
+                    "application/*+json": string[] | null;
+                    "text/plain": string[] | null;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
                 };
                 /** @description Bad Request */
                 400: {
@@ -4829,29 +5057,20 @@ export interface components {
             goals: string[];
             next: components["schemas"]["GraphNodeData"][];
         };
-        FeedDO: components["schemas"]["FeedDONewUserFeedDO"] | components["schemas"]["FeedDOCompletedProjectFeedDO"];
-        FeedDOCompletedProjectFeedDO: {
-            /** @enum {string} */
-            $type?: "CompletedProject";
+        FeedDO: {
             /** Format: uuid */
             id: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            newProject: components["schemas"]["ProjectDO"];
-        };
-        FeedDONewUserFeedDO: {
-            /** @enum {string} */
-            $type?: "NewUser";
+            feedKind: components["schemas"]["FeedKind"];
             /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            newUser: components["schemas"]["MinimalUserDTO2"];
+            resourceId: string | null;
+            /** Format: uuid */
+            notifiableId: string | null;
         };
+        FeedKind: number;
         GitDO: {
             /** Format: uuid */
             id: string;
@@ -4953,16 +5172,11 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            message: string;
-            kind: components["schemas"]["NotificationKind"];
             /** Format: uuid */
             resourceId?: string | null;
         };
-        /** @enum {unknown} */
-        NotificationKind: "Default" | "Invite" | "System";
         NotificationPostDTO: {
             message: string;
-            kind: components["schemas"]["NotificationKind"];
             /** Format: uuid */
             userId: string;
             /** Format: uuid */

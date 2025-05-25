@@ -5,66 +5,70 @@
 
 using System.Text.Json.Serialization;
 
+// ============================================================================
+
 namespace NXTBackend.API.Domain.Enums;
 
 /// <summary>
 /// The different kinds of feeds that exist.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumMemberNameAttribute)), Flags]
+[Flags]
+// [JsonConverter(typeof(JsonStringEnumConverter)),]
 public enum FeedKind
 {
-    /// <summary>
-    /// A new user has joined the app
-    /// </summary>
-    [JsonPropertyName(nameof(NewUser))]
-    NewUser = 1 << 0,
+	/// <summary>
+	/// Feed requires user to accept or decline.
+	/// </summary>
+	[JsonPropertyName(nameof(AcceptOrDecline))]
+	AcceptOrDecline = 1 << 0,
 
+	/// <summary>
+	/// Broadcasted to all users, such as a new feature or update.
+	/// If this is set, the feed *wont* need to set the NotifiableId, instead it will be ignored and the feed will be broadcasted to all users.
+	/// </summary>
+	[JsonPropertyName(nameof(Global))]
+	Global = 1 << 1,
 
-    /// <summary>
-    /// Some user has completed a project, hoorah!
-    /// </summary>
-    [JsonPropertyName(nameof(CompletedProject))]
-    CompletedProject = 1 << 1,
+	/// <summary>
+	/// Only visible to the user who receives the feed.
+	/// If this is set, the feed need to set the NotifiableId to the user who should receive it.
+	/// </summary>
+	[JsonPropertyName(nameof(Private))]
+	Private = 1 << 2,
 
-    /// <summary>
-    /// Some user has completed a goal, hoorah!
-    /// </summary>
-    [JsonPropertyName(nameof(CompletedGoal))]
-    CompletedGoal = 1 << 2,
+	/// <summary>
+	/// A normal feed that just notifies the user of something that has happened.
+	/// </summary>
+	[JsonPropertyName(nameof(Default))]
+	Default = 1 << 3,
 
-    /// <summary>
-    /// Some user has completed a cursus, hoorah!
-    /// </summary>
-    [JsonPropertyName(nameof(CompletedCursus))]
-    CompletedCursus = 1 << 3,
+	/// <summary>
+	/// Feed is viewable only (no accept/decline) directs the user to a page where they can view more information about the feed item.
+	/// </summary>
+	[JsonPropertyName(nameof(Viewable))]
+	Viewable = 1 << 4,
 
-    /// <summary>
-    /// Current user received a review on their work
-    /// </summary>
-    [JsonPropertyName(nameof(ReceivedReview))]
-    ReceivedReview = 1 << 4,
+	/// <summary>
+	/// Feed related to a project.
+	/// </summary>
+	[JsonPropertyName(nameof(Project))]
+	Project = 1 << 5,
 
-    /// <summary>
-    /// A project has been deprecated
-    /// </summary>
-    [JsonPropertyName(nameof(ProjectDeprecated))]
-    ProjectDeprecated = 1 << 5,
+	/// <summary>
+	/// Feed related to a goal.
+	/// </summary>
+	[JsonPropertyName(nameof(Goal))]
+	Goal = 1 << 6,
 
-    /// <summary>
-    /// A goal has been deprecated
-    /// </summary>
-    [JsonPropertyName(nameof(GoalDeprecated))]
-    GoalDeprecated = 1 << 6,
+	/// <summary>
+	/// Feed related to a cursus.
+	/// </summary>
+	[JsonPropertyName(nameof(Cursus))]
+	Cursus = 1 << 7,
 
-    /// <summary>
-    /// A cursus has been deprecated
-    /// </summary>
-    [JsonPropertyName(nameof(CursusDeprecated))]
-    CursusDeprecated = 1 << 7,
-
-        /// <summary>
-    /// A new user has joined the app
-    /// </summary>
-    [JsonPropertyName(nameof(Invite))]
-    Invite = 1 << 8,
+	/// <summary>
+	/// Feed related to a review.
+	/// </summary>
+	[JsonPropertyName(nameof(Review))]
+	Review = 1 << 8,
 }

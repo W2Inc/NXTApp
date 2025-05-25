@@ -23,27 +23,24 @@ namespace NXTBackend.API.Domain.Entities;
 [Table("tbl_feed")]
 public class Feed : BaseEntity
 {
-    public Feed()
-    {
-        Actor = null;
-        ActorId = null;
-        ResourceId = null;
+	public Feed()
+	{
+		ResourceId = null;
+		NotifiableId = null;
+		Kind = FeedKind.Default;
     }
 
-    [Column("actor_id")]
-    public Guid? ActorId { get; set; }
-
-    [ForeignKey(nameof(ActorId))]
-    public virtual User? Actor { get; set; }
+    [Column("notifiable_id")]
+    public Guid? NotifiableId { get; set; }
 
     /// <summary>
-    /// The kind of feed this represents
-    /// </summary>
-    [Column("type")]
+	/// The kind of feed this represents
+	/// </summary>
+	[Column("type")]
     public FeedKind Kind { get; set; }
 
     /// <summary>
-    /// Optional reference to a resource this feed is about
+    /// Optional reference to a resource this feed is about (e.g. a project, goal, etc.).
     /// </summary>
     [Column("resource_id")]
     public Guid? ResourceId { get; set; }

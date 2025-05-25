@@ -28,7 +28,6 @@ using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Infrastructure.Interceptors;
-using NXTBackend.API.Infrastructure.OpenApi;
 using NXTBackend.API.Jobs;
 using NXTBackend.API.Jobs.Interface;
 using NXTBackend.API.Models.Responses.Objects;
@@ -242,7 +241,7 @@ public static class Startup
             q.UseDefaultThreadPool(x => x.MaxConcurrency = 5);
 
             RegisterJob<ReviewCompositionJob>(q);
-            RegisterJob<DispatchNotificationsJob>(q);
+            RegisterJob<DispatchNotificationsJob2>(q);
         });
 
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);

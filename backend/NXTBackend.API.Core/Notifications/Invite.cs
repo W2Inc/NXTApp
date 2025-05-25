@@ -42,16 +42,12 @@ public class Invite(User to, UserProject project) : Notification
         return Project.Members.Any(m => m.UserId != User.Id);
     }
 
-    public override bool ShouldBeDiscarded()
-    {
-        return Project.Members.Any(m => m.UserId != User.Id);
-    }
-
     public override Domain.Entities.Feed? ToFeed()
     {
         return new()
         {
-            Kind = FeedKind.Invite,
+            Kind = FeedKind.AcceptOrDecline | FeedKind.Private,
+			NotifiableId = User.Id,
             ResourceId = Project.Id
         };
     }

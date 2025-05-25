@@ -29,15 +29,21 @@ public class Notification : BaseEntity
 	/// </summary>
 	[Column("type")]
 	public string Type { get; set; }
-
-
-    [Column("notifiable_id")]
-    public Guid NotifiableId { get; set; }
-
+	
 	/// <summary>
     /// Notifications get dispatched at a set interval, this marks that it has been processed.
     /// </summary>
     [Column("state")]
 	public NotificationState State { get; set; }
+
+	/// <summary>
+	/// The notification data.
+	/// </summary>
+	[Column("data", TypeName = "jsonb")]
+	public string Data { get; set; }
+
+
+    [Column("notifiable_id")]
+    public Guid NotifiableId { get; set; }
 
 }

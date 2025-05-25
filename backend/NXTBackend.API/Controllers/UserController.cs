@@ -16,7 +16,6 @@ using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.User;
 using NXTBackend.API.Models.Responses.Objects;
-using NXTBackend.API.Models.Responses.Objects.FeedResponses;
 using NXTBackend.API.Utils;
 
 // ============================================================================
@@ -48,20 +47,20 @@ public class UserController(
         return user is null ? Forbid() : Ok(new UserDO(user));
     }
 
-    [HttpGet("/users/current/feed")]
-    [EndpointSummary("Get the current user's news feed")]
-    [EndpointDescription("Get the activity feed for the user")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<FeedDO>>> GetActivityFeed(
-        IFeedService feedService,
-        [FromQuery] PaginationParams pagination,
-        [FromQuery] SortingParams sorting
-        )
-    {
-        Response.Headers.Append("X-Page", pagination.Page.ToString());
+	[HttpGet("/users/current/feed")]
+	[EndpointSummary("Get the current user's news feed")]
+	[EndpointDescription("Get the activity feed for the user")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	public async Task<ActionResult<IEnumerable<FeedDO>>> GetActivityFeed(
+		IFeedService feedService,
+		[FromQuery] PaginationParams pagination,
+		[FromQuery] SortingParams sorting
+		)
+	{
+		return Ok();	
         // TODO: Missing total pages...
-        return Ok(await feedService.ConstructFeed(pagination, sorting));
-    }
+		// return Ok(await feedService.ConstructFeed(pagination, sorting));
+	}
 
     [HttpGet("/users/current/spotlights")]
     [EndpointSummary("Get spotlighted events")]

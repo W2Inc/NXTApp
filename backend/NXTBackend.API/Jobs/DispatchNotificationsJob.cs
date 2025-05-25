@@ -5,15 +5,8 @@ using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Jobs.Interface;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Distributed;
 using Quartz;
 using Resend;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using NXTBackend.API.Core.Notifications.Welcome;
 
 namespace NXTBackend.API.Jobs;
 
@@ -73,15 +66,6 @@ public class DispatchNotificationsJob : IScheduledJob
         while (_queue.TryDequeue(out var entry))
         {
             var (user, notification) = entry;
-            if (notification.ShouldBeDiscarded())
-            {
-                _logger.LogDebug("Discarding outdated notification for user {userId}", user.Id);
-
-                var dbNotification = notification.ToDatabase();
-                dbNotification.State = NotificationState.Failed;
-                notificationsToSave.Add(dbNotification);
-                continue;
-            }
 
             // Check if notification is ready to be sent
             if (!notification.ShouldSend())

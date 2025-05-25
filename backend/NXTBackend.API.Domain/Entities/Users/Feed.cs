@@ -20,9 +20,6 @@ public class UserFeed : BaseEntity
     public UserFeed()
     {
         UserId = Guid.Empty;
-        VisibleFeeds = FeedKind.NewUser | FeedKind.CompletedProject | FeedKind.CompletedGoal |
-                   FeedKind.CompletedCursus | FeedKind.ReceivedReview | FeedKind.ProjectDeprecated |
-                   FeedKind.GoalDeprecated | FeedKind.CursusDeprecated;
     }
 
     /// <summary>
