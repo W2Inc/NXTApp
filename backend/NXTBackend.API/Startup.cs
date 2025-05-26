@@ -171,7 +171,6 @@ public static class Startup
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
         services.AddScoped<IGitService, GitService>();
         services.AddScoped<INotificationService, NotificationService>();
-        services.AddScoped<IFeedService, FeedService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
         services.AddTransient<IResend, ResendClient>();
         services.AddSingleton<INotificationQueue, InMemoryNotificationQueue>();
@@ -271,7 +270,7 @@ public static class Startup
 		{
 			Log.Information("Cache configured");
 		}
-		
+
     }
 
     public static void RegisterJob<Job>(IServiceCollectionQuartzConfigurator quartz) where Job : IScheduledJob

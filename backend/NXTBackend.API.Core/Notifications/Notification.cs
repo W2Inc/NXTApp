@@ -1,50 +1,30 @@
 using System.Net.Mail;
-using System.Text.Json.Serialization;
-using NXTBackend.API.Domain.Entities;
+using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Core.Notifications;
 
 /// <summary>
 /// Represents an abstract base class for notifications that can be sent through various channels.
 /// </summary>
-public abstract class Notification
+public interface INotification
 {
-	public record Data(
-		[property: JsonPropertyName("html")]
-		[property: JsonInclude]
-		string? HtmlBody = null,
-
-		[property: JsonInclude]
-		[property: JsonPropertyName("text")]
-		string? TextBody = null
-	);
-	
     /// <summary>
-	/// The ID of the user who should receive this notification
-	/// </summary>
-	public Guid NotifiableId { get; init; }
-
-    /// <summary>
-    /// Gets the view name for this notification.
-    /// Can be overridden by implementing classes.
+    /// Describes the notification. This is used to describe the notification in such a way
+    /// that any frontend can inteprid on how / what to display.
+    ///
+    /// E.g: Private | Review | AcceptOrDecline -> A private Notification regarding a review with something to accept or decline it.
     /// </summary>
-    public virtual string View => nameof(Notification);
+    public static abstract NotificationKind Descriptor { get; }
 
     /// <summary>
     /// Sends this notification as an email.
     /// </summary>
-    public virtual MailMessage? ToMail() => null;
+    public MailMessage? ToMail();
 
     /// <summary>
     /// Sends this notification as a text message.
     /// </summary>
-    public virtual string? ToText() => null;
-
-    /// <summary>
-    /// If defined will create a feed response.
-    /// </summary>
-    /// <returns></returns>
-    public virtual Feed? ToFeed() => null;
+    public string? ToText();
 
     /// <summary>
     /// Stores this notification in the database.
@@ -55,12 +35,12 @@ public abstract class Notification
     /// <summary>
     /// Determines whether this notification should be sent.
     /// </summary>
-    public virtual bool ShouldSend() => true;
+    public bool ShouldSend();
 
     /// <summary>
 	/// Retrieves the HTML template for this notification
 	/// </summary>
-	public string GetTemplate()
+	public static string GetTemplate(string View)
 	{
 		string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "templates", $"{View}.html");
 		return File.ReadAllText(templatePath);

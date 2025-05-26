@@ -5,16 +5,7 @@ import DataTableActions from "./data-table-actions.svelte";
 import DataTableSortDate from "./data-table-sort-date.svelte";
 import { createRawSnippet } from "svelte";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type BackendNotification = {
-	id: string;
-	title: string;
-	createdAt: Date;
-	type: "invite" | "notification";
-};
-
-export const columns: ColumnDef<BackendNotification>[] = [
+export const columns: ColumnDef<BackendTypes["NotificationDO"]>[] = [
 	{
 		id: "select",
 		header: ({ table }) =>
@@ -38,59 +29,59 @@ export const columns: ColumnDef<BackendNotification>[] = [
 		accessorKey: "title",
 		header: "Title",
 	},
-	{
-		header: "Type",
-		cell: ({ row }) => {
-			const typeCell = createRawSnippet<[string]>((value) => {
-				return {
-					render: () => `<div class="capitalize">${value()}</div>`,
-				};
-			});
+	// {
+	// 	header: "Type",
+	// 	cell: ({ row }) => {
+	// 		const typeCell = createRawSnippet<[string]>((value) => {
+	// 			return {
+	// 				render: () => `<div class="capitalize">${value()}</div>`,
+	// 			};
+	// 		});
 
-			return renderSnippet(typeCell, row.original.type);
-		},
-	},
-	{
-		accessorKey: "createdAt",
-		cell: ({ row }) => {
-			const formatter = new Intl.DateTimeFormat("en-US", {
-				dateStyle: "long",
-				timeStyle: "short",
-			});
+	// 		return renderSnippet(typeCell, row.original.type);
+	// 	},
+	// },
+	// {
+	// 	accessorKey: "createdAt",
+	// 	cell: ({ row }) => {
+	// 		const formatter = new Intl.DateTimeFormat("en-US", {
+	// 			dateStyle: "long",
+	// 			timeStyle: "short",
+	// 		});
 
-			const amountCellSnippet = createRawSnippet<[string]>((getAmount) => {
-				const amount = getAmount();
-				return {
-					render: () => `<div class="font-medium">${amount}</div>`,
-				};
-			});
+	// 		const amountCellSnippet = createRawSnippet<[string]>((getAmount) => {
+	// 			const amount = getAmount();
+	// 			return {
+	// 				render: () => `<div class="font-medium">1</div>`,
+	// 			};
+	// 		});
 
-			return renderSnippet(
-				amountCellSnippet,
-				formatter.format(row.getValue("createdAt")),
-			);
-		},
-		header: ({ column }) =>
-			renderComponent(DataTableSortDate, {
-				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-			}),
-	},
-	{
-		id: "actions",
-		header: () => {
-			const actionHeader = createRawSnippet<[string]>((value) => {
-				return {
-					render: () => `<div class="text-right pr-4">${value()}</div>`,
-				};
-			});
+	// 		return renderSnippet(
+	// 			amountCellSnippet,
+	// 			formatter.format(row.getValue("createdAt")),
+	// 		);
+	// 	},
+	// 	header: ({ column }) =>
+	// 		renderComponent(DataTableSortDate, {
+	// 			onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+	// 		}),
+	// },
+	// {
+	// 	id: "actions",
+	// 	header: () => {
+	// 		const actionHeader = createRawSnippet<[string]>((value) => {
+	// 			return {
+	// 				render: () => `<div class="text-right pr-4">${value()}</div>`,
+	// 			};
+	// 		});
 
-			return renderSnippet(actionHeader, "Action");
-		},
-		cell: ({ row }) => {
-			return renderComponent(DataTableActions, {
-				id: row.original.id,
-				type: row.original.type,
-			});
-		},
-	},
+	// 		return renderSnippet(actionHeader, "Action");
+	// 	},
+	// 	cell: ({ row }) => {
+	// 		return renderComponent(DataTableActions, {
+	// 			id: row.original.id,
+	// 			type: 0,
+	// 		});
+	// 	},
+	// },
 ];

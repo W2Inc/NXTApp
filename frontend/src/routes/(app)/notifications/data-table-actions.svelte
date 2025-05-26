@@ -7,7 +7,7 @@
 	import Inbox from "lucide-svelte/icons/inbox";
 	import Tippy from "$lib/components/tippy.svelte";
 
-	let { id, type }: { id: string; type: "notification" | "invite" } = $props();
+	let { id, type }: { id: string; type: number } = $props();
 </script>
 
 {#snippet invite()}
@@ -37,9 +37,10 @@
 {/snippet}
 
 <div class="pr-4 text-right">
-	{#if type === "notification"}
+	Hammer
+	<!-- {#if type === "notification"}
 		{@render dismiss()}
 	{:else if type === "invite"}
 		{@render invite()}
-	{/if}
+	{/if} -->
 </div>

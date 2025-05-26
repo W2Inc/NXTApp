@@ -12,38 +12,46 @@ namespace NXTBackend.API.Domain.Entities;
 [Table("tbl_notifications")]
 public class Notification : BaseEntity
 {
-	public Notification()
-	{
-		ReadAt = null;
-		State = NotificationState.Unprocessed;
-	}
+    public Notification()
+    {
+        ReadAt = null;
+        State = NotificationState.Unprocessed;
+        Type = NotificationKind.Default;
+    }
 
-	/// <summary>
-	/// When the notification was read
-	/// </summary>
-	[Column("read_at")]
-	public DateTimeOffset? ReadAt { get; set; }
+    /// <summary>
+    /// The notification data.
+    /// </summary>
+    [Column("type")]
+    public NotificationKind Type { get; set; }
 
-	/// <summary>
-	/// The notification data.
-	/// </summary>
-	[Column("type")]
-	public string Type { get; set; }
-	
-	/// <summary>
+    /// <summary>
     /// Notifications get dispatched at a set interval, this marks that it has been processed.
     /// </summary>
     [Column("state")]
-	public NotificationState State { get; set; }
+    public NotificationState State { get; set; }
 
-	/// <summary>
-	/// The notification data.
-	/// </summary>
-	[Column("data", TypeName = "jsonb")]
-	public string Data { get; set; }
+    /// <summary>
+    /// When the notification was read
+    /// </summary>
+    [Column("read_at")]
+    public DateTimeOffset? ReadAt { get; set; }
 
-
+    /// <summary>
+    /// The entity to be notified.
+    /// </summary>
     [Column("notifiable_id")]
     public Guid NotifiableId { get; set; }
 
+    /// <summary>
+    /// This notification targets a specific resource as context.
+    /// </summary>
+    [Column("resource_id")]
+    public Guid ResourceId { get; set; }
+
+    /// <summary>
+    /// The notification data.
+    /// </summary>
+    [Column("data", TypeName = "jsonb")]
+    public string Data { get; set; }
 }

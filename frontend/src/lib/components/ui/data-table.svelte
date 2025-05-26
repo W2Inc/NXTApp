@@ -19,26 +19,33 @@
 	import ArrowRight from "lucide-svelte/icons/arrow-right";
 	import { Input } from "./input";
 	import Search from "lucide-svelte/icons/search";
+	import { Constants } from "$lib/utils";
 
 	type DataTableProps<TData, TValue> = {
 		data: TData[];
 		columns: ColumnDef<TData, TValue>[];
 		placeholder?: string;
+		sorting: SortingState;
+		pagination: PaginationState;
 	};
 
+	// const paginationOptions = [20, 40, 60, 80];
+
+	const paginationOptions = $derived(Array.from({ length: 4 }, (_, i) => (i + 1) * Constants.PER_PAGE));
 	let {
 		data,
 		columns,
+		pagination = $bindable(),
+		sorting = $bindable(),
 		placeholder = "Search...",
 	}: DataTableProps<TData, TValue> = $props();
 
-	const paginationOptions = [20, 40, 60, 80];
-	let pagination = $state<PaginationState>({
-		pageIndex: 0,
-		pageSize: paginationOptions[0],
-	});
+	// let pagination = $state<PaginationState>({
+	// 	pageIndex: 0,
+	// 	pageSize: paginationOptions[0],
+	// });
 
-	let sorting = $state<SortingState>([]);
+	// let sorting = $state<SortingState>([]);
 	let columnFilters = $state<ColumnFiltersState>([]);
 	let rowSelection = $state<RowSelectionState>({});
 	const table = createSvelteTable({
@@ -114,7 +121,7 @@
 
 		<Separator class="flex-1" />
 		<div class="flex items-center gap-1">
-			<span class="text-muted-foreground flex-1 text-xs hidden lg:block">
+			<span class="text-muted-foreground hidden flex-1 text-xs lg:block">
 				{table.getFilteredSelectedRowModel().rows.length} of{" "}
 				{table.getFilteredRowModel().rows.length} row(s) selected
 			</span>

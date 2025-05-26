@@ -38,7 +38,6 @@ public class DatabaseContext : DbContext
         new CursusConfiguration().Configure(modelBuilder.Entity<Cursus>());
 
         // Evalution
-        new FeedbackConfiguration().Configure(modelBuilder.Entity<Feedback>());
         new RubricConfiguration().Configure(modelBuilder.Entity<Rubric>());
         new CommentConfiguration().Configure(modelBuilder.Entity<Comment>());
 
@@ -75,6 +74,5 @@ public class DatabaseContext : DbContext
     public DbSet<Member> Members { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<UserFeed> UserFeeds { get; set; }
-    public DbSet<Feed> Feeds { get; set; }
 #nullable restore
 }

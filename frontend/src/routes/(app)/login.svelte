@@ -83,13 +83,13 @@
 									Signin
 									<LogIn />
 								</Button>
-								<Button
+								<!-- <Button
 									href="/explore"
 									class="bg-secondary text-secondary-foreground hover:bg-secondary/90 flex items-center rounded-lg px-6 py-3 font-medium shadow-sm transition-all hover:shadow"
 								>
 									Continue as Guest
 									<User />
-								</Button>
+								</Button> -->
 							</div>
 						</form>
 					</div>
@@ -109,7 +109,7 @@
 								<div class="flex h-full w-full flex-col">
 									<!-- Mock navigation -->
 									<div
-										class="bg-background dark:bg-card border flex items-center justify-between border-b p-4"
+										class="bg-background dark:bg-card flex items-center justify-between border-b p-4"
 									>
 										<div class="flex items-center space-x-3">
 											<div class="bg-destructive h-3 w-3 rounded-full"></div>
@@ -136,7 +136,7 @@
 											<div class="bg-muted h-6 w-4/5 rounded-lg"></div>
 										</div>
 										<div
-											class="bg-card col-span-3 flex flex-col rounded-xl p-4 shadow-sm"
+											class="bg-card col-span-3 flex flex-col rounded-xl p-4 border"
 										>
 											<div class="bg-primary mb-4 h-8 w-1/3 rounded-lg"></div>
 											<div class="mb-4 grid grid-cols-2 gap-3">

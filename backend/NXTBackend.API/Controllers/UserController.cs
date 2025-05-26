@@ -52,7 +52,6 @@ public class UserController(
 	[EndpointDescription("Get the activity feed for the user")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<ActionResult<IEnumerable<FeedDO>>> GetActivityFeed(
-		IFeedService feedService,
 		[FromQuery] PaginationParams pagination,
 		[FromQuery] SortingParams sorting
 		)

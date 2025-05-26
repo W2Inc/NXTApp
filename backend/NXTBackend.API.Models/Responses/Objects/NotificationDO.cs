@@ -4,8 +4,10 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Enums;
+using NXTBackend.API.Models.Shared;
 
 namespace NXTBackend.API.Models.Responses.Objects;
 
@@ -15,19 +17,23 @@ public class NotificationDO : BaseObjectDO<Notification>
     {
         // Message = notification.Message;
         // Kind = notification.Kind;
+        ReadAt = notification.ReadAt;
+        Data = JsonSerializer.Deserialize<NotificationDataDO>(notification.Data)
+            ?? throw new InvalidDataException();
+
     }
 
     /// <summary>
     /// The notification message
     /// </summary>
     // [Required]
-    // public string Message { get; set; }
+    public NotificationDataDO Data { get; set; }
 
     /// <summary>
-    /// The type of notification
+    /// Was created at.
     /// </summary>
-    // [Required]
-    // public NotificationKind Kind { get; set; }
+    [Required]
+    public DateTimeOffset? ReadAt { get; set; }
 
     /// <summary>
     /// Optional reference to a resource this notification is about

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using NXTBackend.API.Domain.Enums;
 using System.Text.Json;
+using NXTBackend.API.Core.Notifications.Variants;
 
 namespace NXTBackend.API.Core.Notifications;
 
@@ -64,5 +65,5 @@ public class Invite(User to, UserProject project) : Notification
     };
 
 
-    public override string View => nameof(Welcome);
+    public override string View => nameof(WelcomeNotification);
 }
