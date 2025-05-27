@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Domain.Entities.Spotlight;
@@ -52,14 +53,20 @@ public class UserController(
 	[EndpointDescription("Get the activity feed for the user")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<ActionResult<IEnumerable<FeedDO>>> GetActivityFeed(
+		INotificationService notificationService,
 		[FromQuery] PaginationParams pagination,
 		[FromQuery] SortingParams sorting
 		)
 	{
 		var filters = new FilterDictionary()
+			.AddFilter("kind", NotificationKind.Feed | NotificationKind.FeedOnly)
 			.AddFilter("notifiable", User.GetSID());
 
-		var page = await feedService.GetAllAsync(pagination, sorting, filters);
+		var usr = await userService.Query(false)
+			.Include(u => u.Details)
+			.FirstOrDefaultAsync(u => u.Id == User.GetSID());
+
+		var page = await notificationService.GetAllAsync(pagination, sorting, filters);
 		page.AppendHeaders(Response.Headers);
 		return Ok(page.Items.Select(f => new FeedDO(f)));
 	}
@@ -410,7 +417,7 @@ public class UserController(
     [EndpointDescription("Send a invitation to a user project")]
     [ProducesResponseType<UserProjectDO[]>(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> InviteUserToUserPorject(Guid id, INotificationService notification, IFeedService feed)
+    public async Task<IActionResult> InviteUserToUserPorject(Guid id, INotificationService notification)
     {
         var user = await userService.FindByIdAsync(id);
 

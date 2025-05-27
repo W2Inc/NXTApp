@@ -42,7 +42,7 @@ public interface INotification
 	/// </summary>
 	public static string GetTemplate(string View)
 	{
-		string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "templates", $"{View}.html");
+		var templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "templates", $"{View}.html");
 		return File.ReadAllText(templatePath);
 	}
 }

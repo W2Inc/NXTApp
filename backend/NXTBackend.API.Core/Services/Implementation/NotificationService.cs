@@ -19,12 +19,14 @@ namespace NXTBackend.API.Core.Services.Implementation;
 /// <inheritdoc/>
 public class NotificationService : BaseService<Notification>, INotificationService
 {
-    public NotificationService(DatabaseContext ctx) : base(ctx)
-    {
-        DefineFilter<bool>("read", (q, read) => q.Where(n => read ? n.ReadAt != null : n.ReadAt == null));
-        DefineFilter<Guid>("user_id", (q, userId) => q.Where(n => n.NotifiableId == userId));
-        DefineFilter<NotificationState>("state", (q, state) => q.Where(n => n.State == state));
-    }
+	public NotificationService(DatabaseContext ctx) : base(ctx)
+	{
+		DefineFilter<bool>("read", (q, read) => q.Where(n => read ? n.ReadAt != null : n.ReadAt == null));
+		DefineFilter<Guid>("user_id", (q, userId) => q.Where(n => n.NotifiableId == userId));
+		DefineFilter<NotificationState>("state", (q, state) => q.Where(n => n.State == state));
+		DefineFilter<NotificationKind>("kind", (q, kind) => q.Where(n => (n.Descriptor & kind) != 0));
+		DefineFilter<NotificationKind>("not[kind]", (q, kind) => q.Where(n => (n.Descriptor & kind) == 0));
+	}
 
     public override async Task<PaginatedList<Notification>> GetAllAsync(PaginationParams pagination, SortingParams sorting, FilterDictionary? filters = null)
     {

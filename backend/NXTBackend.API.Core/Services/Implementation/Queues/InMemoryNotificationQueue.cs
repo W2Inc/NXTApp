@@ -25,12 +25,10 @@ public class InMemoryNotificationQueue(ILogger<InMemoryNotificationQueue> logger
 
 	public int QueueLength => _notifications.Count;
 
-	public void Enqueue(User user, Notification notification)
+	public void Enqueue(User user, INotification notification)
 	{
 		logger.LogInformation("Enqueuing notification for user {userId}", user.Id);
 		_notifications.Enqueue(new(user, notification));
-
-		logger.LogInformation("Notification enqueued");
 		logger.LogInformation("Queue length: {queueLength}", QueueLength);
 	}
 

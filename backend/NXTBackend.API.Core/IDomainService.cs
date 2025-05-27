@@ -20,6 +20,9 @@ namespace NXTBackend.API.Core;
 /// <typeparam name="T">The model type.</typeparam>
 public interface IDomainService<T> where T : BaseEntity
 {
+	public IQueryable<T> Query(bool tracking = true);
+
+
 	/// <summary>
 	/// Configures the query to include related entities.
 	/// </summary>

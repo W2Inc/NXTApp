@@ -8,29 +8,33 @@ using NXTBackend.API.Models.Shared;
 namespace NXTBackend.API.Core.Notifications;
 
 
-public class ReviewNotification(Review review, User notifier) : INotification
+public class ReviewNotification(User notifier, Review review) : INotification
 {
-    public static NotificationKind Descriptor => NotificationKind.Private | NotificationKind.Review | NotificationKind.Feed;
+	public User Notifier { get; init; } = notifier;
+	public Review Review { get; init; } = review;
 
-    public Domain.Entities.Notification ToDatabase()
-    {
-        var data = new NotificationDataDO(
-            Title: "You have received a new Review",
-            TextBody: $"Someone has done a review your project: {review.UserProject.Project.Name}",
-            HtmlBody: null
-        );
+	public static NotificationKind Descriptor => NotificationKind.Private | NotificationKind.Review | NotificationKind.Feed;
 
-        return new()
-        {
-            Type = Descriptor,
-            Data = JsonSerializer.Serialize(data),
-            NotifiableId = notifier.Id,
-        };
-    }
+	public Domain.Entities.Notification ToDatabase()
+	{
+		var data = new NotificationDataDO(
+			Title: "You have received a new Review",
+			TextBody: $"Someone has done a review your project",
+			HtmlBody: null
+		);
 
-    public bool ShouldSend() => review.State != ReviewState.Finished;
+		return new()
+		{
+			Descriptor = Descriptor,
+			Type = nameof(ReviewNotification),
+			Data = JsonSerializer.Serialize(data),
+			NotifiableId = Notifier.Id,
+		};
+	}
 
-    public MailMessage? ToMail() => null;
+	public bool ShouldSend() => Review.State != ReviewState.Finished;
 
-    public string? ToText() => null;
+	public MailMessage? ToMail() => null;
+
+	public string? ToText() => null;
 }

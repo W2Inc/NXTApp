@@ -8,21 +8,20 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
 {
     public void Configure(EntityTypeBuilder<Notification> builder)
     {
-        // Indexes
-        // builder.HasIndex(n => n.Kind);
-        builder.HasIndex(n => n.CreatedAt);
+        // ✅ KEEP: Most important composite index for unread notifications
+        builder.HasIndex(n => new { n.NotifiableId, n.ReadAt })
+            .HasDatabaseName("IX_notifications_notifiable_read")
+            .IncludeProperties(n => new { n.CreatedAt, n.Descriptor, n.Type });
 
-        // Properties
-        // builder.Property(n => n.Message)
-        //     .IsRequired();
+        // ✅ KEEP: Essential for background processing
+        builder.HasIndex(n => n.State)
+            .HasDatabaseName("IX_notifications_state")
+            .HasFilter("state = 0");
 
-        // builder.Property(n => n.Kind)
-        //     .IsRequired();
-
-        // Relationships
-        // builder.HasMany(n => n.UserNotifications)
-        //     .WithOne(un => un.Notification)
-        //     .HasForeignKey(un => un.NotificationId)
-        //     .OnDelete(DeleteBehavior.Cascade);
+        // ✅ KEEP: Only if you frequently query notifications by resource
+        // Consider removing if this query pattern is rare
+        builder.HasIndex(n => new { n.ResourceId, n.CreatedAt })
+            .HasDatabaseName("IX_notifications_resource_created")
+            .IsDescending(false, true);
     }
 }

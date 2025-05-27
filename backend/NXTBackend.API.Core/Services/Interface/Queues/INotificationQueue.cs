@@ -6,7 +6,7 @@ namespace NXTBackend.API.Core.Services.Interface.Queues;
 
 public interface INotificationQueue
 {
-	public record NotificationEntry(User User, Notification Notification);
+	public record NotificationEntry(User User, INotification Notification);
 
 	/// <summary>
 	/// Gets the current number of notifications waiting in the queue
@@ -18,7 +18,7 @@ public interface INotificationQueue
 	/// </summary>
 	/// <param name="notification">The notification to enqueue</param>
 	/// <returns>The ID assigned to the notification</returns>
-	void Enqueue(User user, Notification notification);
+	void Enqueue(User user, INotification notification);
 
 	/// <summary>
 	/// Attempts to dequeue a notification from the queue.

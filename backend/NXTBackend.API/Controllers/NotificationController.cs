@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using NXTBackend.API.Core.Notifications;
+using NXTBackend.API.Core.Notifications.Variants;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Services.Interface.Queues;
+using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests;
 using NXTBackend.API.Models.Responses.Objects;
@@ -37,8 +39,9 @@ public class NotificationController(
     )
     {
         var filters = new FilterDictionary()
-            .AddFilter(nameof(id), id)
-            .AddFilter(nameof(read), read)
+			.AddFilter(nameof(id), id)
+			.AddFilter(nameof(read), read)
+			.AddFilter("not[kind]", NotificationKind.FeedOnly)
             .AddFilter("user_id", User.GetSID());
 
         var page = await notificationService.GetAllAsync(paging, sorting, filters);
@@ -50,7 +53,7 @@ public class NotificationController(
     [EndpointSummary("Create a notification")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data, IUserProjectService userProjectService)
+    public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data, IUserProjectService userProjectService, IReviewService reviewService)
     {
         var user = await userService
 			.Include(u => u.Details)
@@ -60,11 +63,29 @@ public class NotificationController(
 			return NotFound();
 		// notifications.Enqueue(user, new Welcome(user));
 
+		notifications.Enqueue(user, new WelcomeNotification(user));
 		var up = await userProjectService
 			.Include(up => up.Project)
 			.Include(up => up.Members)
 			.FindByIdAsync(new Guid("01966da1-6e6f-738b-96bf-7dc64970881f"));
-		notifications.Enqueue(user, new Invite(user, up));
+		notifications.Enqueue(user, new InviteNotification(user, up));
+		// var review = await reviewService.CreateAsync(new()
+		// {
+		// 	UserProjectId = up.Id,
+		// 	ReviewerId = user.Id,
+		// 	State = ReviewState.InProgress,
+		// });
+
+		var review = await reviewService
+			.Include(r => r.UserProject)
+			.FindByIdAsync(new Guid("01970df7-6f3a-7bad-8543-195dfd5cabf7"));
+
+		if (review is null)
+			return BadRequest("Failed to create review");
+
+		// Enqueue the review notification
+
+		notifications.Enqueue(user, new ReviewNotification(user, review));
         return Ok();
     }
 

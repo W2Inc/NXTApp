@@ -362,44 +362,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.ToTable("tbl_feature");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Feed", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasColumnOrder(0);
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("Kind")
-                        .HasColumnType("integer")
-                        .HasColumnName("type");
-
-                    b.Property<Guid?>("NotifiableId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("notifiable_id");
-
-                    b.Property<Guid?>("ResourceId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("resource_id");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("tbl_feed");
-                });
-
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Git", b =>
                 {
                     b.Property<Guid>("Id")
@@ -533,6 +495,10 @@ namespace NXTBackend.API.Infrastructure.Migrations
                         .HasColumnType("jsonb")
                         .HasColumnName("data");
 
+                    b.Property<int>("Descriptor")
+                        .HasColumnType("integer")
+                        .HasColumnName("descriptor");
+
                     b.Property<Guid>("NotifiableId")
                         .HasColumnType("uuid")
                         .HasColumnName("notifiable_id");
@@ -540,6 +506,10 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("ReadAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("read_at");
+
+                    b.Property<Guid>("ResourceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("resource_id");
 
                     b.Property<int>("State")
                         .HasColumnType("integer")
@@ -556,7 +526,18 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedAt");
+                    b.HasIndex("State")
+                        .HasDatabaseName("IX_notifications_state")
+                        .HasFilter("state = 0");
+
+                    b.HasIndex("NotifiableId", "ReadAt")
+                        .HasDatabaseName("IX_notifications_notifiable_read");
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("NotifiableId", "ReadAt"), new[] { "CreatedAt", "Descriptor", "Type" });
+
+                    b.HasIndex("ResourceId", "CreatedAt")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("IX_notifications_resource_created");
 
                     b.ToTable("tbl_notifications");
                 });
@@ -893,11 +874,24 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DetailsId");
+                    b.HasIndex("CreatedAt")
+                        .IsDescending()
+                        .HasDatabaseName("IX_user_temporal_covering");
 
-                    b.HasIndex("DisplayName");
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("CreatedAt"), new[] { "Login", "DisplayName", "AvatarUrl", "UpdatedAt" });
 
-                    b.HasIndex("Login");
+                    b.HasIndex("DetailsId")
+                        .HasDatabaseName("IX_user_details_id")
+                        .HasFilter("details_id IS NOT NULL");
+
+                    b.HasIndex("Login")
+                        .IsUnique()
+                        .HasDatabaseName("IX_user_login_unique");
+
+                    b.HasIndex("Login", "DisplayName")
+                        .HasDatabaseName("IX_user_login_display");
+
+                    NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Login", "DisplayName"), new[] { "AvatarUrl", "CreatedAt", "UpdatedAt" });
 
                     b.ToTable("tbl_user");
                 });
@@ -1162,13 +1156,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Entities.Feed", b =>
-                {
-                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", null)
-                        .WithMany("CreatedFeeds")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.LearningGoal", b =>
                 {
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Creator")
@@ -1359,8 +1346,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("CreatedCursus");
-
-                    b.Navigation("CreatedFeeds");
 
                     b.Navigation("CreatedGoals");
 

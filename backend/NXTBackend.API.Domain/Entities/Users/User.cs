@@ -100,7 +100,7 @@ public class User : BaseEntity
     /// <summary>
     /// Feeds where the user is the actor
     /// </summary>
-    public virtual ICollection<Feed> CreatedFeeds { get; set; }
+    // public virtual ICollection<Feed> CreatedFeeds { get; set; }
 
     //= Collaborations =//
 

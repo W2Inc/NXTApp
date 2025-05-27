@@ -16,88 +16,45 @@ namespace NXTBackend.API.Core.Notifications.Variants;
 
 public class WelcomeNotification(User notifier) : INotification
 {
-    public static NotificationKind Descriptor => NotificationKind.Private | NotificationKind.Welcome;
+	public User Notifier { get; init; } = notifier;
 
-    public bool ShouldSend() => true;
+	public static NotificationKind Descriptor => NotificationKind.Private | NotificationKind.Welcome | NotificationKind.FeedOnly;
 
-    public Notification ToDatabase()
-    {
-        var data = new NotificationDataDO(
-            Title: "You have received a new Review",
-            TextBody: null,
-            HtmlBody: null
-        );
+	public bool ShouldSend() => true;
 
-        return new()
-        {
-            Type = Descriptor,
-            Data = JsonSerializer.Serialize(data),
-            NotifiableId = notifier.Id,
-        };
-    }
+	public Notification ToDatabase()
+	{
+		var data = new NotificationDataDO(
+			Title: "You have received a new Review",
+			TextBody: null,
+			HtmlBody: null
+		);
 
-    public MailMessage? ToMail()
-    {
-        var mail = new MailMessage();
-        if (notifier.Details?.Email is null)
-            return null;
+		return new()
+		{
+			Descriptor = Descriptor,
+			Type = nameof(WelcomeNotification),
+			Data = JsonSerializer.Serialize(data),
+			NotifiableId = Notifier.Id,
+		};
+	}
 
-        mail.To.Add(notifier.Details.Email);
-        mail.Subject = "Welcome to our platform!";
-        mail.IsBodyHtml = true;
-        mail.Body = INotification
-            .GetTemplate(nameof(WelcomeNotification))
-            .Replace("{{login}}", notifier.Login);
+	public MailMessage? ToMail()
+	{
+		return null;
+		// var mail = new MailMessage();
+		// if (Notifier.Details?.Email is null)
+		// 	return null;
 
-        return mail;
-    }
+		// mail.To.Add(Notifier.Details.Email);
+		// mail.Subject = "Welcome to our platform!";
+		// mail.IsBodyHtml = true;
+		// mail.Body = INotification
+		// 	.GetTemplate(nameof(WelcomeNotification))
+		// 	.Replace("{{login}}", Notifier.Login);
 
-    public string? ToText()
-    {
-        throw new NotImplementedException();
-    }
+		// return mail;
+	}
 
-    // public override MailMessage ToMail()
-    // {
-    //     var mail = new MailMessage();
-
-    //     mail.To.Add(to.Details?.Email ?? throw new ServiceException("No Email!"));
-    //     mail.Subject = "Welcome to our platform!";
-
-    //     // Render the view to HTML
-    //     // TODO: Instead I may want to use Razor, but I don't wanna spend 6 years implementing that now
-    //     mail.Body = GetTemplate()
-    //         .Replace("{{login}}", to.Login);
-    //     mail.IsBodyHtml = true;
-
-    //     return mail;
-    // }
-
-    // public override bool ShouldSend()
-    // {
-    //     return true;
-    // }
-
-    // public override Domain.Entities.Notification ToDatabase() => new()
-    // {
-    // 	Type = nameof(Welcome),
-    // 	NotifiableId = to.Id,
-    // 	Data = JsonSerializer.Serialize(new Data(
-    // 		null,
-    // 		"Welcome to our platform! We are excited to have you on board. If you have any questions, feel free to reach out."
-    // 	))
-    // };
-
-    // public override Domain.Entities.Feed? ToFeed()
-    // {
-    // 	return new()
-    // 	{
-    // 		Kind = FeedKind.Default | FeedKind.Private | FeedKind.Welcome,
-    // 		NotifiableId = to.Id
-    // 	};
-    // }
-
-    // // private User User { get; init; } = to;
-
-    // public override string View => nameof(Welcome);
+	public string? ToText() => null;
 }

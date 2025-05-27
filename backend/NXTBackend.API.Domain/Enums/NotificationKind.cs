@@ -13,7 +13,6 @@ namespace NXTBackend.API.Domain.Enums;
 /// The different kinds of notifications that exist.
 /// </summary>
 [Flags]
-// [JsonConverter(typeof(JsonStringEnumConverter)),]
 public enum NotificationKind
 {
     /// <summary>
@@ -43,7 +42,7 @@ public enum NotificationKind
     Default = 1 << 3,
 
     /// <summary>
-    /// Notification is viewable only (no accept/decline) directs the user to a page where they can view more information about the notification item.
+    /// Notification is viewable, ALLOWS to direct the user to a page where they can view more information about the notification item.
     /// </summary>
     [JsonPropertyName(nameof(Viewable))]
     Viewable = 1 << 4,

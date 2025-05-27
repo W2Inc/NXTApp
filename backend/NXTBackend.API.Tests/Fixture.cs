@@ -43,7 +43,6 @@ namespace NXTBackend.API.Tests
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IResourceOwnerService, ResourceOwnerService>();
             services.AddScoped<ISpotlightEventService, SpotlightEventService>();
-            services.AddScoped<IFeedService, FeedService>();
             services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
         }
 

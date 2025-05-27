@@ -65,7 +65,7 @@
 						</ul>
 					{/if}
 					<aside
-						class="sticky top-0 hidden h-min min-w-[346px] flex-col gap-2 pt-2 xl:flex"
+						class="sticky top-0 hidden h-min min-w-[346px] flex-col gap-2 xl:flex"
 					>
 						<SpotlightCard />
 						<ChangelogCard />

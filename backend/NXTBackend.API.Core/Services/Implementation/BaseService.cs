@@ -30,22 +30,27 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 			["updated_at"] = (query, value) => value is DateTimeOffset date ? query.Where(e => e.UpdatedAt == date) : query
 		};
 	}
+	
+	public IQueryable<T> Query(bool tracking = true)
+	{
+		return tracking ? _dbSet : _dbSet.AsNoTracking();
+	}
 
     /// <summary>
-    /// Registers a new filter handler that can perform any query transformation
-    /// </summary>
-    /// <typeparam name="TValue">The type of the filter value</typeparam>
-    /// <param name="key">The filter key</param>
-    /// <param name="queryTransform">The function that transforms the query</param>
-    protected void DefineFilter<TValue>(string key, Func<IQueryable<T>, TValue, IQueryable<T>> queryTransform)
-    {
-        _filterHandlers[key.ToLowerInvariant()] = (query, value) =>
-        {
-            if (value is TValue typedValue)
-                return queryTransform(query, typedValue);
-            return query;
-        };
-    }
+	/// Registers a new filter handler that can perform any query transformation
+	/// </summary>
+	/// <typeparam name="TValue">The type of the filter value</typeparam>
+	/// <param name="key">The filter key</param>
+	/// <param name="queryTransform">The function that transforms the query</param>
+	protected void DefineFilter<TValue>(string key, Func<IQueryable<T>, TValue, IQueryable<T>> queryTransform)
+	{
+		_filterHandlers[key.ToLowerInvariant()] = (query, value) =>
+		{
+			if (value is TValue typedValue)
+				return queryTransform(query, typedValue);
+			return query;
+		};
+	}
 
 	protected IQueryable<T> CreateQuery(bool tracking = true)
 	{

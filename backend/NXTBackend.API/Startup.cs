@@ -86,7 +86,6 @@ public static class Startup
             o.AddDocumentTransformer<InfoSchemeTransformer>();
             o.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             o.AddOperationTransformer<BasicResponsesOperationTransformer>();
-            // o.AddSchemaTransformer<FeedSchemaTransformer>();
 
             // Keycloak Authentication
             o.AddDocumentTransformer((document, context, cancellationToken) =>
@@ -240,7 +239,7 @@ public static class Startup
             q.UseDefaultThreadPool(x => x.MaxConcurrency = 5);
 
             RegisterJob<ReviewCompositionJob>(q);
-            RegisterJob<DispatchNotificationsJob2>(q);
+            RegisterJob<DispatchNotificationsJob>(q);
         });
 
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);

@@ -5064,13 +5064,12 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            feedKind: components["schemas"]["FeedKind"];
+            feedKind: components["schemas"]["NotificationKind"];
             /** Format: uuid */
             resourceId: string | null;
             /** Format: uuid */
             notifiableId: string | null;
         };
-        FeedKind: number;
         GitDO: {
             /** Format: uuid */
             id: string;
@@ -5172,9 +5171,20 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+            data?: components["schemas"]["NotificationDataDO"];
+            /** Format: date-time */
+            readAt: string | null;
             /** Format: uuid */
             resourceId?: string | null;
         };
+        NotificationDataDO: {
+            title: string;
+            /** @default null */
+            htmlBody: string | null;
+            /** @default null */
+            textBody: string | null;
+        };
+        NotificationKind: number;
         NotificationPostDTO: {
             message: string;
             /** Format: uuid */

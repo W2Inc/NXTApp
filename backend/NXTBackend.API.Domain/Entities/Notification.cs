@@ -12,23 +12,31 @@ namespace NXTBackend.API.Domain.Entities;
 [Table("tbl_notifications")]
 public class Notification : BaseEntity
 {
-    public Notification()
-    {
-        ReadAt = null;
-        State = NotificationState.Unprocessed;
-        Type = NotificationKind.Default;
+	public Notification()
+	{
+		Data = "{}";
+		ReadAt = null;
+		Type = nameof(Notification);
+		State = NotificationState.Unprocessed;
+		Descriptor = NotificationKind.Default;
     }
 
     /// <summary>
-    /// The notification data.
+    /// The notification class.
     /// </summary>
     [Column("type")]
-    public NotificationKind Type { get; set; }
+    public string Type { get; set; }
+	
+	/// <summary>
+    /// The notification 
+    /// </summary>
+    [Column("descriptor")]
+    public NotificationKind Descriptor { get; set; }
 
     /// <summary>
-    /// Notifications get dispatched at a set interval, this marks that it has been processed.
-    /// </summary>
-    [Column("state")]
+	/// Notifications get dispatched at a set interval, this marks that it has been processed.
+	/// </summary>
+	[Column("state")]
     public NotificationState State { get; set; }
 
     /// <summary>

@@ -1,201 +1,100 @@
+using NXTBackend.API.Core.Notifications;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Services.Interface.Queues;
 using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Domain.Entities;
+
+// using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Jobs.Interface;
-using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Resend;
 
+
 namespace NXTBackend.API.Jobs;
 
+
 [DisallowConcurrentExecution]
-public class DispatchNotificationsJob : IScheduledJob
+public class DispatchNotificationsJob(
+	DatabaseContext ctx,
+	ILogger<DispatchNotificationsJob> logger,
+	INotificationQueue queue,
+	IResend resend
+) : IScheduledJob
 {
-    private readonly DatabaseContext _ctx;
-    private readonly ILogger<DispatchNotificationsJob> _logger;
-    private readonly INotificationQueue _queue;
-    private readonly IResend _resend;
-    private readonly IFeedService _feedService;
+	public static string? Schedule => "0 0/1 * ? * *";
+	public static string Identity => nameof(DispatchNotificationsJob);
 
-    // Configuration settings
-    private const int MaxBatchSize = 50;
-    private const int NotificationTtlMinutes = 10;
+	public async Task Execute(IJobExecutionContext context)
+	{
+		logger.LogInformation("Dispatching notifications...");
+		if (queue.QueueLength == 0)
+		{
+			logger.LogInformation("No notifications to process");
+			return;
+		}
 
-    public DispatchNotificationsJob(
-        DatabaseContext ctx,
-        ILogger<DispatchNotificationsJob> logger,
-        INotificationQueue queue,
-        IFeedService feedService,
-        IResend resend)
-    {
-        _ctx = ctx;
-        _logger = logger;
-        _queue = queue;
-        _resend = resend;
-        _feedService = feedService;
-    }
+		while (queue.TryDequeue(out var entry))
+		{
+			if (entry is null)
+				continue;
 
-    public static string Identity => nameof(DispatchNotificationsJob);
-    public static string? Schedule => "0 0/1 * ? * *";
+			var (user, notification) = entry;
+			if (notification is null || user is null || !notification.ShouldSend())
+				continue;
 
-    public async Task Execute(IJobExecutionContext context)
-    {
-        // 1. Process in-memory queue first
-        await ProcessQueuedNotifications(context.CancellationToken);
-        // await ProcessFailedNotifications(context.CancellationToken);
+			NotificationState state;
+			try
+			{
+				await Task.WhenAll([
+					ProcessToSMS(notification),
+					ProcessToEmail(notification),
+				]);
 
-        _logger.LogInformation("{Job} completed successfully", Identity);
-    }
+				state = NotificationState.Dispatched;
+			}
+			catch (Exception e)
+			{
+				logger.LogError(e, "Failed to process notification");
+				state = NotificationState.Failed;
+			}
 
-    private async Task ProcessQueuedNotifications(CancellationToken cancellationToken)
-    {
-        if (_queue.QueueLength == 0)
-        {
-            _logger.LogInformation("{Job} has no queued notifications to process", Identity);
-            return;
-        }
+			await ProcessToDatabase(notification, state);
+		}
 
-        _logger.LogInformation("Processing {count} queued notifications", _queue.QueueLength);
+		logger.LogInformation("All notifications processed, saving to database...");
+		await ctx.SaveChangesAsync(context.CancellationToken);
+	}
 
-        var emailBatch = new List<EmailMessage>();
-        var notificationsToSave = new List<Notification>();
+	private Task ProcessToSMS(INotification notification)
+	{
+		var text = notification.ToText();
+		if (string.IsNullOrEmpty(text))
+			return Task.CompletedTask;
 
-        // Process queue in a single pass
-        while (_queue.TryDequeue(out var entry))
-        {
-            var (user, notification) = entry;
+		// TODO: Implement SMS processing logic here
 
-            // Check if notification is ready to be sent
-            if (!notification.ShouldSend())
-            {
-                _logger.LogDebug("Notification for user {userId} not ready to send, re-queuing", user.Id);
-                _queue.Enqueue(user, notification);
-                continue;
-            }
+		return Task.CompletedTask;
+	}
 
-            try
-            {
-                // Process notification based on type
-                var dbNotification = notification.ToDatabase();
+	private Task ProcessToEmail(INotification notification)
+	{
+		var mail = notification.ToMail();
+		if (mail is null)
+			return Task.CompletedTask;
 
-                // Prepare email if applicable
-                var email = notification.ToMail();
-                if (email is not null)
-                {
-                    emailBatch.Add(new EmailMessage
-                    {
-                        HtmlBody = email.Body,
-                        Subject = email.Subject,
-                        To = email.To.Select(addr => addr.Address).ToArray()
-                    });
-                }
+		// Implement email processing logic here
+		// This could involve sending an email using a service like SendGrid or similar
+		// For example:
+		// var emailService = new EmailService();
+		// await emailService.SendEmailAsync(notification.Data, notification.NotifiableId);
 
-                // Prepare SMS if applicable (commented out as implementation may vary)
-                var text = notification.ToText();
-                if (text is not null)
-                {
-                    // SMS sending logic would go here
-                }
+		return Task.CompletedTask;
+	}
 
-                var feed = notification.ToFeed();
-                if (feed is not null)
-                    await _feedService.CreateAsync(feed);
-
-                // Mark as ready to be saved
-                dbNotification.State = NotificationState.Dispatched;
-                notificationsToSave.Add(dbNotification);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing notification for user {userId}", user.Id);
-
-                var failedNotification = notification.ToDatabase();
-                failedNotification.State = NotificationState.Failed;
-                // failedNotification.ErrorMessage = ex.Message;
-                notificationsToSave.Add(failedNotification);
-            }
-        }
-
-        // Process emails in a batch if any
-        if (emailBatch.Count > 0)
-        {
-            try
-            {
-                _logger.LogInformation("Sending batch of {count} emails", emailBatch.Count);
-                // Uncomment when ready to use
-                // var response = await _resend.EmailBatchAsync(emailBatch.ToArray(), cancellationToken);
-
-                // If email sending fails, update the corresponding notifications
-                // This would need additional tracking to map emails back to notifications
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error sending email batch");
-                // Mark all email notifications as failed
-                foreach (var notification in notificationsToSave.Where(n => n.State == NotificationState.Dispatched))
-                {
-                    notification.State = NotificationState.Failed;
-                    // notification.ErrorMessage = "Email batch sending failed: " + ex.Message;
-                }
-            }
-        }
-
-        // Save all notifications in a single database call
-        if (notificationsToSave.Count > 0)
-        {
-            _logger.LogInformation("Saving {count} notifications to database", notificationsToSave.Count);
-            await _ctx.Notifications.AddRangeAsync(notificationsToSave, cancellationToken);
-            await _ctx.SaveChangesAsync(cancellationToken);
-        }
-    }
-
-    // TODO: Figure this out, without reflection to *rebuild* the notification.
-    // ToDatabase needs to have a nice way for us to be able to re-construct the notification
-    private async Task ProcessFailedNotifications(CancellationToken cancellationToken)
-    {
-        // Get failed notifications that aren't too old
-        var cutoffTime = DateTime.UtcNow.AddMinutes(-NotificationTtlMinutes);
-
-        // Single query to get processable failed notifications
-        var failedNotifications = await _ctx.Notifications
-            .Where(n => n.State == NotificationState.Failed)
-            .Where(n => n.CreatedAt > cutoffTime) // Only retry if not too old
-            .OrderBy(n => n.CreatedAt)
-            .Take(MaxBatchSize)
-            .ToListAsync(cancellationToken);
-
-        if (failedNotifications.Count == 0)
-        {
-            return;
-        }
-
-        _logger.LogInformation("Retrying {count} failed notifications", failedNotifications.Count);
-
-        // Process each failed notification
-        foreach (var notification in failedNotifications)
-        {
-            try
-            {
-                // Here you would implement retry logic for the failed notification
-                // This would depend on your notification implementation details
-
-                // For this example, we'll just mark it as dispatched
-                notification.State = NotificationState.Dispatched;
-                // notification.ErrorMessage = null;
-                notification.UpdatedAt = DateTime.UtcNow;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to retry notification {id}", notification.Id);
-                // notification.ErrorMessage = ex.Message;
-                notification.UpdatedAt = DateTime.UtcNow;
-                // Still failed, but we updated the error message and timestamp
-            }
-        }
-
-        // Update all notifications in a single call
-        await _ctx.SaveChangesAsync(cancellationToken);
-    }
+	private async Task ProcessToDatabase(INotification notification, NotificationState state)
+	{
+		var dbNotification = notification.ToDatabase();
+		dbNotification.State = state;
+		await ctx.Notifications.AddAsync(dbNotification);
+	}
 }
