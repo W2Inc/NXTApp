@@ -6,6 +6,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Notifications;
 using NXTBackend.API.Core.Notifications.Variants;
 using NXTBackend.API.Core.Services.Interface;
@@ -55,37 +56,37 @@ public class NotificationController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<NotificationDO>> Create([FromBody] NotificationPostDTO data, IUserProjectService userProjectService, IReviewService reviewService)
     {
-        var user = await userService
-			.Include(u => u.Details)
-			.FindByIdAsync(data.UserId);
-
-        if (user is null)
-			return NotFound();
-		// notifications.Enqueue(user, new Welcome(user));
-
-		notifications.Enqueue(user, new WelcomeNotification(user));
-		var up = await userProjectService
-			.Include(up => up.Project)
-			.Include(up => up.Members)
-			.FindByIdAsync(new Guid("01966da1-6e6f-738b-96bf-7dc64970881f"));
-		notifications.Enqueue(user, new InviteNotification(user, up));
-		// var review = await reviewService.CreateAsync(new()
-		// {
-		// 	UserProjectId = up.Id,
-		// 	ReviewerId = user.Id,
-		// 	State = ReviewState.InProgress,
-		// });
-
-		var review = await reviewService
-			.Include(r => r.UserProject)
-			.FindByIdAsync(new Guid("01970df7-6f3a-7bad-8543-195dfd5cabf7"));
-
-		if (review is null)
-			return BadRequest("Failed to create review");
-
-		// Enqueue the review notification
-
-		notifications.Enqueue(user, new ReviewNotification(user, review));
+  //       var user = await userService.Query(false)
+  //           .Include(u => u.Details)
+		// 	.FirstOrDefaultAsync();
+  //
+  //       if (user is null)
+		// 	return NotFound();
+		// // notifications.Enqueue(user, new Welcome(user));
+  //
+		// notifications.Enqueue(user, new WelcomeNotification(user));
+		// var up = await userProjectService
+		// 	.Include(up => up.Project)
+		// 	.Include(up => up.Members)
+		// 	.FindByIdAsync(new Guid("01966da1-6e6f-738b-96bf-7dc64970881f"));
+		// notifications.Enqueue(user, new InviteNotification(user, up));
+		// // var review = await reviewService.CreateAsync(new()
+		// // {
+		// // 	UserProjectId = up.Id,
+		// // 	ReviewerId = user.Id,
+		// // 	State = ReviewState.InProgress,
+		// // });
+  //
+		// var review = await reviewService
+		// 	.Include(r => r.UserProject)
+		// 	.FindByIdAsync(new Guid("01970df7-6f3a-7bad-8543-195dfd5cabf7"));
+  //
+		// if (review is null)
+		// 	return BadRequest("Failed to create review");
+  //
+		// // Enqueue the review notification
+  //
+		// notifications.Enqueue(user, new ReviewNotification(user, review));
         return Ok();
     }
 

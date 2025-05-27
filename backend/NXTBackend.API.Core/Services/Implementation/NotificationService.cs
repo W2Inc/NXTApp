@@ -31,6 +31,7 @@ public class NotificationService : BaseService<Notification>, INotificationServi
     public override async Task<PaginatedList<Notification>> GetAllAsync(PaginationParams pagination, SortingParams sorting, FilterDictionary? filters = null)
     {
         var query = ApplyFilters(_dbSet.AsQueryable(), filters);
+        query = SortedList<Notification>.Apply(query, sorting);
         return await PaginatedList<Notification>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 

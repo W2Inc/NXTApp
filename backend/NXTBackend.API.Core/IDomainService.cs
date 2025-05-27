@@ -22,14 +22,6 @@ public interface IDomainService<T> where T : BaseEntity
 {
 	public IQueryable<T> Query(bool tracking = true);
 
-
-	/// <summary>
-	/// Configures the query to include related entities.
-	/// </summary>
-	/// <param name="includeExpression">Expression that defines the related entity to include.</param>
-	/// <returns>The service instance for method chaining.</returns>
-	IDomainService<T> Include(Expression<Func<T, object>> includeExpression);
-
 	/// <summary>
 	/// Find the entity by its ID.
 	/// </summary>

@@ -62,10 +62,6 @@ public class UserController(
 			.AddFilter("kind", NotificationKind.Feed | NotificationKind.FeedOnly)
 			.AddFilter("notifiable", User.GetSID());
 
-		var usr = await userService.Query(false)
-			.Include(u => u.Details)
-			.FirstOrDefaultAsync(u => u.Id == User.GetSID());
-
 		var page = await notificationService.GetAllAsync(pagination, sorting, filters);
 		page.AppendHeaders(Response.Headers);
 		return Ok(page.Items.Select(f => new FeedDO(f)));

@@ -17,7 +17,6 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 	protected readonly DatabaseContext _context;
 	protected readonly DbSet<T> _dbSet;
 	protected readonly Dictionary<string, Func<IQueryable<T>, object?, IQueryable<T>>> _filterHandlers;
-	private readonly List<Expression<Func<T, object>>> _includes = new();
 
 	public BaseService(DatabaseContext context)
 	{
@@ -51,20 +50,6 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 			return query;
 		};
 	}
-
-	protected IQueryable<T> CreateQuery(bool tracking = true)
-	{
-		var query = tracking ? _dbSet : _dbSet.AsNoTracking();
-
-		foreach (var include in _includes)
-		{
-			query = query.Include(include);
-		}
-
-		_includes.Clear();
-		return query;
-	}
-
 	protected virtual IQueryable<T> ApplyFilters(IQueryable<T> query, FilterDictionary? filters)
 	{
 		if (filters is null || !filters.Any())
@@ -78,8 +63,7 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 
 	public virtual async Task<T?> FindByIdAsync(Guid id)
 	{
-		return await CreateQuery(tracking: false)
-			.FirstOrDefaultAsync(x => x.Id == id);
+		return await Query(false).FirstOrDefaultAsync(x => x.Id == id);
 	}
 
 	public virtual async Task<bool> AreValid(IEnumerable<Guid> ids)
@@ -88,7 +72,7 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 			return true;
 
 		var idSet = new HashSet<Guid>(ids);
-		var existingCount = await CreateQuery(tracking: false)
+		var existingCount = await Query(false)
 			.Where(p => idSet.Contains(p.Id))
 			.CountAsync();
 
@@ -121,13 +105,9 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 		SortingParams sorting,
 		FilterDictionary? filters = null)
 	{
-		var query = ApplyFilters(CreateQuery(), filters);
+        Console.WriteLine("\n\n\n\n\nja\n\n\n\n\n");
+		var query = ApplyFilters(Query(), filters);
+        query = SortedList<T>.Apply(query, sorting);
 		return await PaginatedList<T>.CreateAsync(query, pagination.Page, pagination.Size);
-	}
-
-	IDomainService<T> IDomainService<T>.Include(Expression<Func<T, object>> includeExpression)
-	{
-		_includes.Add(includeExpression);
-		return this;
 	}
 }

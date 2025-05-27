@@ -1,9 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 
 namespace NXTBackend.API.Domain.Common;
 
 // NOTE: https://learn.microsoft.com/en-us/ef/core/modeling/generated-properties?tabs=data-annotations
+
+public interface ISortableEntity<T> where T : BaseEntity
+{
+    static abstract Expression<Func<T, object>>? GetKeySelectorFor(string sortKey);
+    static abstract string[] GetAvailableSortKeys();
+}
 
 /// <summary>
 /// Base entity for all entities in the system.
@@ -26,4 +33,23 @@ public abstract class BaseEntity
     /// </summary>
     [Column("updated_at")]
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+    
+    /// <summary>
+    /// Function to retrieve the order by property.
+    ///
+    /// If the property is order-able it is returned, else null.
+    /// </summary>
+    /// <param name="key">The supposed property name (</param>
+    /// <returns></returns>
+    public static Expression<Func<BaseEntity, object>>? GetOrderByKey(string? key)
+    {
+        return key?.ToLowerInvariant() switch
+        {
+            // BaseEntity properties
+            "id" => entity => entity.Id,
+            "createdat" => entity => entity.CreatedAt,
+            "updatedat" => entity => entity.UpdatedAt,
+            _ => null
+        };
+    }
 }
