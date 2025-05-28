@@ -9,6 +9,7 @@ using NXTBackend.API.Models.Requests;
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models.Responses.Objects.SearchResponses;
+using NXTBackend.API.Core.Utils.Query;
 
 namespace NXTBackend.API.Core.Services.Interface;
 

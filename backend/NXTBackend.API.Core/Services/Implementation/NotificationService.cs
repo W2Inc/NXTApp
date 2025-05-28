@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
+using NXTBackend.API.Core.Utils.Query;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Infrastructure.Database;

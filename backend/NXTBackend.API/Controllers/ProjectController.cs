@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Distributed;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
+using NXTBackend.API.Core.Utils.Query;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;

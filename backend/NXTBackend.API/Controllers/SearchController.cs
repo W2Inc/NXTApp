@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Utils.Query;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Responses.Objects.SearchResponses;

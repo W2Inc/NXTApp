@@ -24,9 +24,11 @@
 	type DataTableProps<TData, TValue> = {
 		data: TData[];
 		columns: ColumnDef<TData, TValue>[];
+		searchKey: string;
 		placeholder?: string;
 		sorting: SortingState;
 		pagination: PaginationState;
+		rowSelection: RowSelectionState;
 	};
 
 	// const paginationOptions = [20, 40, 60, 80];
@@ -37,7 +39,9 @@
 		columns,
 		pagination = $bindable(),
 		sorting = $bindable(),
+		rowSelection = $bindable(),
 		placeholder = "Search...",
+		searchKey
 	}: DataTableProps<TData, TValue> = $props();
 
 	// let pagination = $state<PaginationState>({
@@ -47,7 +51,7 @@
 
 	// let sorting = $state<SortingState>([]);
 	let columnFilters = $state<ColumnFiltersState>([]);
-	let rowSelection = $state<RowSelectionState>({});
+	// let rowSelection = $state<RowSelectionState>({});
 	const table = createSvelteTable({
 		get data() {
 			return data;
@@ -112,10 +116,10 @@
 			/>
 			<Input
 				{placeholder}
-				value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-				onchange={(e) => table.getColumn("title")?.setFilterValue(e.currentTarget.value)}
-				oninput={(e) => table.getColumn("title")?.setFilterValue(e.currentTarget.value)}
-				class="pl-9 shadow-inner"
+				value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+				onchange={(e) => table.getColumn(searchKey)?.setFilterValue(e.currentTarget.value)}
+				oninput={(e) => table.getColumn(searchKey)?.setFilterValue(e.currentTarget.value)}
+				class="pl-9 inset-shadow-sm shadow-none"
 			/>
 		</div>
 
@@ -136,7 +140,7 @@
 					class={buttonVariants({
 						size: "sm",
 						variant: "outline",
-						class: "text-foreground w-20 select-none justify-between shadow-inner",
+						class: "text-foreground w-20 select-none justify-between inset-shadow-sm shadow-none",
 					})}>{pagination.pageSize}</Select.Trigger
 				>
 				<Select.Content>
@@ -151,7 +155,7 @@
 			<Button
 				variant="outline"
 				size="sm"
-				class="select-none shadow-inner"
+				class="select-none inset-shadow-sm shadow-none"
 				onclick={() => table.previousPage()}
 				disabled={!table.getCanPreviousPage()}
 			>
@@ -161,7 +165,7 @@
 			<Button
 				variant="outline"
 				size="sm"
-				class="select-none shadow-inner"
+				class="select-none inset-shadow-sm shadow-none"
 				onclick={() => table.nextPage()}
 				disabled={!table.getCanNextPage()}
 			>

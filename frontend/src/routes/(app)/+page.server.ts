@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return { feed: [] }
 	}
 	const { data } = await locals.api.GET("/users/current/feed", {
-		params: { query: { "Size": 15, Order: "Descending", OrderBy: "CreatedAt" } }
+		params: { query: { "page[size]": 15, "sort": "Descending", "sort_by": "CreatedAt" } }
 	});
 
 	return {

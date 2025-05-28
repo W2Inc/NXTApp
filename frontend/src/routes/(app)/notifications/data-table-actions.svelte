@@ -6,6 +6,7 @@
 	import X from "lucide-svelte/icons/x";
 	import Inbox from "lucide-svelte/icons/inbox";
 	import Tippy from "$lib/components/tippy.svelte";
+	import { Eye } from "lucide-svelte";
 
 	let { id, type }: { id: string; type: number } = $props();
 </script>
@@ -29,6 +30,31 @@
 	</Button>
 {/snippet}
 
+{#snippet actionButtons()}
+	{#if type & (1 << 0)}
+		<Button
+			size="sm"
+			class="h-7 border-0 bg-green-600 px-3 text-xs text-white hover:bg-green-700"
+		>
+			<Check class="mr-1 h-3 w-3" />
+			Accept
+		</Button>
+		<Button
+			size="sm"
+			variant="outline"
+			class="h-7 border-red-200 px-3 text-xs text-red-600 hover:bg-red-50"
+		>
+			<X class="mr-1 h-3 w-3" />
+			Decline
+		</Button>
+	{:else if type & (1 << 4)}
+		<Button size="sm" variant="outline" class="h-7 px-3 text-xs">
+			<Eye class="mr-1 h-3 w-3" />
+			View Details
+		</Button>
+	{/if}
+{/snippet}
+
 {#snippet dismiss()}
 	<Button size="sm" variant="outline" class="shadow-inner">
 		<Inbox class="size-4" />
@@ -37,10 +63,5 @@
 {/snippet}
 
 <div class="pr-4 text-right">
-	Hammer
-	<!-- {#if type === "notification"}
-		{@render dismiss()}
-	{:else if type === "invite"}
-		{@render invite()}
-	{/if} -->
+	{@render actionButtons()}
 </div>

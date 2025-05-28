@@ -4,7 +4,7 @@
 </script>
 
 <div
-	class="bg-background mb-2 w-full min-w-[346px] max-w-[400px] rounded-lg border p-4 shadow"
+	class="bg-card mb-2 w-full min-w-[346px] max-w-[400px] rounded-lg border p-4"
 >
 	<h2 class="mb-4 flex items-center justify-between text-xl font-bold">
 		<span>Changelog</span>

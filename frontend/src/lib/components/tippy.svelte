@@ -14,11 +14,12 @@
 	let { text, class: className, children, onclick }: Props = $props();
 </script>
 
-<Tooltip.Root>
+<Tooltip.Root disableHoverableContent>
 	<Tooltip.Trigger {onclick}>
 		{@render children?.()}
 	</Tooltip.Trigger>
 	<Tooltip.Content
+
 		class={cn(
 			"bg-muted text-muted-foreground dark:border-background max-w-64 border p-2 text-sm leading-relaxed tracking-wide shadow-xl",
 			className,

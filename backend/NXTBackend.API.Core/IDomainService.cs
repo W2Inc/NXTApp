@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.Linq.Expressions;
+using NXTBackend.API.Core.Utils.Query;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Models;
 

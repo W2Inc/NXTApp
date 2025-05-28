@@ -14,6 +14,7 @@
 	import * as Button from "$lib/components/ui/button/";
 	import { Badge } from "$lib/components/ui/badge/";
 	import { page } from "$app/state";
+	import * as Tooltip from "$lib/components/ui/tooltip";
 
 	const { data }: { data: BackendTypes["FeedDO"] } = $props();
 
@@ -216,9 +217,14 @@
 					{/if}
 				</div>
 
-				<span class="text-muted-foreground text-xs">
-					{getRelativeTime(data.createdAt)}
-				</span>
+				<Tooltip.Root>
+					<Tooltip.Trigger class="text-muted-foreground text-xs capitalize">
+						{getRelativeTime(data.createdAt)}
+					</Tooltip.Trigger>
+					<Tooltip.Content>
+						<p>{new Date(data.createdAt).toDateString()}</p>
+					</Tooltip.Content>
+				</Tooltip.Root>
 			</div>
 
 			<!-- Description -->

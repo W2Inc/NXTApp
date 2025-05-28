@@ -21,9 +21,6 @@ namespace NXTBackend.API.Core.Notifications;
 /// <param name="project"></param>
 public class InviteNotification(User notifier, UserProject userProject) : INotification
 {
-	public User Notifier { get; init; } = notifier;
-	public UserProject UserProject { get; init; } = userProject;
-
 	public static NotificationKind Descriptor => NotificationKind.AcceptOrDecline | NotificationKind.Project | NotificationKind.Viewable;
 
 	public bool ShouldSend() => true;
@@ -31,11 +28,11 @@ public class InviteNotification(User notifier, UserProject userProject) : INotif
 	public Domain.Entities.Notification ToDatabase() => new()
 	{
 		Descriptor = Descriptor,
-		NotifiableId = Notifier.Id,
+		NotifiableId = notifier.Id,
 		Type = nameof(InviteNotification),
 		Data = JsonSerializer.Serialize(new NotificationDataDO(
 			Title: $"You have been invited to join the project",
-			HtmlBody: $"<p>You have been invited to join the project</p>.",
+			HtmlBody: $"<p>You have been invited to join the project: {userProject.Project.Name}</p>.",
 			TextBody: $"You have been invited to join the project."
 		)),
 	};

@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using NXTBackend.API.Core.Utils.Query;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
@@ -29,7 +30,7 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 			["updated_at"] = (query, value) => value is DateTimeOffset date ? query.Where(e => e.UpdatedAt == date) : query
 		};
 	}
-	
+
 	public IQueryable<T> Query(bool tracking = true)
 	{
 		return tracking ? _dbSet : _dbSet.AsNoTracking();

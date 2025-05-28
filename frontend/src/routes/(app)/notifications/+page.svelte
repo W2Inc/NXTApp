@@ -7,7 +7,11 @@
 	import { z } from "zod";
 	import type { PageProps } from "./$types";
 	import Loader from "lucide-svelte/icons/loader";
-	import type { PaginationState, SortingState } from "@tanstack/table-core";
+	import type {
+		PaginationState,
+		RowSelectionState,
+		SortingState,
+	} from "@tanstack/table-core";
 	import { Constants } from "$lib/utils";
 
 	const { data }: PageProps = $props();
@@ -19,16 +23,21 @@
 	// 	}),
 	// );
 	let sorting = $state<SortingState>([]);
+	let rowSelection = $state<RowSelectionState>({});
 	let pagination = $state<PaginationState>({
 		pageIndex: 0,
-		pageSize: Constants.PER_PAGE,
+		pageSize: 10,
 	});
+
+	// let selectedRows = $derived()
 
 	$effect(() => {
-
+		// data.notifications
 	});
 
-	$inspect(pagination)
+	$inspect(pagination);
+	$inspect(rowSelection);
+	$inspect(data.notifications);
 </script>
 
 <svelte:head>
@@ -45,11 +54,18 @@
 		</Tabs.Root>
 	{/snippet}
 	{#snippet right()}
-		<div class="px-24 py-4">
+		<div class="px-4 py-4">
 			{#await data.notifications}
 				<Loader class="animate-spin" />
 			{:then notifications}
-				<DataTable data={notifications} {columns} bind:pagination bind:sorting />
+				<DataTable
+					searchKey="Title"
+					data={notifications}
+					{columns}
+					bind:pagination
+					bind:sorting
+					bind:rowSelection
+				/>
 			{/await}
 		</div>
 	{/snippet}

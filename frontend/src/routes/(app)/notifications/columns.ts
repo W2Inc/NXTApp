@@ -26,7 +26,8 @@ export const columns: ColumnDef<BackendTypes["NotificationDO"]>[] = [
 		enableHiding: false,
 	},
 	{
-		accessorKey: "title",
+		id: "Title",
+		accessorKey: "data.title",
 		header: "Title",
 	},
 	// {
@@ -41,47 +42,47 @@ export const columns: ColumnDef<BackendTypes["NotificationDO"]>[] = [
 	// 		return renderSnippet(typeCell, row.original.type);
 	// 	},
 	// },
-	// {
-	// 	accessorKey: "createdAt",
-	// 	cell: ({ row }) => {
-	// 		const formatter = new Intl.DateTimeFormat("en-US", {
-	// 			dateStyle: "long",
-	// 			timeStyle: "short",
-	// 		});
+	{
+		accessorKey: "createdAt",
+		cell: ({ row }) => {
+			const formatter = new Intl.DateTimeFormat("en-US", {
+				dateStyle: "long",
+				timeStyle: "short",
+			});
 
-	// 		const amountCellSnippet = createRawSnippet<[string]>((getAmount) => {
-	// 			const amount = getAmount();
-	// 			return {
-	// 				render: () => `<div class="font-medium">1</div>`,
-	// 			};
-	// 		});
+			const amountCellSnippet = createRawSnippet<[string]>((getAmount) => {
+				const amount = getAmount();
+				return {
+					render: () => `<div class="font-medium">${amount}</div>`,
+				};
+			});
 
-	// 		return renderSnippet(
-	// 			amountCellSnippet,
-	// 			formatter.format(row.getValue("createdAt")),
-	// 		);
-	// 	},
-	// 	header: ({ column }) =>
-	// 		renderComponent(DataTableSortDate, {
-	// 			onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
-	// 		}),
-	// },
-	// {
-	// 	id: "actions",
-	// 	header: () => {
-	// 		const actionHeader = createRawSnippet<[string]>((value) => {
-	// 			return {
-	// 				render: () => `<div class="text-right pr-4">${value()}</div>`,
-	// 			};
-	// 		});
+			return renderSnippet(
+				amountCellSnippet,
+				formatter.format(new Date(row.getValue("createdAt"))),
+			);
+		},
+		header: ({ column }) =>
+			renderComponent(DataTableSortDate, {
+				onclick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+			}),
+	},
+	{
+		id: "actions",
+		header: () => {
+			const actionHeader = createRawSnippet<[string]>((value) => {
+				return {
+					render: () => `<div class="text-right pr-4">${value()}</div>`,
+				};
+			});
 
-	// 		return renderSnippet(actionHeader, "Action");
-	// 	},
-	// 	cell: ({ row }) => {
-	// 		return renderComponent(DataTableActions, {
-	// 			id: row.original.id,
-	// 			type: 0,
-	// 		});
-	// 	},
-	// },
+			return renderSnippet(actionHeader, "Action");
+		},
+		cell: ({ row }) => {
+			return renderComponent(DataTableActions, {
+				id: row.original.id,
+				type: row.original.descriptor,
+			});
+		},
+	},
 ];

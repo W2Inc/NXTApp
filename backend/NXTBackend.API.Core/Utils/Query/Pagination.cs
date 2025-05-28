@@ -1,9 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+// ============================================================================
+// W2Inc, Amsterdam 2023-2025, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
+
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using NXTBackend.API.Domain.Common;
 
-namespace NXTBackend.API.Models;
+namespace NXTBackend.API.Core.Utils.Query;
 
 /// <summary>
 /// Query parameters for pagination.
@@ -19,6 +26,7 @@ public class PaginationParams
     /// The page number.
     /// </summary>
     [Range(1, int.MaxValue)]
+    [FromQuery( Name = "page[index]")]
     public int Page
     {
         get => _pageNumber;
@@ -29,6 +37,7 @@ public class PaginationParams
     /// How many items per page.
     /// </summary>
     [Range(1, c_MaxPageSize)]
+    [FromQuery( Name = "page[size]")]
     public int Size
     {
         get => _pageSize;
@@ -40,15 +49,8 @@ public class PaginationParams
 /// Paginated list of items.
 /// </summary>
 /// <typeparam name="T">The object type</typeparam>
-public class PaginatedList<T> where T : BaseEntity
+public class PaginatedList<T>(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize) where T : BaseEntity
 {
-    public PaginatedList(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize)
-    {
-        Items = items;
-        Page = pageNumber;
-        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-    }
-
     /// <summary>
     /// Create a paginated list from a queryable source.
     /// </summary>
@@ -62,7 +64,6 @@ public class PaginatedList<T> where T : BaseEntity
         var items = await source
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            // .OrderBy(e => e.Id)
             .ToListAsync();
 
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
@@ -78,9 +79,9 @@ public class PaginatedList<T> where T : BaseEntity
         headers.Add("X-Pages", TotalPages.ToString());
     }
 
-    public IReadOnlyCollection<T> Items { get; }
+    public IReadOnlyCollection<T> Items { get; } = items;
 
-    public int Page { get; }
+    public int Page { get; } = pageNumber;
 
-    public int TotalPages { get; }
+    public int TotalPages { get; } = (int)Math.Ceiling(count / (double)pageSize);
 }

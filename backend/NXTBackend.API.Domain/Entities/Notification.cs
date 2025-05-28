@@ -12,13 +12,14 @@ namespace NXTBackend.API.Domain.Entities;
 [Table("tbl_notifications")]
 public class Notification : BaseEntity
 {
-	public Notification()
-	{
-		Data = "{}";
-		ReadAt = null;
-		Type = nameof(Notification);
-		State = NotificationState.Unprocessed;
-		Descriptor = NotificationKind.Default;
+    public Notification()
+    {
+        Data = "{}";
+        ReadAt = null;
+        Type = nameof(Notification);
+        State = NotificationState.Unprocessed;
+        Descriptor = NotificationKind.Default;
+        ResourceId = null;
     }
 
     /// <summary>
@@ -26,9 +27,9 @@ public class Notification : BaseEntity
     /// </summary>
     [Column("type")]
     public string Type { get; set; }
-	
+
 	/// <summary>
-    /// The notification 
+    /// The notification
     /// </summary>
     [Column("descriptor")]
     public NotificationKind Descriptor { get; set; }
@@ -55,7 +56,7 @@ public class Notification : BaseEntity
     /// This notification targets a specific resource as context.
     /// </summary>
     [Column("resource_id")]
-    public Guid ResourceId { get; set; }
+    public Guid? ResourceId { get; set; }
 
     /// <summary>
     /// The notification data.

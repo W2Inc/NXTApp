@@ -15,10 +15,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     "filter[slug]"?: string;
                     "filter[id]"?: string;
                 };
@@ -540,10 +540,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     "filter[id]"?: string;
                     "filter[slug]"?: string;
                     "filter[name]"?: string;
@@ -911,10 +911,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                 };
                 header?: never;
                 path: {
@@ -980,10 +980,10 @@ export interface paths {
         put: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                 };
                 header?: never;
                 path: {
@@ -1063,10 +1063,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                 };
                 header?: never;
                 path: {
@@ -1147,10 +1147,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     "filter[id]"?: string;
                     "filter[read]"?: boolean;
                 };
@@ -1538,10 +1538,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     "filter[id]"?: string;
                     "filter[slug]"?: string;
                     "filter[name]"?: string;
@@ -2002,10 +2002,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                 };
                 header?: never;
                 path: {
@@ -2086,11 +2086,11 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
+                    "page[index]"?: number;
+                    "page[size]"?: number;
                     "filter[user_project_id]"?: string;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                 };
                 header?: never;
                 path?: never;
@@ -2457,10 +2457,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     "filter[name]"?: string;
                     "filter[project_id]"?: string;
                     "filter[project_slug]"?: string;
@@ -2830,8 +2830,8 @@ export interface paths {
                 query?: {
                     "filter[category]"?: string;
                     "filter[query]"?: string;
-                    Page?: number;
-                    Size?: number;
+                    "page[index]"?: number;
+                    "page[size]"?: number;
                 };
                 header?: never;
                 path: {
@@ -2919,10 +2919,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     "filter[id]"?: string;
                 };
                 header?: never;
@@ -3354,10 +3354,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                 };
                 header?: never;
                 path?: never;
@@ -3587,10 +3587,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     "filter[state]"?: string;
                 };
                 header?: never;
@@ -3877,10 +3877,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     "filter[display_name]"?: string;
                 };
                 header?: never;
@@ -4191,8 +4191,8 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
+                    "page[index]"?: number;
+                    "page[size]"?: number;
                 };
                 header?: never;
                 path: {
@@ -4272,10 +4272,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     /** @description The name of the learning goal */
                     "filter[name]"?: string;
                 };
@@ -4358,10 +4358,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     /** @description Filter user projects based on the project name */
                     "filter[name]"?: string;
                     /** @description Give projects that are in the following state */
@@ -4604,10 +4604,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
-                    OrderBy?: string;
-                    Order?: components["schemas"]["Order"];
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                    sort_by?: string;
+                    sort?: components["schemas"]["Order"];
                     /** @description Filter on user */
                     "filter[id]"?: string;
                     /** @description Filter on project */
@@ -4695,8 +4695,8 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    Page?: number;
-                    Size?: number;
+                    "page[index]"?: number;
+                    "page[size]"?: number;
                 };
                 header?: never;
                 path: {
@@ -5171,11 +5171,12 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            data?: components["schemas"]["NotificationDataDO"];
+            data: components["schemas"]["NotificationDataDO"];
+            descriptor: components["schemas"]["NotificationKind"];
             /** Format: date-time */
             readAt: string | null;
             /** Format: uuid */
-            resourceId?: string | null;
+            resourceId: string | null;
         };
         NotificationDataDO: {
             title: string;

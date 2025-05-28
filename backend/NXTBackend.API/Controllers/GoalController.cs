@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore.Query;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Utils.Query;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Cursus;

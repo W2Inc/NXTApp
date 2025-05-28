@@ -10,6 +10,7 @@ using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Models.Responses.Objects;
 using Microsoft.AspNetCore.Http;
 using NXTBackend.API.Domain.Entities.Spotlight;
+using NXTBackend.API.Core.Utils.Query;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -44,7 +45,7 @@ public sealed class UserService : BaseService<User>, IUserService
             .AsQueryable();
 
         query = ApplyFilters(query, filters);
-        query = await SortedList<User>.ApplyAsync(query, sorting);
+        query = SortedList<User>.Apply(query, sorting);
         return await PaginatedList<User>.CreateAsync(query, pagination.Page, pagination.Size);
     }
 

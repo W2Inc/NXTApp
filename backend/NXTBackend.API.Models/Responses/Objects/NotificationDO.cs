@@ -18,6 +18,7 @@ public class NotificationDO : BaseObjectDO<Notification>
         // Message = notification.Message;
         // Kind = notification.Kind;
         ReadAt = notification.ReadAt;
+        Descriptor = notification.Descriptor;
         Data = JsonSerializer.Deserialize<NotificationDataDO>(notification.Data)
             ?? throw new InvalidDataException();
 
@@ -27,7 +28,15 @@ public class NotificationDO : BaseObjectDO<Notification>
     /// The notification message
     /// </summary>
     // [Required]
+    [Required]
     public NotificationDataDO Data { get; set; }
+
+    /// <summary>
+    /// The notification message
+    /// </summary>
+    // [Required]
+    [Required]
+    public NotificationKind Descriptor { get; set; }
 
     /// <summary>
     /// Was created at.
@@ -38,6 +47,7 @@ public class NotificationDO : BaseObjectDO<Notification>
     /// <summary>
     /// Optional reference to a resource this notification is about
     /// </summary>
+    [Required]
     public Guid? ResourceId { get; set; }
 
     public static implicit operator NotificationDO?(Notification? entity) => entity is null ? null : new NotificationDO(entity);

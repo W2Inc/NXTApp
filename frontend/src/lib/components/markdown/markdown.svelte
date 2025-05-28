@@ -25,6 +25,8 @@
 	import Textarea from "../ui/textarea/textarea.svelte";
 	import { buttonVariants } from "../ui/button";
 	import { cn } from "$lib/utils";
+	import Button from "../ui/button/button.svelte";
+	import Tippy from "../tippy.svelte";
 
 	// Types
 
@@ -205,16 +207,11 @@
 {#snippet shortcut({ icon, tooltip, action }: Action)}
 	{@const RenderIcon = icon}
 	<li>
-		<!-- <Tippy text={tooltip} onclick={() => action()}> -->
-		<button
-			title={tooltip}
-			type="button"
-			onclick={() => action()}
-			class="hover:bg-muted outline-primary grid size-8 place-content-center rounded outline-1 transition focus-visible:outline"
-		>
-			<RenderIcon size={16} class="m-auto" />
-		</button>
-		<!-- </Tippy> -->
+		<Tippy text={tooltip} onclick={() => action()}>
+			<Button size="icon" variant="ghost" class="shadow-none">
+				<RenderIcon size={16} class="m-auto" />
+			</Button>
+		</Tippy>
 	</li>
 {/snippet}
 
@@ -249,7 +246,11 @@
 					{#if shortcuts.length > 5}
 						<Popover.Root>
 							<Popover.Trigger
-								class="bg-background hover:bg-muted outline-primary grid size-8 place-content-center rounded outline-1 focus-visible:outline"
+								class={buttonVariants({
+									variant: "ghost",
+									size: "icon",
+									class: "shadow-none",
+								})}
 							>
 								<Ellipsis size={16} class="m-auto" />
 							</Popover.Trigger>

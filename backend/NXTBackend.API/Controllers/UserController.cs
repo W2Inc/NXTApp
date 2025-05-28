@@ -6,15 +6,12 @@
 using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
+using NXTBackend.API.Core.Utils.Query;
 using NXTBackend.API.Domain.Entities.Spotlight;
 using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.User;
 using NXTBackend.API.Models.Responses.Objects;
 using NXTBackend.API.Utils;
@@ -56,7 +53,7 @@ public class UserController(
 		INotificationService notificationService,
 		[FromQuery] PaginationParams pagination,
 		[FromQuery] SortingParams sorting
-		)
+	)
 	{
 		var filters = new FilterDictionary()
 			.AddFilter("kind", NotificationKind.Feed | NotificationKind.FeedOnly)

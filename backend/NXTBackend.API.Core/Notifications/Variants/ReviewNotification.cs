@@ -19,16 +19,17 @@ public class ReviewNotification(User notifier, Review review) : INotification
 	{
 		var data = new NotificationDataDO(
 			Title: "You have received a new Review",
-			TextBody: $"Someone has done a review your project",
+			TextBody: $"Someone has done a review your project: {Review.UserProject.Project.Name}",
 			HtmlBody: null
 		);
 
 		return new()
-		{
-			Descriptor = Descriptor,
-			Type = nameof(ReviewNotification),
-			Data = JsonSerializer.Serialize(data),
-			NotifiableId = Notifier.Id,
+        {
+            Descriptor = Descriptor,
+            Type = nameof(ReviewNotification),
+            Data = JsonSerializer.Serialize(data),
+            NotifiableId = Notifier.Id,
+            ResourceId = Review.Id
 		};
 	}
 
