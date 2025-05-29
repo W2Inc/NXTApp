@@ -10,27 +10,6 @@ using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Domain.Entities.Users;
 
-/*
-model UserProject {
-    id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    created_at DateTime @default(now())
-    updated_at DateTime @default(now()) @updatedAt
-    state      State    @default(INACTIVE)
-
-    project       Project         @relation(fields: [project_id], references: [id])
-    git_info      GitInfo?        @relation(fields: [git_info_id], references: [id])
-    rubric        Rubric          @relation(fields: [rubric_id], references: [id])
-    project_users ProjectMember[]
-    reviews       Review[]
-
-    rubric_id   String  @db.Uuid
-    project_id  String  @db.Uuid
-    git_info_id String? @db.Uuid
-
-    @@map("user_project")
-}
-*/
-
 /// <summary>
 /// User projects are project "instances" / "sessions" for a project.
 /// User's can partake in this session and complete it with the help of other members.

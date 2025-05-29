@@ -34,6 +34,7 @@ NXTApp is an open-source peer-to-peer education platform designed as a monorepo 
 2. Set up required services:
    - Install and configure PostgreSQL.
    - Set up Keycloak for authentication and authorization.
+   - Set up a Gitea (or Forgejo) as the backend relies on it's API
 
 3. Configure environment variables:
    - Refer to environment variable settings in individual project READMEs.
@@ -45,6 +46,10 @@ NXTApp is an open-source peer-to-peer education platform designed as a monorepo 
    ```
 
 5. Access the application at `http://localhost:5000`.
+
+## Git Server
+
+There are various solutions to setting up a git server but in our case we simply use
 
 ## Contributing
 

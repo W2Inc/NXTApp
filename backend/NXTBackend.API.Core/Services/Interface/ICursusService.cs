@@ -3,6 +3,7 @@ using NXTBackend.API.Core.Services.Traits;
 using NXTBackend.API.Domain;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Models.Shared;
 
 namespace NXTBackend.API.Core.Services.Interface;
 public interface ICursusService : IDomainService<Cursus>, ICollaborative<Cursus>
@@ -12,7 +13,7 @@ public interface ICursusService : IDomainService<Cursus>, ICollaborative<Cursus>
     /// </summary>
     /// <param name="track"></param>
     /// <returns></returns>
-    public IEnumerable<Guid> ExtractTrackGoals(IGraphTrack track);
+    public IEnumerable<Guid> ExtractTrackGoals(CursusTrack track);
 
     /// <summary>
     /// Takes in a <see cref="IGraphTrack"/> compliant datatype and returns the goal IDs and the constructed
@@ -21,5 +22,5 @@ public interface ICursusService : IDomainService<Cursus>, ICollaborative<Cursus>
     /// <exception cref="ServiceException"/> Unable to process the request.
     /// <param name="track"></param>
     /// <returns></returns>
-    public Task<GraphNode> ConstructTrack(IGraphTrack track);
+    public Task<CursusTrackDTO> ConstructTrack(CursusTrack track);
 }

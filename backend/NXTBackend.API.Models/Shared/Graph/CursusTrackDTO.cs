@@ -3,21 +3,20 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using NXTBackend.API.Domain;
+using System;
 using System.ComponentModel.DataAnnotations;
-
-// ============================================================================
+using NXTBackend.API.Models.Shared.Graph;
 
 namespace NXTBackend.API.Models.Shared;
 
 /// <summary>
-/// Request and Response obkect
+/// Represents the entire track of a cursus for API requests and responses
 /// </summary>
-public class CursusTrackDO : BaseRequestDTO, IGraphTrack
+public class CursusTrackDTO : BaseRequestDTO
 {
-    [Required, MinLength(1), MaxLength(3)]
-    public Guid[] Goals { get; set; }
-
-    [Required, MinLength(0), MaxLength(4)]
-    public GraphNodeData[] Next { get; set; }
+    /// <summary>
+    /// Root node of the cursus track
+    /// </summary>
+    [Required]
+    public TrackNodeDTO Root { get; set; }
 }

@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using NXTBackend.API.Models.Shared;
+using NXTBackend.API.Models.Shared.Graph;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
@@ -26,43 +28,58 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
         _goalService = goalService;
     }
 
-    public async Task<GraphNode> ConstructTrack(IGraphTrack track)
+    public async Task<CursusTrackDTO> ConstructTrack(CursusTrack track)
     {
         var goalIds = ExtractTrackGoals(track).Distinct().ToArray();
-        var goals = await _context.LearningGoals.AsNoTracking()
+        var goals = await _context.LearningGoals
+            .AsNoTracking()
             .Where(g => goalIds.Contains(g.Id))
-            .ToListAsync();
+            .ToDictionaryAsync(g => g.Id);
 
-        var goalDict = goals.ToDictionary(g => g.Id);
-        GraphNode BuildNode(Guid[] goalIds, GraphNodeData[] nextNodes, int nodeId)
+        return new CursusTrackDTO()
         {
-            var nodeGoals = goalIds
+            Root = BuildNode(track.Goals, track.Next, 1)
+        };
+
+        TrackNodeDTO BuildNode(Guid[] ids, CursusTrack[] nextNodes, int nodeId)
+        {
+            var nodeGoals = ids
                 .Select(id =>
                 {
-                    var goal = goalDict[id];
-                    return new GraphNodeGoal(
-                        goal.Id,
-                        goal.Name,
-                        goal.Description,
-                        TaskState.Active // TODO: Evaluate state based on parent,
-                    );
+                    var goal = goals[id];
+                    return new TrackGoalDTO()
+                    {
+                        Id = goal.Id,
+                        Name = goal.Name,
+                        State = TaskState.Active
+                    };
                 })
                 .ToArray();
-
+    
             var children = nextNodes
                 .Select((node, index) => BuildNode(node.Goals, node.Next, nodeId * 100 + index + 1))
                 .ToArray();
-
-            return new GraphNode(nodeId, nodeGoals, children);
+    
+            return new TrackNodeDTO()
+            {
+                Id = nodeId,
+                Children = children,
+                Goals = nodeGoals,
+            };
         }
-
-        return BuildNode(track.Goals, track.Next, 1);
     }
 
     /// <inheritdoc />
-    public IEnumerable<Guid> ExtractTrackGoals(IGraphTrack track)
+    public IEnumerable<Guid> ExtractTrackGoals(CursusTrack track)
     {
-        static IEnumerable<Guid> CollectGoalIds(GraphNodeData data, int depth = 0)
+        // Start the recursion with the track data
+        var ids = CollectGoalIds(track);
+        var distinctCount = ids.Distinct().Count();
+        if (ids.Count() != distinctCount)
+            throw new ServiceException(StatusCodes.Status422UnprocessableEntity, "Duplicate goals detected in track");
+        return ids;
+
+        static IEnumerable<Guid> CollectGoalIds(CursusTrack data, int depth = 0)
         {
             foreach (var goal in data.Goals)
                 yield return goal;
@@ -76,13 +93,6 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
                     yield return goalId;
             }
         }
-
-        // Start the recursion with the track data
-        var ids = CollectGoalIds(new GraphNodeData(track.Goals, track.Next));
-        var distinctCount = ids.Distinct().Count();
-        if (ids.Count() != distinctCount)
-            throw new ServiceException(StatusCodes.Status422UnprocessableEntity, "Duplicate goals detected in track");
-        return ids;
     }
 
     /// <summary>
@@ -91,7 +101,7 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
     public override async Task<Cursus> DeleteAsync(Cursus entity)
     {
         // If no references exist, we can't hard delete.
-        entity.Deprecated = false;
+        entity.Deprecated = true;
         await _context.SaveChangesAsync();
         return entity;
     }
@@ -112,8 +122,10 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
 
     public async Task<bool> AddCollaborator(Guid cursusId, Guid userId)
     {
-        var cursus = await _dbSet.Include(c => c.Collaborators)
-                                .FirstOrDefaultAsync(c => c.Id == cursusId);
+        var cursus = await _dbSet
+            .Include(c => c.Collaborators)
+            .FirstOrDefaultAsync(c => c.Id == cursusId);
+        
         if (cursus is null)
             return false;
 
@@ -121,7 +133,7 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
         if (user is null)
             return false;
 
-        if (!cursus.Collaborators.Any(c => c.Id == userId))
+        if (cursus.Collaborators.All(c => c.Id != userId))
             cursus.Collaborators.Add(user);
 
         await _context.SaveChangesAsync();
@@ -130,16 +142,15 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
 
     public async Task<bool> RemoveCollaborator(Guid cursusId, Guid userId)
     {
-        var cursus = await _dbSet.Include(c => c.Collaborators)
-                                .FirstOrDefaultAsync(c => c.Id == cursusId);
-        if (cursus is null)
-            return false;
+        var cursus = await _dbSet
+            .Include(c => c.Collaborators)
+            .FirstOrDefaultAsync(c => c.Id == cursusId);
 
-        var user = cursus.Collaborators.FirstOrDefault(u => u.Id == userId);
+        var user = cursus?.Collaborators.FirstOrDefault(u => u.Id == userId);
         if (user is null)
             return false;
 
-        cursus.Collaborators.Remove(user);
+        cursus?.Collaborators.Remove(user);
         await _context.SaveChangesAsync();
         return true;
     }

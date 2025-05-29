@@ -8,6 +8,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NXTBackend.API.Core.Services.Interface;
+using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Core.Utils.Query;
 using NXTBackend.API.Domain;
 using NXTBackend.API.Models;
@@ -142,7 +143,7 @@ public class CursusController(
     [EndpointDescription("Sets the actual tree of the cursus")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<GraphNode>> SetTrack(Guid id, [FromBody] CursusTrackDO data)
+    public async Task<IActionResult> SetTrack(Guid id, [FromBody] CursusTrack data)
     {
         var (cursus, user) = await cursusService.IsCollaborator(id, User.GetSID());
         if (cursus is null)
@@ -163,7 +164,7 @@ public class CursusController(
     [EndpointDescription("Lets you retrieve the binary data of the track ")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<GraphNode>> GetTrack(Guid id)
+    public async Task<ActionResult<CursusTrackDTO>> GetTrack(Guid id)
     {
         var cursus = await cursusService.FindByIdAsync(id);
         if (cursus is null)
@@ -173,15 +174,14 @@ public class CursusController(
 
         try
         {
-            var lel = JsonSerializer.Deserialize<CursusTrackDO>(cursus.Track);
-            logger.LogInformation("Processing item {Id} with value {Value}", id, lel);
-            if (lel is null)
-                return Problem("Failed to deserialize track data");
-            return Ok(await cursusService.ConstructTrack(lel));
+            var lel = JsonSerializer.Deserialize<CursusTrack>(cursus.Track);
+            return lel is null 
+                ? Problem("Failed to deserialize track data")
+                : Ok(await cursusService.ConstructTrack(lel));
         }
         catch (Exception)
         {
-            throw;
+            throw new ServiceException(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the track data");
         }
     }
 }

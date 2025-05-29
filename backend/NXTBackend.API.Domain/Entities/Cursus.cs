@@ -14,46 +14,6 @@ using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Domain.Entities;
 
-/*
-model Cursus {
-    id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    created_at DateTime @default(now())
-    updated_at DateTime @default(now()) @updatedAt
-
-    name        String @unique
-    description String @db.VarChar(256)
-    markdown    String
-
-    slug String @unique
-
-    // If false then it's not visible to other users, except owner
-    public     Boolean @default(false)
-    // Allow for new user cursus to be created based on this cursus
-    enabled    Boolean @default(false)
-    // Everything is abandoned and no longer maintained
-    deprecated Boolean @default(false)
-
-    // If the cursus is readonly, meaning it's a pre-defined path then it can't be modified
-    // and as such the path_id is required! The goal's can't be changed either.
-    //
-    // If the cursus is not readonly, then the path is yet to be fully defined.
-    // In essence the user constructs this path themselves over time.
-    readonly Boolean @default(false)
-
-    owner_id String @db.Uuid
-    owner    User   @relation("CursusCreator", fields: [owner_id], references: [id])
-
-    // path_id String?       @unique @db.Uuid
-    // path    CursusVertex? @relation("CursusPath", fields: [path_id], references: [id])
-
-    vertices CursusVertex[] @relation("CursusVertices")
-
-    user_cursi UserCursus[]
-
-    @@map("cursus")
-}
-*/
-
 // ============================================================================
 
 /// <summary>

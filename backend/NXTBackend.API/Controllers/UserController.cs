@@ -7,6 +7,7 @@ using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Core.Utils.Query;
@@ -248,6 +249,16 @@ public class UserController(
         return Ok();
         // var cursi = await userService.GetUserCursi(user, pagination);
         // return Ok(cursi.Items.Select(c => new UserCursusDO(c)));
+    }
+    
+    [HttpGet("/users/{id:guid}/cursus/{cursusId:guid}/track")]
+    [EndpointSummary("")]
+    [EndpointDescription("")]
+    [ProducesResponseType<UserCursusDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetUserCursus(Guid id, Guid cursusId, IUserCursusService service)
+    {
+        return Ok(await service.ConstructTrack(id, cursusId));
     }
 
     [HttpGet("/users/{id:guid}/goals")]
