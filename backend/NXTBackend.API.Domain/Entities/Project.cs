@@ -6,9 +6,11 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Joins;
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -48,6 +50,8 @@ model Project {
 */
 
 [Table("tbl_project")]
+[Index(nameof(Name))]
+[Index(nameof(Slug))]
 public class Project : BaseEntity
 {
     public Project()
@@ -121,7 +125,7 @@ public class Project : BaseEntity
     /// <summary>
     /// The goals that reference this project
     /// </summary>
-    public virtual ICollection<LearningGoal> Goals { get; set; }
+    public virtual ICollection<GoalProject> Goals { get; set; }
 
     /// <summary>
     /// The different sessions that exist for this project

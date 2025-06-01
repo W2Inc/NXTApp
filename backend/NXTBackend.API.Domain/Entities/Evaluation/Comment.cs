@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Users;
 

@@ -5,7 +5,7 @@ using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Spotlight;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Infrastructure.Configurations;
+using NXTBackend.API.Domain.Joins;
 
 namespace NXTBackend.API.Infrastructure.Database;
 
@@ -25,33 +25,7 @@ public class DatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // modelBuilder.HasPostgresEnum<TaskState>();
-        // modelBuilder.HasPostgresEnum<CursusKind>();
-        // modelBuilder.HasPostgresEnum<MemberInviteState>();
-        // modelBuilder.HasPostgresEnum<NotificationState>();
-        // modelBuilder.HasPostgresEnum<ReviewKind>();
-        // modelBuilder.HasPostgresEnum<ReviewState>();
 
-        // Entities
-        new ProjectConfiguration().Configure(modelBuilder.Entity<Project>());
-        new LearningGoalConfiguration().Configure(modelBuilder.Entity<LearningGoal>());
-        new CursusConfiguration().Configure(modelBuilder.Entity<Cursus>());
-
-        // Evalution
-        new RubricConfiguration().Configure(modelBuilder.Entity<Rubric>());
-        new CommentConfiguration().Configure(modelBuilder.Entity<Comment>());
-
-        // User
-        new UserConfiguration().Configure(modelBuilder.Entity<User>());
-        new UserCursusConfiguration().Configure(modelBuilder.Entity<UserCursus>());
-        new UserGoalConfiguration().Configure(modelBuilder.Entity<UserGoal>());
-        new UserProjectConfiguration().Configure(modelBuilder.Entity<UserProject>());
-
-        // Other
-        new MemberConfiguration().Configure(modelBuilder.Entity<Member>());
-        new NotificationConfiguration().Configure(modelBuilder.Entity<Notification>());
-        new UserFeedConfiguration().Configure(modelBuilder.Entity<UserFeed>());
-        new NotificationConfiguration().Configure(modelBuilder.Entity<Notification>());
     }
 
 #nullable disable
@@ -74,5 +48,10 @@ public class DatabaseContext : DbContext
     public DbSet<Member> Members { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<UserFeed> UserFeeds { get; set; }
+    
+    // Joins
+    public DbSet<GoalProject> GoalProject { get; set; }
+    public DbSet<GoalCollaborator> GoalCollaborator { get; set; }
+    public DbSet<CursusCollaborator> CursusCollaborator { get; set; }
 #nullable restore
 }

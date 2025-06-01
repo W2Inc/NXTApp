@@ -6,8 +6,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Joins;
 
 // ============================================================================
 
@@ -17,6 +19,8 @@ namespace NXTBackend.API.Domain.Entities.Users;
 /// A feature is a experimental feature that is being developed.
 /// </summary>
 [Table("tbl_user")]
+[Index(nameof(Login), IsUnique = true)]
+[Index(nameof(Login), nameof(DisplayName))]
 public class User : BaseEntity
 {
     public User()
@@ -104,8 +108,9 @@ public class User : BaseEntity
 
     //= Collaborations =//
 
-    public virtual ICollection<Cursus> CollaboratedCursi { get; set; }
-    public virtual ICollection<LearningGoal> CollaboratedGoals { get; set; }
+    public virtual ICollection<CursusCollaborator> CollaboratedCursi { get; set; }
+    public virtual ICollection<GoalCollaborator> CollaboratedGoals { get; set; }
+    
 
     // NOTE(W2): Project collaboration is tracked via the external git source control.
     // That way we can sync the state more conveniently in case user gets added as a collaborator

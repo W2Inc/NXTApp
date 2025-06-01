@@ -5,6 +5,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Enums;
 
@@ -47,10 +48,23 @@ public class UserCursus : BaseEntity
         CursusId = Guid.Empty;
         Cursus = null!;
         UserGoals = [];
+        LastComputeAt = null;
     }
 
     [Column("state")]
     public TaskState State { get; set; }
+    
+    /// <summary>
+    /// Indicates the last time the graph was computed.
+    ///
+    /// Computation refers to the construction of the snapshot track.
+    /// When null, it  means the next time the users requests the track, it should be
+    /// rebuild in reference to the real track.
+    ///
+    /// That way we can save the effort of constantly building the track over and over again.
+    /// </summary>
+    [Column("last_compute_at")]
+    public DateTimeOffset? LastComputeAt { get; set; }
 
     [Column("user_id")]
     public Guid UserId { get; set; }
@@ -63,6 +77,12 @@ public class UserCursus : BaseEntity
 
     [ForeignKey(nameof(CursusId))]
     public virtual Cursus Cursus { get; set; }
+    
+    /// <summary>
+    /// The track / path of the Cursus stored in the .graph format.
+    /// </summary>
+    [Column("track", TypeName = "jsonb")]
+    public string? Track { get; set; }
 
     /// <summary>
     /// All the members that are part of this project.

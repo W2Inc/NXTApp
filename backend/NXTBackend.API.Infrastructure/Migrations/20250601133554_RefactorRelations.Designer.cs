@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NXTBackend.API.Infrastructure.Database;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NXTBackend.API.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250601133554_RefactorRelations")]
+    partial class RefactorRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,6 +27,51 @@ namespace NXTBackend.API.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("CollaboratorsOnCursi", b =>
+                {
+                    b.Property<Guid>("CollaboratedCursiId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CollaboratorsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CollaboratedCursiId", "CollaboratorsId");
+
+                    b.HasIndex("CollaboratorsId");
+
+                    b.ToTable("CollaboratorsOnCursi");
+                });
+
+            modelBuilder.Entity("CollaboratorsOnGoals", b =>
+                {
+                    b.Property<Guid>("CollaboratedGoalsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CollaboratorsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("CollaboratedGoalsId", "CollaboratorsId");
+
+                    b.HasIndex("CollaboratorsId");
+
+                    b.ToTable("CollaboratorsOnGoals");
+                });
+
+            modelBuilder.Entity("LearningGoalProject", b =>
+                {
+                    b.Property<Guid>("GoalsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProjectsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("GoalsId", "ProjectsId");
+
+                    b.HasIndex("ProjectsId");
+
+                    b.ToTable("LearningGoalProject");
+                });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Cursus", b =>
                 {
@@ -954,55 +1002,49 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.ToTable("tbl_user_project");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Joins.CursusCollaborator", b =>
+            modelBuilder.Entity("CollaboratorsOnCursi", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
+                    b.HasOne("NXTBackend.API.Domain.Entities.Cursus", null)
+                        .WithMany()
+                        .HasForeignKey("CollaboratedCursiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<Guid>("CursusId")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
-
-                    b.HasKey("UserId", "CursusId");
-
-                    b.HasIndex("CursusId");
-
-                    b.ToTable("rel_cursuscollaborator");
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("CollaboratorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Joins.GoalCollaborator", b =>
+            modelBuilder.Entity("CollaboratorsOnGoals", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
+                    b.HasOne("NXTBackend.API.Domain.Entities.LearningGoal", null)
+                        .WithMany()
+                        .HasForeignKey("CollaboratedGoalsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<Guid>("GoalId")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
-
-                    b.HasKey("UserId", "GoalId");
-
-                    b.HasIndex("GoalId");
-
-                    b.ToTable("rel_goalcollaborator");
+                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("CollaboratorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Joins.GoalProject", b =>
+            modelBuilder.Entity("LearningGoalProject", b =>
                 {
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(1);
+                    b.HasOne("NXTBackend.API.Domain.Entities.LearningGoal", null)
+                        .WithMany()
+                        .HasForeignKey("GoalsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<Guid>("GoalId")
-                        .HasColumnType("uuid")
-                        .HasColumnOrder(0);
-
-                    b.HasKey("ProjectId", "GoalId");
-
-                    b.HasIndex("GoalId");
-
-                    b.ToTable("rel_goalproject");
+                    b.HasOne("NXTBackend.API.Domain.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Cursus", b =>
@@ -1010,7 +1052,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Creator")
                         .WithMany("CreatedCursus")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Creator");
@@ -1107,7 +1149,7 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "Creator")
                         .WithMany("CreatedGoals")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Creator");
@@ -1242,67 +1284,8 @@ namespace NXTBackend.API.Infrastructure.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("NXTBackend.API.Domain.Joins.CursusCollaborator", b =>
-                {
-                    b.HasOne("NXTBackend.API.Domain.Entities.Cursus", "Cursus")
-                        .WithMany("Collaborators")
-                        .HasForeignKey("CursusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
-                        .WithMany("CollaboratedCursi")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cursus");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Joins.GoalCollaborator", b =>
-                {
-                    b.HasOne("NXTBackend.API.Domain.Entities.LearningGoal", "Goal")
-                        .WithMany("Collaborators")
-                        .HasForeignKey("GoalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.Users.User", "User")
-                        .WithMany("CollaboratedGoals")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Goal");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NXTBackend.API.Domain.Joins.GoalProject", b =>
-                {
-                    b.HasOne("NXTBackend.API.Domain.Entities.LearningGoal", "Goal")
-                        .WithMany("Projects")
-                        .HasForeignKey("GoalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NXTBackend.API.Domain.Entities.Project", "Project")
-                        .WithMany("Goals")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Goal");
-
-                    b.Navigation("Project");
-                });
-
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Cursus", b =>
                 {
-                    b.Navigation("Collaborators");
-
                     b.Navigation("UserCursi");
                 });
 
@@ -1329,17 +1312,11 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.LearningGoal", b =>
                 {
-                    b.Navigation("Collaborators");
-
-                    b.Navigation("Projects");
-
                     b.Navigation("UserGoals");
                 });
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Project", b =>
                 {
-                    b.Navigation("Goals");
-
                     b.Navigation("Rubrics");
 
                     b.Navigation("UserProjects");
@@ -1353,10 +1330,6 @@ namespace NXTBackend.API.Infrastructure.Migrations
 
             modelBuilder.Entity("NXTBackend.API.Domain.Entities.Users.User", b =>
                 {
-                    b.Navigation("CollaboratedCursi");
-
-                    b.Navigation("CollaboratedGoals");
-
                     b.Navigation("Comments");
 
                     b.Navigation("CreatedCursus");

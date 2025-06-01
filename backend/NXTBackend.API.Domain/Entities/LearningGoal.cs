@@ -5,8 +5,10 @@
 
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Users;
+using NXTBackend.API.Domain.Joins;
 
 namespace NXTBackend.API.Domain.Entities;
 
@@ -37,6 +39,8 @@ model LearningGoal {
 */
 
 [Table("tbl_learning_goal")]
+[Index(nameof(Name))]
+[Index(nameof(Slug))]
 public class LearningGoal : BaseEntity
 {
     public LearningGoal()
@@ -92,12 +96,12 @@ public class LearningGoal : BaseEntity
     /// <summary>
     /// The projects that are part of this goal
     /// </summary>
-    public virtual ICollection<Project> Projects { get; set; }
+    public virtual ICollection<GoalProject> Projects { get; set; }
 
     /// <summary>
     /// The instances of this goal
     /// </summary>
     public virtual ICollection<UserGoal> UserGoals { get; set; }
 
-    public virtual ICollection<User> Collaborators { get; set; }
+    public virtual ICollection<GoalCollaborator> Collaborators { get; set; }
 }

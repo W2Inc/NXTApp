@@ -35,137 +35,32 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
     /// <exception cref="ServiceException">Thrown when the cursus track is not found or cannot be processed.</exception>
     public async Task<CursusTrackDTO> ConstructTrack(Guid userId, Guid cursusId)
     {
-        // Get the user's cursus with track data in a single query
-        var userCursus = await _context.UserCursi
-            .Include(uc => uc.Cursus)
-            .Where(uc => uc.CursusId == cursusId && uc.UserId == userId)
+        // Check if such user cursus exists...
+        var userCursus = await  Query(false)
+            .Where(u => u.UserId == userId && u.CursusId == cursusId)
             .FirstOrDefaultAsync();
-
-        if (userCursus?.Cursus.Track is null)
-            throw new ServiceException(StatusCodes.Status404NotFound, "Not found");
-            
-        var track = JsonSerializer.Deserialize<CursusTrack>(userCursus.Cursus.Track)
-            ?? throw new ServiceException(StatusCodes.Status500InternalServerError, "Failed to deserialize track data");
-
-        // Get all goal IDs in the track
-        var allGoalIds = GetGoalIDs(track).Distinct().ToList();
         
-        // Perform a single complex query to get all the required data
-        var goalsQuery = await _context.LearningGoals
-            .Where(g => allGoalIds.Contains(g.Id))
-            .Select(g => new
-            {
-                Goal = g,
-                Projects = g.Projects.Select(p => new
-                {
-                    ProjectId = p.Id,
-                    UserProjects = p.UserProjects
-                        .Where(up => up.Members.Any(m => m.UserId == userId))
-                        .Select(up => new { up.Id, up.State })
-                        .ToList()
-                }).ToList()
-            })
-            .ToListAsync();
+        if (userCursus is null)
+            throw new ServiceException(StatusCodes.Status404NotFound, "UserCursus not found");
         
-        // Map to create goal state dictionary
-        var goalStates = new Dictionary<Guid, TaskState>();
-        var goalNames = new Dictionary<Guid, string>();
+        // Does graph need to be re-computed since the user made any progress?
+        // If true, compute
+        // If false, serve snapshot track
         
-        foreach (var goalData in goalsQuery)
-        {
-            goalNames[goalData.Goal.Id] = goalData.Goal.Name;
-            
-            // Determine state based on related projects
-            var projectStates = goalData.Projects
-                .SelectMany(p => p.UserProjects.Select(up => up.State))
-                .ToList();
-            
-            TaskState state;
-            if (projectStates.Count == 0)
-            {
-                state = TaskState.Inactive;
-            }
-            else if (projectStates.All(s => s == TaskState.Completed))
-            {
-                state = TaskState.Completed;
-            }
-            else if (projectStates.Any(s => s == TaskState.Active))
-            {
-                state = TaskState.Active;
-            }
-            else
-            {
-                state = TaskState.Inactive;
-            }
-            
-            goalStates[goalData.Goal.Id] = state;
-        }
-        
-        // Ensure all goal IDs have a state
-        foreach (var goalId in allGoalIds.Where(id => !goalStates.ContainsKey(id)))
-            goalStates[goalId] = TaskState.Inactive;
-        
-        return new CursusTrackDTO
-        {
-            Root = BuildTrackNode(track.Goals, track.Next)
-        };
+        // If computed:
+        // - Fetch the original cursus
+        // - Compare tracks
+        // - - When comparing the tracks, the snapshot takes precedence
+        // - - When cursus was e.g: Goal A -> Goal B during the last snapshot but is now: Goal C -> Goal B
+        // - - - Then we prefer the snapshot as that is what the user actually did, but we need to see state of goal to determine precedence
+        // - - - If Goal state is inactive, cursus wins else userCursus Snapshot wins (Optional Behaviour: Always prefer snapshot one)
+        await ComputeGraph(userCursus);
 
-        // Local function to build a track node and its children recursively
-        TrackNodeDTO BuildTrackNode(Guid[] goalIds, CursusTrack[] nextNodes, int nodeId = 1)
-        {
-            // Create goal DTOs with state information
-            var goalDtos = goalIds.Select(goalId => new TrackGoalDTO
-            {
-                Id = goalId,
-                Name = goalNames.GetValueOrDefault(goalId, "Unknown Goal"),
-                State = goalStates.GetValueOrDefault(goalId, TaskState.Inactive)
-            }).ToArray();
-
-            // Build child nodes recursively
-            var childNodes = nextNodes.Select((node, index) => 
-                BuildTrackNode(node.Goals, node.Next, nodeId * 10 + index + 1)).ToArray();
-
-            return new TrackNodeDTO
-            {
-                Id = nodeId,
-                Goals = goalDtos,
-                Children = childNodes
-            };
-        }
+        return new CursusTrackDTO();
     }
-    
-    private IEnumerable<Guid> GetGoalIDs(CursusTrack data, int depth = 0)
+
+    private async Task ComputeGraph(UserCursus cursus)
     {
-        // TODO: Move these as statics somewhere ?
-        const int maxDepth = 255;
-        const int maxNextNodes = 4;
-
-        // Handle null or empty arrays
-        if (data?.Goals is not null)
-            foreach (var goal in data.Goals)
-                yield return goal;
-
-        if (data?.Next is null)
-            yield break;
         
-        foreach (var node in data.Next)
-        {
-            if (depth > maxDepth)
-            {
-                throw new ServiceException(StatusCodes.Status422UnprocessableEntity,
-                    "Graph too deep (exceeds maximum depth)");
-            }
-                
-            if (node.Next is not null && node.Next.Length > maxNextNodes)
-            {
-                throw new ServiceException(StatusCodes.Status422UnprocessableEntity,
-                    "Node has too many child nodes (exceeds maximum)");
-            }
-                
-            foreach (var goalId in GetGoalIDs(node, depth + 1))
-            {
-                yield return goalId;
-            }
-        }
     }
 }

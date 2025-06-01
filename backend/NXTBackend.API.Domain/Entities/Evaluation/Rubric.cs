@@ -5,6 +5,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Users;
 
@@ -43,6 +44,7 @@ model Rubric {
 // ============================================================================
 
 [Table("tbl_rubric")]
+[Index(nameof(Name))]
 public class Rubric : BaseEntity
 {
     public Rubric()

@@ -6,10 +6,12 @@
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace NXTBackend.API.Domain.Entities;
 
 [Table("tbl_notifications")]
+[Index(nameof(NotifiableId), nameof(ReadAt))]
 public class Notification : BaseEntity
 {
     public Notification()

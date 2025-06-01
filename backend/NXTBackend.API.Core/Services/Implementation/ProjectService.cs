@@ -9,7 +9,6 @@ using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Infrastructure.Database;
-using NXTBackend.API.Models;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 

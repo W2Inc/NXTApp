@@ -11,4 +11,10 @@
     <NoWarn>$(NoWarn);CS1998</NoWarn>
 	</PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="Microsoft.EntityFrameworkCore.Abstractions">
+      <HintPath>..\..\..\..\..\.nuget\packages\microsoft.entityframeworkcore.abstractions\9.0.5\lib\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

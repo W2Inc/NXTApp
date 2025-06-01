@@ -6,9 +6,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
+using NXTBackend.API.Domain.Joins;
 
 // ============================================================================
 
@@ -20,6 +22,8 @@ namespace NXTBackend.API.Domain.Entities;
 /// A feature is a experimental feature that is being developed.
 /// </summary>
 [Table("tbl_cursus")]
+[Index(nameof(Name))]
+[Index(nameof(Slug))]
 public class Cursus : BaseEntity
 {
     public Cursus()
@@ -31,6 +35,9 @@ public class Cursus : BaseEntity
         Deprecated = false;
         Public = false;
         Enabled = false;
+        
+        CreatorId = Guid.Empty;
+        Creator = null!;
     }
 
     /// <summary>
@@ -85,7 +92,7 @@ public class Cursus : BaseEntity
     public Guid CreatorId { get; set; }
 
     [ForeignKey(nameof(CreatorId))]
-    public virtual User Creator { get; set; } = null!;
+    public virtual User Creator { get; set; }
 
     /// <summary>
     /// The track / path of the Cursus stored in the .graph format.
@@ -97,6 +104,6 @@ public class Cursus : BaseEntity
     /// The different cursus sessions that exist for this cursus.
     /// </summary>
     public virtual ICollection<UserCursus> UserCursi { get; set; }
-
-    public virtual ICollection<User> Collaborators { get; set; }
+    
+    public virtual ICollection<CursusCollaborator> Collaborators { get; set; }
 }

@@ -5,6 +5,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 // ============================================================================
 
@@ -15,6 +16,7 @@ namespace NXTBackend.API.Domain.Common;
 /// <summary>
 /// Base entity for all entities in the system.
 /// </summary>
+// [PrimaryKey(nameof(Id))]
 public abstract class BaseEntity
 {
     // This can easily be modified to be BaseEntity<T> and public T Id to support different key types.

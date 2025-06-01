@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using NXTBackend.API.Domain.Joins;
 using NXTBackend.API.Models.Shared;
 using NXTBackend.API.Models.Shared.Graph;
 
@@ -55,11 +56,11 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
                     };
                 })
                 .ToArray();
-    
+
             var children = nextNodes
                 .Select((node, index) => BuildNode(node.Goals, node.Next, nodeId * 100 + index + 1))
                 .ToArray();
-    
+
             return new TrackNodeDTO()
             {
                 Id = nodeId,
@@ -108,49 +109,51 @@ public sealed class CursusService : BaseService<Cursus>, ICursusService
 
     public async Task<(Cursus?, User?)> IsCollaborator(Guid entityId, Guid userId)
     {
-        var query = from c in _dbSet.AsNoTracking()
-                    where c.Id == entityId
-                    select new
-                    {
-                        Cursus = c,
-                        Collaborator = c.CreatorId == userId ? c.Creator : c.Collaborators.FirstOrDefault(co => co.Id == userId)
-                    };
+        var result = await _context.CursusCollaborator
+            .AsNoTracking()
+            .Include(c => c.User)
+            .Include(c => c.Cursus)
+            .Where(e => e.CursusId == entityId && e.UserId == userId)
+            .FirstOrDefaultAsync();
 
-        var result = await query.FirstOrDefaultAsync();
-        return (result?.Cursus, result?.Collaborator);
+        return (result?.Cursus, result?.User);
     }
 
     public async Task<bool> AddCollaborator(Guid cursusId, Guid userId)
     {
-        var cursus = await _dbSet
-            .Include(c => c.Collaborators)
-            .FirstOrDefaultAsync(c => c.Id == cursusId);
-        
+        var (_, user) = await IsCollaborator(cursusId, userId);
+        if (user is not null)
+            return false;
+
+        // Ensure entities exists
+        var cursus = await FindByIdAsync(cursusId);
         if (cursus is null)
-            return false;
+            throw new ServiceException(StatusCodes.Status404NotFound, "Cursus not found");
 
-        var user = await _context.Users.FindAsync(userId);
+        user = await _context.Users.FindAsync(userId);
         if (user is null)
-            return false;
-
-        if (cursus.Collaborators.All(c => c.Id != userId))
-            cursus.Collaborators.Add(user);
-
+            throw new ServiceException(StatusCodes.Status404NotFound, "User not found");
+        
+        await _context.CursusCollaborator.AddAsync(new()
+        {
+            CursusId = cursusId,
+            UserId = userId,
+        });
         await _context.SaveChangesAsync();
         return true;
     }
 
     public async Task<bool> RemoveCollaborator(Guid cursusId, Guid userId)
     {
-        var cursus = await _dbSet
-            .Include(c => c.Collaborators)
-            .FirstOrDefaultAsync(c => c.Id == cursusId);
-
-        var user = cursus?.Collaborators.FirstOrDefault(u => u.Id == userId);
-        if (user is null)
+        var result = await _context.CursusCollaborator
+            .AsNoTracking()
+            .Where(e => e.CursusId == cursusId && e.UserId == userId)
+            .FirstOrDefaultAsync();
+        
+        if (result is null)
             return false;
 
-        cursus?.Collaborators.Remove(user);
+        _context.CursusCollaborator.Remove(result);
         await _context.SaveChangesAsync();
         return true;
     }

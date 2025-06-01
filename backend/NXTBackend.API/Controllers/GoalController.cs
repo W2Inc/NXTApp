@@ -7,6 +7,7 @@ using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils.Query;
@@ -25,6 +26,7 @@ namespace NXTBackend.API.Controllers;
 
 [ApiController]
 [Route("goals"), Authorize]
+[ProducesErrorResponseType(typeof(ProblemDetails))]
 public class GoalController(
     ILogger<GoalController> logger,
     IGoalService goalService,
@@ -54,15 +56,22 @@ public class GoalController(
         return Ok(page.Items.Select(c => new LearningGoalDO(c)));
     }
 
-    [HttpPost("/goals")]
+    [HttpPost("/goals"), Authorize(Policy = "CanCreate")]
     [EndpointSummary("Create a goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<ActionResult<LearningGoalDO>> Create([FromBody] GoalPostRequestDto data)
     {
+        var existingGoal = await goalService.Query()
+            .Where(g => g.Name.ToLowerInvariant() == data.Name.ToLowerInvariant())
+            .FirstOrDefaultAsync();
 
-        var goal = await goalService.CreateAsync(new()
+        if (existingGoal is not null)
+            return Conflict();
+
+        var goal = await goalService.CreateAsync(new LearningGoal
         {
             CreatorId = User.GetSID(),
             Markdown = data.Markdown,
@@ -74,7 +83,7 @@ public class GoalController(
         return Ok(new LearningGoalDO(goal));
     }
 
-    [HttpGet("/goals/{id:guid}"), AllowAnonymous]
+    [HttpGet("/goals/{id:guid}")]
     [EndpointSummary("Get a goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -87,17 +96,18 @@ public class GoalController(
         return Ok(new LearningGoalDO(goal));
     }
 
-    [HttpPatch("/goals/{id:guid}")]
+    [HttpPatch("/goals/{id:guid}"), Authorize(Policy = "CanCreate")]
     [EndpointSummary("Update a goal")]
     [EndpointDescription("Updates a goal partially based on the provided fields.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<ActionResult<LearningGoalDO>> Update(Guid id, [FromBody] GoalPatchRequestDto data)
     {
-        var goal = await goalService.FindByIdAsync(id);
+        var (goal, user) = await goalService.IsCollaborator(id, User.GetSID());
         if (goal is null)
             return NotFound();
-        if (User.GetSID() != goal.CreatorId && !User.IsAdmin())
+        if (user is null)
             return Forbid();
 
         if (data.Markdown is not null)
@@ -106,6 +116,12 @@ public class GoalController(
             goal.Description = data.Description;
         if (data.Name is not null)
         {
+            var existingGoal = await goalService.Query()
+                .Where(g => g.Name.ToLowerInvariant() == data.Name.ToLowerInvariant())
+                .FirstOrDefaultAsync();
+
+            if (existingGoal is not null)
+                return Conflict();
             goal.Name = data.Name;
             goal.Slug = goal.Name.ToUrlSlug();
         }
@@ -122,9 +138,11 @@ public class GoalController(
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LearningGoalDO>> Deprecate(Guid id)
     {
-        var goal = await goalService.FindByIdAsync(id);
+        var (goal, user) = await goalService.IsCollaborator(id, User.GetSID());
         if (goal is null)
-            return NotFound("Cursus not found");
+            return NotFound();
+        if (user is null)
+            return Forbid();
 
         await goalService.DeleteAsync(goal);
         return Ok(new LearningGoalDO(goal));
@@ -135,19 +153,14 @@ public class GoalController(
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<ProjectDO>>> GetProjects(
-        Guid id,
-        [FromQuery] PaginationParams paging,
-        [FromQuery] SortingParams sorting
-    )
+    public async Task<ActionResult<IEnumerable<ProjectDO>>> GetProjects(Guid id, [FromQuery] SortingParams sorting)
     {
         var goal = await goalService.FindByIdAsync(id);
         if (goal is null)
-            return NotFound("Cursus not found");
+            return NotFound();
 
-        var page = await goalService.GetProjects(goal, paging, sorting);
-        page.AppendHeaders(Response.Headers);
-        return Ok(page.Items.Select(p => new ProjectDO(p)));
+        var projects = await goalService.GetProjects(goal, sorting);
+        return Ok(projects.Select(p => new ProjectDO(p)));
     }
 
     [HttpPut("/goals/{id:guid}/projects")]
@@ -155,19 +168,16 @@ public class GoalController(
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<ProjectDO>>> SetProjects(
-        Guid id,
-        [FromQuery] PaginationParams paging,
-        [FromQuery] SortingParams sorting
-    )
+    public async Task<ActionResult<IEnumerable<ProjectDO>>> SetProjects(Guid id, [FromBody] IEnumerable<Guid> projects)
     {
-        var goal = await goalService.FindByIdAsync(id);
+        var (goal, user) = await goalService.IsCollaborator(id, User.GetSID());
         if (goal is null)
-            return NotFound("Cursus not found");
-
-        var page = await goalService.GetProjects(goal, paging, sorting);
-        page.AppendHeaders(Response.Headers);
-        return Ok(page.Items.Select(p => new ProjectDO(p)));
+            return NotFound();
+        if (user is null)
+            return Forbid();
+        
+        var entities = await goalService.SetProjects(goal, projects);
+        return Ok(entities.Select(p => new ProjectDO(p)));
     }
 
     [HttpGet("/goals/{id:guid}/users"), AllowAnonymous]
