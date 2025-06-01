@@ -4,6 +4,7 @@
 // ============================================================================
 
 using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Joins;
 
 namespace NXTBackend.API.Core.Services.Interface;
 /// <summary>
@@ -11,5 +12,5 @@ namespace NXTBackend.API.Core.Services.Interface;
 /// </summary>
 public interface IReviewService : IDomainService<Review>
 {
-
+    
 }

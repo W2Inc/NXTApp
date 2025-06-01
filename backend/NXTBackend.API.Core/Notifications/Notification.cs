@@ -30,7 +30,7 @@ public interface INotification
     /// Stores this notification in the database.
     /// Must be implemented by derived classes.
     /// </summary>
-    public abstract Domain.Entities.Notification ToDatabase();
+    public Domain.Entities.Notification ToDatabase();
 
     /// <summary>
     /// Determines whether this notification should be sent.

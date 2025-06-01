@@ -3,6 +3,7 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
+using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
 
 namespace NXTBackend.API.Core.Services.Traits;
@@ -13,7 +14,7 @@ namespace NXTBackend.API.Core.Services.Traits;
 /// Interface for entities that support collaboration functionality,
 /// allowing other users to access and modify the entity.
 /// </summary>
-public interface ICollaborative<T>
+public interface ICollaborative<T> where T : class
 {
     /// <summary>
     /// Finds an entity by ID where the specified user is either a collaborator or the owner.
