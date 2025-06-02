@@ -24,6 +24,6 @@ public class CursusTrack
     /// <summary>
     /// Collection of next nodes in the graph, representing the subsequent steps.
     /// </summary>
-    [Required, MinLength(1), MaxLength(4)]
+    [Required, MaxLength(4)]
     public CursusTrack[] Next { get; set; }
 }

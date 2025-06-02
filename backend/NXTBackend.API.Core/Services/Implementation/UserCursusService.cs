@@ -40,8 +40,8 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
     public async Task<CursusTrackDTO> ConstructTrack(Guid userId, Guid cursusId)
     {
         // Check if such user cursus exists...
-        var userCursus = await Query(false)
-            .Include(uc => uc.Cursus)
+        var userCursus = await Query()
+            .Include(uc => uc.Cursus).AsNoTracking()
             .Include(uc => uc.UserGoals)
             .ThenInclude(ug => ug.Goal)
             .ThenInclude(g => g.Projects)
@@ -51,8 +51,12 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
 
         if (userCursus is null)
             throw new ServiceException(StatusCodes.Status404NotFound, "UserCursus not found");
-        if (userCursus.LastComputeAt is not null)
-            await ComputeGraph(userCursus);
+        if (userCursus.LastComputeAt is null)
+        {
+            userCursus.LastComputeAt = DateTimeOffset.Now;
+            userCursus.Track = await ComputeGraph(userCursus);
+            await UpdateAsync(userCursus);
+        }
         _logger.LogInformation("{Projects}", userCursus.UserGoals);
 
         await BuildGraph(userCursus);
@@ -93,7 +97,7 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
     /// - - - If all projects are completed, then goal is completed.
     /// </remarks>
     /// <param name="userCursus"></param>
-    private async Task ComputeGraph(UserCursus userCursus)
+    private async Task<string> ComputeGraph(UserCursus userCursus)
     {
         userCursus.LastComputeAt = DateTime.UtcNow;
         var cursusTrack = JsonSerializer.Deserialize<CursusTrack>(userCursus.Cursus.Track);
@@ -101,16 +105,11 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
             throw new ServiceException(StatusCodes.Status422UnprocessableEntity, "Invalid cursus track");
 
         // Get user track if exists, or create empty one
-        var userTrack = userCursus.Track != null
+        var userTrack = userCursus.Track is not null
             ? JsonSerializer.Deserialize<CursusTrack>(userCursus.Track)
-            : new CursusTrack { Goals = Array.Empty<Guid>(), Next = Array.Empty<CursusTrack>() };
+            : new CursusTrack { Goals = [], Next = [] };
 
-        var computedTrack = Compute(cursusTrack, userTrack);
-
-        // Save the computed track back to userCursus
-        userCursus.Track = JsonSerializer.Serialize(computedTrack);
-
-        return;
+        return JsonSerializer.Serialize(Compute(cursusTrack, userTrack));
 
         CursusTrack Compute(CursusTrack cursusNode, CursusTrack userNode)
         {
@@ -124,7 +123,7 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
                 var cursusNext = cursusNode.Next[i];
                 var userNext = (userNode.Next != null && i < userNode.Next.Length)
                     ? userNode.Next[i]
-                    : new CursusTrack { Goals = Array.Empty<Guid>(), Next = Array.Empty<CursusTrack>() };
+                    : new CursusTrack { Goals = [], Next = [] };
 
                 nextNodes.Add(Compute(cursusNext, userNext));
             }
@@ -141,40 +140,29 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
         {
             // Check if user has any of these goals
             var userGoals = userCursus.UserGoals.Where(ug => cursusGoalIds.Contains(ug.GoalId)).ToList();
-
-            if (!userGoals.Any())
-            {
-                // User doesn't have any of these goals, use cursus goals
+            if (userGoals.Count == 0)
                 return cursusGoalIds;
-            }
 
-            // Check if all user goals are inactive
-            bool allInactive = userGoals.All(ug => DetermineGoalState(ug.Goal) == TaskState.Inactive);
-
+            // Determine based on state
+            var allInactive = userGoals.All(ug => DetermineGoalState(ug.Goal) is TaskState.Inactive);
             if (allInactive)
-            {
-                // All goals are inactive, user hasn't reached this node yet
                 return cursusGoalIds;
-            }
-
-            // Some goals are active or completed, refer to snapshot
             return userGoalIds.Length > 0 ? userGoalIds : cursusGoalIds;
         }
 
         TaskState DetermineGoalState(LearningGoal goal)
         {
-            // If goal has no projects, consider it active
-            if (goal.Projects == null || !goal.Projects.Any())
-                return TaskState.Active;
+            if (goal.Projects.Count == 0)
+                return TaskState.Completed;
 
-            bool allCompleted = true;
-            bool allInactive = true;
+            var allInactive = true;
+            var allCompleted = true;
 
             foreach (var goalProject in goal.Projects)
             {
                 var project = goalProject.Project;
-                var userProject = project.UserProjects.FirstOrDefault(up => up.UserId == userCursus.UserId);
-
+                var userProject = project.UserProjects.FirstOrDefault(up => up.Members.Any(m => m.UserId == userCursus.UserId));
+                
                 if (userProject == null)
                 {
                     // Project not started by user
@@ -193,14 +181,9 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
                 }
             }
 
-            // Determine overall state
             if (allInactive)
                 return TaskState.Inactive;
-
-            if (allCompleted)
-                return TaskState.Completed;
-
-            return TaskState.Active;
+            return allCompleted ? TaskState.Completed : TaskState.Active;
         }
     }
 

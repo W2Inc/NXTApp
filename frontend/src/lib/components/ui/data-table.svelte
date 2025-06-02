@@ -108,7 +108,7 @@
 
 <div class="rounded-md border shadow-sm">
 	<div
-		class="bg-background sticky top-0 z-10 flex flex-col items-start gap-2 rounded-t-md border-b p-2 shadow-sm md:flex-row md:items-center"
+		class="bg-background sticky top-0 z-10 flex flex-col items-start gap-2 rounded-t-md border-b p-2 md:flex-row md:items-center"
 	>
 		<div class="relative w-full md:max-w-60">
 			<Search

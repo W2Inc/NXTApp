@@ -65,7 +65,7 @@ public class GoalController(
     public async Task<ActionResult<LearningGoalDO>> Create([FromBody] GoalPostRequestDto data)
     {
         var existingGoal = await goalService.Query()
-            .Where(g => g.Name.ToLowerInvariant() == data.Name.ToLowerInvariant())
+            .Where(g => g.Name.ToLower() == data.Name.ToLower())
             .FirstOrDefaultAsync();
 
         if (existingGoal is not null)

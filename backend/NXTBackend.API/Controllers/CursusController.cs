@@ -146,10 +146,10 @@ public class CursusController(
     public async Task<IActionResult> SetTrack(Guid id, [FromBody] CursusTrack data)
     {
         var (cursus, user) = await cursusService.IsCollaborator(id, User.GetSID());
-        if (cursus is null)
-            return NotFound();
         if (user is null)
-            return Forbid();
+            return Forbid("Forbidden to modify cursus");
+        if (cursus is null)
+            return NotFound("Cursus not found");
 
         var goals = cursusService.ExtractTrackGoals(data);
         if (!await goalService.AreValid(goals))
