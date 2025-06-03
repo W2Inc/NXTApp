@@ -175,13 +175,47 @@ public class CursusController(
         try
         {
             var lel = JsonSerializer.Deserialize<CursusTrack>(cursus.Track);
-            return lel is null 
+            return lel is null
                 ? Problem("Failed to deserialize track data")
                 : Ok(await cursusService.ConstructTrack(lel));
         }
         catch (Exception)
         {
-            throw new ServiceException(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the track data");
+            throw new ServiceException(StatusCodes.Status500InternalServerError,
+                "An error occurred while retrieving the track data");
         }
+    }
+
+    [Tags("Cursus")]
+    [HttpGet("/users/{id:guid}/cursus")]
+    [EndpointSummary("Get the User's cursus")]
+    [EndpointDescription("User's are able to create cursus instances / sessions. This allows you to retrieve it.")]
+    [ProducesResponseType<UserCursusDO[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetUserCursus(Guid id, [FromQuery] PaginationParams pagination)
+    {
+        var user = await userService.FindByIdAsync(id);
+        if (user is null)
+            return NotFound("User not found");
+
+        return Ok();
+        // var cursi = await userService.GetUserCursi(user, pagination);
+        // return Ok(cursi.Items.Select(c => new UserCursusDO(c)));
+    }
+
+    [Tags("Cursus")]
+    [HttpGet("/users/{id:guid}/cursus/{cursusId:guid}/track")]
+    [EndpointSummary("Get the track of a user's cursus")]
+    [EndpointDescription(@"
+As user's progress on a cursus the track get's updated. This allows you to retrieve the JSON data of the track.
+
+With theses instances they store the invidiual tracks / progress they have made on the cursus this intance is
+based on. They are computed on a need by need basis. E.g: User completes a project, now we need to re-evaluate the cursus track.
+    ")]
+    [ProducesResponseType<CursusTrackDTO>(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetTrack(Guid id, Guid cursusId, IUserCursusService service)
+    {
+        return Ok(await service.ConstructTrack(id, cursusId));
     }
 }

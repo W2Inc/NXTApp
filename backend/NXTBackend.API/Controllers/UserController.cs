@@ -235,32 +235,6 @@ public class UserController(
         return Ok(new UserDO(updatedUser));
     }
 
-    [HttpGet("/users/{id:guid}/cursus")]
-    [EndpointSummary("")]
-    [EndpointDescription("")]
-    [ProducesResponseType<UserCursusDO[]>(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetUserCursus(Guid id, [FromQuery] PaginationParams pagination)
-    {
-        var user = await userService.FindByIdAsync(id);
-        if (user is null)
-            return NotFound("User not found");
-
-        return Ok();
-        // var cursi = await userService.GetUserCursi(user, pagination);
-        // return Ok(cursi.Items.Select(c => new UserCursusDO(c)));
-    }
-    
-    [HttpGet("/users/{id:guid}/cursus/{cursusId:guid}/track")]
-    [EndpointSummary("")]
-    [EndpointDescription("")]
-    [ProducesResponseType<UserCursusDO[]>(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetUserCursus(Guid id, Guid cursusId, IUserCursusService service)
-    {
-        return Ok(await service.ConstructTrack(id, cursusId));
-    }
-
     [HttpGet("/users/{id:guid}/goals")]
     [EndpointSummary("")]
     [EndpointDescription("")]
