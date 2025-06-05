@@ -5,17 +5,15 @@
 	import Navgroup from "$lib/components/navgroup.svelte";
 	import Link from "lucide-svelte/icons/link";
 	import Github from "lucide-svelte/icons/github";
-	import { useStorage } from "$lib/utils/local.svelte.js";
-	import type { IconLink, NamedLink } from "$lib/types.js";
+	import {useStorage} from "$lib/utils/local.svelte.js";
+	import type {NamedLink} from "$lib/types.js";
 	import Base from "$lib/components/base.svelte";
-	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import FeedCard from "$lib/components/cards/feed-card.svelte";
 	import ChangelogCard from "$lib/components/cards/changelog-card.svelte";
-	import Tilter from "$lib/components/tilter.svelte";
-	import Landing from "./landing.svelte";
-	import { page } from "$app/state";
+	import {page} from "$app/state";
 	import Empty from "$lib/components/empty.svelte";
 	import Login from "./login.svelte";
+	import EntitySearch from "$lib/components/EntitySearch.svelte";
 
 	const { data } = $props();
 	const storage = useStorage();
@@ -44,6 +42,12 @@
 {#if page.data.session}
 	<Base>
 		{#snippet left()}
+			<EntitySearch onSelect={(e) => { }} api={(input) => {}}>
+				{#snippet item({key, value})}
+
+				{/snippet}
+			</EntitySearch>
+
 			<Navgroup title="Links" navs={navigations} />
 			{#if recent.length > 0}
 				<Navgroup title="Recently Visited" navs={recent} />

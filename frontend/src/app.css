@@ -1,5 +1,6 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+/*TODO: Reimport once we fixed the animations!*/
+/*@import "tw-animate-css";*/
 @import "./markdown.css";
 @import "./github.css";
 

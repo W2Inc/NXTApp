@@ -1,11 +1,11 @@
 <script lang="ts" generics="TData">
-	import * as Popover from "$lib/components/ui/popover/index.js";
 	import type {Snippet} from "svelte";
 	import {useDebounce} from "$lib/utils/debounce.svelte";
-	import {cn} from "$lib/utils";
 	import {Button} from "$lib/components/ui/button";
-	import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down.svelte";
-	import Input from "./ui/input/input.svelte";
+	import Search from "lucide-svelte/icons/search";
+	import CalculatorIcon from "lucide-svelte/icons/calculator";
+	import CalendarIcon from "lucide-svelte/icons/calendar";
+	import SmileIcon from "lucide-svelte/icons/smile";
 
 	interface Props {
 		placeholder?: string;
@@ -20,28 +20,42 @@
 	let promise = $state<Promise<TData[]> | null>(null);
 
 	const debounce = useDebounce();
+	let open = $state(false);
+
+	function handleKeydown(e: MouseEvent) {
+		e.preventDefault();
+		open = !open;
+	}
 </script>
 
 
-<Popover.Root>
-	<Popover.Trigger bind:ref={triggerRef}>
-		{#snippet child({props})}
-			<Button
-				variant="outline"
-				class={cn("w-[200px] justify-between text-muted-foreground ", className)}
-				{...props}
-				role="combobox"
-			>
-				{placeholder}
-				<ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50"/>
-			</Button>
-		{/snippet}
-	</Popover.Trigger>
-	<Popover.Content class="w-[350px] p-0" align="start">
-		<Input
-			oninput={(e) => debounce(() => {}, e.currentTarget.value.trim())}
-			class="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent py-3 pl-1 text-base outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm shadow-none"
-			{placeholder}
-		/>
-	</Popover.Content>
-</Popover.Root>
+<Button
+	class="justify-start"
+	onclick={handleKeydown}
+	{placeholder}
+	variant="outline"
+>
+	<Search class="size-4"/>
+	<span>{placeholder}</span>
+</Button>
+
+<Command.Dialog bind:open>
+	<Command.Input placeholder="Search for any entity..."/>
+	<Command.List>
+		<Command.Empty>No results found.</Command.Empty>
+		<Command.Group heading="Results">
+			<Command.Item>
+				<CalendarIcon class="mr-2 size-4"/>
+				<span>Calendar</span>
+			</Command.Item>
+			<Command.Item>
+				<SmileIcon class="mr-2 size-4"/>
+				<span>Search Emoji</span>
+			</Command.Item>
+			<Command.Item>
+				<CalculatorIcon class="mr-2 size-4"/>
+				<span>Calculator</span>
+			</Command.Item>
+		</Command.Group>
+	</Command.List>
+</Command.Dialog>
