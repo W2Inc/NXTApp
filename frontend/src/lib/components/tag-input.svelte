@@ -4,7 +4,13 @@
 	import Button from "./ui/button/button.svelte";
 	import Input from "./ui/input/input.svelte";
 
-	let items = $state.raw<string[]>(["1", "2", "3", "4", "5"]);
+	// let items = $state.raw<string[]>(["1", "2", "3", "4", "5"]);
+
+	interface Props {
+		items: string[]
+	}
+
+	let { items = $bindable() }: Props = $props();
 </script>
 
 <div class="flex flex-wrap items-center gap-2 p-2 rounded-md border border-input bg-background min-h-10">

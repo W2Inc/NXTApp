@@ -25,6 +25,7 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
     /// Initializes a new instance of the <see cref="UserCursusService"/> class.
     /// </summary>
     /// <param name="context">The database context.</param>
+    /// <param name="logger"></param>
     public UserCursusService(DatabaseContext context, ILogger<UserCursusService> logger) : base(context)
     {
         _logger = logger;

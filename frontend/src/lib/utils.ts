@@ -90,6 +90,12 @@ export function defer(fn: Function) {
 	return { [Symbol.dispose]: fn };
 }
 
+export async function GET<T>(url: string): Promise<T>
+{
+	const response = await fetch(url);
+	return await response.json() as T;
+}
+
 // ============================================================================
 // Based on:
 // - Original work copyright © 2010 Johannes Baagøe, under MIT license

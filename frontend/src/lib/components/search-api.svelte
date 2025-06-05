@@ -63,7 +63,7 @@
 		<div class="flex border-b px-3">
 			<Input
 				oninput={(e) => debounce(searchFor, e.currentTarget.value.trim())}
-				class="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent py-3 pl-1 text-base outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+				class="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent py-3 pl-1 text-base outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm shadow-none"
 				{placeholder}
 			/>
 		</div>
