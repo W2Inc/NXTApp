@@ -33,7 +33,7 @@
 		perPage = $bindable(10),
 		page = $bindable(1),
 		variant = "default",
-		pageSizeOptions = [10, 25, 50, 100],
+		pageSizeOptions = [2, 25, 50, 100],
 		onNext,
 		onPrevious,
 		onPage,
@@ -41,6 +41,7 @@
 	}: Props = $props();
 
 	const totalPages = $derived(Math.max(1, Math.ceil(totalItems / perPage)));
+	$inspect(totalPages)
 	function handlePageSizeChange(newSize: number) {
 		perPage = newSize;
 		if (page > totalPages) {

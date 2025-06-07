@@ -402,9 +402,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["GraphNode"];
-                        "application/json": components["schemas"]["GraphNode"];
-                        "text/json": components["schemas"]["GraphNode"];
+                        "text/plain": components["schemas"]["CursusTrackDTO"];
+                        "application/json": components["schemas"]["CursusTrackDTO"];
+                        "text/json": components["schemas"]["CursusTrackDTO"];
                     };
                 };
                 /** @description Bad Request */
@@ -463,10 +463,10 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["CursusTrackDO"];
-                    "text/json": components["schemas"]["CursusTrackDO"];
-                    "application/*+json": components["schemas"]["CursusTrackDO"];
-                    "text/plain": components["schemas"]["CursusTrackDO"];
+                    "application/json": components["schemas"]["CursusTrack"];
+                    "text/json": components["schemas"]["CursusTrack"];
+                    "application/*+json": components["schemas"]["CursusTrack"];
+                    "text/plain": components["schemas"]["CursusTrack"];
                 };
             };
             responses: {
@@ -475,10 +475,90 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
                     content: {
-                        "text/plain": components["schemas"]["GraphNode"];
-                        "application/json": components["schemas"]["GraphNode"];
-                        "text/json": components["schemas"]["GraphNode"];
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/cursus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the User's cursus
+         * @description User's are able to create cursus instances / sessions. This allows you to retrieve it.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    "page[index]"?: number;
+                    "page[size]"?: number;
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserCursusDO"][];
+                        "application/json": components["schemas"]["UserCursusDO"][];
+                        "text/json": components["schemas"]["UserCursusDO"][];
                     };
                 };
                 /** @description Bad Request */
@@ -522,6 +602,95 @@ export interface paths {
                 };
             };
         };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{id}/cursus/{cursusId}/track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the track of a user's cursus
+         * @description
+         *     As user's progress on a cursus the track get's updated. This allows you to retrieve the JSON data of the track.
+         *
+         *     With theses instances they store the invidiual tracks / progress they have made on the cursus this intance is
+         *     based on. They are computed on a need by need basis. E.g: User completes a project, now we need to re-evaluate the cursus track.
+         *
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    cursusId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CursusTrackDTO"];
+                        "application/json": components["schemas"]["CursusTrackDTO"];
+                        "text/json": components["schemas"]["CursusTrackDTO"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -666,6 +835,17 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
                 };
                 /** @description Too Many Requests */
                 429: {
@@ -889,6 +1069,17 @@ export interface paths {
                     };
                     content?: never;
                 };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
+                        "text/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Too Many Requests */
                 429: {
                     headers: {
@@ -911,8 +1102,6 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    "page[index]"?: number;
-                    "page[size]"?: number;
                     sort_by?: string;
                     sort?: components["schemas"]["Order"];
                 };
@@ -979,19 +1168,21 @@ export interface paths {
         /** Set the projects that are part of this goal */
         put: {
             parameters: {
-                query?: {
-                    "page[index]"?: number;
-                    "page[size]"?: number;
-                    sort_by?: string;
-                    sort?: components["schemas"]["Order"];
-                };
+                query?: never;
                 header?: never;
                 path: {
                     id: string;
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": string[];
+                    "text/json": string[];
+                    "application/*+json": string[];
+                    "text/plain": string[];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -4181,87 +4372,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{id}/cursus": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: {
-                    "page[index]"?: number;
-                    "page[size]"?: number;
-                };
-                header?: never;
-                path: {
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["UserCursusDO"][];
-                        "application/json": components["schemas"]["UserCursusDO"][];
-                        "text/json": components["schemas"]["UserCursusDO"][];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ProblemDetails"];
-                        "application/json": components["schemas"]["ProblemDetails"];
-                        "text/json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Too Many Requests */
-                429: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users/{id}/goals": {
         parameters: {
             query?: never;
@@ -5053,9 +5163,12 @@ export interface components {
             enabled: boolean;
             kind: components["schemas"]["CursusKind"];
         };
-        CursusTrackDO: {
+        CursusTrack: {
             goals: string[];
-            next: components["schemas"]["GraphNodeData"][];
+            next: components["schemas"]["CursusTrack"][];
+        };
+        CursusTrackDTO: {
+            root: components["schemas"]["TrackNodeDTO"];
         };
         FeedDO: {
             /** Format: uuid */
@@ -5107,23 +5220,6 @@ export interface components {
             markdown: string;
             public: boolean;
             enabled: boolean;
-        };
-        GraphNode: {
-            /** Format: int32 */
-            id: number;
-            goals: components["schemas"]["GraphNodeGoal"][];
-            children: components["schemas"]["GraphNode"][];
-        };
-        GraphNodeData: {
-            goals: string[];
-            next: unknown[];
-        };
-        GraphNodeGoal: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            description: string;
-            state: components["schemas"]["TaskState"];
         };
         LearningGoalDO: {
             /** Format: uuid */
@@ -5393,6 +5489,18 @@ export interface components {
         };
         /** @enum {unknown} */
         TaskState: "Inactive" | "Active" | "Awaiting" | "Completed";
+        TrackGoalDTO: {
+            /** Format: uuid */
+            id: string;
+            name?: string;
+            state?: components["schemas"]["TaskState"];
+        };
+        TrackNodeDTO: {
+            /** Format: int32 */
+            id?: number;
+            goals: components["schemas"]["TrackGoalDTO"][];
+            children: components["schemas"]["TrackNodeDTO"][];
+        };
         UserCursusDO: {
             /** Format: uuid */
             id: string;
@@ -5462,6 +5570,7 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+            name: string | null;
             user: components["schemas"]["MinimalUserDTO"];
             /** Format: uuid */
             goalId: string;

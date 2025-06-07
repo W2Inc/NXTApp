@@ -39,23 +39,23 @@
 	<span>{placeholder}</span>
 </Button>
 
-<Command.Dialog bind:open>
-	<Command.Input placeholder="Search for any entity..."/>
-	<Command.List>
-		<Command.Empty>No results found.</Command.Empty>
-		<Command.Group heading="Results">
-			<Command.Item>
-				<CalendarIcon class="mr-2 size-4"/>
-				<span>Calendar</span>
-			</Command.Item>
-			<Command.Item>
-				<SmileIcon class="mr-2 size-4"/>
-				<span>Search Emoji</span>
-			</Command.Item>
-			<Command.Item>
-				<CalculatorIcon class="mr-2 size-4"/>
-				<span>Calculator</span>
-			</Command.Item>
-		</Command.Group>
-	</Command.List>
-</Command.Dialog>
+<!--<Command.Dialog bind:open>-->
+<!--	<Command.Input placeholder="Search for any entity..."/>-->
+<!--	<Command.List>-->
+<!--		<Command.Empty>No results found.</Command.Empty>-->
+<!--		<Command.Group heading="Results">-->
+<!--			<Command.Item>-->
+<!--				<CalendarIcon class="mr-2 size-4"/>-->
+<!--				<span>Calendar</span>-->
+<!--			</Command.Item>-->
+<!--			<Command.Item>-->
+<!--				<SmileIcon class="mr-2 size-4"/>-->
+<!--				<span>Search Emoji</span>-->
+<!--			</Command.Item>-->
+<!--			<Command.Item>-->
+<!--				<CalculatorIcon class="mr-2 size-4"/>-->
+<!--				<span>Calculator</span>-->
+<!--			</Command.Item>-->
+<!--		</Command.Group>-->
+<!--	</Command.List>-->
+<!--</Command.Dialog>-->

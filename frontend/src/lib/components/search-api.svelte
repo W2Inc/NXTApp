@@ -2,12 +2,12 @@
 	import Loader from "lucide-svelte/icons/loader";
 	import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
 	import Search from "lucide-svelte/icons/text-search";
-	import { tick, type Snippet } from "svelte";
+	import {tick, type Snippet} from "svelte";
 	import * as Popover from "$lib/components/ui/popover/index.js";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import { useDebounce } from "$lib/utils/debounce.svelte";
+	import {Button} from "$lib/components/ui/button/index.js";
+	import {useDebounce} from "$lib/utils/debounce.svelte";
 	import Input from "./ui/input/input.svelte";
-	import { cn } from "$lib/utils";
+	import {cn} from "$lib/utils";
 
 	const debounce = useDebounce();
 	let triggerRef = $state<HTMLButtonElement>(null!);
@@ -46,7 +46,7 @@
 
 <Popover.Root bind:open>
 	<Popover.Trigger bind:ref={triggerRef}>
-		{#snippet child({ props })}
+		{#snippet child({props})}
 			<Button
 				variant="outline"
 				class={cn("w-[200px] justify-between text-muted-foreground ", className)}
@@ -55,7 +55,7 @@
 				aria-expanded={open}
 			>
 				{placeholder}
-				<ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50" />
+				<ChevronsUpDown class="ml-2 size-4 shrink-0 opacity-50"/>
 			</Button>
 		{/snippet}
 	</Popover.Trigger>
@@ -63,7 +63,7 @@
 		<div class="flex border-b px-3">
 			<Input
 				oninput={(e) => debounce(searchFor, e.currentTarget.value.trim())}
-				class="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent py-3 pl-1 text-base outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm shadow-none"
+				class="placeholder:text-muted-foreground flex h-9 w-full rounded-md border-none bg-transparent py-3 pl-1 text-base outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
 				{placeholder}
 			/>
 		</div>
@@ -72,7 +72,7 @@
 				{#await promise}
 					<p class="center-content m-auto w-full">
 						Loading
-						<Loader class="animate-spin" />
+						<Loader class="animate-spin"/>
 					</p>
 				{:then entries}
 					{#if entries.length === 0}
@@ -92,7 +92,7 @@
 										onSelect(entry);
 									}}
 								>
-									{@render item({ value: entry })}
+									{@render item({value: entry})}
 								</Button>
 							</li>
 						{/each}

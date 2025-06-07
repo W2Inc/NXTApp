@@ -17,8 +17,15 @@ using NXTBackend.API.Infrastructure.Database;
 
 namespace NXTBackend.API.Core.Services.Implementation;
 
-public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>(ctx), IGoalService
+public sealed class GoalService : BaseService<LearningGoal>, IGoalService
 {
+    public GoalService(DatabaseContext ctx) : base(ctx)
+    {
+        DefineFilter<Guid>("id", (q, id) => q.Where(g => g.Id == id));
+        DefineFilter<string>("name", (q, name) => q.Where(g => EF.Functions.Like(g.Name, $"%{name}%")));
+        DefineFilter<string>("slug", (q, slug) => q.Where(g => EF.Functions.Like(g.Slug, $"%{slug}%")));
+    }
+
     /// <inheritdoc />
     public async Task<(LearningGoal?, User?)> IsCollaborator(Guid entityId, Guid userId)
     {
@@ -46,7 +53,7 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
         user = await _context.Users.FindAsync(userId);
         if (user is null)
             throw new ServiceException(StatusCodes.Status404NotFound, "User not found");
-        
+
         await _context.CursusCollaborator.AddAsync(new()
         {
             CursusId = goal.Id,
@@ -62,7 +69,7 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
             .AsNoTracking()
             .Where(e => e.GoalId == goalId && e.UserId == userId)
             .FirstOrDefaultAsync();
-        
+
         if (result is null)
             return false;
 
@@ -95,7 +102,7 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
         var projects = _context.GoalProject.AsNoTracking()
             .Where(gp => gp.GoalId == goal.Id)
             .Select(gp => gp.Project);
-        
+
         return await SortedList<Project>.Apply(projects, sorting).ToListAsync();
     }
 
@@ -105,11 +112,11 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
         var projectIds = projects.ToList();
         if (projectIds.Count > 4)
             throw new ServiceException(StatusCodes.Status422UnprocessableEntity, "Maximum number of projects exceeded");
-        
+
         var existingProjects = await _context.Projects
             .Where(p => projectIds.Contains(p.Id))
             .ToListAsync();
-        
+
         if (existingProjects.Count != projectIds.Count)
             throw new ServiceException(StatusCodes.Status422UnprocessableEntity, "Non-existent projects");
 
@@ -117,16 +124,16 @@ public sealed class GoalService(DatabaseContext ctx) : BaseService<LearningGoal>
             .Where(gp => gp.GoalId == goal.Id && projectIds.Contains(gp.ProjectId))
             .Select(gp => gp.ProjectId)
             .ToListAsync();
-    
+
         if (existingRelations.Count is not 0)
             throw new ServiceException(StatusCodes.Status409Conflict, "Some projects were already associated with this goal");
-    
+
         var goalProjects = projectIds.Select(projectId => new GoalProject
         {
             GoalId = goal.Id,
             ProjectId = projectId,
         });
-    
+
         await _context.GoalProject.AddRangeAsync(goalProjects);
         await _context.SaveChangesAsync();
         return existingProjects;

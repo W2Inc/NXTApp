@@ -17,7 +17,11 @@ public class UserGoalDO : BaseObjectDO<UserGoal>
         User = userGoal.User;
         GoalId = userGoal.GoalId;
         UserCursusId = userGoal.UserCursusId;
+        Name = userGoal.Goal.Name;
     }
+
+    [Required]
+    public string? Name { get; set; }
 
     [Required]
     public virtual MinimalUserDTO? User { get; set; }
