@@ -12,12 +12,11 @@
 	import * as Tabs from "$lib/components/ui/tabs/index";
 	import { page } from "$app/state";
 	import type { QueryKeys } from "./+page.server";
+	import { encodeID } from "$lib/utils";
 
 	const debounce = useDebounce();
 	const query = useQuery<QueryKeys>(page.url);
 	const { data }: PageProps = $props();
-
-	const size = $derived(data.size);
 </script>
 
 <svelte:head>
@@ -66,7 +65,7 @@
 					<li>
 						<Pagination
 							variant="default"
-							totalItems={size}
+							pages={data.XPages}
 							onPage={(p) => query.write("page", p)}
 							onPageSizeChange={(s) => query.write("size", s)}
 						/>
@@ -78,12 +77,12 @@
 				{#if query.read("filter") === "available"}
 					{#each data.goals as entity}
 						{@const goal = entity as BackendTypes["LearningGoalDO"]}
-						<Taskcard href="goals/1" type="goal" title={goal.name} />
+						<Taskcard href="goals/{encodeID(goal.id)}" type="goal" title={goal.name} />
 					{/each}
 				{:else}
 					{#each data.goals as entity}
 						{@const goal = entity as BackendTypes["UserGoalDO"]}
-						<Taskcard href="goals/1" type="goal" title={goal.name ?? "Unknown"} />
+						<Taskcard href="goals/{encodeID(goal.goalId)}" type="goal" title={goal.name ?? "Unknown"} />
 					{/each}
 				{/if}
 			</div>

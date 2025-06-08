@@ -4386,8 +4386,9 @@ export interface paths {
                     "page[size]"?: number;
                     sort_by?: string;
                     sort?: components["schemas"]["Order"];
-                    /** @description The name of the learning goal */
                     "filter[name]"?: string;
+                    "filter[slug]"?: string;
+                    "filter[goal_id]"?: string;
                 };
                 header?: never;
                 path: {

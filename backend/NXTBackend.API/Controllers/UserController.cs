@@ -244,7 +244,9 @@ public class UserController(
         Guid id,
         [FromQuery] PaginationParams pagination,
         [FromQuery] SortingParams sorting,
-        [FromQuery(Name = "filter[name]"), Description("The name of the learning goal")] string? goalName
+        [FromQuery(Name = "filter[name]")] string? name,
+        [FromQuery(Name = "filter[slug]")] string? slug,
+        [FromQuery(Name = "filter[goal_id]")] string? goalId
     )
     {
         var user = await userService.FindByIdAsync(id);
@@ -252,7 +254,9 @@ public class UserController(
             return NotFound("User not found");
 
         var filters = new FilterDictionary()
-            .AddFilter("name", goalName)
+            .AddFilter("name", name)
+            .AddFilter("slug", slug)
+            .AddFilter("goal_id", goalId)
             .AddFilter("user_id", id);
 
         var page = await userGoalService.GetAllAsync(pagination, sorting, filters);

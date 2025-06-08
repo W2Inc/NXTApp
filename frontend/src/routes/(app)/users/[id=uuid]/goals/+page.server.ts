@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({locals, params, url}) => {
 		logger.debug({ lel: Number(response.headers.get("X-Pages")) })
 
 		return {
-			size: Number(response.headers.get("X-Pages")),
+			XPages: Number(response.headers.get("X-Pages")),
 			goals: data ?? []
 		}
 	} else {
@@ -61,7 +61,7 @@ export const load: PageServerLoad = async ({locals, params, url}) => {
 		logger.debug({ lel: Number(response.headers.get("X-Pages")) })
 
 		return {
-			size: Number(response.headers.get("X-Pages")),
+			XPages: Number(response.headers.get("X-Pages")),
 			goals: data ?? []
 		}
 	}

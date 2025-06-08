@@ -16,6 +16,8 @@ public sealed class UserGoalService : BaseService<UserGoal>, IUserGoalService
     public UserGoalService(DatabaseContext ctx) : base(ctx)
     {
         DefineFilter<Guid>("user_id", (q, id) => q.Where(ug => ug.UserId == id));
+        DefineFilter<Guid>("goal_id", (q, id) => q.Where(ug => ug.GoalId == id));
         DefineFilter<string>("name", (q, name) => q.Where(ug => EF.Functions.Like(ug.Goal.Name, $"%{name}%")));
+        DefineFilter<string>("slug", (q, slug) => q.Include(ug => ug.Goal).Where(ug => ug.Goal.Slug == slug));
     }
 }

@@ -9,7 +9,7 @@
 
 	interface Props {
 		/** Total number of items */
-		totalItems?: number;
+		pages?: number;
 		/** How many per page */
 		perPage?: number;
 		/** Current page */
@@ -29,7 +29,7 @@
 	}
 
 	let {
-		totalItems = 0,
+		pages = 0,
 		perPage = $bindable(10),
 		page = $bindable(1),
 		variant = "default",
@@ -40,8 +40,7 @@
 		onPageSizeChange,
 	}: Props = $props();
 
-	const totalPages = $derived(Math.max(1, Math.ceil(totalItems / perPage)));
-	$inspect(totalPages)
+	const totalPages = $derived(pages * perPage);
 	function handlePageSizeChange(newSize: number) {
 		perPage = newSize;
 		if (page > totalPages) {
@@ -123,7 +122,7 @@
 					{:else}
 						<Pagination.Item>
 							<span class="px-2 text-sm font-medium">
-								Page {currentPage} of {totalPages}
+								Page {currentPage} of {pages.length}
 							</span>
 						</Pagination.Item>
 					{/if}

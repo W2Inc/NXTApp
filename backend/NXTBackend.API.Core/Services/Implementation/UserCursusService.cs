@@ -67,7 +67,7 @@ public sealed class UserCursusService : BaseService<UserCursus>, IUserCursusServ
         // 3. Load user goals separately with minimal data needed
         var userGoalsInfo = await _context.UserGoals
             .AsNoTracking()
-            .Where(ug => ug.UserCursusId == userCursus.Id)
+            .Where(ug => ug.UserId == userId)
             .Select(ug => new
             {
                 ug.GoalId,
