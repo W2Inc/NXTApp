@@ -18,6 +18,7 @@ using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Infrastructure.Database;
 using NXTBackend.API.Models;
 using NXTBackend.API.Models.Requests.Cursus;
+using NXTBackend.API.Models.Requests.ExternalGit;
 using NXTBackend.API.Models.Requests.LearningGoal;
 using NXTBackend.API.Models.Requests.Project;
 using NXTBackend.API.Models.Responses.Objects;
@@ -73,7 +74,7 @@ public class ProjectController(
         if (owner is null)
             return UnprocessableEntity("Non-existing user");
 
-        var git = await gitService.CreateRepository(new()
+        var git = await gitService.CreateRepository(new GitRepoPostRequestDTO
         {
             Name = data.Name,
             Description = data.Description,

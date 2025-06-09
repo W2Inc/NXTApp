@@ -202,9 +202,11 @@ public sealed class GitService(
 
     public async Task<Git> CreateRepository(GitRepoPostRequestDTO DTO, OwnerKind OwnerType)
     {
-        GetUserID();
+        var user = await _context.Users.FindAsync(GetUserID());
+        SetWebauthHeader("w2wizard");
+        
         var response = await _client.PostAsJsonAsync($"/api/v1/repos/{_gitTemplate}/generate", DTO);
-        // logger.LogInformation("Response: {response}", response);
+        logger.LogInformation("Response: {response}", response);
 
         if (response.StatusCode is HttpStatusCode.Conflict)
             throw new ServiceException(StatusCodes.Status409Conflict, "The repository with the same name already exists");

@@ -5367,6 +5367,7 @@ export interface components {
             thumbnailUrl: string;
             public: boolean;
             enabled: boolean;
+            tags?: string[];
         };
         ReviewDO: {
             /** Format: uuid */

@@ -8,7 +8,8 @@
 	import Archive from "lucide-svelte/icons/archive";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import * as Tabs from "$lib/components/ui/tabs/index";
-	import { useQuery } from "$lib/utils/query.svelte";
+	import { useQuery } from "$lib/utils/url.svelte";
+
 	import { z } from "zod";
 	import Base from "$lib/components/base.svelte";
 
@@ -17,24 +18,11 @@
 	import type { PageProps } from "./$types";
 	import Empty from "$lib/components/empty.svelte";
 	import * as Alert from "$lib/components/ui/alert";
+	import type { QueryKeys } from "./+page.server";
 
 	const { data }: PageProps = $props();
 	const debounce = useDebounce();
-	const query = useQuery(
-		z.object({
-			page: z.number().default(0),
-			search: z.string().optional(),
-			subscribed: z.boolean().default(true).optional(),
-		}),
-	);
-
-	function searchProject(search: string) {
-		if (search.length > 0) {
-			query.write("search", search);
-		} else {
-			query.write("search", undefined);
-		}
-	}
+	const query = useQuery<QueryKeys>(page.url);
 </script>
 
 <svelte:head>
@@ -49,13 +37,14 @@
 			icon={Search}
 			value={query.read("search")}
 			placeholder="Search for cursus"
-			oninput={(v) => debounce(searchProject, v.currentTarget.value.trim())}
+			oninput={(v) =>
+				debounce((q: string) => query.write("filter", q), v.currentTarget.value.trim())}
 		/>
 		{#if data.session && data.isCurrentUser}
 			<Separator />
 			<Tabs.Root
-				value={query.read("subscribed") ? "subscribed" : "all"}
-				onValueChange={(v) => query.write("subscribed", v === "subscribed")}
+				value={query.read("filter") ?? "subscribed"}
+				onValueChange={(v) => query.write("filter", v)}
 			>
 				<Tabs.List class="w-full">
 					<Tabs.Trigger class="w-full" value="subscribed">Subscribed</Tabs.Trigger>
@@ -76,14 +65,14 @@
 				{#if data.projects.length === 0}
 					<Empty />
 				{/if}
-				{#key query.read("subscribed")}
-					{#if query.read("subscribed") === true || !data.isCurrentUser}
+				{#key query.read("filter")}
+					{#if query.read("filter") === "subscribed" || !data.isCurrentUser}
 						{#each data.projects as up}
 							{@const userProject = up as BackendTypes["UserProjectDO"]}
 							<Taskcard
 								href="projects/{userProject.project?.slug}"
 								type="project"
-								title={userProject.project?.name}
+								title={userProject.project?.name ?? "Unknown"}
 								state={userProject.state}
 							/>
 						{/each}

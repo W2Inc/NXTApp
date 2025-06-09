@@ -4,34 +4,33 @@
 	import Button from "./ui/button/button.svelte";
 	import Input from "./ui/input/input.svelte";
 
-	// let items = $state.raw<string[]>(["1", "2", "3", "4", "5"]);
-
-	interface Props {
-		items: string[]
-	}
-
-	let { items = $bindable() }: Props = $props();
+	let items = $state.raw<string[]>(["1", "2", "3", "4", "5"]);
 </script>
 
-<div class="flex flex-wrap items-center gap-2 p-2 rounded-md border border-input bg-background min-h-10">
+<div
+	class="border-input bg-background flex min-h-10 flex-wrap items-center gap-2 rounded-md border p-2"
+>
 	{#each items as item, i}
-		<Badge color="primary" class="shadow-text px-3 py-1 flex gap-1 text-center justify-center items-center">
+		<Badge
+			color="primary"
+			class="shadow-text flex items-center justify-center gap-1 px-3 py-1 text-center"
+		>
 			<input type="hidden" name="tags" value={item} />
 			<span>{item}</span>
 			<button
 				type="button"
-				class="ml-1 rounded-full hover:bg-primary-foreground/20 transition-colors"
-				onclick={() => items = items.filter((_, j) => j !== i)}
+				class="hover:bg-primary-foreground/20 ml-1 rounded-full transition-colors"
+				onclick={() => (items = items.filter((_, j) => j !== i))}
 				aria-label="Remove tag"
 			>
-			<X class="w-4 h-4" />
+				<X class="h-4 w-4" />
 			</button>
 		</Badge>
 	{/each}
 	<Input
 		placeholder="Add tag..."
 		maxlength={64}
-		class="border-none bg-transparent shadow-none h-min focus-visible:ring-0 p-0 w-auto min-w-32"
+		class="h-min w-auto min-w-32 border-none bg-transparent p-0 shadow-none focus-visible:ring-0"
 		onkeydown={(e) => {
 			if (e.key === "Enter") {
 				e.preventDefault();

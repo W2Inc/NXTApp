@@ -101,6 +101,7 @@ export const load: PageServerLoad = async ({ request, locals, url }) => {
 export const actions: Actions = {
 	create: async ({ locals, request }) => {
 		const form = await request.formData();
+		const session = await locals.session() ?? kitError(403);
 		let [image, issue] = await ensure(formValueToS3<FormBundle>(form, "thumbnailUrl"));
 
 		logger.debug("Tags =>", form.getAll("tags"));
@@ -127,7 +128,8 @@ export const actions: Actions = {
 				maxMembers: Number(form.get("maxMembers")),
 				public: form.get("public")?.toString() === "true",
 				enabled: form.get("enabled")?.toString() === "true",
-				tags: form.getAll("tags").flatMap((v) => v.toString()),
+				ownerId: session.user_id, // TODO: Support organizations
+				tags: [],
 				thumbnailUrl: url,
 			},
 		});
