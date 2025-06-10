@@ -1,26 +1,22 @@
 <script lang="ts">
-	import { page } from "$app/state";
+	import {page} from "$app/state";
 	import Navgroup from "$lib/components/navgroup.svelte";
-	import type { IconLink } from "$lib/types";
-	import { decodeID, encodeID } from "$lib/utils.js";
+	import type {IconLink} from "$lib/types";
 	import Trophy from "lucide-svelte/icons/trophy";
 	import Archive from "lucide-svelte/icons/archive";
 	import GraduationCap from "lucide-svelte/icons/graduation-cap";
 	import Code from "lucide-svelte/icons/code";
-	import Shield from "lucide-svelte/icons/shield";
 	import Sparkles from "lucide-svelte/icons/sparkles";
 	import Globe from "lucide-svelte/icons/globe";
 	import Linkedin from "lucide-svelte/icons/linkedin";
 	import Github from "lucide-svelte/icons/github";
 	import MessageCircle from "lucide-svelte/icons/message-circle";
 	import ExternalLink from "lucide-svelte/icons/external-link";
-	import * as Avatar from "$lib/components/ui/avatar";
-	import * as Card from "$lib/components/ui/card";
-	import { Badge } from "$lib/components/ui/badge";
-	import { Separator } from "$lib/components/ui/separator";
+	import {Badge} from "$lib/components/ui/badge";
+	import {Separator} from "$lib/components/ui/separator";
 	import Markdown from "$lib/components/markdown/markdown.svelte";
-	import { cn } from "$lib/utils";
-	import { dialog } from "$lib/components/dialog/state.svelte.js";
+	import {cn} from "$lib/utils";
+	import {dialog} from "$lib/components/dialog/state.svelte.js";
 	// import Markdown from "svelte-exmarkdown";
 
 	const { data } = $props();
@@ -92,7 +88,7 @@
 {/snippet}
 
 <div class="container mx-auto max-w-5xl gap-3 py-8">
-	<Card.Root class="h-min shadow-sm">
+	<Card.Root class="h-min shadow-sm p-0">
 		<div
 			class="relative h-48 rounded-t-[inherit] bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
 		>
@@ -100,7 +96,7 @@
 				class="absolute inset-0 rounded-t-[inherit] bg-[url('/img.png')] bg-cover bg-center opacity-20"
 			></div>
 			<Avatar.Root
-				class="border-background absolute left-4 top-4 size-32 rounded border-2 shadow-xl"
+				class="absolute left-4 top-4 size-32 rounded-md shadow-xl"
 			>
 				<Avatar.Image src={data.user.avatarUrl} alt={data.user.login} />
 				<Avatar.Fallback class="rounded text-2xl font-bold">

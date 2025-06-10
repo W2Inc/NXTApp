@@ -1,37 +1,68 @@
-import { check } from "$lib/utils/check.svelte";
-import type { PageServerLoad } from "./$types";
+// ============================================================================
+// W2Inc, Amsterdam 2023-2024, All Rights Reserved.
+// See README in the root project for more information.
+// ============================================================================
 
-export const load: PageServerLoad = async ({ locals, url }) => {
-	const { data } = await check(locals.api.GET("/users/current/notifications", {
+import {check} from "$lib/utils/check.svelte";
+import z from "zod/v4";
+import type {Actions, PageServerLoad} from "./$types";
+import {useQuery} from "$lib/utils/url.svelte";
+import {logger} from "$lib/logger";
+
+// ============================================================================
+
+const schema = z.object({
+	page: z.coerce.number().optional(),
+	size: z.coerce.number().optional(),
+	mask: z.coerce.number().optional(),
+	search: z.string().optional(),
+	read: z.enum(["read", "unread"]).optional(),
+	type: z.enum(["exclude", "include"]).optional(),
+});
+
+export type QueryKeys = keyof z.infer<typeof schema>;
+
+// ============================================================================
+
+export const load: PageServerLoad = async ({locals, url, depends}) => {
+	depends("app:notifications");
+
+	const query = useQuery(url, schema);
+	const mask = query.read("mask");
+	const exclude = query.read("type") === "exclude";
+	logger.debug("Loading notifications", {
+		page: query.read("page"),
+		size: query.read("size"),
+		mask,
+		exclude,
+		search: query.read("search"),
+		read: query.read("read"),
+	});
+
+	const {data, response} = await check(locals.api.GET("/users/current/notifications", {
 		params: { query: {
-			Page: 0,
-			Size: 10,
-			"filter[read]": url.searchParams.get("read") ?? undefined
+				"page[index]": query.read("page"),
+				"page[size]": query.read("size"),
+				[exclude ? "filter[not[kind]]" : "filter[kind]"]: mask,
+				"filter[read]": query.read("read") === "read" ? true : false,
 		}}
-	}))
+	}));
 
 	return {
 		notifications: data ?? []
 	}
+};
 
-	// const data = new Promise<BackendNotification[]>((resolve) => {
-	// 	const notifications: BackendNotification[] = Array.from({ length: 1000 }, (_, i) => ({
-	// 		id: (i + 1).toString(),
-	// 		type: i % 2 === 0 ? "invite" : "notification" as const,
-	// 		title: `Notification ${i + 1}`,
-	// 		createdAt: new Date(Date.now() + i * 24 * 60 * 60 * 1000),
-	// 	}));
-	// 	setTimeout(() => resolve(notifications), 4000);
-	// });
+// ============================================================================
 
-	// const notifications: BackendNotification[] = Array.from({ length: 1000 }, (_, i) => ({
-	// 	id: (i + 1).toString(),
-	// 	type: Math.random() >= 0.5 ? "invite" : "notification" as const,
-	// 	title: `Notification ${i + 1}`,
-	// 	createdAt: new Date(Date.now() + i * 24 * 60 * 60 * 1000),
-	// }));
+export const actions: Actions = {
+	read: async ({locals, request}) => {
+		const formData = await request.formData();
+		const ids = formData.getAll("id") as string[];
+		await check(locals.api.POST("/users/current/notifications/read", {
+			body: ids
+		}));
 
-	// return {
-	// 	notifications
-	// };
+		return {};
+	}
 };

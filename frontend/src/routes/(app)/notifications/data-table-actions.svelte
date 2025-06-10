@@ -1,12 +1,9 @@
 <script lang="ts">
-	import Ellipsis from "lucide-svelte/icons/ellipsis";
-	import { Button } from "$lib/components/ui/button/index.js";
-	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+	import {Button} from "$lib/components/ui/button/index.js";
 	import Check from "lucide-svelte/icons/check";
 	import X from "lucide-svelte/icons/x";
 	import Inbox from "lucide-svelte/icons/inbox";
-	import Tippy from "$lib/components/tippy.svelte";
-	import { Eye } from "lucide-svelte";
+	import {Eye} from "lucide-svelte";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
 
 	let { id, type }: { id: string; type: number } = $props();
@@ -51,6 +48,6 @@
 	</Button>
 {/snippet}
 
-<div class="flex justify-end pr-4 gap-1">
+<div class="flex justify-end pr-4 gap-1 flex-wrap">
 	{@render actionButtons()}
 </div>

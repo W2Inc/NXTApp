@@ -5,14 +5,13 @@
 	import Tippy from "$lib/components/tippy.svelte";
 	import Input from "$lib/components/ui/input/input.svelte";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
-	import { useQuery } from "$lib/utils/url.svelte";
-	import { useDebounce } from "$lib/utils/debounce.svelte";
+	import {useQuery} from "$lib/utils/url.svelte";
+	import {useDebounce} from "$lib/utils/debounce.svelte";
 	import Base from "$lib/components/base.svelte";
-	import type { PageProps } from "./$types";
-	import * as Tabs from "$lib/components/ui/tabs/index";
-	import { page } from "$app/state";
-	import type { QueryKeys } from "./+page.server";
-	import { encodeID } from "$lib/utils";
+	import type {PageProps} from "./$types";
+	import {page} from "$app/state";
+	import type {QueryKeys} from "./+page.server";
+	import {encodeID} from "$lib/utils";
 
 	const debounce = useDebounce();
 	const query = useQuery<QueryKeys>(page.url);

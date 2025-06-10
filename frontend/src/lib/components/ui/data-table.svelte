@@ -2,24 +2,22 @@
 	import {
 		type ColumnDef,
 		type ColumnFiltersState,
-		type PaginationState,
-		type RowSelectionState,
-		type SortingState,
 		getCoreRowModel,
 		getFilteredRowModel,
 		getPaginationRowModel,
 		getSortedRowModel,
+		type PaginationState,
+		type RowSelectionState,
+		type SortingState,
 	} from "@tanstack/table-core";
-	import { createSvelteTable, FlexRender } from "$lib/components/ui/data-table/index.js";
-	import * as Table from "$lib/components/ui/table";
-	import * as Select from "$lib/components/ui/select";
-	import { Button, buttonVariants } from "./button";
+	import {createSvelteTable, FlexRender} from "$lib/components/ui/data-table/index.js";
+	import {Button, buttonVariants} from "./button";
 	import Separator from "./separator/separator.svelte";
 	import ArrowLeft from "lucide-svelte/icons/arrow-left";
 	import ArrowRight from "lucide-svelte/icons/arrow-right";
-	import { Input } from "./input";
+	import {Input} from "./input";
 	import Search from "lucide-svelte/icons/search";
-	import { Constants } from "$lib/utils";
+	import {Constants} from "$lib/utils";
 
 	type DataTableProps<TData, TValue> = {
 		data: TData[];
@@ -44,14 +42,7 @@
 		searchKey
 	}: DataTableProps<TData, TValue> = $props();
 
-	// let pagination = $state<PaginationState>({
-	// 	pageIndex: 0,
-	// 	pageSize: paginationOptions[0],
-	// });
-
-	// let sorting = $state<SortingState>([]);
 	let columnFilters = $state<ColumnFiltersState>([]);
-	// let rowSelection = $state<RowSelectionState>({});
 	const table = createSvelteTable({
 		get data() {
 			return data;
@@ -77,6 +68,10 @@
 			} else {
 				pagination = updater;
 			}
+
+			// NOTE(W2): Reset row selection on pagination change
+			// That way we can cull the selections and keep requests small
+			rowSelection = {};
 		},
 		onSortingChange: (updater) => {
 			if (typeof updater === "function") {
@@ -108,7 +103,7 @@
 
 <div class="rounded-md border shadow-sm">
 	<div
-		class="bg-background sticky top-0 z-10 flex flex-col items-start gap-2 rounded-t-md border-b p-2 md:flex-row md:items-center"
+		class="bg-card sticky top-0 z-10 flex flex-col items-start gap-2 rounded-t-md border-b p-2 md:flex-row md:items-center"
 	>
 		<div class="relative w-full md:max-w-60">
 			<Search
@@ -178,7 +173,7 @@
 		<Table.Root>
 			<Table.Header>
 				{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-					<Table.Row>
+					<Table.Row class="bg-card">
 						{#each headerGroup.headers as header (header.id)}
 							<Table.Head>
 								{#if !header.isPlaceholder}
@@ -194,7 +189,7 @@
 			</Table.Header>
 			<Table.Body>
 				{#each table.getRowModel().rows as row (row.id)}
-					<Table.Row data-state={row.getIsSelected() && "selected"}>
+					<Table.Row class="bg-card" data-state={row.getIsSelected() && "selected"}>
 						{#each row.getVisibleCells() as cell (cell.id)}
 							<Table.Cell>
 								<FlexRender

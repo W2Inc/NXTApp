@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Switch as SwitchPrimitive, type WithoutChildrenOrChild } from "bits-ui";
-	import { cn } from "$lib/utils.js";
+	import {Switch as SwitchPrimitive, type WithoutChildrenOrChild} from "bits-ui";
+	import {cn} from "$lib/utils.js";
 
 	let {
 		ref = $bindable(null),
@@ -12,7 +12,7 @@
 </script>
 
 <!-- Ugly fix... because input with type checkbox returns actual trash "on" | undefined like wtf -->
-<input hidden type="text" {name} value={checked} />
+<input hidden {name} oninput={() => console.log("yup")} type="text" value={checked}/>
 <SwitchPrimitive.Root
 	bind:ref
 	bind:checked

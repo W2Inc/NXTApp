@@ -1,9 +1,9 @@
-import { Checkbox } from "$lib/components/ui/checkbox";
-import { renderComponent, renderSnippet } from "$lib/components/ui/data-table";
-import type { ColumnDef } from "@tanstack/table-core";
+import {Checkbox} from "$lib/components/ui/checkbox";
+import {renderComponent, renderSnippet} from "$lib/components/ui/data-table";
+import type {ColumnDef} from "@tanstack/table-core";
 import DataTableActions from "./data-table-actions.svelte";
 import DataTableSortDate from "./data-table-sort-date.svelte";
-import { createRawSnippet } from "svelte";
+import {createRawSnippet} from "svelte";
 
 export const columns: ColumnDef<BackendTypes["NotificationDO"]>[] = [
 	{
@@ -13,7 +13,10 @@ export const columns: ColumnDef<BackendTypes["NotificationDO"]>[] = [
 				checked: table.getIsAllPageRowsSelected(),
 				indeterminate:
 					table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
-				onCheckedChange: (value) => table.toggleAllRowsSelected(!!value),
+				// NOTE(W2): We only want to toggle the selection of all rows on the current page
+				// when the checkbox is clicked, otherwise it will be too many requests
+				// to the backend.
+				onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
 				"aria-label": "Select all",
 			}),
 		cell: ({ row }) =>

@@ -7,7 +7,6 @@ using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Core.Utils.Query;
@@ -94,12 +93,17 @@ public class UserController(
         INotificationService notificationService,
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
-        [FromQuery(Name = "filter[state]")] NotificationState? state
+        [FromQuery(Name = "filter[read]")] bool? read,
+        [FromQuery(Name = "filter[not[kind]]")]
+        NotificationKind? notKind,
+        [FromQuery(Name = "filter[kind]")] NotificationKind? kind
     )
     {
         var filters = new FilterDictionary()
             .AddFilter("user_id", User.GetSID())
-            .AddFilter("state", state);
+            .AddFilter("kind", kind)
+            .AddFilter("not[kind]", notKind)
+            .AddFilter("read", read);
 
         var page = await notificationService.GetAllAsync(paging, sorting, filters);
         page.AppendHeaders(Response.Headers);

@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from "svelte";
-	import * as Resizable from "$lib/components/ui/resizable";
+	import type {Snippet} from "svelte";
 
 	interface Props {
 		left: Snippet;
@@ -16,7 +15,7 @@
 	<div
 		class="grid grid-rows-[auto_1fr] lg:grid-cols-[minmax(200px,300px)_1fr] lg:grid-rows-1"
 	>
-		<aside class="dark:bg-card sticky top-0 flex flex-col gap-2 p-4 lg:h-dvh lg:border-r">
+		<aside class="dark:bg-card sticky top-0 flex flex-col gap-2 p-4 lg:h-dvh lg:border-r z-[49]">
 			{@render left()}
 		</aside>
 

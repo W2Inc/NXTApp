@@ -16,6 +16,11 @@ namespace NXTBackend.API.Domain.Enums;
 public enum NotificationKind
 {
     /// <summary>
+    ///     No specific notification kind, acts as a wildcard/ignore
+    /// </summary>
+    [JsonPropertyName(nameof(None))] None = 0,
+    
+    /// <summary>
     /// Notification requires user to accept or decline.
     /// </summary>
     [JsonPropertyName(nameof(AcceptOrDecline))]

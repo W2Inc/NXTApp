@@ -16,10 +16,23 @@ interface QueryOptions {
 	invalidateAll?: boolean;
 }
 
+type RouteResource = string | URL | ((url: URL) => boolean);
 type ClientResult<K extends string = string> = {
 	read(key: K): string | null;
-	write(key: K, value: string | number | boolean | null | undefined): void;
-	reset(): Promise<void>;
+	/**
+	 * Write a new value to the URL search parameters.
+	 * If the value is null or undefined, it will remove the parameter.
+	 *
+	 * @param key The query parameter key to write.
+	 * @param value The value to set for the query parameter. Can be string, number, boolean, null, or undefined.
+	 * @param invalidate Optional array of resources to invalidate after writing the new value. E.g: Changing tabs should re-validate the current page.
+	 */
+	write(
+		key: K,
+		value: string | number | boolean | null | undefined,
+		invalidate?: Array<RouteResource>
+	): void;
+	reset(invalidate?: Array<RouteResource>): Promise<void>;
 };
 
 type ServerResult<T extends z.ZodType> = {
@@ -54,7 +67,7 @@ export function useQuery<T extends z.ZodType, K extends string = string>(
 		replaceState: true,
 		keepFocus: true,
 		noScroll: true,
-		invalidateAll: true,
+		invalidateAll: false,
 	};
 
 	const mergedOptions = {...defaultOptions, options};
@@ -68,7 +81,7 @@ export function useQuery<T extends z.ZodType, K extends string = string>(
 				return stateURL.searchParams.get(key);
 			},
 
-			async write(key: K, value: string | number | boolean | null | undefined) {
+			async write(key: K, value: string | number | boolean | null | undefined, invalidate?: Array<string | URL | ((url: URL) => boolean)>) {
 				const newUrl = new URL(window.location.href);
 				if (value === null || value === undefined || (typeof value === 'string' && value.length === 0)) {
 					newUrl.searchParams.delete(key);
@@ -76,17 +89,26 @@ export function useQuery<T extends z.ZodType, K extends string = string>(
 					newUrl.searchParams.set(key, String(value));
 				}
 
-				await goto((stateURL = newUrl), mergedOptions);
+				await goto((stateURL = newUrl), {invalidate});
+				// if (invalidate) {
+				// } else {
+				// 	pushState(newUrl, {});
+				// }
 			},
 
 			// Reset all parameters
-			async reset() {
+			async reset(invalidate?: Array<string | URL | ((url: URL) => boolean)>) {
 				if (!browser) return;
 
 				const newUrl = new URL(window.location.href);
 				newUrl.search = "";
 
-				await goto((stateURL = newUrl), mergedOptions);
+				await goto((stateURL = newUrl), {invalidate});
+				// if (invalidate) {
+				// } else {
+				// 	stateURL = newUrl; // Update internal state
+				// 	replaceState((stateURL = newUrl), {}); // Update URL without navigation
+				// }
 			}
 		} satisfies ClientResult<K>;
 	}

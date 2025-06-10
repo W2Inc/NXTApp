@@ -190,7 +190,7 @@ public static class Startup
                         PermitLimit = 1680, // More requests
                         Window = TimeSpan.FromMinutes(20),
                         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        QueueLimit = 5
+                        QueueLimit = 10
                     });
             });
         });

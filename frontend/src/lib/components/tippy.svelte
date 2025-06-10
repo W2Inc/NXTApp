@@ -1,17 +1,17 @@
 <script lang="ts">
-	import * as Tooltip from "$lib/components/ui/tooltip";
-	import { cn } from "$lib/utils.js";
-	import type { Snippet } from "svelte";
-	import type { HTMLButtonAttributes, MouseEventHandler } from "svelte/elements";
+	import {cn} from "$lib/utils.js";
+	import type {WithChild} from "bits-ui";
+	import type {Snippet} from "svelte";
+	import type {MouseEventHandler} from "svelte/elements";
 
-	interface Props {
+	interface Props extends WithChild {
 		text: string;
 		class?: string;
 		onclick?: MouseEventHandler<HTMLButtonElement>;
 		children: Snippet;
 	}
 
-	let { text, class: className, children, onclick }: Props = $props();
+	let {text, class: className, children, onclick, child}: Props = $props();
 </script>
 
 <Tooltip.Root disableHoverableContent>
@@ -21,7 +21,6 @@
 	<Tooltip.Content
 
 		class={cn(
-			"bg-muted text-muted-foreground dark:border-background max-w-64 border p-2 text-sm leading-relaxed tracking-wide shadow-xl",
 			className,
 		)}
 	>
