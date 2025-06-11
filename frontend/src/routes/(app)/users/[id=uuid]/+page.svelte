@@ -17,6 +17,8 @@
 	import Markdown from "$lib/components/markdown/markdown.svelte";
 	import {cn} from "$lib/utils";
 	import {dialog} from "$lib/components/dialog/state.svelte.js";
+	import * as Avatar from "$lib/components/ui/avatar";
+	import * as Card from "$lib/components/ui/card";
 	// import Markdown from "svelte-exmarkdown";
 
 	const { data } = $props();

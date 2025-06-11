@@ -4,7 +4,7 @@
 // ============================================================================
 
 import type {z} from "zod/v4";
-import {goto} from "$app/navigation";
+import {goto, pushState, replaceState} from "$app/navigation";
 import {browser} from "$app/environment";
 
 // ============================================================================
@@ -89,12 +89,18 @@ export function useQuery<T extends z.ZodType, K extends string = string>(
 					newUrl.searchParams.set(key, String(value));
 				}
 
-				await goto((stateURL = newUrl), {invalidate});
+				// replaceState((stateURL = newUrl), {});
+				// window.history.pushState({}, '', newUrl.toString());
+
+				goto(`?${newUrl.searchParams.toString()}`);
+
 				// if (invalidate) {
+				// 	await goto((stateURL = newUrl), {invalidate, invalidateAll: false, replaceState: false, keepFocus: true, noScroll: true});
 				// } else {
 				// 	pushState(newUrl, {});
 				// }
 			},
+
 
 			// Reset all parameters
 			async reset(invalidate?: Array<string | URL | ((url: URL) => boolean)>) {
@@ -103,7 +109,7 @@ export function useQuery<T extends z.ZodType, K extends string = string>(
 				const newUrl = new URL(window.location.href);
 				newUrl.search = "";
 
-				await goto((stateURL = newUrl), {invalidate});
+				await goto((stateURL = newUrl), {invalidate, invalidateAll: false, replaceState: false, keepFocus: true, noScroll: true});
 				// if (invalidate) {
 				// } else {
 				// 	stateURL = newUrl; // Update internal state

@@ -1,0 +1,208 @@
+{
+	"name": "Main Cursus",
+	"path": "/Main Cursus",
+	"goals": [
+		{
+			"name": "Root Goal",
+			"guid": "root-123",
+			"state": 1
+		}
+	],
+	"children": [
+		{
+			"name": "Frontend",
+			"path": "/Main Cursus/Frontend",
+			"goals": [
+				{
+					"name": "Frontend Fundamentals",
+					"guid": "frontend-basics",
+					"state": 1
+				}
+			],
+			"children": [
+				{
+					"name": "HTML & CSS",
+					"path": "/Main Cursus/Frontend/HTML & CSS",
+					"goals": [
+						{
+							"name": "Learn HTML5",
+							"guid": "html5",
+							"state": 1
+						}
+					],
+					"children": [
+						{
+							"name": "Semantic HTML",
+							"path": "/Main Cursus/Frontend/HTML & CSS/Semantic HTML",
+							"goals": [
+								{
+									"name": "Master Semantic Elements",
+									"guid": "semantic-html",
+									"state": 0
+								}
+							],
+							"children": []
+						},
+						{
+							"name": "CSS Layouts",
+							"path": "/Main Cursus/Frontend/HTML & CSS/CSS Layouts",
+							"goals": [
+								{
+									"name": "Learn Flexbox",
+									"guid": "flexbox",
+									"state": 1
+								},
+								{
+									"name": "Learn Grid",
+									"guid": "grid",
+									"state": 0
+								}
+							],
+							"children": [
+								{
+									"name": "Advanced CSS",
+									"path": "/Main Cursus/Frontend/HTML & CSS/CSS Layouts/Advanced CSS",
+									"goals": [
+										{
+											"name": "CSS Animations",
+											"guid": "css-animations",
+											"state": 0
+										}
+									],
+									"children": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "JavaScript",
+					"path": "/Main Cursus/Frontend/JavaScript",
+					"goals": [
+						{
+							"name": "JS Basics",
+							"guid": "js-basics",
+							"state": 1
+						}
+					],
+					"children": [
+						{
+							"name": "DOM Manipulation",
+							"path": "/Main Cursus/Frontend/JavaScript/DOM Manipulation",
+							"goals": [
+								{
+									"name": "Learn DOM API",
+									"guid": "dom-api",
+									"state": 0
+								}
+							],
+							"children": [
+								{
+									"name": "Event Handling",
+									"path": "/Main Cursus/Frontend/JavaScript/DOM Manipulation/Event Handling",
+									"goals": [
+										{
+											"name": "Master Events",
+											"guid": "events",
+											"state": 0
+										}
+									],
+									"children": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Backend",
+			"path": "/Main Cursus/Backend",
+			"goals": [
+				{
+					"name": "Backend Fundamentals",
+					"guid": "backend-basics",
+					"state": 0
+				}
+			],
+			"children": [
+				{
+					"name": "Node.js",
+					"path": "/Main Cursus/Backend/Node.js",
+					"goals": [
+						{
+							"name": "Node.js Basics",
+							"guid": "node-basics",
+							"state": 1
+						}
+					],
+					"children": [
+						{
+							"name": "Express Framework",
+							"path": "/Main Cursus/Backend/Node.js/Express Framework",
+							"goals": [
+								{
+									"name": "REST API Development",
+									"guid": "rest-api",
+									"state": 0
+								}
+							],
+							"children": [
+								{
+									"name": "Authentication",
+									"path": "/Main Cursus/Backend/Node.js/Express Framework/Authentication",
+									"goals": [
+										{
+											"name": "JWT Implementation",
+											"guid": "jwt-auth",
+											"state": 0
+										}
+									],
+									"children": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "DevOps",
+			"path": "/Main Cursus/DevOps",
+			"goals": [
+				{
+					"name": "DevOps Introduction",
+					"guid": "devops-intro",
+					"state": 0
+				}
+			],
+			"children": [
+				{
+					"name": "Docker",
+					"path": "/Main Cursus/DevOps/Docker",
+					"goals": [
+						{
+							"name": "Container Basics",
+							"guid": "docker-basics",
+							"state": 0
+						}
+					],
+					"children": [
+						{
+							"name": "Docker Compose",
+							"path": "/Main Cursus/DevOps/Docker/Docker Compose",
+							"goals": [
+								{
+									"name": "Multi-container Apps",
+									"guid": "docker-compose",
+									"state": 0
+								}
+							],
+							"children": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

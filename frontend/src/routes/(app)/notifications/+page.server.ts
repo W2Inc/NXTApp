@@ -57,10 +57,21 @@ export const load: PageServerLoad = async ({locals, url, depends}) => {
 
 export const actions: Actions = {
 	read: async ({locals, request}) => {
+		logger.debug("Marking notifications as unread");
+
 		const formData = await request.formData();
-		const ids = formData.getAll("id") as string[];
 		await check(locals.api.POST("/users/current/notifications/read", {
-			body: ids
+			body: formData.getAll("id") as string[]
+		}));
+
+
+		return {};
+	},
+	unread: async ({locals, request}) => {
+		logger.debug("Marking notifications as unread");
+		const formData = await request.formData();
+		await check(locals.api.POST("/users/current/notifications/unread", {
+			body: formData.getAll("id") as string[]
 		}));
 
 		return {};

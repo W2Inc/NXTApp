@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type {Snippet} from "svelte";
+	import * as Resizable from "$lib/components/ui/resizable";
 
 	interface Props {
 		left: Snippet;

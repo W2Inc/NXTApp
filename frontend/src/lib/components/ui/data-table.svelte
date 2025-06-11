@@ -18,6 +18,8 @@
 	import {Input} from "./input";
 	import Search from "lucide-svelte/icons/search";
 	import {Constants} from "$lib/utils";
+	import * as Select from "$lib/components/ui/select";
+	import * as Table from "$lib/components/ui/table";
 
 	type DataTableProps<TData, TValue> = {
 		data: TData[];

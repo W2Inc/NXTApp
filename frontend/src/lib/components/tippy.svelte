@@ -3,6 +3,7 @@
 	import type {WithChild} from "bits-ui";
 	import type {Snippet} from "svelte";
 	import type {MouseEventHandler} from "svelte/elements";
+	import * as Tooltip from "$lib/components/ui/tooltip";
 
 	interface Props extends WithChild {
 		text: string;

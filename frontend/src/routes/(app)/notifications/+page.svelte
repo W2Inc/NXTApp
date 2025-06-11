@@ -1,21 +1,30 @@
 <script lang="ts">
 	import Base from "$lib/components/base.svelte";
 	import DataTable from "$lib/components/ui/data-table.svelte";
-	import {columns} from "./columns";
-	import {useQuery} from "$lib/utils/url.svelte";
-	import type {PageProps} from "./$types";
+	import { columns } from "./columns";
+	import { useQuery } from "$lib/utils/url.svelte";
+	import type { PageProps } from "./$types";
 	import Loader from "lucide-svelte/icons/loader";
-	import type {PaginationState, RowSelectionState, SortingState,} from "@tanstack/table-core";
+	import type {
+		PaginationState,
+		RowSelectionState,
+		SortingState,
+	} from "@tanstack/table-core";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
 	import Button from "$lib/components/ui/button/button.svelte";
+	import Mail from "lucide-svelte/icons/mail";
 	import MailOpen from "lucide-svelte/icons/mail-open";
 	import RefreshCw from "lucide-svelte/icons/refresh-cw";
-	import type {QueryKeys} from "./+page.server";
-	import {page} from "$app/state";
+	import type { QueryKeys } from "./+page.server";
+	import { page } from "$app/state";
 	import Switch from "$lib/components/ui/switch/switch.svelte";
-	import {invalidate} from "$app/navigation";
-	import {useDebounce} from "$lib/utils/debounce.svelte";
-	import {BookOpen, FolderOpen, MessageSquare, Target, UserPlus} from "lucide-svelte";
+	import { invalidate } from "$app/navigation";
+	import { useDebounce } from "$lib/utils/debounce.svelte";
+	import { BookOpen, FolderOpen, MessageSquare, Target, UserPlus } from "lucide-svelte";
+	import * as Select from "$lib/components/ui/select";
+	import * as Tabs from "$lib/components/ui/tabs";
+	import { useForm } from "$lib/utils/form.svelte";
+	import { enhance } from "$app/forms";
 
 	// Notification kinds with their masks and UI representations
 	const notificationKinds = {
@@ -50,9 +59,10 @@
 			icon: MessageSquare,
 		},
 	};
+	// TODO:
 
 	const { data }: PageProps = $props();
-	const debounce = useDebounce();
+	const debounce = useDebounce(750);
 	const query = useQuery<QueryKeys>(page.url);
 
 	let selected = $state<string[]>([]);
@@ -64,6 +74,7 @@
 	});
 
 	// Derive the rows from selection
+	let isUnread = $state(query.read("read") === "unread");
 	const rows = $derived.by(() => {
 		const selectedIndexes = Object.keys(rowSelection).map(Number);
 		return data.notifications.filter((_, index) => selectedIndexes.includes(index));
@@ -88,8 +99,8 @@
 	// Action handlers
 	const setRead = (v: string) =>
 		debounce(() => {
-			query.reset();
 			query.write("read", v);
+			isUnread = v === "unread";
 		});
 
 	const setExclude = (v: boolean) =>
@@ -141,43 +152,63 @@
 			<Select.Root type="multiple" value={selected} onValueChange={setMask}>
 				<Select.Trigger class="max-w-[180px]" type="button">Filter</Select.Trigger>
 				<Select.Content>
-					<div class="bg-muted/50 flex items-center justify-between rounded-sm px-3 py-2">
+					<div class="bg-muted/50 flex border items-center justify-between rounded-sm px-3 py-2">
 						<span class="text-xs font-medium">Exclude</span>
 						<Switch
 							checked={query.read("type") === "exclude"}
 							onCheckedChange={setExclude}
 						/>
 					</div>
-					<Separator class="my-1"/>
+					<Separator class="my-1" />
 					{#each Object.values(notificationKinds) as kind}
 						<Select.Item value={kind.value}>
-							<kind.icon class="mr-2 h-4 w-4"/>
+							<kind.icon class="mr-2 h-4 w-4" />
 							{kind.label}
 						</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>
-			<Separator orientation="vertical"/>
+			<Separator orientation="vertical" />
 
-			<form class="w-full" method="POST" action="?/read" enctype="multipart/form-data">
+			<form
+				method="POST"
+				class="flex-1"
+				enctype="multipart/form-data"
+				use:enhance
+			>
 				{#each rows as row}
-					<input type="hidden" name="id" value={row.id}/>
+					<input type="hidden" name="id" value={row.id} />
 				{/each}
-				<Button
-					class="w-full"
-					type="submit"
-					onclick={() => {}}
-					disabled={!rows.length}
-					variant="outline"
-				>
-					Mark as Read
-					<MailOpen/>
-				</Button>
+				{#if !isUnread}
+					<Button
+						class="w-full"
+						type="submit"
+						formaction="?/unread"
+						onclick={() => {}}
+						disabled={!rows.length}
+						variant="outline"
+					>
+						Mark as Unread
+						<Mail />
+					</Button>
+				{:else}
+					<Button
+						class="w-full"
+						type="submit"
+						formaction="?/read"
+						onclick={() => {}}
+						disabled={!rows.length}
+						variant="outline"
+					>
+						Mark as Read
+						<MailOpen />
+					</Button>
+				{/if}
 			</form>
 		</div>
-		<Separator/>
+		<Separator />
 		<Button variant="outline" onclick={refresh}>
-			<RefreshCw/>
+			<RefreshCw />
 			<span class="text-xs font-medium">Fetch Notifications</span>
 		</Button>
 	{/snippet}

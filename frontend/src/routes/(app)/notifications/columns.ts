@@ -85,6 +85,7 @@ export const columns: ColumnDef<BackendTypes["NotificationDO"]>[] = [
 			return renderComponent(DataTableActions, {
 				id: row.original.id,
 				type: row.original.descriptor,
+				resource: row.original.resourceId,
 			});
 		},
 	},

@@ -89,13 +89,13 @@ public class UserController(
     [EndpointSummary("Get your notifications")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+	[OutputCache(PolicyName = "1m")]
     public async Task<ActionResult<IEnumerable<NotificationDO>>> GetNotifications(
         INotificationService notificationService,
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
         [FromQuery(Name = "filter[read]")] bool? read,
-        [FromQuery(Name = "filter[not[kind]]")]
-        NotificationKind? notKind,
+        [FromQuery(Name = "filter[not[kind]]")] NotificationKind? notKind,
         [FromQuery(Name = "filter[kind]")] NotificationKind? kind
     )
     {
@@ -119,12 +119,8 @@ public class UserController(
         INotificationService notificationService,
         [FromBody, Description("Optional: Specific notification IDs to mark as read")] IEnumerable<Guid>? notificationIds = null)
     {
-        var user = await userService.FindByIdAsync(User.GetSID());
-        if (user is null)
-            return Forbid();
-
-        // await notificationService.MarkAsReadAsync(user.Id, notificationIds);
-        return Ok();
+        await notificationService.MarkAsReadAsync(User.GetSID(), notificationIds);
+        return NoContent();
     }
 
     [HttpPost("/users/current/notifications/unread")]
@@ -136,12 +132,8 @@ public class UserController(
         INotificationService notificationService,
         [FromBody, Description("Optional: Specific notification IDs to mark as unread")] IEnumerable<Guid>? notificationIds = null)
     {
-        var user = await userService.FindByIdAsync(User.GetSID());
-        if (user is null)
-            return Forbid();
-
-        // await notificationService.MarkAsUnreadAsync(user.Id, notificationIds);
-        return Ok();
+        await notificationService.MarkAsUnreadAsync(User.GetSID(), notificationIds);
+        return NoContent();
     }
 
     [HttpGet("/users/current/events")]

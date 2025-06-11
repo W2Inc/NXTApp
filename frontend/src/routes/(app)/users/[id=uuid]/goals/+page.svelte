@@ -12,6 +12,7 @@
 	import {page} from "$app/state";
 	import type {QueryKeys} from "./+page.server";
 	import {encodeID} from "$lib/utils";
+	import * as Tabs from "$lib/components/ui/tabs";
 
 	const debounce = useDebounce();
 	const query = useQuery<QueryKeys>(page.url);

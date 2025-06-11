@@ -6,7 +6,7 @@
 	import {Eye} from "lucide-svelte";
 	import Separator from "$lib/components/ui/separator/separator.svelte";
 
-	let { id, type }: { id: string; type: number } = $props();
+	let { id, type, resource }: { id: GUID; type: number, resource: GUID | null } = $props();
 </script>
 
 {#snippet invite()}
@@ -30,7 +30,7 @@
 
 {#snippet actionButtons()}
 	{#if type & (1 << 4)}
-		<Button size="sm" href="/" variant="outline" class="h-7 px-3 text-xs">
+		<Button size="sm" href="projects/{resource}" variant="outline" class="h-7 px-3 text-xs">
 			<Eye class="mr-1 h-3 w-3" />
 			View Project
 		</Button>
@@ -49,5 +49,6 @@
 {/snippet}
 
 <div class="flex justify-end pr-4 gap-1 flex-wrap">
+	{resource}
 	{@render actionButtons()}
 </div>
