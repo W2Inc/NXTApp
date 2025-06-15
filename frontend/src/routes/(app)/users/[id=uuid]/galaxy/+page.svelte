@@ -24,15 +24,7 @@
 	import { transformXGraphV1Data, type ClientGraph } from "$lib/graph";
 	import { read } from "$app/server";
 	import D3 from "./d3.svelte";
-
-	let ctx = $state<GalaxyCTX>({
-		mode: "3d",
-		audioPlaying: false,
-	});
-
-	setContext("audio", ctx);
-
-	let graph = $state.raw<ClientGraph>();
+	import { generateSampleData } from "./d3utils.svelte";
 </script>
 
 <svelte:head>
@@ -48,15 +40,18 @@
 	</div>
 {/snippet}
 
+
 <div class="flex h-screen flex-col">
 	<Menu
 		bind:search
 		bind:cursus
-		onCursusChange={(v) => (promise = invalidateAll())}
+		onCursusChange={(v) => {}}
 		cursi={["42", "c-piscine"]}
 	/>
 
-	<D3 />
+	<!-- {#await Promise.resolve() then _} -->
+		<D3 data={generateSampleData()} />
+	<!-- {/await} -->
 </div>
 
 <style>

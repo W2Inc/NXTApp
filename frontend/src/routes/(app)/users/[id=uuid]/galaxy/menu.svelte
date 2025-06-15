@@ -44,71 +44,45 @@
 	});
 </script>
 
-<div
-	class="bg-card absolute z-10 flex min-h-12 flex-col items-start gap-2 rounded-br-lg border-b border-r p-2"
->
-	<div class="flex items-center gap-2">
-		<Input
-			type="search"
-			icon={Search}
-			bind:value={search}
-			list="ice-cream-flavors"
-			placeholder="Search goals..."
-			class="bg-background w-42"
-		/>
+<div id="kaka" class="flex absolute z-10">
+	<div
+		class="bg-card flex min-h-12 flex-col items-start gap-2 rounded-br-lg border-r border-b p-2"
+	>
+		<div class="flex items-center gap-2">
+			<Input
+				type="search"
+				icon={Search}
+				bind:value={search}
+				list="ice-cream-flavors"
+				placeholder="Search goals..."
+				class="bg-background w-42"
+			/>
 
-		<datalist id="ice-cream-flavors">
-			<option value="Chocolate"></option>
-			<option value="Coconut"></option>
-			<option value="Mint"></option>
-			<option value="Strawberry"></option>
-			<option value="Vanilla"></option>
-		</datalist>
-
-		<Select.Root type="single" bind:value={cursus} onValueChange={onCursusChange}>
-			<Select.Trigger class="bg-background w-[120px] capitalize">
-				{cursusContent}
-			</Select.Trigger>
-			<Select.Content>
-				{#each availableCursi as option}
-					<Select.Item value={option.value}>
-						{option.label}
-					</Select.Item>
-				{/each}
-			</Select.Content>
-		</Select.Root>
-
-		<Tabs.Root bind:value={ctx.mode} class="w-[100px]">
-			<Tabs.List class="grid w-full grid-cols-2">
-				<Tabs.Trigger value="2d">2D</Tabs.Trigger>
-				<Tabs.Trigger value="3d">3D</Tabs.Trigger>
-			</Tabs.List>
-		</Tabs.Root>
-
-		{#if ctx.mode === "3d"}
-			<Button
-				size="icon"
-				variant="secondary"
-				onclick={() => (ctx.audioPlaying = !ctx.audioPlaying)}
-			>
-				{#if ctx.audioPlaying}
-					<Volume2 />
-				{:else}
-					<VolumeX />
-				{/if}
-			</Button>
-		{/if}
-	</div>
-	{#if ctx.mode === "3d"}
+			<Select.Root type="single" bind:value={cursus} onValueChange={onCursusChange}>
+				<Select.Trigger class="bg-background w-[120px] capitalize">
+					{cursusContent}
+				</Select.Trigger>
+				<Select.Content>
+					{#each availableCursi as option}
+						<Select.Item value={option.value}>
+							{option.label}
+						</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</div>
 		<div class="flex gap-2 text-xs">
 			<span class="text-primary flex items-center font-bold uppercase">
 				<Flask size={16} class="mr-1" />
 				beta
 			</span>
 			<Separator orientation="vertical" />
-			<span class="text-muted-foreground underline"
-				>The Galaxy graph is still rough and in development</span
-			>
+			<span class="text-muted-foreground underline">
+				The graph is currently experimental
+			</span>
 		</div>
-	{/if}
+	</div>
+	<span id="breadcrumbs">
+		<!--Teleport Breadcrumbs-->
+	</span>
 </div>

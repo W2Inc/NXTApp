@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type {Snippet} from "svelte";
+	import type { Snippet } from "svelte";
 	import * as Resizable from "$lib/components/ui/resizable";
 
 	interface Props {
@@ -16,7 +16,9 @@
 	<div
 		class="grid grid-rows-[auto_1fr] lg:grid-cols-[minmax(200px,300px)_1fr] lg:grid-rows-1"
 	>
-		<aside class="dark:bg-card sticky top-0 flex flex-col gap-2 p-4 lg:h-dvh lg:border-r z-[49]">
+		<aside
+			class="dark:bg-card sticky top-0 z-[49] flex flex-col gap-2 p-4 lg:h-dvh lg:border-r"
+		>
 			{@render left()}
 		</aside>
 
@@ -32,7 +34,7 @@
 		</div>
 	</div>
 {:else if variant === "splitpane"}
-	<div class="h-full w-full">
+	<div class="h-dvh w-full">
 		<Resizable.PaneGroup direction="horizontal">
 			<Resizable.Pane minSize={30} maxSize={50} defaultSize={30}>
 				{@render left()}
@@ -44,7 +46,7 @@
 		</Resizable.PaneGroup>
 	</div>
 {:else if variant === "center"}
-	<div class="m-auto max-w-6xl px-4 py-2 h-full">
+	<div class="m-auto h-full max-w-6xl px-4 py-2">
 		{@render left()}
 		{@render right()}
 	</div>
