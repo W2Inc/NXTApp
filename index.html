@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document Annotation System</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<style>
+		:root {
+			--primary-color: #4a6fa5;
+			--secondary-color: #166088;
+			--accent-color: #4fc1e9;
+			--light-color: #f5f7fa;
+			--dark-color: #434a54;
+			--danger-color: #e74c3c;
+			--success-color: #2ecc71;
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background-color: #f0f2f5;
+			color: var(--dark-color);
+			height: 100vh;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.app-container {
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+			overflow: hidden;
+		}
+
+		.toolbar {
+			display: flex;
+			background-color: var(--primary-color);
+			color: white;
+			padding: 10px;
+			gap: 10px;
+			z-index: 100;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		}
+
+		.toolbar-section {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.separator {
+			width: 1px;
+			height: 24px;
+			background-color: rgba(255, 255, 255, 0.3);
+			margin: 0 10px;
+		}
+
+		.content-container {
+			display: flex;
+			flex: 1;
+			overflow: hidden;
+		}
+
+		.document-container {
+			position: relative;
+			flex: 1;
+			overflow: hidden;
+		}
+
+		.document-wrapper {
+			position: relative;
+			width: 100%;
+			height: 100%;
+		}
+
+		iframe {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			border: none;
+		}
+
+		.annotation-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			pointer-events: none;
+			z-index: 10;
+		}
+
+		.json-panel {
+			width: 350px;
+			background-color: var(--light-color);
+			padding: 15px;
+			border-left: 1px solid #ddd;
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+			transition: width 0.3s ease;
+		}
+
+		.json-panel.hidden {
+			width: 0;
+			padding: 0;
+			border: none;
+		}
+
+		.json-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 10px;
+		}
+
+		#annotationsJson {
+			width: 100%;
+			flex: 1;
+			resize: none;
+			padding: 10px;
+			font-family: monospace;
+			font-size: 0.8rem;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+		}
+
+		.btn {
+			padding: 8px 12px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-weight: 500;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 5px;
+			transition: all 0.2s ease;
+		}
+
+		.btn-tool {
+			background-color: transparent;
+			color: white;
+			min-width: 40px;
+		}
+
+		.btn-tool:hover,
+		.btn-tool.active {
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+
+		.btn-primary {
+			background-color: var(--primary-color);
+			color: white;
+		}
+
+		.btn-primary:hover {
+			background-color: var(--secondary-color);
+		}
+
+		.btn-secondary {
+			background-color: var(--light-color);
+			color: var(--dark-color);
+		}
+
+		.btn-secondary:hover {
+			background-color: #e4e7eb;
+		}
+
+		.btn-danger {
+			background-color: var(--danger-color);
+			color: white;
+		}
+
+		.btn-danger:hover {
+			background-color: #c0392b;
+		}
+
+		.panel-buttons {
+			display: flex;
+			gap: 10px;
+			margin-top: 10px;
+		}
+
+		.annotation {
+			position: absolute;
+			z-index: 20;
+		}
+
+		.annotation-text {
+			background-color: rgba(255, 255, 102, 0.7);
+			padding: 5px;
+			border-radius: 3px;
+			max-width: 200px;
+			pointer-events: auto;
+			cursor: move;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+		}
+
+		.annotation-line {
+			pointer-events: none;
+			stroke: red;
+			stroke-width: 2;
+		}
+
+		.annotation-circle {
+			pointer-events: none;
+			stroke: blue;
+			stroke-width: 2;
+			fill: rgba(0, 0, 255, 0.1);
+		}
+
+		.color-picker {
+			display: flex;
+			gap: 5px;
+			align-items: center;
+		}
+
+		.color-option {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			cursor: pointer;
+			border: 2px solid transparent;
+		}
+
+		.color-option.active {
+			border-color: white;
+		}
+
+		.tool-settings {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			margin-left: 10px;
+			background-color: rgba(255, 255, 255, 0.1);
+			padding: 5px 10px;
+			border-radius: 4px;
+		}
+
+		.positions-dropdown {
+			background-color: white;
+			color: var(--dark-color);
+			padding: 5px;
+			border-radius: 4px;
+			border: 1px solid #ccc;
+		}
+
+		.text-input-dialog {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+			z-index: 1000;
+			width: 300px;
+		}
+
+		.text-input-dialog textarea {
+			width: 100%;
+			padding: 10px;
+			margin: 10px 0;
+			resize: vertical;
+			min-height: 80px;
+		}
+
+		.dialog-buttons {
+			display: flex;
+			justify-content: flex-end;
+			gap: 10px;
+		}
+
+		.helper-text {
+			color: rgba(255, 255, 255, 0.7);
+			font-size: 0.85rem;
+			margin-left: auto;
+		}
+
+		/* Override pointer-events for specific annotation types when active */
+		.annotation-overlay.drawing-mode {
+			pointer-events: auto;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="app-container">
+		<div class="toolbar">
+			<div class="toolbar-section">
+				<button id="cursor-tool" class="btn btn-tool active" title="Select">
+					<i class="fas fa-mouse-pointer"></i>
+				</button>
+				<button id="text-tool" class="btn btn-tool" title="Add Text">
+					<i class="fas fa-font"></i>
+				</button>
+				<button id="line-tool" class="btn btn-tool" title="Draw Line">
+					<i class="fas fa-slash"></i>
+				</button>
+				<button id="circle-tool" class="btn btn-tool" title="Draw Circle">
+					<i class="far fa-circle"></i>
+				</button>
+			</div>
+
+			<div class="separator"></div>
+
+			<div class="toolbar-section tool-settings">
+				<div class="color-picker">
+					<div class="color-option active" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+					<div class="color-option" style="background-color: #3498db;" data-color="#3498db"></div>
+					<div class="color-option" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
+					<div class="color-option" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
+					<div class="color-option" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+				</div>
+			</div>
+
+			<div class="separator"></div>
+
+			<div class="toolbar-section">
+				<button id="clear-annotations" class="btn btn-tool" title="Clear All Annotations">
+					<i class="fas fa-trash-alt"></i>
+				</button>
+				<button id="toggle-json" class="btn btn-tool" title="Toggle JSON Panel">
+					<i class="fas fa-code"></i>
+				</button>
+			</div>
+
+			<span class="helper-text">Annotations are saved automatically</span>
+		</div>
+
+		<div class="content-container">
+			<div class="document-container">
+				<div class="document-wrapper">
+					<iframe title="Word Document"
+						src="https://view.officeapps.live.com/op/embed.aspx?src=http://newteach.pbworks.com/f/ele+newsletter.docx"
+						frameborder="0"></iframe>
+					<div id="annotation-overlay" class="annotation-overlay"></div>
+				</div>
+			</div>
+			<div id="json-panel" class="json-panel">
+				<div class="json-header">
+					<h3>Annotation Data</h3>
+				</div>
+				<textarea id="annotationsJson" spellcheck="false"></textarea>
+				<div class="panel-buttons">
+					<button id="apply-json" class="btn btn-primary">
+						<i class="fas fa-check"></i> Apply Changes
+					</button>
+					<button id="copy-json" class="btn btn-secondary">
+						<i class="fas fa-copy"></i> Copy
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="text-input-dialog" class="text-input-dialog" style="display: none;">
+		<h3>Add Annotation Text</h3>
+		<textarea id="annotation-text-input" placeholder="Enter your annotation text..."></textarea>
+		<div class="dialog-buttons">
+			<button id="cancel-text" class="btn btn-secondary">Cancel</button>
+			<button id="add-text" class="btn btn-primary">Add</button>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			// DOM Elements
+			const annotationOverlay = document.getElementById('annotation-overlay');
+			const jsonPanel = document.getElementById('json-panel');
+			const annotationsJson = document.getElementById('annotationsJson');
+			const iframeElement = document.querySelector('iframe');
+			const textInputDialog = document.getElementById('text-input-dialog');
+			const textInput = document.getElementById('annotation-text-input');
+
+			// Tool buttons
+			const cursorTool = document.getElementById('cursor-tool');
+			const textTool = document.getElementById('text-tool');
+			const lineTool = document.getElementById('line-tool');
+			const circleTool = document.getElementById('circle-tool');
+			const clearAnnotationsBtn = document.getElementById('clear-annotations');
+			const toggleJsonBtn = document.getElementById('toggle-json');
+			const applyJsonBtn = document.getElementById('apply-json');
+			const copyJsonBtn = document.getElementById('copy-json');
+
+			// Text dialog buttons
+			const cancelTextBtn = document.getElementById('cancel-text');
+			const addTextBtn = document.getElementById('add-text');
+
+			// Color picker
+			const colorOptions = document.querySelectorAll('.color-option');
+
+			// State variables
+			let annotations = [];
+			let currentTool = 'cursor';
+			let isDrawing = false;
+			let startPos = { x: 0, y: 0 };
+			let temporaryElement = null;
+			let currentColor = '#e74c3c'; // Default red
+			let pendingTextPosition = null;
+			let annotatablePage = null;
+			let iframeLoaded = false;
+
+			// Handle iframe load event
+			iframeElement.addEventListener('load', () => {
+				iframeLoaded = true;
+				renderAnnotations();
+				console.log('Document loaded successfully');
+			});
+
+			iframeElement.addEventListener("contextmenu", () => console.log("wtf"))
+
+			// Load saved annotations from localStorage if available
+			function loadSavedAnnotations() {
+				const saved = localStorage.getItem('documentAnnotations');
+				if (saved) {
+					try {
+						annotations = JSON.parse(saved);
+						updateJsonDisplay();
+					} catch (e) {
+						console.error('Failed to parse saved annotations:', e);
+						annotations = [];
+					}
+				}
+			}
+
+			// Save annotations to localStorage
+			function saveAnnotations() {
+				localStorage.setItem('documentAnnotations', JSON.stringify(annotations));
+				updateJsonDisplay();
+			}
+
+			// Update the JSON display
+			function updateJsonDisplay() {
+				annotationsJson.value = JSON.stringify(annotations, null, 2);
+			}
+
+			// Clear all annotations
+			function clearAnnotations() {
+				annotations = [];
+				renderAnnotations();
+				saveAnnotations();
+			}
+
+			// Set the active tool
+			function setActiveTool(tool) {
+				currentTool = tool;
+
+				// Remove active class from all tools
+				[cursorTool, textTool, lineTool, circleTool].forEach(btn => {
+					btn.classList.remove('active');
+				});
+
+				// Add active class to selected tool
+				document.getElementById(`${tool}-tool`).classList.add('active');
+
+				// Add or remove drawing-mode class for overlay
+				if (tool === 'cursor') {
+					annotationOverlay.classList.remove('drawing-mode');
+				} else {
+					annotationOverlay.classList.add('drawing-mode');
+				}
+			}
+
+			// Set active color
+			function setActiveColor(color, element) {
+				currentColor = color;
+
+				// Remove active class from all colors
+				colorOptions.forEach(option => {
+					option.classList.remove('active');
+				});
+
+				// Add active class to selected color
+				element.classList.add('active');
+			}
+
+			// Create a new annotation
+			function createAnnotation(type, props = {}) {
+				const annotation = {
+					id: Date.now().toString(),
+					type,
+					color: currentColor,
+					...props
+				};
+
+				annotations.push(annotation);
+				saveAnnotations();
+				renderAnnotations();
+				return annotation;
+			}
+
+			// Render all annotations
+			function renderAnnotations() {
+				if (!iframeLoaded) return;
+
+				// Clear the overlay
+				annotationOverlay.innerHTML = '';
+
+				// Render each annotation
+				annotations.forEach(annotation => {
+					switch (annotation.type) {
+						case 'text':
+							renderTextAnnotation(annotation);
+							break;
+						case 'line':
+							renderLineAnnotation(annotation);
+							break;
+						case 'circle':
+							renderCircleAnnotation(annotation);
+							break;
+					}
+				});
+			}
+
+			// Render text annotation
+			function renderTextAnnotation(annotation) {
+				const element = document.createElement('div');
+				element.className = 'annotation annotation-text';
+				element.style.left = `${annotation.x}px`;
+				element.style.top = `${annotation.y}px`;
+				element.style.backgroundColor = `${annotation.color}40`; // 25% opacity
+				element.style.borderLeft = `3px solid ${annotation.color}`;
+				element.textContent = annotation.text;
+				element.dataset.id = annotation.id;
+
+				// Make text annotations draggable
+				element.addEventListener('mousedown', startDragText);
+
+				annotationOverlay.appendChild(element);
+			}
+
+			// Render line annotation
+			function renderLineAnnotation(annotation) {
+				const svgNs = "http://www.w3.org/2000/svg";
+				const svg = document.createElementNS(svgNs, "svg");
+				svg.setAttribute('class', 'annotation annotation-line');
+				svg.style.position = 'absolute';
+				svg.style.left = '0';
+				svg.style.top = '0';
+				svg.style.width = '100%';
+				svg.style.height = '100%';
+				svg.style.pointerEvents = 'none';
+
+				const line = document.createElementNS(svgNs, "line");
+				line.setAttribute('x1', annotation.x1);
+				line.setAttribute('y1', annotation.y1);
+				line.setAttribute('x2', annotation.x2);
+				line.setAttribute('y2', annotation.y2);
+				line.setAttribute('stroke', annotation.color);
+				line.setAttribute('stroke-width', '2');
+
+				svg.appendChild(line);
+				annotationOverlay.appendChild(svg);
+			}
+
+			// Render circle annotation
+			function renderCircleAnnotation(annotation) {
+				const svgNs = "http://www.w3.org/2000/svg";
+				const svg = document.createElementNS(svgNs, "svg");
+				svg.setAttribute('class', 'annotation annotation-circle');
+				svg.style.position = 'absolute';
+				svg.style.left = '0';
+				svg.style.top = '0';
+				svg.style.width = '100%';
+				svg.style.height = '100%';
+				svg.style.pointerEvents = 'none';
+
+				const rx = Math.abs(annotation.x2 - annotation.x1) / 2;
+				const ry = Math.abs(annotation.y2 - annotation.y1) / 2;
+				const cx = Math.min(annotation.x1, annotation.x2) + rx;
+				const cy = Math.min(annotation.y1, annotation.y2) + ry;
+
+				const circle = document.createElementNS(svgNs, "ellipse");
+				circle.setAttribute('cx', cx);
+				circle.setAttribute('cy', cy);
+				circle.setAttribute('rx', rx);
+				circle.setAttribute('ry', ry);
+				circle.setAttribute('stroke', annotation.color);
+				circle.setAttribute('stroke-width', '2');
+				circle.setAttribute('fill', `${annotation.color}20`); // 12.5% opacity
+
+				svg.appendChild(circle);
+				annotationOverlay.appendChild(svg);
+			}
+
+			// Start text annotation drag
+			function startDragText(e) {
+				if (currentTool !== 'cursor') return;
+
+				e.preventDefault();
+
+				const element = e.target;
+				const annotationId = element.dataset.id;
+				let offsetX = e.clientX - element.getBoundingClientRect().left;
+				let offsetY = e.clientY - element.getBoundingClientRect().top;
+
+				function onMouseMove(e) {
+					const x = e.clientX - offsetX - annotationOverlay.getBoundingClientRect().left;
+					const y = e.clientY - offsetY - annotationOverlay.getBoundingClientRect().top;
+
+					element.style.left = `${x}px`;
+					element.style.top = `${y}px`;
+				}
+
+				function onMouseUp() {
+					document.removeEventListener('mousemove', onMouseMove);
+					document.removeEventListener('mouseup', onMouseUp);
+
+					// Update annotation position in the data
+					const annotation = annotations.find(a => a.id === annotationId);
+					if (annotation) {
+						annotation.x = parseInt(element.style.left);
+						annotation.y = parseInt(element.style.top);
+						saveAnnotations();
+					}
+				}
+
+				document.addEventListener('mousemove', onMouseMove);
+				document.addEventListener('mouseup', onMouseUp);
+			}
+
+			// Handle mouse down on overlay
+			function handleOverlayMouseDown(e) {
+				if (currentTool === 'cursor') return;
+
+				isDrawing = true;
+				const rect = annotationOverlay.getBoundingClientRect();
+				startPos = {
+					x: e.clientX - rect.left,
+					y: e.clientY - rect.top
+				};
+
+				// For text annotations, open the dialog
+				if (currentTool === 'text') {
+					pendingTextPosition = { ...startPos };
+					textInput.value = '';
+					textInputDialog.style.display = 'block';
+					textInput.focus();
+					isDrawing = false;
+					return;
+				}
+
+				// Create temporary element for drawing preview
+				const svgNs = "http://www.w3.org/2000/svg";
+				const svg = document.createElementNS(svgNs, "svg");
+				svg.setAttribute('class', 'annotation');
+				svg.style.position = 'absolute';
+				svg.style.left = '0';
+				svg.style.top = '0';
+				svg.style.width = '100%';
+				svg.style.height = '100%';
+				svg.style.pointerEvents = 'none';
+
+				if (currentTool === 'line') {
+					const line = document.createElementNS(svgNs, "line");
+					line.setAttribute('x1', startPos.x);
+					line.setAttribute('y1', startPos.y);
+					line.setAttribute('x2', startPos.x);
+					line.setAttribute('y2', startPos.y);
+					line.setAttribute('stroke', currentColor);
+					line.setAttribute('stroke-width', '2');
+					svg.appendChild(line);
+					temporaryElement = { svg, shape: line };
+				} else if (currentTool === 'circle') {
+					const circle = document.createElementNS(svgNs, "ellipse");
+					circle.setAttribute('cx', startPos.x);
+					circle.setAttribute('cy', startPos.y);
+					circle.setAttribute('rx', 0);
+					circle.setAttribute('ry', 0);
+					circle.setAttribute('stroke', currentColor);
+					circle.setAttribute('stroke-width', '2');
+					circle.setAttribute('fill', `${currentColor}20`); // 12.5% opacity
+					svg.appendChild(circle);
+					temporaryElement = { svg, shape: circle };
+				}
+
+				annotationOverlay.appendChild(svg);
+			}
+
+			// Handle mouse move on overlay
+			function handleOverlayMouseMove(e) {
+				if (!isDrawing || !temporaryElement) return;
+
+				const rect = annotationOverlay.getBoundingClientRect();
+				const currentPos = {
+					x: e.clientX - rect.left,
+					y: e.clientY - rect.top
+				};
+
+				if (currentTool === 'line') {
+					temporaryElement.shape.setAttribute('x2', currentPos.x);
+					temporaryElement.shape.setAttribute('y2', currentPos.y);
+				} else if (currentTool === 'circle') {
+					const rx = Math.abs(currentPos.x - startPos.x) / 2;
+					const ry = Math.abs(currentPos.y - startPos.y) / 2;
+					const cx = Math.min(startPos.x, currentPos.x) + rx;
+					const cy = Math.min(startPos.y, currentPos.y) + ry;
+
+					temporaryElement.shape.setAttribute('cx', cx);
+					temporaryElement.shape.setAttribute('cy', cy);
+					temporaryElement.shape.setAttribute('rx', rx);
+					temporaryElement.shape.setAttribute('ry', ry);
+				}
+			}
+
+			// Handle mouse up on overlay
+			function handleOverlayMouseUp(e) {
+				if (!isDrawing) return;
+
+				isDrawing = false;
+
+				// If temporary element exists, finalize it
+				if (temporaryElement) {
+					const rect = annotationOverlay.getBoundingClientRect();
+					const endPos = {
+						x: e.clientX - rect.left,
+						y: e.clientY - rect.top
+					};
+
+					// Remove temporary element
+					annotationOverlay.removeChild(temporaryElement.svg);
+					temporaryElement = null;
+
+					// Create final annotation
+					if (currentTool === 'line') {
+						createAnnotation('line', {
+							x1: startPos.x,
+							y1: startPos.y,
+							x2: endPos.x,
+							y2: endPos.y
+						});
+					} else if (currentTool === 'circle') {
+						createAnnotation('circle', {
+							x1: startPos.x,
+							y1: startPos.y,
+							x2: endPos.x,
+							y2: endPos.y
+						});
+					}
+				}
+			}
+
+			// Handle text input dialog
+			function handleTextDialogSubmit() {
+				const text = textInput.value.trim();
+				if (text && pendingTextPosition) {
+					createAnnotation('text', {
+						x: pendingTextPosition.x,
+						y: pendingTextPosition.y,
+						text
+					});
+				}
+				textInputDialog.style.display = 'none';
+				pendingTextPosition = null;
+			}
+
+			function handleTextDialogCancel() {
+				textInputDialog.style.display = 'none';
+				pendingTextPosition = null;
+			}
+
+			// Handle JSON panel toggle
+			function toggleJsonPanel() {
+				jsonPanel.classList.toggle('hidden');
+			}
+
+			// Apply JSON changes
+			function applyJsonChanges() {
+				try {
+					const newAnnotations = JSON.parse(annotationsJson.value);
+					annotations = newAnnotations;
+					renderAnnotations();
+					saveAnnotations();
+				} catch (e) {
+					alert('Invalid JSON format');
+					console.error('JSON parse error:', e);
+				}
+			}
+
+			// Copy JSON to clipboard
+			function copyJsonToClipboard() {
+				annotationsJson.select();
+				document.execCommand('copy');
+				alert('JSON copied to clipboard');
+			}
+
+			// Event listeners
+			annotationOverlay.addEventListener('mousedown', handleOverlayMouseDown);
+			annotationOverlay.addEventListener('mousemove', handleOverlayMouseMove);
+			annotationOverlay.addEventListener('mouseup', handleOverlayMouseUp);
+
+			// Tool buttons
+			cursorTool.addEventListener('click', () => setActiveTool('cursor'));
+			textTool.addEventListener('click', () => setActiveTool('text'));
+			lineTool.addEventListener('click', () => setActiveTool('line'));
+			circleTool.addEventListener('click', () => setActiveTool('circle'));
+			clearAnnotationsBtn.addEventListener('click', clearAnnotations);
+			toggleJsonBtn.addEventListener('click', toggleJsonPanel);
+			applyJsonBtn.addEventListener('click', applyJsonChanges);
+			copyJsonBtn.addEventListener('click', copyJsonToClipboard);
+
+			// Text dialog buttons
+			addTextBtn.addEventListener('click', handleTextDialogSubmit);
+			cancelTextBtn.addEventListener('click', handleTextDialogCancel);
+			textInput.addEventListener('keyup', e => {
+				if (e.key === 'Enter' && e.ctrlKey) {
+					handleTextDialogSubmit();
+				} else if (e.key === 'Escape') {
+					handleTextDialogCancel();
+				}
+			});
+
+			// Color picker
+			colorOptions.forEach(option => {
+				option.addEventListener('click', () => {
+					setActiveColor(option.getAttribute('data-color'), option);
+				});
+			});
+
+			// Initialize
+			loadSavedAnnotations();
+			setActiveTool('cursor');
+		});
+	</script>
+</body>
+
+</html>

@@ -1,16 +1,15 @@
 <script lang="ts">
 	import Base from "$lib/components/base.svelte";
 	import Markdown from "$lib/components/markdown/markdown.svelte";
+	import RubricViewer from "./rubric.svelte";
 	import * as Tabs from "$lib/components/ui/tabs";
 	import * as Card from "$lib/components/ui/card";
-	import FileTree from "./files.svelte";
-	import FileViewer from "./viewer.svelte";
-	import type { FileNode } from "./types";
-	import Rubric from "./rubric.svelte";
+	import type { VFSFile } from "$lib/components/fileviews/types";
+	import VFS from "$lib/components/vfs/vfs.svelte";
+	import Txt from "$lib/components/vfs/views/txt.svelte";
+	import VfsView from "$lib/components/vfs/vfs-view.svelte";
 
-	const value = $state("# Mhmmm");
-	let selectedFile = $state<FileNode | null>(null);
-
+	// Rubric markdown
 	const rubricMarkdown = $state(`# Assignment Evaluation
 
 ## 1. Code Structure
@@ -37,73 +36,75 @@ Review documentation quality.
 - README explains how to run the project
 - API endpoints are documented if applicable`);
 
-	// Example file structure - replace with your actual data
-	const files: FileNode[] = [
+	let selectedFile = $state<VFSFile | null>(null);
+
+	// Example file structure using flat paths
+	const files: VFSFile[] = [
 		{
-			name: "Project",
-			type: "directory",
-			path: "/project",
-			children: [
-				{
-					name: "src",
-					type: "directory",
-					path: "/project/src",
-					children: [
-						{
-							name: "main.ts",
-							type: "file",
-							extension: "ts",
-							path: "/project/src/main.ts",
-							content: "console.log('Hello world');",
-						},
-						{
-							name: "README.md",
-							type: "file",
-							extension: "md",
-							path: "/project/src/README.md",
-							content: "# Project Documentation\n\nThis is a sample project.",
-						},
-					],
-				},
-				{
-					name: "diagram.png",
-					type: "file",
-					extension: "png",
-					path: "/project/diagram.png",
-					content:
-						"https://png.pngtree.com/png-clipart/20240924/original/pngtree-d-red-fluffy-angry-emoji-intense-but-cute-anger-on-transparent-png-image_16081655.png", // In real usage, this would be a data URL or path
-				},
-			],
+			path: "/project/src/main.ts",
+			content: "console.log('Hello world');",
+		},
+		{
+			path: "/project/src/README.md",
+			content: "# Project Documentation\n\nThis is a sample project.",
+		},
+		{
+			path: "/project/diagram.png",
+			content:
+				"https://png.pngtree.com/png-clipart/20240924/original/pngtree-d-red-fluffy-angry-emoji-intense-but-cute-anger-on-transparent-png-image_16081655.png",
+		},
+		{
+			path: "/changelog/v1.0.0.md",
+			content: "# API Documentation\n\nDetails about the API endpoints.",
+		},
+		{
+			path: "/project/style.css",
+			content: "body { font-family: sans-serif; }\n\nh1 { color: blue; }",
+		},
+		{
+			path: "/project/dummy.pdf",
+			content: "https://research.google.com/pubs/archive/44678.pdf",
+		},
+		{
+			path: "/word/lel.doc",
+			content: "http://ieee802.org:80/secmail/docIZSEwEqHFr.doc"
+		},
+		{
+			path: "/word/lel2.docx",
+			content: "http://newteach.pbworks.com/f/ele+newsletter.docx"
 		},
 	];
-
-	function handleFileSelect(event: CustomEvent<FileNode>) {
-		selectedFile = event.detail;
-	}
 </script>
 
 <Base variant="splitpane">
 	{#snippet left()}
-		<div class="m-4 flex flex-col gap-2">
-			<Rubric md={rubricMarkdown} currentStep={0} />
+		<div class="m-4 space-y-4">
+			<!-- Rubric Step Navigation - placed above tabs -->
+			<RubricViewer currentStep={0} md={rubricMarkdown} />
+
 			<Tabs.Root value="files">
 				<Tabs.List class="w-full">
 					<Tabs.Trigger class="w-full" value="files">Files</Tabs.Trigger>
 					<Tabs.Trigger class="w-full" value="rubric">Rubric</Tabs.Trigger>
 				</Tabs.List>
-				<Tabs.Content value="files" class="h-[calc(100vh-10rem)]">
-					<FileTree {files} {selectedFile} on:fileSelect={handleFileSelect} />
+				<Tabs.Content value="files" class="h-[calc(100vh-20rem)]">
+					<VFS
+						{files}
+						onFileSelect={(file) => {
+							selectedFile = file;
+						}}
+					/>
+
+					<!-- <FileTree {files} {selectedFile} on:fileSelect={handleFileSelect} /> -->
 				</Tabs.Content>
 				<Tabs.Content value="rubric">
 					<Card.Root>
 						<Card.Header>
-							<Card.Title>Rubric</Card.Title>
-							<Card.Description>
-								Evaluation criteria for the project submission.
-							</Card.Description>
+							<Card.Title>Full Rubric</Card.Title>
+							<Card.Description>Complete evaluation criteria.</Card.Description>
 						</Card.Header>
-						<Card.Content class="">
-							<Markdown variant="viewer" {value} />
+						<Card.Content>
+							<Markdown variant="viewer" value={rubricMarkdown} />
 						</Card.Content>
 					</Card.Root>
 				</Tabs.Content>
@@ -112,16 +113,21 @@ Review documentation quality.
 	{/snippet}
 
 	{#snippet right()}
-		<Card.Root class="m-4 h-[calc(100dvh-2rem)]">
-			<Card.Header>
-				<Card.Title>{selectedFile?.name || "File Viewer"}</Card.Title>
-				<Card.Description>
-					{selectedFile?.path || "Select a file to view its contents"}
-				</Card.Description>
-			</Card.Header>
-			<Card.Content class="h-[calc(100%-5rem)]">
-				<FileViewer file={selectedFile} />
-			</Card.Content>
-		</Card.Root>
+		{#if selectedFile}
+			<VfsView file={selectedFile} />
+		{:else}
+			<div class="flex items-center justify-center h-full">
+				<Card.Root class="max-w-md">
+					<Card.Header>
+						<Card.Title>No File Selected</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<Card.Description>
+							Please select a file from the list to view its contents.
+						</Card.Description>
+					</Card.Content>
+				</Card.Root>
+			</div>
+		{/if}
 	{/snippet}
 </Base>
