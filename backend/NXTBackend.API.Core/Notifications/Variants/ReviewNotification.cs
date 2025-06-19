@@ -1,6 +1,7 @@
 using System.Net.Mail;
 using System.Text.Json;
 using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Entities.Evaluation.v2;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
 using NXTBackend.API.Models.Shared;

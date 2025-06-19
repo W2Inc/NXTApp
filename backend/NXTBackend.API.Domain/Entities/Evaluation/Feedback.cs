@@ -29,7 +29,9 @@ model Feedback {
 // ============================================================================
 
 /// <summary>
-/// A feature is a experimental feature that is being developed.
+/// Feedback is targeted comments on some object.
+///
+/// E.g: A review on a project may contain multiple feedbacks each feedback may have multiple comments
 /// </summary>
 [Table("tbl_feedback")]
 public class Feedback : BaseEntity

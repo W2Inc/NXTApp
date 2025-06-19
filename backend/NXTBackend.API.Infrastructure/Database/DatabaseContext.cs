@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Entities.Evaluation.v2;
 using NXTBackend.API.Domain.Entities.Spotlight;
 using NXTBackend.API.Domain.Entities.Users;
 using NXTBackend.API.Domain.Enums;
@@ -48,7 +49,7 @@ public class DatabaseContext : DbContext
     public DbSet<Member> Members { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<UserFeed> UserFeeds { get; set; }
-    
+
     // Joins
     public DbSet<GoalProject> GoalProject { get; set; }
     public DbSet<GoalCollaborator> GoalCollaborator { get; set; }

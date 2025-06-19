@@ -12,7 +12,7 @@
 <div class="relative h-full w-full">
 	<iframe
 		title="Word Document"
-		src="https://view.officeapps.live.com/op/embed.aspx?src={file.}"
+		src="https://view.officeapps.live.com/op/embed.aspx?src={file.content}"
 		width="100%"
 		height="100%"
 		frameborder="0"

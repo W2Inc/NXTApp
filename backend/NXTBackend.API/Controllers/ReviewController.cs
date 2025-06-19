@@ -24,21 +24,8 @@ using NXTBackend.API.Utils;
 
 namespace NXTBackend.API.Controllers;
 
-// public class ReviewQueryParams
-// {
-//     [Description("URL slug to filter on")]
-//     [FromQuery(Name = "filter[slug]")]
-//     public string? Slug { get; set; }
-
-//     [Description("The entity id to filter on")]
-//     [FromQuery(Name = "filter[id]")]
-//     public Guid? Id { get; set; }
-// }
-
-// ============================================================================
-
 [ApiController]
-[Route("reviews")]
+[Route("reviews"), Authorize]
 public class ReviewController(
     ILogger<ReviewController> logger,
     IReviewService reviewService,
@@ -47,7 +34,7 @@ public class ReviewController(
     IUserService userService
 ) : Controller
 {
-    [HttpGet("/reviews"), AllowAnonymous]
+    [HttpGet("/reviews")]
     [EndpointSummary("Get all exisiting goals")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -129,7 +116,7 @@ If the kind of review and reviewerId are null. It will signal that the project i
         })));
     }
 
-    [HttpGet("/reviews/{id:guid}"), AllowAnonymous]
+    [HttpGet("/reviews/{id:guid}")]
     [EndpointSummary("Get a goal")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -178,11 +165,26 @@ If the kind of review and reviewerId are null. It will signal that the project i
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LearningGoalDO>> Deprecate(Guid id)
     {
+        // TODO: Notify the members that a review on their project has been cancelled
         var review = await reviewService.FindByIdAsync(id);
         if (review is null)
             return NotFound("Cursus not found");
 
         await reviewService.DeleteAsync(review);
+        return Ok(new ReviewDO(review));
+    }
+
+    [HttpGet("/reviews/{id:guid}/finalize")]
+    [EndpointSummary("Get a goal")]
+    [EndpointDescription("")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ReviewDO>> Get(Guid id, IEnumerable<>)
+    {
+        // TODO: Notify the members that a review on their project has been reviewed
+        var review = await reviewService.FindByIdAsync(id);
+        if (review is null)
+            return NotFound();
         return Ok(new ReviewDO(review));
     }
 }

@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
+using NXTBackend.API.Domain.Entities.Evaluation.v2;
 using NXTBackend.API.Domain.Joins;
 
 // ============================================================================
@@ -110,7 +111,7 @@ public class User : BaseEntity
 
     public virtual ICollection<CursusCollaborator> CollaboratedCursi { get; set; }
     public virtual ICollection<GoalCollaborator> CollaboratedGoals { get; set; }
-    
+
 
     // NOTE(W2): Project collaboration is tracked via the external git source control.
     // That way we can sync the state more conveniently in case user gets added as a collaborator

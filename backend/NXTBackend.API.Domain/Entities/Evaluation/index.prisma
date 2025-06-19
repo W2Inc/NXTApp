@@ -1,0 +1,149 @@
+model Review {
+    id String @id @default(cuid())
+
+    // Reviewer ID
+    // User Project ID
+
+    // State
+
+    // Which git hash version was it reviewed on
+    hash String
+}
+
+enum FeedbackType {
+  INLINE_ANNOTATION
+  WHOLE_FILE_CORRECTION
+}
+
+model Feedback {
+    id String @id @default(cuid())
+
+
+    path String
+
+    type FeedbackType // Polymorphic
+
+    annotations Annotation[]
+    correction Correction?
+    comments Comment[]
+}
+
+model Annotation {
+  id          String    @id @default(cuid())
+  from   Int
+  to     Int
+
+  // Relations
+  feedbackId  String    @unique
+  feedback    Feedback  @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+}
+
+model Correction {
+  id          String    @id @default(cuid())
+  s3FilePath  String    // Path to the corrected file in S3
+  fileName    String    // Original file name
+  fileSize    Int?      // File size in bytes
+
+  // Relations
+  feedbackId  String    @unique
+  feedback    Feedback  @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+    id String @id @default(uuid())
+
+    markdown String
+}
+
+
+// model ProjectFile {
+//   id          String    @id @default(cuid())
+//   filePath    String    // Stores the path like "/test/example.md"
+//   mimeType    String?   // To help identify file type
+//   createdAt   DateTime  @default(now())
+//   updatedAt   DateTime  @updatedAt
+
+//   // Relations
+//   projectId   String
+//   project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+//   feedback    Feedback[]
+
+//   @@index([projectId])
+//   @@unique([projectId, filePath])
+// }
+
+// model Review {
+//   id          String    @id @default(cuid())
+//   commitHash  String    // The git commit hash this review targets
+//   overallComment String?
+//   status      ReviewStatus @default(PENDING)
+//   createdAt   DateTime  @default(now())
+//   updatedAt   DateTime  @updatedAt
+
+//   // Relations
+//   projectId   String
+//   project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+//   reviewerId  String
+//   reviewer    User      @relation("ReviewSubmitter", fields: [reviewerId], references: [id])
+//   feedback    Feedback[]
+
+//   @@index([projectId])
+//   @@index([reviewerId])
+// }
+
+// enum ReviewStatus {
+//   PENDING
+//   APPROVED
+//   CHANGES_REQUESTED
+// }
+
+// model Feedback {
+//   id          String    @id @default(cuid())
+//   comment     String
+//   createdAt   DateTime  @default(now())
+//   updatedAt   DateTime  @updatedAt
+
+//   // Relations
+//   reviewId    String
+//   review      Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+//   fileId      String
+//   file        ProjectFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+//   // Polymorphic relation to feedback types
+//   feedbackType FeedbackType
+
+//   // For inline annotations
+//   inlineAnnotation InlineAnnotation?
+
+//   // For whole file corrections
+//   wholeFileCorrection WholeFileCorrection?
+
+//   @@index([reviewId])
+//   @@index([fileId])
+// }
+
+// enum FeedbackType {
+//   INLINE_ANNOTATION
+//   WHOLE_FILE_CORRECTION
+// }
+
+// model InlineAnnotation {
+//   id          String    @id @default(cuid())
+//   startLine   Int
+//   endLine     Int
+
+//   // Relations
+//   feedbackId  String    @unique
+//   feedback    Feedback  @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+// }
+
+// model WholeFileCorrection {
+//   id          String    @id @default(cuid())
+//   s3FilePath  String    // Path to the corrected file in S3
+//   fileName    String    // Original file name
+//   fileSize    Int?      // File size in bytes
+
+//   // Relations
+//   feedbackId  String    @unique
+//   feedback    Feedback  @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+// }
