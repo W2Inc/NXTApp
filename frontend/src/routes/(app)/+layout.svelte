@@ -30,9 +30,9 @@
 
 <Tooltip.Provider>
 	<ModeWatcher defaultMode="system"/>
+	<Toaster closeButton richColors duration={8000} />
 	<DialogProvider />
 	{#if data.session}
-		<Toaster closeButton richColors duration={8000} />
 		<Header />
 	{/if}
 	<main>

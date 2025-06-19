@@ -34,13 +34,13 @@
 		</div>
 	</div>
 {:else if variant === "splitpane"}
-	<div class="h-dvh w-full">
+	<div class="h-[calc(100dvh-var(--header-height))] w-full">
 		<Resizable.PaneGroup direction="horizontal">
-			<Resizable.Pane minSize={30} maxSize={50} defaultSize={30}>
+			<Resizable.Pane minSize={15} maxSize={25} defaultSize={20}>
 				{@render left()}
 			</Resizable.Pane>
 			<Resizable.Handle withHandle />
-			<Resizable.Pane minSize={50} maxSize={70}>
+			<Resizable.Pane defaultSize={80}>
 				{@render right()}
 			</Resizable.Pane>
 		</Resizable.PaneGroup>

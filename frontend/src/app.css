@@ -40,6 +40,8 @@
 	--sidebar-ring: hsl(33 100% 60%); /* Consistent with main ring */
 
 	--radius: 0.5rem;
+
+	--header-height: 3.5rem; /* 56px */
 }
 
 .dark {
@@ -135,6 +137,7 @@
 	}
 
 	body {
+		font-family: "Nunito Sans", sans-serif;
 		--tw-gradient-from: currentColor;
 		--tw-gradient-stops:
 			var(--tw-gradient-from), var(--tw-gradient-to, rgba(255, 255, 255, 0));

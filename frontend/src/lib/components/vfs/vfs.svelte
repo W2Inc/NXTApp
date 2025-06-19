@@ -152,8 +152,7 @@
 				}}
 			>
 				<IconComponent class="h-4 min-w-4" />
-				<span class={cn("truncate", isSelected && "line-through")}>{node.name}</span>
-				<Check class={cn("h-4 w-4 ml-auto", !isSelected && "opacity-0 group-hover:opacity-100")} />
+				<span>{node.name}</span>
 			</Button>
 		</li>
 	{/if}

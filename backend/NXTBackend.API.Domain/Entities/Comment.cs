@@ -4,13 +4,12 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Users;
 
 // ============================================================================
 
-namespace NXTBackend.API.Domain.Entities.Evaluation;
+namespace NXTBackend.API.Domain.Entities;
 
 // ============================================================================
 
@@ -26,7 +25,10 @@ public class Comment : BaseEntity
         UserId = Guid.Empty;
     }
 
-    [Column("markdown")]
+    [Column("parent_id")]
+    public Guid ParentId { get; set; }
+
+	[Column("markdown")]
     public string Markdown { get; set; }
 
     [Column("user_id")]
