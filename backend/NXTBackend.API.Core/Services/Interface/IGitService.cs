@@ -61,4 +61,12 @@ public interface IGitService : IDomainService<Git>, ICollaborative<Git>
     /// <param name="Branch">The branch where the file should be updated. Defaults to "main".</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     public Task SetFile(Guid id, string Path, string Content, string CommitMessage, string Branch = "main");
+
+    /// <summary>
+    /// Retrieves the hash for the current git info from the remote.
+    /// </summary>
+    /// <param name="id">The git info to get the hash for</param>
+    /// <param name="Branch">From the specific branch</param>
+    /// <returns>The SHA1 hash of the repository for a given branch</returns>
+    public Task<string> GetLatestHash(Guid id, string Branch = "main");
 }

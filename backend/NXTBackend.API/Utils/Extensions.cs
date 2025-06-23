@@ -42,6 +42,8 @@ public static class Extensions
 
     public static bool IsAdmin(this ClaimsPrincipal principal)
     {
+        RequireClaim(ClaimTypes.Role, "staff"))
+
         return principal.IsInRole(Role.Admin.ToString());
     }
 }

@@ -67,15 +67,15 @@ public class RubricsController(
         return Ok(page.Items.Select(c => new RubricDO(c)));
     }
 
-    [HttpPost("/rubrics"), Consumes("application/json")]
-    [EndpointSummary("Create a rubric")]
-    [EndpointDescription("Creates a new rubric")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<RubricDO>> Create(ReviewPostRequestDTO requestedReview)
-    {
-        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
-    }
+    // [HttpPost("/rubrics"), Consumes("application/json")]
+    // [EndpointSummary("Create a rubric")]
+    // [EndpointDescription("Creates a new rubric")]
+    // [ProducesResponseType(StatusCodes.Status200OK)]
+    // [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    // public async Task<ActionResult<RubricDO>> Create(ReviewPostRequestDTO requestedReview)
+    // {
+    //     throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
+    // }
 
     [HttpGet("/rubrics/{id:guid}")]
     [EndpointSummary("Get a specific rubric")]
@@ -90,33 +90,33 @@ public class RubricsController(
         return Ok(new RubricDO(review));
     }
 
-    [HttpPatch("/rubrics/{id:guid}")]
-    [EndpointSummary("Update a goal")]
-    [EndpointDescription("Updates a goal partially based on the provided fields.")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<RubricDO>> Update(Guid id, [FromBody] ReviewPatchRequestDto data)
-    {
-        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
-        // var goal = await reviewService.FindByIdAsync(id);
-        // if (goal is null)
-        //     return NotFound();
-        // if (User.GetSID() != goal.CreatorId && !User.IsAdmin())
-        //     return Forbid();
+    // [HttpPatch("/rubrics/{id:guid}")]
+    // [EndpointSummary("Update a goal")]
+    // [EndpointDescription("Updates a goal partially based on the provided fields.")]
+    // [ProducesResponseType(StatusCodes.Status200OK)]
+    // [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    // public async Task<ActionResult<RubricDO>> Update(Guid id, [FromBody] ReviewPatchRequestDto data)
+    // {
+    //     throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
+    //     // var goal = await reviewService.FindByIdAsync(id);
+    //     // if (goal is null)
+    //     //     return NotFound();
+    //     // if (User.GetSID() != goal.CreatorId && !User.IsAdmin())
+    //     //     return Forbid();
 
-        // if (data.Markdown is not null)
-        //     goal.Markdown = data.Markdown;
-        // if (data.Description is not null)
-        //     goal.Description = data.Description;
-        // if (data.Name is not null)
-        // {
-        //     goal.Name = data.Name;
-        //     goal.Slug = goal.Name.ToUrlSlug();
-        // }
+    //     // if (data.Markdown is not null)
+    //     //     goal.Markdown = data.Markdown;
+    //     // if (data.Description is not null)
+    //     //     goal.Description = data.Description;
+    //     // if (data.Name is not null)
+    //     // {
+    //     //     goal.Name = data.Name;
+    //     //     goal.Slug = goal.Name.ToUrlSlug();
+    //     // }
 
-        // var updatedGoal = await goalService.UpdateAsync(goal);
-        // return Ok(new RubricDO(updatedGoal));
-    }
+    //     // var updatedGoal = await goalService.UpdateAsync(goal);
+    //     // return Ok(new RubricDO(updatedGoal));
+    // }
 
 
     [HttpDelete("/rubrics/{id:guid}")]

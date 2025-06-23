@@ -79,17 +79,17 @@ public class Rubric : BaseEntity
     [Column("project_id")]
     public Guid ProjectId { get; set; }
 
-    [ForeignKey(nameof(ProjectId))]
-    public virtual Project Project { get; set; }
-
     [Column("creator_id")]
     public Guid CreatorId { get; set; }
 
-    [ForeignKey(nameof(CreatorId))]
-    public virtual User Creator { get; set; }
-
     [Column("git_info_id")]
     public Guid GitInfoId { get; set; }
+
+    [ForeignKey(nameof(ProjectId))]
+    public virtual Project Project { get; set; }
+
+    [ForeignKey(nameof(CreatorId))]
+    public virtual User Creator { get; set; }
 
     [ForeignKey(nameof(GitInfoId))]
     public virtual Git GitInfo { get; set; }

@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations;
+using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Entities.Evaluation;
 using NXTBackend.API.Domain.Entities.Users;
 
@@ -13,9 +14,9 @@ public class CommentDO : BaseObjectDO<Comment>
 {
     public CommentDO(Comment comment) : base(comment)
     {
-        Markdown = comment.Markdown;
         User = comment.User;
-        Feedback = comment.Feedback;
+        Markdown = comment.Markdown;
+        ParentId = comment.ParentId;
     }
 
     [Required]
@@ -25,7 +26,7 @@ public class CommentDO : BaseObjectDO<Comment>
     public virtual MinimalUserDTO User { get; set; }
 
     [Required]
-    public virtual FeedbackDO Feedback { get; set; }
+    public Guid ParentId { get; set; }
 
     public static implicit operator CommentDO?(Comment? entity) => entity is null ? null : new(entity);
 }

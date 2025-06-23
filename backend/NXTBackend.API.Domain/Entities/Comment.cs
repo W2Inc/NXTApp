@@ -4,6 +4,7 @@
 // ============================================================================
 
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Users;
 
@@ -17,20 +18,31 @@ namespace NXTBackend.API.Domain.Entities;
 /// A feature is a experimental feature that is being developed.
 /// </summary>
 [Table("tbl_comment")]
+[Index(nameof(ParentId))]
+[Index(nameof(UserId))]
 public class Comment : BaseEntity
 {
-    public Comment()
-    {
-        Markdown = string.Empty;
-        UserId = Guid.Empty;
-    }
+    /// <summary>
+    /// NameOf what this comment is for.
+    /// </summary>
+    [Column("parent_type")]
+    public string ParentType { get; set; }
 
+    /// <summary>
+    /// The resource this comment is targeted to.
+    /// </summary>
     [Column("parent_id")]
     public Guid ParentId { get; set; }
 
-	[Column("markdown")]
+    /// <summary>
+    /// The message sent
+    /// </summary>
+    [Column("markdown")]
     public string Markdown { get; set; }
 
+    /// <summary>
+    /// The user who sent it.
+    /// </summary>
     [Column("user_id")]
     public Guid UserId { get; set; }
 

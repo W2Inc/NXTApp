@@ -9,7 +9,6 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using NXTBackend.API.Domain.Common;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.Evaluation.v2;
 using NXTBackend.API.Domain.Joins;
 
 // ============================================================================

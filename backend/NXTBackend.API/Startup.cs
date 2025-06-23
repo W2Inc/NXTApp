@@ -65,7 +65,8 @@ public static class Startup
         // Authentication and Authorization (Keycloak)
         services.AddKeycloakWebApiAuthentication(builder.Configuration);
         services.AddAuthorizationBuilder()
-            .AddPolicy("CanCreate", policy => policy.RequireClaim(ClaimTypes.Role, "creator"));
+            .AddPolicy("CanCreate", policy => policy.RequireClaim(ClaimTypes.Role, "creator"))
+            .AddPolicy("IsStaff", policy => policy.RequireClaim(ClaimTypes.Role, "staff"));
 
 
         // Swagger / OpenAPI Configuration
@@ -152,6 +153,8 @@ public static class Startup
         services.AddScoped<IUserProjectService, UserProjectService>();
         services.AddScoped<IFeatureService, FeatureService>();
         services.AddScoped<IGoalService, GoalService>();
+        services.AddScoped<IFeedbackService, FeedbackService>();
+        services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IRubricService, RubricService>();
         services.AddScoped<IReviewService, ReviewService>();

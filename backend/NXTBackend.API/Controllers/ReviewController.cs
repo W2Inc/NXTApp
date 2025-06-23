@@ -3,19 +3,12 @@
 // See README.md in the project root for license information.
 // ============================================================================
 
-using System.ComponentModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.EntityFrameworkCore.Query;
 using NXTBackend.API.Core.Services.Interface;
 using NXTBackend.API.Core.Utils;
 using NXTBackend.API.Core.Utils.Query;
-using NXTBackend.API.Domain.Entities;
 using NXTBackend.API.Domain.Enums;
-using NXTBackend.API.Models;
-using NXTBackend.API.Models.Requests.Cursus;
-using NXTBackend.API.Models.Requests.LearningGoal;
 using NXTBackend.API.Models.Requests.Review;
 using NXTBackend.API.Models.Responses.Objects;
 using NXTBackend.API.Utils;
@@ -56,33 +49,26 @@ public class ReviewController(
     [HttpPost("/reviews"), Consumes("application/json")]
     [EndpointSummary("Create a review")]
     [EndpointDescription(@"
-If the kind of review and reviewerId are null. It will signal that the project instance is *requesting* a review"
-    )]
+Establishes a review on the given user project, but does not start it immedieatly.
+    ")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ReviewDO>> Create(ReviewPostRequestDTO requestedReview)
+    public async Task<ActionResult<ReviewDO>> Request([FromBody] ReviewRequestPostRequestDTO data, IGitService gitService)
     {
-        // 1. Check user project
-        logger.LogCritical("{@shit}", requestedReview);
-        if (requestedReview.RubricId == Guid.Empty)
-            return UnprocessableEntity(new ProblemDetails() { Title = "Rubric does not exist" });
-
-        // TODO: Check for exisiting reviews
-
-        var userProject = await userProjectService.FindByIdAsync(requestedReview.UserProjectId);
-        if (userProject is null)
+        var up = await userProjectService.FindByIdAsync(data.UserProjectId);
+        if (up is null)
             return UnprocessableEntity(new ProblemDetails() { Title = "Project instance does not exist" });
-        if (userProject.GitInfoId is null)
+        if (up.GitInfoId is null)
             return UnprocessableEntity(new ProblemDetails() { Title = "Project has no git repository specified" });
 
-        var rubric = await rubricService.FindByIdAsync(requestedReview.RubricId);
+        var rubric = await rubricService.FindByIdAsync(data.RubricId);
         if (rubric is null)
             return UnprocessableEntity(new ProblemDetails() { Title = "Rubric does not exist" });
-        if (userProject.ProjectId != rubric.ProjectId)
-            return UnprocessableEntity(new ProblemDetails() { Title = "Rubric can't be used for project instance" });
+        if (up.ProjectId != rubric.ProjectId)
+            return UnprocessableEntity(new ProblemDetails() { Title = "Rubric can't be used on this project" });
 
-        bool userIsMember = userProject.Members.Any(m => m.UserId == requestedReview.ReviewerId);
-        switch (requestedReview.Kind)
+        bool userIsMember = up.Members.Any(m => m.UserId == data.ReviewerId);
+        switch (data.Kind)
         {
             case ReviewKind.Self:
                 if (!userIsMember)
@@ -91,7 +77,7 @@ If the kind of review and reviewerId are null. It will signal that the project i
             case ReviewKind.Peer:
             case ReviewKind.Async:
                 // TODO: Check if request has the privilege to assign user to a review
-                if (requestedReview.ReviewerId is not null)
+                if (data.ReviewerId is not null)
                 {
                     if (userIsMember)
                         return UnprocessableEntity(new ProblemDetails() { Title = "Reviewer must not be a member of project instance" });
@@ -103,17 +89,74 @@ If the kind of review and reviewerId are null. It will signal that the project i
             case ReviewKind.Auto:
                 throw new ServiceException(StatusCodes.Status501NotImplemented, "Auto reviews are not yet implemented");
             default:
-                throw new NotImplementedException($"Review kind: {requestedReview.Kind} is not supported.");
+                throw new NotImplementedException($"Review kind: {data.Kind} is not supported.");
         }
 
         return Ok(new ReviewDO(await reviewService.CreateAsync(new()
         {
-            Kind = requestedReview.Kind,
+            Kind = data.Kind,
             State = ReviewState.Pending,
-            ReviewerId = requestedReview.Kind is ReviewKind.Self ? requestedReview.ReviewerId : null,
-            UserProjectId = requestedReview.UserProjectId,
-            RubricId = requestedReview.RubricId
+            Hash = await gitService.GetLatestHash(up.GitInfoId.Value),
+            ReviewerId = data.Kind is ReviewKind.Self ? data.ReviewerId : null,
+            UserProjectId = data.UserProjectId,
         })));
+    }
+
+
+    [HttpPost("/reviews/{id:guid}/start"), Consumes("application/json")]
+    [EndpointSummary("Start a review")]
+    [EndpointDescription(@"
+Basically, once evaluated, this endpoint can be used to finalize the review / marking it completed
+Allows directly uploading the annotations / corrections of files.
+
+Calling this endpoint on a review marks it as completed.
+    ")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ReviewDO>> Start(Guid id)
+    {
+        var review = await reviewService.FindByIdAsync(id);
+        if (review is null)
+            return NotFound();
+
+        // For Auto reviews, there is no reviewer, in other cases check if it set yet.
+        // Obviously we can't review the user project if no one is there to review it...
+        if (review.Kind is not ReviewKind.Auto && review.ReviewerId is null)
+            return UnprocessableEntity("Can't start review without a reviewer");
+        // Caller must be user and if not must be staff
+        if (review.ReviewerId != User.GetSID() && !User.IsAdmin())
+            return Forbid();
+        if (review.Kind is ReviewKind.Peer)
+        {
+            // TODO: Verify the IP Address to ensure it comes from within the Network only
+            return Problem(title: "TODO: IPAddress check", statusCode: StatusCodes.Status501NotImplemented);
+        }
+        if (review.Kind is ReviewKind.Auto)
+        {
+            // TODO: Dispatch a Job, and setup webhook routes to inform us on when the tests are done running
+            // NXTPeer is "done" but we have no webhooks yet
+            return Problem(title: "TODO: NXTPeer service", statusCode: StatusCodes.Status501NotImplemented);
+        }
+
+        // Async and Self can just go ahead
+        review.State = ReviewState.InProgress;
+        await reviewService.UpdateAsync(review);
+        return Ok();
+    }
+
+    [HttpPost("/reviews/{id:guid}/finish"), Consumes("application/json")]
+    [EndpointSummary("Submit a finalization of the review")]
+    [EndpointDescription(@"
+Basically, once evaluated, this endpoint can be used to finalize the review / marking it completed
+Allows directly uploading the annotations / corrections of files.
+
+Calling this endpoint on a review marks it as completed.
+    ")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ReviewDO>> Finish(Guid id, [FromBody] ReviewFinalizePostRequestDTO data)
+    {
+        return Ok();
     }
 
     [HttpGet("/reviews/{id:guid}")]
@@ -129,41 +172,12 @@ If the kind of review and reviewerId are null. It will signal that the project i
         return Ok(new ReviewDO(review));
     }
 
-    [HttpPatch("/reviews/{id:guid}")]
-    [EndpointSummary("Update a goal")]
-    [EndpointDescription("Updates a goal partially based on the provided fields.")]
+    [HttpDelete("/reviews/{id:guid}/cancel")]
+    [EndpointSummary("Cancels a review.")]
+    [EndpointDescription("Deletes a review / cancels it")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ReviewDO>> Update(Guid id, [FromBody] ReviewPatchRequestDto data)
-    {
-        throw new ServiceException(StatusCodes.Status501NotImplemented, "TODO");
-        // var goal = await reviewService.FindByIdAsync(id);
-        // if (goal is null)
-        //     return NotFound();
-        // if (User.GetSID() != goal.CreatorId && !User.IsAdmin())
-        //     return Forbid();
-
-        // if (data.Markdown is not null)
-        //     goal.Markdown = data.Markdown;
-        // if (data.Description is not null)
-        //     goal.Description = data.Description;
-        // if (data.Name is not null)
-        // {
-        //     goal.Name = data.Name;
-        //     goal.Slug = goal.Name.ToUrlSlug();
-        // }
-
-        // var updatedGoal = await goalService.UpdateAsync(goal);
-        // return Ok(new ReviewDO(updatedGoal));
-    }
-
-
-    [HttpDelete("/reviews/{id:guid}")]
-    [EndpointSummary("Delete a goal")]
-    [EndpointDescription("Goal deletion is rarely done, and only result in deprecations if they have dependencies")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<LearningGoalDO>> Deprecate(Guid id)
+    public async Task<ActionResult<LearningGoalDO>> Cancel(Guid id)
     {
         // TODO: Notify the members that a review on their project has been cancelled
         var review = await reviewService.FindByIdAsync(id);
@@ -174,17 +188,19 @@ If the kind of review and reviewerId are null. It will signal that the project i
         return Ok(new ReviewDO(review));
     }
 
-    [HttpGet("/reviews/{id:guid}/finalize")]
-    [EndpointSummary("Get a goal")]
-    [EndpointDescription("")]
+    [HttpDelete("/reviews/{id:guid}")]
+    [EndpointSummary("Deletes a review.")]
+    [EndpointDescription("Deletes a review / cancels it")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ReviewDO>> Get(Guid id, IEnumerable<>)
+    public async Task<ActionResult<LearningGoalDO>> Delete(Guid id)
     {
-        // TODO: Notify the members that a review on their project has been reviewed
+        // TODO: Notify the members that a review on their project has been cancelled
         var review = await reviewService.FindByIdAsync(id);
         if (review is null)
-            return NotFound();
+            return NotFound("Cursus not found");
+
+        await reviewService.DeleteAsync(review);
         return Ok(new ReviewDO(review));
     }
 }

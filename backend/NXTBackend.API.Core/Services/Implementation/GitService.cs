@@ -204,7 +204,7 @@ public sealed class GitService(
     {
         var user = await _context.Users.FindAsync(GetUserID());
         SetWebauthHeader("w2wizard");
-        
+
         var response = await _client.PostAsJsonAsync($"/api/v1/repos/{_gitTemplate}/generate", DTO);
         logger.LogInformation("Response: {response}", response);
 
@@ -253,5 +253,39 @@ public sealed class GitService(
 
         var result = await query.FirstOrDefaultAsync();
         return result is null ? (null, null) : (result.Git, result.User);
+    }
+
+    public async Task<string> GetLatestHash(Guid id, string Branch = "main")
+    {
+        var result = await GetUserAndGit(id, GetUserID());
+        var git = result.Item1 ?? throw new ServiceException(StatusCodes.Status404NotFound, "Git not found");
+        var user = result.Item2 ?? throw new ServiceException(StatusCodes.Status404NotFound, "User not found");
+
+        SetWebauthHeader(user.Login);
+        var response = await _client.GetAsync($"/api/v1/repos/{git.Namespace}/git/refs");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw response.StatusCode switch
+            {
+                HttpStatusCode.NotFound => new ServiceException(StatusCodes.Status404NotFound, "References not found"),
+                _ => new ServiceException(StatusCodes.Status500InternalServerError, "Failed to get repository references")
+            };
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var refs = JsonDocument.Parse(content).RootElement;
+
+        foreach (var refElement in refs.EnumerateArray())
+        {
+            var refName = refElement.GetProperty("ref").GetString();
+            if (refName == $"refs/heads/{Branch}")
+            {
+                var sha = refElement.GetProperty("object").GetProperty("sha").GetString();
+                return sha ?? throw new ServiceException(StatusCodes.Status500InternalServerError, "Invalid SHA format");
+            }
+        }
+
+        throw new ServiceException(StatusCodes.Status404NotFound, $"Branch '{Branch}' not found");
     }
 }

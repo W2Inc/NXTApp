@@ -4,7 +4,6 @@
 // ============================================================================
 
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.Evaluation.v2;
 using NXTBackend.API.Domain.Joins;
 
 namespace NXTBackend.API.Core.Services.Interface;

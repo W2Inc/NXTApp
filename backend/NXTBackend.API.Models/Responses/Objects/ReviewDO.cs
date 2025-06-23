@@ -5,7 +5,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using NXTBackend.API.Domain.Entities.Evaluation;
-using NXTBackend.API.Domain.Entities.Evaluation.v2;
 using NXTBackend.API.Domain.Enums;
 
 namespace NXTBackend.API.Models.Responses.Objects;
@@ -16,7 +15,6 @@ public class ReviewDO : BaseObjectDO<Review>
     {
         Kind = review.Kind;
         State = review.State;
-        Validated = review.Validated;
         Reviewer = review.Reviewer;
         // Rubric = review.Rubric;
         // Feedback = review.Feedback;
@@ -28,9 +26,6 @@ public class ReviewDO : BaseObjectDO<Review>
 
     [Required]
     public ReviewState State { get; set; }
-
-    [Required]
-    public bool Validated { get; set; }
 
     [Required]
     public MinimalUserDTO? Reviewer { get; set; }
