@@ -9,18 +9,6 @@ using NXTBackend.API.Models;
 namespace NXTBackend.API.Core.Services.Interface;
 public interface IProjectService : IDomainService<Project>, ICollaborative<Project>
 {
-	/// <summary>
-	/// Get a file from a project.
-	/// This will fetch the file from the git repository of the project.
-	///
-	/// File contents are cached.
-	/// </summary>
-	/// <param name="projectId"></param>
-	/// <param name="file"></param>
-	/// <param name="branch"></param>
-	/// </summary>
-    public Task<string> GetFileFromProject(Guid projectId, string file, string branch);
-
     /// <summary>
     /// Create a new project with a specific git model assigned to it.
     /// </summary>

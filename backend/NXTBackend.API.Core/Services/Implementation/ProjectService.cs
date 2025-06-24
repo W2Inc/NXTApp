@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -38,28 +37,6 @@ public sealed class ProjectService : BaseService<Project>, IProjectService
         return newProject.Entity;
     }
 
-    /// <inheritdoc />
-    public async Task<string> GetFileFromProject(Guid projectId, string file, string branch)
-    {
-        var project = await _context.Projects
-            .Include(p => p.GitInfo)
-            .FirstOrDefaultAsync(p => p.Id == projectId)
-                ?? throw new ServiceException(StatusCodes.Status404NotFound, "Project not found");
-
-        var cacheKey = $"{project.Id}:{branch}:{file}";
-        var markdown = await _cache.GetStringAsync(cacheKey);
-        if (markdown is null)
-        {
-            markdown = await _git.GetFile(project.GitInfoId, file, branch);
-            await _cache.SetStringAsync(cacheKey, markdown, options: new()
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-            });
-        }
-
-		return Encoding.UTF8.GetString(Convert.FromBase64String(markdown));
-    }
-
     public Task<PaginatedList<Rubric>> GetRubric(Project project, PaginationParams pagination)
     {
         // Implementation using _context
@@ -74,14 +51,9 @@ public sealed class ProjectService : BaseService<Project>, IProjectService
 
     public override async Task<Project> DeleteAsync(Project entity)
     {
-        await _git.UpdateRepository(entity.GitInfoId, new()
-        {
-            Archived = true
-        });
-
-        _dbSet.Update(entity);
-        await _context.SaveChangesAsync();
-        return entity;
+		await _git.ArchiveRepository(entity.GitInfoId);
+		entity.Deprecated = true;
+		return await UpdateAsync(entity);
     }
 
     public async Task<(Project?, User?)> IsCollaborator(Guid entityId, Guid userId)
