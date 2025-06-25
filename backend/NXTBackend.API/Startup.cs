@@ -8,7 +8,10 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using Keycloak.AuthServices.Authentication;
+using Keycloak.AuthServices.Authorization;
+using Keycloak.AuthServices.Authorization.AuthorizationServer;
 using Keycloak.AuthServices.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using NXTBackend.API.Core.Options;
@@ -58,6 +61,11 @@ public static class Startup
 
         services.AddControllers(options =>
         {
+            options.AddProtectedResources();
+            // Filter to catch and process service exceptions
+            //
+            // Some services can go quite deep into processing requests and in case of
+            // any errors / issues (e.g: SELECT * FROM ... WHERE id = 0 returns ??? )
             options.Filters.Add<ServiceExceptionFilter>();
             options.InputFormatters.Add(new TextPlainInputFormatter());
         });
@@ -65,8 +73,28 @@ public static class Startup
         // Authentication and Authorization (Keycloak)
         services.AddKeycloakWebApiAuthentication(builder.Configuration);
         services.AddAuthorizationBuilder()
-            .AddPolicy("CanCreate", policy => policy.RequireClaim(ClaimTypes.Role, "creator"))
-            .AddPolicy("IsStaff", policy => policy.RequireClaim(ClaimTypes.Role, "staff"));
+            .AddPolicy("IsStaff", b => b.RequireClaim(ClaimTypes.Role, "staff"))
+            .AddPolicy("IsDeveloper", b => b.RequireClaim(ClaimTypes.Role, "developer"));
+        // .AddPolicy("ResourceWrite", b =>
+        // {
+        //     b.RequireProtectedResource("goals", "goals:write");
+        //     b.RequireProtectedResource("projects", "projects:write");
+        //     b.RequireProtectedResource("rubrics", "rubrics:write");
+        //     b.RequireProtectedResource("comments", "comments:write");
+        //     b.RequireProtectedResource("reviews", "reviews:write");
+        // })
+        // .AddPolicy("ResourceRead", b =>
+        // {
+        //     b.RequireProtectedResource("goals", "goals:read");
+        //     b.RequireProtectedResource("projects", "projects:read");
+        //     b.RequireProtectedResource("rubrics", "rubrics:read");
+        //     b.RequireProtectedResource("comments", "comments:read");
+        //     b.RequireProtectedResource("reviews", "reviews:read");
+        // });
+
+
+        services.AddKeycloakAuthorization(builder.Configuration)
+            .AddAuthorizationServer(builder.Configuration);
 
 
         // Swagger / OpenAPI Configuration
@@ -160,7 +188,7 @@ public static class Startup
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IResourceOwnerService, ResourceOwnerService>();
         services.AddScoped<ISpotlightEventService, SpotlightEventService>();
-        services.AddScoped<IGitService, GitService>();
+        services.AddScoped<IGitService, GitService2>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<ISpotlightEventActionService, SpotlightEventActionService>();
         services.AddTransient<IResend, ResendClient>();
@@ -237,30 +265,30 @@ public static class Startup
         services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
     }
 
-	private static void AddDistributedCache(WebApplicationBuilder builder)
-	{
-		try
-		{
-			var redis = builder.Configuration.GetConnectionString("Cache")
-				?? throw new Exception("Missing Cache connection string. Please configure.");
-			var password = builder.Configuration["NXTCache:Password"]
-				?? throw new Exception("Missing Cache password. Please configure.");
+    private static void AddDistributedCache(WebApplicationBuilder builder)
+    {
+        try
+        {
+            var redis = builder.Configuration.GetConnectionString("Cache")
+                ?? throw new Exception("Missing Cache connection string. Please configure.");
+            var password = builder.Configuration["NXTCache:Password"]
+                ?? throw new Exception("Missing Cache password. Please configure.");
 
-			builder.Services.AddStackExchangeRedisCache(o =>
-			{
-				o.Configuration = $"{redis},password={password}";
-				o.InstanceName = "NXTCache";
-			});
-		}
-		catch (Exception ex)
-		{
-			Log.Error(ex, "Using memory cache instead of Cache");
-			builder.Services.AddDistributedMemoryCache();
-		}
-		finally
-		{
-			Log.Information("Cache configured");
-		}
+            builder.Services.AddStackExchangeRedisCache(o =>
+            {
+                o.Configuration = $"{redis},password={password}";
+                o.InstanceName = "NXTCache";
+            });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Using memory cache instead of Cache");
+            builder.Services.AddDistributedMemoryCache();
+        }
+        finally
+        {
+            Log.Information("Cache configured");
+        }
 
     }
 

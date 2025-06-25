@@ -106,7 +106,6 @@ public abstract class BaseService<T> : IDomainService<T> where T : BaseEntity
 		SortingParams sorting,
 		FilterDictionary? filters = null)
 	{
-        Console.WriteLine("\n\n\n\n\nja\n\n\n\n\n");
 		var query = ApplyFilters(Query(), filters);
         query = SortedList<T>.Apply(query, sorting);
 		return await PaginatedList<T>.CreateAsync(query, pagination.Page, pagination.Size);

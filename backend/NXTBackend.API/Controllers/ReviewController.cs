@@ -96,7 +96,7 @@ Establishes a review on the given user project, but does not start it immedieatl
         {
             Kind = data.Kind,
             State = ReviewState.Pending,
-            Hash = await gitService.GetLatestHash(up.GitInfoId.Value),
+            Hash = "unknown",
             ReviewerId = data.Kind is ReviewKind.Self ? data.ReviewerId : null,
             UserProjectId = data.UserProjectId,
         })));

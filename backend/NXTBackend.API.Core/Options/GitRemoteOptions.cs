@@ -18,7 +18,7 @@ public class GitRemoteOptions
 
 // ============================================================================
 
-public static class ConfigurationExtensions
+public static partial class ConfigurationExtensions
 {
     /// <summary>
     /// Retrieves the Keycloak options from the configuration section with the specified name.

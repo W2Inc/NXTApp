@@ -5,15 +5,18 @@
 	import Navgroup from "$lib/components/navgroup.svelte";
 	import Link from "lucide-svelte/icons/link";
 	import Github from "lucide-svelte/icons/github";
-	import {useStorage} from "$lib/utils/local.svelte.js";
-	import type {NamedLink} from "$lib/types.js";
+	import { useStorage } from "$lib/utils/local.svelte.js";
+	import type { NamedLink } from "$lib/types.js";
 	import Base from "$lib/components/base.svelte";
 	import FeedCard from "$lib/components/cards/feed-card.svelte";
 	import ChangelogCard from "$lib/components/cards/changelog-card.svelte";
-	import {page} from "$app/state";
+	import { page } from "$app/state";
 	import Empty from "$lib/components/empty.svelte";
 	import Login from "./login.svelte";
+	import { Constants } from "$lib/utils";
 	import EntitySearch from "$lib/components/EntitySearch.svelte";
+	import Button from "$lib/components/ui/button/button.svelte";
+	import { enhance } from "$app/forms";
 
 	const { data } = $props();
 	const storage = useStorage();
@@ -42,12 +45,6 @@
 {#if page.data.session}
 	<Base>
 		{#snippet left()}
-			<EntitySearch onSelect={(e) => { }} api={(input) => {}}>
-				{#snippet item({key, value})}
-
-				{/snippet}
-			</EntitySearch>
-
 			<Navgroup title="Links" navs={navigations} />
 			{#if recent.length > 0}
 				<Navgroup title="Recently Visited" navs={recent} />
@@ -66,11 +63,13 @@
 									<FeedCard data={feed} />
 								</li>
 							{/each}
+							<li>
+								<!-- TODO: Remote function -->
+								<Button class="w-full" variant="outline">Load More</Button>
+							</li>
 						</ul>
 					{/if}
-					<aside
-						class="sticky top-0 hidden h-min min-w-[346px] flex-col gap-2 xl:flex"
-					>
+					<aside class="sticky top-0 hidden h-min min-w-[346px] flex-col gap-2 xl:flex">
 						<SpotlightCard />
 						<ChangelogCard />
 					</aside>

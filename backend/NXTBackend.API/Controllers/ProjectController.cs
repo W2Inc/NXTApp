@@ -5,6 +5,7 @@
 
 using System.ComponentModel;
 using System.Security.Claims;
+using Keycloak.AuthServices.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -22,6 +23,7 @@ using NXTBackend.API.Models.Requests.ExternalGit;
 using NXTBackend.API.Models.Requests.LearningGoal;
 using NXTBackend.API.Models.Requests.Project;
 using NXTBackend.API.Models.Responses.Objects;
+using NXTBackend.API.Models.Shared;
 using NXTBackend.API.Utils;
 
 // ============================================================================
@@ -30,8 +32,9 @@ namespace NXTBackend.API.Controllers;
 
 // ============================================================================
 
-[ApiController, Authorize]
 [Route("projects")]
+[ApiController, Authorize]
+[ProtectedResource("projects")]
 public class ProjectController(
     ILogger<ProjectController> logger,
     IProjectService projectService,
@@ -39,11 +42,11 @@ public class ProjectController(
     IGitService gitService
 ) : Controller
 {
-    [HttpGet("/projects")]
     [EndpointSummary("Get all exisiting projects")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [HttpGet("/projects"), ProtectedResource("projects", "projects:list")]
     public async Task<ActionResult<IEnumerable<ProjectDO>>> GetAll(
         [FromQuery] PaginationParams paging,
         [FromQuery] SortingParams sorting,
@@ -62,51 +65,51 @@ public class ProjectController(
         return Ok(page.Items.Select(c => new ProjectDO(c)));
     }
 
-    [HttpPost("/projects"), Authorize(Policy = "CanCreate")]
     [EndpointSummary("Create a project")]
     [EndpointDescription("Creates a new project, also creates a remote repository for hosting the project.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(ProblemDetails))]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    [HttpPost("/projects"), ProtectedResource("projects", "projects:create")]
     public async Task<ActionResult<ProjectDO>> Create([FromBody] ProjectPostRequestDTO data, IDistributedCache cache)
     {
         var owner = await ownerService.FindByIdAsync(data.OwnerId);
         if (owner is null)
             return UnprocessableEntity("Non-existing user");
 
-        var git = await gitService.CreateRepository(new GitRepoPostRequestDTO
-        {
-            Name = data.Name,
-            Description = data.Description,
-        }, owner.Type);
+        // var git = await gitService.CreateRepository(new GitRepoPostRequestDTO
+        // {
+        //     Name = data.Name,
+        //     Description = data.Description,
+        // }, owner.Type);
 
-        await gitService.SetFile(
-            git.Id,
-            "readme.md",
-            data.Markdown,
-            "Initial Commit"
-        );
+        // await gitService.SetFile(
+        //     git.Id,
+        //     "readme.md",
+        //     data.Markdown,
+        //     "Initial Commit"
+        // );
 
-        var project = await projectService.CreateProjectWithGit(new()
-        {
-            CreatorId = User.GetSID(),
-            Name = data.Name,
-            Slug = data.Name.ToUrlSlug(),
-            Description = data.Description,
-            MaxMembers = data.MaxMembers,
-            ThumbnailUrl = data.ThumbnailUrl,
-            Tags = data.Tags
-        }, git);
+        // var project = await projectService.CreateProjectWithGit(new()
+        // {
+        //     CreatorId = User.GetSID(),
+        //     Name = data.Name,
+        //     Slug = data.Name.ToUrlSlug(),
+        //     Description = data.Description,
+        //     MaxMembers = data.MaxMembers,
+        //     ThumbnailUrl = data.ThumbnailUrl,
+        //     Tags = data.Tags
+        // }, git);
 
-        await cache.SetStringAsync($"M_{project.Id}", data.Markdown);
-        return Ok(new ProjectDO(project));
+        // await cache.SetStringAsync($"M_{project.Id}", data.Markdown);
+        return Ok();
     }
 
-    [HttpGet("/projects/{id:guid}")]
     [EndpointSummary("Get a project")]
     [EndpointDescription("")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [HttpGet("/projects/{id:guid}"), ProtectedResource("projects", "projects:read")]
     public async Task<ActionResult<ProjectDO>> Get(Guid id)
     {
         // var project = await projectService.FindByIdAsync(id);
@@ -124,26 +127,28 @@ public class ProjectController(
         return Ok(new ProjectDO(project));
     }
 
-    [HttpGet("/projects/{id:guid}/markdown/{file:regex(^(README|SUBJECT)\\.(md|MD|Md|mD)$)}")]
-    [EndpointSummary("Get a markdown of the project")]
-    [EndpointDescription(@"
-Retrieves the current markdown file, may either be the README or the SUBJECT.
-Subject is the actual subject sheet while the readme is simply an explanation of the project itself.
-    ")]
+    [EndpointSummary("Get a specific file from the project repository")]
+    [EndpointDescription(@"")]
     [ProducesResponseType<string>(StatusCodes.Status200OK, contentType: "text/markdown")]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [OutputCache(Duration = 300)] // Cache for 5 minutes
-    public async Task<ActionResult<string>> GetMarkdown(
+    [OutputCache(PolicyName = "5min")]
+    [HttpGet("/projects/{id:guid}/file"), ProtectedResource("projects", "projects:read")]
+    public async Task<ActionResult<IEnumerable<GitVfsNodeDO>>> GetFile(
         Guid id,
-        string file,
+        [FromQuery(Name = "filter[path]")] string path,
         [FromQuery(Name = "filter[branch]")] string branch = "main"
     )
     {
-        // NOTE(W2): Only support UTF-8 Strings for now.
-        var content = await projectService.GetFileFromProject(id, file, branch);
-        if (content is null)
+        var project = await projectService.FindByIdAsync(id);
+        if (project is null)
             return NotFound();
-        return Ok(content);
+
+        var files = await gitService.GetFiles(project.GitInfoId, path, branch);
+        logger.LogInformation("{@files}", files);
+        // var file = files.Where(f => f.Path == path).FirstOrDefault();
+        // if (file is null)
+        //     return NotFound();
+        return Ok(files);
     }
 
     [HttpPatch("/projects/{id:guid}"), Authorize(Policy = "CanCreate")]
@@ -161,9 +166,9 @@ Subject is the actual subject sheet while the readme is simply an explanation of
             return Forbid();
 
         // if (data.Markdown is not null)
-            //     project.Markdown = data.Markdown;
-            if (data.Description is not null)
-                project.Description = data.Description;
+        //     project.Markdown = data.Markdown;
+        if (data.Description is not null)
+            project.Description = data.Description;
         if (data.Name is not null)
         {
             project.Name = data.Name;
@@ -172,7 +177,7 @@ Subject is the actual subject sheet while the readme is simply an explanation of
 
         if (data.Markdown is not null)
         {
-            await gitService.SetFile(project.GitInfoId, "README.md", data.Markdown, "Update Readme");
+            await gitService.UpsertFile(project.GitInfoId, "./README.md", data.Markdown, "Update Readme");
         }
 
         var updatedProject = await projectService.UpdateAsync(project);

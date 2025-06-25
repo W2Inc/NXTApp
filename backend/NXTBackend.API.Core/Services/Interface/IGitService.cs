@@ -35,7 +35,7 @@ public interface IGitService : IDomainService<Git>, ICollaborative<Git>
 	/// <param name="id"></param>
 	/// <returns></returns>
 	public Task<Git> ArchiveRepository(Guid id);
-	
+
 	/// <summary>
 	/// Upserts a file in the repository.
 	/// If the file does not exist, it will be created.
@@ -50,7 +50,7 @@ public interface IGitService : IDomainService<Git>, ICollaborative<Git>
 	public Task<Git> UpsertFile(Guid id, string path, string? content, string message = "Update", string branch = "main");
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	/// <param name="id"></param>
 	/// <param name="path"></param>
@@ -58,11 +58,10 @@ public interface IGitService : IDomainService<Git>, ICollaborative<Git>
 	/// <returns></returns>
 	public Task<IEnumerable<GitVfsNodeDO>> GetFiles(Guid id, string path, string branch = "main");
 
-
-	/// <summary>
-	/// Get the current latest hash of the remote.
-	/// </summary>
-	/// <param name="id"></param>
-	/// <returns></returns>
-	public Task<IEnumerable<GitRefDO>> GetRefs(Guid id);
+    /// <summary>
+    /// Get the current latest hash of the remote.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public Task<IEnumerable<GitRefDO>> GetRefs(Guid id);
 }
