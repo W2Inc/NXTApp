@@ -38,17 +38,28 @@ import type { Problem } from "$lib/utils/api.svelte";
 // ============================================================================
 
 // TODO: Replace with arctic client...
-const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
+// const keycloak = new KeycloakClient(KC_CLIENT_ID, KC_CLIENT_SECRET, KC_ISSUER);
 
 /**
  * Here you can configure the overal routes that need which role in order
  * to be accessed.
  */
-const routes = RouteConfig as Record<string, Role[] | never[]>;
+const routes = RouteConfig as Record<string, string[] | never[]>;
 
 export const init: ServerInit = async () => {
 	initLogger();
 	logger.info("Starting FE...");
+};
+
+const errorMiddleware: Middleware = {
+  onResponse({ response }) {
+    if (!response.ok) {
+      // turn a 429, 500, etc into a rejected promise
+			return Promise.reject("kaka");
+      // throw new Error(`API error ${response.status} ${response.statusText}`);
+    }
+    return response;
+  }
 };
 
 // ============================================================================
@@ -56,21 +67,33 @@ export const init: ServerInit = async () => {
 const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const session = await event.locals.session();
 	const url = `/${event.url.pathname.split("/")[1]}`;
-	const requiredRoles = routes[url];
+	const requiredScopes = routes[url];
 
 	// Redirect to home if no route config or unauthorized
-	if (!requiredRoles) return redirect(303, "/");
+	if (!requiredScopes) return redirect(303, "/");
 
 	// Allow if no roles required
-	if (requiredRoles.length === 0) return resolve(event);
+	if (requiredScopes.length === 0) return resolve(event);
 
 	// Require authentication for protected routes
 	if (
 		!session ||
-		(requiredRoles.length > 0 &&
-			!requiredRoles.some((role) => session.roles.includes(role)))
+		(requiredScopes.length > 0 &&
+			!requiredScopes.some((s) => session.scopes.includes(s)))
 	) {
-		return redirect(303, "/");
+		return new Response(
+			"Unauthorized",
+			{
+				status: 401,
+				statusText: "Unauthorized",
+				headers: {
+					"WWW-Authenticate": `Bearer realm="${KC_ISSUER}"`,
+				},
+			},
+		);
+		// return error(403, {
+		// 	message: "You are not authorized to access this resource.",
+		// });
 	}
 
 	return resolve(event);
@@ -78,18 +101,13 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 
 /** Create the universal api fetch function */
 const apiHandle: Handle = async ({ event, resolve }) => {
-	event.locals.api = createClient<BackendRoutes>({
+	event.locals.api ??= createClient<BackendRoutes>({
 		baseUrl: dev ? "http://localhost:3001" : "https://localhost:3000",
 		mode: "cors",
 		fetch: event.fetch,
 	});
 
-	event.locals.keycloak = createClient<KeycloakRoutes>({
-		baseUrl: KC_HOST,
-		mode: "cors",
-		fetch: event.fetch,
-	});
-
+	// event.locals.api.use(errorMiddleware);
 	return resolve(event);
 };
 
@@ -135,10 +153,10 @@ export async function handleFetch({ fetch, request, event }) {
 		request.headers.set("authorization", `Bearer ${accessToken}`);
 	}
 
-	if (request.url.startsWith(KC_HOST)) {
-		const token = await keycloak.getToken();
-		request.headers.set("Authorization", `Bearer ${token}`);
-	}
+	// if (request.url.startsWith(KC_HOST)) {
+	// 	const token = await keycloak.getToken();
+	// 	request.headers.set("Authorization", `Bearer ${token}`);
+	// }
 
 	return fetch(request);;
 }

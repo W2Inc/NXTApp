@@ -3,11 +3,11 @@
 	"/settings": [],
 	"/auth": [],
 	"/users": [],
-	"/new": ["creator"],
+	"/new": [],
 	"/notifications": [],
 	"/changelog": [],
 	"/search": [],
-    "/evaluation": [],
+  "/evaluation": [],
 	"/projects": [],
-    "/eval": []
+  "/eval": []
 }

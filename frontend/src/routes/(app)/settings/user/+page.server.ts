@@ -8,6 +8,7 @@ import { formValueToS3, problem, success, type FormState, type PageMixFormBundle
 import { error as kitError, redirect } from "@sveltejs/kit";
 import { Constants, ensure } from "$lib/utils";
 import { logger } from "$lib/logger";
+import { check } from "$lib/utils/check.svelte";
 
 
 // ============================================================================
@@ -24,25 +25,21 @@ export type FormBundle = PageMixFormBundle<
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.session() ?? kitError(401);
-	const { data, error } = await locals.api.GET("/users/current");
-	if (error || !data) {
-		logger.error("Failed to fetch user data", error);
-		kitError(500);
-	}
+	const { data } = await check(locals.api.GET("/users/current"));
 
 	return {
 		form: {
 			data: {
-				firstName: data.details?.firstName,
-				lastName: data.details?.lastName,
-				displayName: data.displayName,
-				email: data.details?.email,
-				markdown: data.details?.markdown,
-				websiteUrl: data.details?.websiteUrl,
-				redditUrl: data.details?.redditUrl,
-				linkedinUrl: data.details?.linkedinUrl,
-				githubUrl: data.details?.githubUrl,
-				avatarUrl: data.avatarUrl ?? session.avatarUrl ?? Constants.FALLBACK_IMG,
+				firstName: data!.details?.firstName,
+				lastName: data!.details?.lastName,
+				displayName: data!.displayName,
+				email: data!.details?.email,
+				markdown: data!.details?.markdown,
+				websiteUrl: data!.details?.websiteUrl,
+				redditUrl: data!.details?.redditUrl,
+				linkedinUrl: data!.details?.linkedinUrl,
+				githubUrl: data!.details?.githubUrl,
+				avatarUrl: data!.avatarUrl ?? session.avatarUrl ?? Constants.FALLBACK_IMG,
 			},
 			errors: {},
 			isLoading: false,

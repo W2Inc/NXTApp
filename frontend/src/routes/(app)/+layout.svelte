@@ -11,6 +11,9 @@
 	import { useStorage } from "$lib/utils/local.svelte";
 	import type { NamedLink } from "$lib/types";
 	import type { LayoutProps } from "./$types";
+	import { page } from "$app/state";
+	import Button from "$lib/components/ui/button/button.svelte";
+	import { Home, RefreshCw } from "lucide-svelte";
 
 	let { children, data }: LayoutProps = $props();
 
