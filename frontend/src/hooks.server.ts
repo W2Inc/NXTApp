@@ -51,17 +51,6 @@ export const init: ServerInit = async () => {
 	logger.info("Starting FE...");
 };
 
-const errorMiddleware: Middleware = {
-  onResponse({ response }) {
-    if (!response.ok) {
-      // turn a 429, 500, etc into a rejected promise
-			return Promise.reject("kaka");
-      // throw new Error(`API error ${response.status} ${response.statusText}`);
-    }
-    return response;
-  }
-};
-
 // ============================================================================
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
@@ -91,9 +80,6 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 				},
 			},
 		);
-		// return error(403, {
-		// 	message: "You are not authorized to access this resource.",
-		// });
 	}
 
 	return resolve(event);
@@ -102,12 +88,11 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 /** Create the universal api fetch function */
 const apiHandle: Handle = async ({ event, resolve }) => {
 	event.locals.api ??= createClient<BackendRoutes>({
-		baseUrl: dev ? "http://localhost:3001" : "https://localhost:3000",
+		baseUrl: dev ? "http://localhost:3001" : "http://localhost:3001",
 		mode: "cors",
 		fetch: event.fetch,
 	});
 
-	// event.locals.api.use(errorMiddleware);
 	return resolve(event);
 };
 

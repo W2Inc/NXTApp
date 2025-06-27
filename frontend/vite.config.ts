@@ -11,7 +11,7 @@ export default defineConfig({
 		enhancedImages(),
 		sveltekit(),
 		/*mkcert(),*/
-		Sonda({ server: true, open: false }),
+		Sonda({ server: false, open: false, brotli: true }),
 	],
 	ssr: {
 		noExternal: ["three"],

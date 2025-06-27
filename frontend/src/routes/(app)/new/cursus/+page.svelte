@@ -106,7 +106,6 @@
 								shorter description about the cursus.
 							</Dialog.Description>
 						</Dialog.Header>
-						<!-- Branch -->
 						<Control label="Markdown" name="markdown" errors={form.errors.description}>
 							<Markdown
 								variant="editor"

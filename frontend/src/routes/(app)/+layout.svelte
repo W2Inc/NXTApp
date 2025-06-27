@@ -11,28 +11,12 @@
 	import { useStorage } from "$lib/utils/local.svelte";
 	import type { NamedLink } from "$lib/types";
 	import type { LayoutProps } from "./$types";
-	import { page } from "$app/state";
-	import Button from "$lib/components/ui/button/button.svelte";
-	import { Home, RefreshCw } from "lucide-svelte";
 
-	let { children, data }: LayoutProps = $props();
-
-	const MAX_HISTORY = 5;
-	const storage = useStorage();
-
-	onNavigate(({ to, from }) => {
-		if (!from) return;
-		const link = { href: from.url.href, title: document.title };
-		const history = storage.get<NamedLink[]>("app:history") ?? [];
-		storage.set("app:history", [
-			...history.filter((nav) => nav.href !== from.url.href).slice(-MAX_HISTORY + 1),
-			link,
-		]);
-	});
+	const { data, children }: LayoutProps = $props();
 </script>
 
 <Tooltip.Provider>
-	<ModeWatcher defaultMode="system"/>
+	<ModeWatcher defaultMode="system" />
 	<Toaster closeButton richColors duration={8000} />
 	<DialogProvider />
 	{#if data.session}
@@ -42,5 +26,3 @@
 		{@render children?.()}
 	</main>
 </Tooltip.Provider>
-
-<!-- <Footer /> -->

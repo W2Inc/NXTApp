@@ -1,6 +1,6 @@
 import { logger } from "$lib/logger";
 import { ensure } from "$lib/utils";
-import { error, redirect } from "@sveltejs/kit";
+import { error, redirect, type Cookies } from "@sveltejs/kit";
 import type { FetchResponse } from "openapi-fetch";
 
 export async function check<
@@ -10,6 +10,7 @@ export async function check<
 >(
 	fetchPromise: Promise<FetchResponse<T, Options, Media>>,
 	ignoreStatusCodes?: number[],
+	cookies?: Cookies
 ): Promise<{
 	data: NonNullable<FetchResponse<T, Options, Media>["data"]> | null;
 	error: NonNullable<FetchResponse<T, Options, Media>["error"]> | null;

@@ -18,6 +18,8 @@
 	import Button from "$lib/components/ui/button/button.svelte";
 	import { enhance } from "$app/forms";
 	import { RefreshCw } from "lucide-svelte";
+	import { unstream } from "$lib/utils/stream.svelte";
+	import Loader from "$lib/components/loader.svelte";
 
 	const { data } = $props();
 	const storage = useStorage();
@@ -54,49 +56,57 @@
 
 		{#snippet right()}
 			<div class="w-full">
-					{#await data.feed}
-						<p>Loading feed…</p>
-					{:then feed}
-						{(JSON.stringify(feed), typeof feed)}
-					{:catch error}
-						<p class="error">Error loading feed: {error.message}</p>
-					{/await}
-			</div>
-
-			<!-- <div class="w-full">
 				<div class="mx-auto flex max-w-7xl gap-2 p-4">
-					{#await data.feed}
-						<div class="flex h-full w-full items-center justify-center">
-							<Button class="w-full" variant="outline" loading>
-								Loading Feed...
-							</Button>
-						</div>
-					{:catch error}
-						<p>Nope!</p>
-					{:then data}
-						{#if data.feed.length == 0}
-							<Empty />
-						{:else}
-							<ul class="flex-auto">
-								{#each data.feed as feed}
-									<li>
-										<FeedCard data={feed} />
-									</li>
-								{/each}
-								<li>
-									<Button class="w-full" variant="outline">Load More</Button>
-								</li>
-							</ul>
-						{/if}
-					{/await}
+					<div class="w-full">
+						{#await unstream(data.feed)}
+							<Loader />
+						{:then data}
+							{@render feeds(data.items, data.page, data.pages)}
+						{:catch error}
+							<p>error {error.message}</p>
+						{/await}
+					</div>
 					<aside class="sticky top-0 hidden h-min min-w-[346px] flex-col gap-2 xl:flex">
-						<SpotlightCard />
+						{#await unstream(data.spotlights)}
+							<Loader />
+						{:then data}
+							{@render spotlights(data)}
+						{:catch error}
+							<p>error {error.message}</p>
+						{/await}
 						<ChangelogCard />
 					</aside>
 				</div>
-			</div> -->
+			</div>
 		{/snippet}
 	</Base>
 {:else}
 	<Login />
 {/if}
+
+{#snippet spotlights(data: BackendTypes["SpotlightEventDO"][])}
+	{#if data.length}
+		{#each data as spotlight}
+			<SpotlightCard data={spotlight}/>
+		{/each}
+	{/if}
+{/snippet}
+
+{#snippet feeds(data: BackendTypes["FeedDO"][], page: number, pages: number)}
+	{#if data.length}
+		<ul class="flex-auto">
+			{#each data as feed}
+				<li>
+					<FeedCard data={feed} />
+				</li>
+			{/each}
+			{#if page < pages}
+				<li>
+					<Button class="w-full" variant="outline">Load More</Button>
+				</li>
+			{/if}
+		</ul>
+	{:else}
+		<Empty />
+	{/if}
+{/snippet}

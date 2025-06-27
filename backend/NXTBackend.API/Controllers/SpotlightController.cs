@@ -40,7 +40,7 @@ public class SpotlightController(
         return Ok(page.Items.Select(item => new SpotlightEventDO(item)));
     }
 
-    [HttpPost("/spotlights"), Authorize(Roles = "events")]
+    [HttpPost("/spotlights")]
     [EndpointSummary("Create a spotlight")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

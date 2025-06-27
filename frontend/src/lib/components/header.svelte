@@ -25,7 +25,6 @@
 	import { toggleMode } from "mode-watcher";
 	import * as DropdownMenu from "./ui/dropdown-menu";
 	import * as Avatar from "./ui/avatar";
-	import * as Breadcrumb from "./ui//breadcrumb";
 	import Search from "./search/search.svelte";
 	import type { IconLink } from "$lib/types";
 	import { Constants, encodeID } from "$lib/utils";

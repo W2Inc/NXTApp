@@ -16,7 +16,6 @@
 	import { useDebounce } from "$lib/utils/debounce.svelte.js";
 	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
 	import type { PageProps } from "./$types";
-	import Tilter from "$lib/components/tilter.svelte";
 	import Empty from "$lib/components/empty.svelte";
 	import Button from "$lib/components/ui/button/button.svelte";
 	import Tippy from "$lib/components/tippy.svelte";

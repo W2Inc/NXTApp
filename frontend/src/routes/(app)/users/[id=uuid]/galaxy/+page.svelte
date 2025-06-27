@@ -1,14 +1,5 @@
 <script lang="ts">
-	import { T, Canvas } from "@threlte/core";
-	import { OrbitControls } from "@threlte/extras";
-	import * as THREE from "three";
-
-	// Import Shadcn components
-	// import * as Select from "$lib/components/ui/select";
-	import * as Tabs from "$lib/components/ui/tabs";
-	import { Input } from "$lib/components/ui/input";
-	import { Search, Volume2, VolumeX, LoaderCircle } from "lucide-svelte";
-	import { Button } from "$lib/components/ui/button";
+	import { LoaderCircle } from "lucide-svelte";
 
 	const { data }: PageProps = $props();
 	let search = $state("");
@@ -16,13 +7,8 @@
 	let promise = $state<Promise<unknown>>();
 
 	// Audio state and Web Audio API setup
-	import { Tween } from "svelte/motion";
 	import type { PageProps } from "./$types";
 	import Menu from "./menu.svelte";
-	import { invalidateAll } from "$app/navigation";
-	import { setContext } from "svelte";
-	import { transformXGraphV1Data, type ClientGraph } from "$lib/graph";
-	import { read } from "$app/server";
 	import D3 from "./d3.svelte";
 	import { generateSampleData } from "./d3utils.svelte";
 </script>
