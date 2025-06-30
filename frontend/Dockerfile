@@ -1,46 +1,40 @@
 # Install dependencies only when needed
-FROM node:16-alpine AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+FROM oven/bun:canary-alpine AS deps
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY ./prisma/ ./prisma/
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-   elif [ -f package-lock.json ]; then npm ci; \
-   elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i; \
-   else echo "Lockfile not found." && exit 1; \
-   fi
+# Copy package files and prisma directory
+COPY package.json bun.lockb* yarn.lock* package-lock.json* ./
 
-# Rebuild the source code only when needed
-FROM node:16-alpine AS builder
+# Install dependencies
+RUN bun install
+
+# Build stage
+FROM oven/bun:canary-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN npm run build
+# Build the application
+RUN bun run build
 
-
-FROM node:16-alpine AS runner
+# Production stage
+FROM oven/bun:canary-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nodejs
+# Create a non-root user
+RUN addgroup --system --gid 1001 bunjs
+RUN adduser --system --uid 1001 bunjs
 
+# Copy package.json and build output
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/package-lock.json ./package-lock.json
+COPY --from=builder --chown=bunjs:bunjs /app/build ./build
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nodejs:nodejs /app/build ./build
-
-USER nodejs
+USER bunjs
 
 EXPOSE 3000
-ENV PORT 3000
+ENV PORT=3000
 
-CMD ["node", "build"]
+# Start the application with Bun
+CMD ["bun", "--bun", "run", "/app/build"]

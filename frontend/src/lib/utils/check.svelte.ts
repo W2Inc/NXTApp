@@ -10,7 +10,6 @@ export async function check<
 >(
 	fetchPromise: Promise<FetchResponse<T, Options, Media>>,
 	ignoreStatusCodes?: number[],
-	cookies?: Cookies
 ): Promise<{
 	data: NonNullable<FetchResponse<T, Options, Media>["data"]> | null;
 	error: NonNullable<FetchResponse<T, Options, Media>["error"]> | null;

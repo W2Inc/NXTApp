@@ -1,98 +1,35 @@
----
 services:
-  # mailhog:
-  #   image: mailhog/mailhog:latest
-  #   restart: on-failure:5
-  #   ports:
-  #     - 1025:1025
-  #   networks:
-  #     - app
-  #   depends_on:
-  #     keycloak:
-  #       condition: service_healthy
-  #     keycloakdb:
-  #       condition: service_healthy
-  #     clickhouse:
-  #       db: service_healthy
-
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: redis
-  #   ports:
-  #     - "6379:6379"
-  #   networks:
-  #     - app
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-
-  keycloak:
-    image: keycloak-app
-    #command: ['start-dev']
-    container_name: keycloak
-    networks:
-      - app
-    environment:
-      KC_DB: postgres
-      KC_DB_URL_DATABASE: keycloak
-      KC_DB_SCHEMA: public
-      KC_LOG_LEVEL: DEBUG # I Added this <====
-      KC_DB_URL: jdbc:postgresql://keycloakdb/keycloak
-
-      KC_DB_USERNAME: keycloak # Make sure it matches the POSTGRES_USER below
-      KC_DB_PASSWORD: password # Make sure it matches the POSTGRES_PASSWORD below
-
-      KEYCLOAK_ADMIN: admin # Change this to a different username
-      KEYCLOAK_ADMIN_PASSWORD: password # Change this to a better password
-
-      KC_HEALTH_ENABLED: true
-      KC_HTTP_RELATIVE_PATH: /auth
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "8089:8080"
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000;echo -e 'GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  keycloakdb:
-    image: postgres
-    networks:
-      - app
-    container_name: keycloak-postgres
+      - "3000:3000"
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak # Change this to a different username
-      POSTGRES_PASSWORD: password # Change this to a better password
-    ports:
-      - "8888:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
-      interval: 30s
-      timeout: 60s
-      retries: 5
-      start_period: 80s
+      - NODE_ENV=production
+      - API_URL=http://backend:3001
+    restart: unless-stopped
+    depends_on:
+      - backend
 
-  db:
-    image: postgres
-    networks:
-      - app
-    container_name: backend-postgres
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
     environment:
-      POSTGRES_DB: backend
-      POSTGRES_USER: backend # Change this to a different username
-      POSTGRES_PASSWORD: password # Change this to a better password
-    ports:
-      - "1330:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
-      interval: 30s
-      timeout: 60s
-      retries: 5
-      start_period: 80s
-
-networks:
-  app:
-    driver: bridge
+      - ASPNETCORE_URLS=http://+:3001
+      - ASPNETCORE_ENVIRONMENT=Production
+      # Cache & Database
+      - NXTDatabase:Password=gAUzlli22pWMwel5wfqGrafusT4kJl0nPzz6acgsE3aRMDWUJHaQzCbgMZJzXEl0
+      - NXTCache:Password=rn61FchILYS13tMe3mBVKL6sLKjtHx0PH9AvPeVuaNLqW2L97cv6ZUwPAuxwQB9B
+      # Keycloak Authentication
+      - Keycloak:realm=student
+      - Keycloak:auth-server-url=https://auth.hamette.net
+      - Keycloak:resource=intra
+      - Keycloak:credentials:secret=8EliRmg5oMiq3UUAgFzPV00rY77fDxAo
+      # Connection Strings
+      - ConnectionStrings:Cache=31.187.76.65:1338,ssl=False,abortConnect=False
+      - ConnectionStrings:DefaultConnection=Host=31.187.76.65; Port=1337; Database=postgres; Username=postgres;
+    restart: unless-stopped

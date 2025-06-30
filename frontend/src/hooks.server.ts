@@ -23,9 +23,9 @@ import {
 	KC_COOKIE_NAME,
 	KC_ISSUER,
 	KC_HOST,
-	BE_HOST,
 	S3_ACCESS_KEY_ID,
 	S3_SECRET_ACCESS_KEY,
+	API_URL
 } from "$env/static/private";
 
 import KeycloakClient from "$lib/keycloak";
@@ -88,7 +88,7 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 /** Create the universal api fetch function */
 const apiHandle: Handle = async ({ event, resolve }) => {
 	event.locals.api ??= createClient<BackendRoutes>({
-		baseUrl: dev ? "http://localhost:3001" : "http://localhost:3001",
+		baseUrl: API_URL,
 		mode: "cors",
 		fetch: event.fetch,
 	});
@@ -133,7 +133,7 @@ export const handle: Handle = sequence(
 // NOTE(W2): Attach authorization here as putting it in the client means
 // it would be stuck on the first client request's cookie.
 export async function handleFetch({ fetch, request, event }) {
-	if (request.url.startsWith(BE_HOST)) {
+	if (request.url.startsWith(API_URL)) {
 		const accessToken = event.cookies.get(`${KC_COOKIE_NAME}-a`);
 		request.headers.set("authorization", `Bearer ${accessToken}`);
 	}
