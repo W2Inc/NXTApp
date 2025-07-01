@@ -92,7 +92,7 @@
 	];
 </script>
 
-<main class="overflow-hidden">
+<div class="overflow-hidden" style="filter: url(#pixelate-20); will-change: filter;">
 	<section
 		class="bg-background dark:bg-background relative flex items-center overflow-hidden pb-24 pt-32 md:min-h-[calc(100vh-80px)]"
 	>
@@ -636,7 +636,7 @@
 			</div>
 		</div>
 	</footer>
-</main>
+</d>
 
 <style>
 	@keyframes float {

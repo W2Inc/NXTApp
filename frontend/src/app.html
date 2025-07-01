@@ -6,12 +6,158 @@
 	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+	<link
+		href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+		rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	%sveltekit.head%
 </head>
 
 <body data-sveltekit-preload-data="hover">
+	<svg height="0" width="0">
+		<defs>
+			<filter id="pixelate-20" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="40" width="40"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="20"></feMorphology>
+			</filter>
+			<filter id="pixelate-19" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="38" width="38"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="19"></feMorphology>
+			</filter>
+			<filter id="pixelate-18" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="36" width="36"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="18"></feMorphology>
+			</filter>
+			<filter id="pixelate-17" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="34" width="34"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="17"></feMorphology>
+			</filter>
+			<filter id="pixelate-16" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="32" width="32"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="16"></feMorphology>
+			</filter>
+			<filter id="pixelate-15" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="30" width="30"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="15"></feMorphology>
+			</filter>
+			<filter id="pixelate-14" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="28" width="28"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="14"></feMorphology>
+			</filter>
+			<filter id="pixelate-13" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="26" width="26"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="13"></feMorphology>
+			</filter>
+			<filter id="pixelate-12" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="24" width="24"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="12"></feMorphology>
+			</filter>
+			<filter id="pixelate-11" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="22" width="22"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="11"></feMorphology>
+			</filter>
+			<filter id="pixelate-10" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="20" width="20"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="10"></feMorphology>
+			</filter>
+			<filter id="pixelate-9" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="18" width="18"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="9"></feMorphology>
+			</filter>
+			<filter id="pixelate-8" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="16" width="16"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="8"></feMorphology>
+			</filter>
+			<filter id="pixelate-7" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="14" width="14"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="7"></feMorphology>
+			</filter>
+			<filter id="pixelate-6" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="12" width="12"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="6"></feMorphology>
+			</filter>
+			<filter id="pixelate-5" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="10" width="10"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="5"></feMorphology>
+			</filter>
+			<filter id="pixelate-4" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="8" width="8"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="4"></feMorphology>
+			</filter>
+			<filter id="pixelate-3" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="6" width="6"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="3"></feMorphology>
+			</filter>
+			<filter id="pixelate-2" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="4" width="4"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="2"></feMorphology>
+			</filter>
+			<filter id="pixelate-1" x="0" y="0">
+				<feFlood height="1" width="1" x="4" y="4"></feFlood>
+				<feComposite height="2" width="2"></feComposite>
+				<feTile result="tile"></feTile>
+				<feComposite in="SourceGraphic" in2="tile" operator="in"></feComposite>
+				<feMorphology operator="dilate" radius="1"></feMorphology>
+			</filter>
+		</defs>
+	</svg>
 	<div style="display: contents">%sveltekit.body%</div>
 </body>
 

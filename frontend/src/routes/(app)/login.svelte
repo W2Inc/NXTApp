@@ -6,14 +6,19 @@
 	import Moon from "lucide-svelte/icons/moon";
 	import Sun from "lucide-svelte/icons/sun";
 	import { toggleMode } from "mode-watcher";
+	import { Tween } from "svelte/motion";
+	import Pixelate from "$lib/components/pixelate.svelte";
 
 	let beginAnimation = $state(false);
 	$effect(() => {
-		setTimeout(() => (beginAnimation = true), 300);
+		setTimeout(() => {
+			beginAnimation = true;
+			tween.set(0);
+		}, 300);
 	});
 </script>
 
-<main class="overflow-hidden">
+<div class="overflow-hidden">
 	<section
 		class="bg-background dark:bg-background relative flex items-center overflow-hidden pb-24 pt-32 md:min-h-[calc(100vh-80px)]"
 	>
@@ -32,12 +37,12 @@
 		<!-- Animated decorative elements -->
 		<div class="animate-float-slow absolute right-10 top-20 hidden md:block">
 			<div
-				class="from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 h-24 w-24 rotate-12 rounded-xl bg-linear-to-br backdrop-blur-sm"
+				class="from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 bg-linear-to-br h-24 w-24 rotate-12 rounded-xl backdrop-blur-sm"
 			></div>
 		</div>
 		<div class="animate-float-slow absolute bottom-20 left-10 hidden md:block">
 			<div
-				class="from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 h-16 w-16 -rotate-12 rounded-lg bg-linear-to-br backdrop-blur-sm"
+				class="from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 bg-linear-to-br h-16 w-16 -rotate-12 rounded-lg backdrop-blur-sm"
 			></div>
 		</div>
 
@@ -45,8 +50,8 @@
 			<div class="grid items-center gap-12 md:grid-cols-2 md:gap-8">
 				{#if beginAnimation}
 					<!-- Left column with text and login buttons -->
-					<div class="flex flex-col space-y-6">
-						<div in:fly={{ y: 50, delay: 200, duration: 700 }}>
+					<div class="flex flex-col space-y-6" in:fly={{ y: 50, duration: 700 }}>
+						<div>
 							<span
 								class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground inline-block rounded-full px-4 py-1.5 text-sm font-medium"
 							>
@@ -54,31 +59,25 @@
 							</span>
 						</div>
 
-						<h1
-							class="text-foreground text-4xl font-bold leading-tight md:text-5xl lg:text-6xl"
-							in:fly={{ y: 50, delay: 400, duration: 700 }}
-						>
-							<span class="block">Access Your</span>
-							<span
-								class="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent"
+						<Pixelate delay={320}>
+							<h1
+								class="text-foreground text-4xl font-bold leading-tight md:text-5xl lg:text-6xl"
 							>
-								Learning Journey
-							</span>
-						</h1>
+								<span class="block">Access Your</span>
+								<span
+									class="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent"
+								>
+									Learning Potential
+								</span>
+							</h1>
 
-						<p
-							class="text-muted-foreground max-w-xl text-lg md:text-xl"
-							in:fly={{ y: 50, delay: 600, duration: 700 }}
-						>
-							Continue your project-based learning experience or explore as a guest to see
-							what our community has to offer.
-						</p>
+							<p class="text-muted-foreground max-w-xl text-lg md:text-xl">
+								Continue your project-based learning experience.
+							</p>
+						</Pixelate>
 
 						<form method="post" use:enhance>
-							<div
-								class="flex flex-wrap gap-4 pt-4"
-								in:fly={{ y: 50, delay: 800, duration: 700 }}
-							>
+							<div class="flex flex-wrap gap-4 pt-4">
 								<Button type="submit" formaction="/auth/keycloak?/signin">
 									Signin
 									<LogIn />
@@ -100,10 +99,10 @@
 						in:fade={{ delay: 1200, duration: 250 }}
 					>
 						<div
-							class="bg-card dark:bg-card border relative z-10 w-full max-w-md rounded-2xl p-1 shadow-xl animate-mock"
+							class="bg-card dark:bg-card animate-mock relative z-10 w-full max-w-md rounded-2xl border p-1 shadow-xl"
 						>
 							<div
-								class="from-muted/30 to-background/30 dark:from-background/10 dark:to-muted/10 flex aspect-4/3 items-center justify-center overflow-hidden rounded-xl bg-linear-to-br"
+								class="from-muted/30 to-background/30 dark:from-background/10 dark:to-muted/10 aspect-4/3 bg-linear-to-br flex items-center justify-center overflow-hidden rounded-xl"
 							>
 								<!-- Platform UI mockup -->
 								<div class="flex h-full w-full flex-col">
@@ -135,9 +134,7 @@
 											<div class="bg-muted h-6 w-5/6 rounded-lg"></div>
 											<div class="bg-muted h-6 w-4/5 rounded-lg"></div>
 										</div>
-										<div
-											class="bg-card col-span-3 flex flex-col rounded-xl p-4 border"
-										>
+										<div class="bg-card col-span-3 flex flex-col rounded-xl border p-4">
 											<div class="bg-primary mb-4 h-8 w-1/3 rounded-lg"></div>
 											<div class="mb-4 grid grid-cols-2 gap-3">
 												<div
@@ -167,12 +164,17 @@
 			</div>
 		</div>
 	</section>
-	<Button onclick={toggleMode} variant="outline" size="icon" class="absolute top-[10px] left-[10px]">
+	<Button
+		onclick={toggleMode}
+		variant="outline"
+		size="icon"
+		class="absolute left-[10px] top-[10px]"
+	>
 		<Sun class="transition-all dark:-rotate-90 dark:scale-0" />
 		<Moon class="absolute scale-0 transition-all dark:rotate-0 dark:scale-100" />
 		<span class="sr-only">Toggle theme</span>
 	</Button>
-</main>
+</div>
 
 <style>
 	@keyframes float {
@@ -196,7 +198,8 @@
 	}
 
 	@keyframes float-mock {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateY(0) rotate(-1.5deg);
 		}
 		50% {

@@ -1,5 +1,6 @@
 services:
   frontend:
+    container_name: nxt-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -11,25 +12,219 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+      - minio
+      - keycloak
 
   backend:
+    container_name: nxt-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
     environment:
-      - ASPNETCORE_URLS=http://+:3001
       - ASPNETCORE_ENVIRONMENT=Production
-      # Cache & Database
-      - NXTDatabase:Password=gAUzlli22pWMwel5wfqGrafusT4kJl0nPzz6acgsE3aRMDWUJHaQzCbgMZJzXEl0
-      - NXTCache:Password=rn61FchILYS13tMe3mBVKL6sLKjtHx0PH9AvPeVuaNLqW2L97cv6ZUwPAuxwQB9B
+      # Local Database and Cache settings
+      - NXTDatabase:Password=${DB_PASSWORD:-postgres}
+      - NXTCache:Password=${KEYDB_PASSWORD:-keydb}
       # Keycloak Authentication
       - Keycloak:realm=student
-      - Keycloak:auth-server-url=https://auth.hamette.net
+      - Keycloak:auth-server-url=http://keycloak:8080
       - Keycloak:resource=intra
-      - Keycloak:credentials:secret=8EliRmg5oMiq3UUAgFzPV00rY77fDxAo
-      # Connection Strings
-      - ConnectionStrings:Cache=31.187.76.65:1338,ssl=False,abortConnect=False
-      - ConnectionStrings:DefaultConnection=Host=31.187.76.65; Port=1337; Database=postgres; Username=postgres;
+      - Keycloak:credentials:secret=${KEYCLOAK_SECRET:-your-secret}
+      # Connection Strings - pointing to local services
+      - ConnectionStrings:Cache=keydb:6379,ssl=False,abortConnect=False
+      - ConnectionStrings:DefaultConnection=Host=postgres-nxtapp; Port=5432; Database=nxtapp; Username=postgres; Password=${DB_PASSWORD:-postgres}
     restart: unless-stopped
+    depends_on:
+      - postgres-nxtapp
+      - keydb
+      - keycloak
+      - gitea
+
+  # Keycloak and its dedicated postgres
+  keycloak:
+    container_name: nxt-keycloak
+    image: 'quay.io/keycloak/keycloak:26.0'
+    command:
+      - start
+    environment:
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN:-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      - KC_DB=postgres
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - KC_DB_URL_PORT=5432
+      - KC_DB_URL=jdbc:postgresql://postgres-keycloak/keycloak
+      - KC_HOSTNAME=keycloak
+      - KC_HTTP_ENABLED=true
+      - KC_HEALTH_ENABLED=true
+      - KC_PROXY_HEADERS=xforwarded
+    ports:
+      - "8080:8080"
+    volumes:
+      - 'keycloak-data:/opt/keycloak/data'
+      - 'keycloak-themes:/opt/keycloak/themes'
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "exec 3<>/dev/tcp/127.0.0.1/9000; echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost:9000\r\nConnection: close\r\n\r\n' >&3;cat <&3 | grep -q '\"status\": \"UP\"' && exit 0 || exit 1"
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+  postgres-keycloak:
+    container_name: nxt-postgres-keycloak
+    image: 'postgres:16-alpine'
+    volumes:
+      - 'postgres-keycloak-data:/var/lib/postgresql/data'
+    ports:
+      - "5433:5432"  # Different host port to avoid conflicts
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=keycloak
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+  # NXTApp dedicated postgres
+  postgres-nxtapp:
+    container_name: nxt-postgres-app
+    image: 'postgres:16-alpine'
+    volumes:
+      - 'postgres-nxtapp-data:/var/lib/postgresql/data'
+    ports:
+      - "5432:5432"  # Main app gets the standard port
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=nxtapp
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+  # MinIO and its dedicated postgres
+  postgres-minio:
+    container_name: nxt-postgres-minio
+    image: 'postgres:16-alpine'
+    volumes:
+      - 'postgres-minio-data:/var/lib/postgresql/data'
+    ports:
+      - "5435:5432"  # Different host port to avoid conflicts
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=minio
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+  # Gitea and its dedicated postgres
+  gitea:
+    container_name: nxt-gitea
+    image: 'gitea/gitea:latest'
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=postgres
+      - GITEA__database__HOST=postgres-gitea
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=postgres
+      - GITEA__database__PASSWD=${DB_PASSWORD:-postgres}
+      # Make Gitea accessible at its service hostname
+      - GITEA__server__DOMAIN=gitea
+      - GITEA__server__ROOT_URL=http://gitea:3000/
+    volumes:
+      - 'gitea-data:/data'
+    ports:
+      - '3002:3000'
+      - '22222:22'
+    depends_on:
+      postgres-gitea:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://127.0.0.1:3000'
+      interval: 2s
+      timeout: 10s
+      retries: 15
+
+  postgres-gitea:
+    container_name: nxt-postgres-gitea
+    image: 'postgres:16-alpine'
+    volumes:
+      - 'postgres-gitea-data:/var/lib/postgresql/data'
+    ports:
+      - "5434:5432"  # Different host port to avoid conflicts
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=gitea
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+  minio:
+    container_name: nxt-minio
+    image: 'quay.io/minio/minio:latest'
+    command: 'server /data --console-address ":9001"'
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "9090:9000"  # Changed from 9000:9000 to avoid conflict
+      - "9001:9001"  # Web Console
+    volumes:
+      - 'minio-data:/data'
+    depends_on:
+      postgres-minio:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - '-f'
+        - 'http://localhost:9000/minio/health/live'
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+  keydb:
+    container_name: nxt-keydb
+    image: 'eqalpha/keydb:latest'
+    ports:
+      - "6379:6379"
+    volumes:
+      - 'keydb-data:/data'
+    command: keydb-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "keydb-cli", "ping"]
+      interval: 5s
+      timeout: 20s
+      retries: 10
+
+volumes:
+  keycloak-data:
+  keycloak-themes:
+  postgres-keycloak-data:
+  postgres-nxtapp-data:
+  postgres-gitea-data:
+  postgres-minio-data:
+  gitea-data:
+  minio-data:
+  keydb-data:
