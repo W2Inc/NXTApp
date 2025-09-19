@@ -2,6 +2,9 @@
 
 NXTApp is an open-source peer-to-peer education platform designed as a monorepo to manage various components of the application. The repository contains multiple services, primarily written in C#, alongside modern frontend technologies like Svelte and TypeScript.
 
+<img width="1311" height="1406" alt="image" src="https://github.com/user-attachments/assets/0eea5b7d-9705-43dc-a8a4-f44c5f3e589d" />
+
+
 ## Repository Structure
 
 - **Backend**: Contains the backend services for the application, written in C#.
